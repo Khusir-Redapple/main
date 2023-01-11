@@ -92,7 +92,7 @@ module.exports = {
             let event = {
                 type: 'room_including_me',
                 room: params.room,
-                delay: 2000,//2200,
+                delay: 3000,//2200,
                 name: 'make_diceroll',
                 data: {
                     room: params.room,
@@ -526,7 +526,7 @@ module.exports = {
                     let movePossible = _tab.isMovePossible(params.room, id);
                     console.log('movePossible >>', movePossible);
 
-                    let timer = 3000; //1500;
+                    let timer = 1500; //1500;
                     if (killed) timer = killTimer;//4000 //nostra 3000
 
                     // If Move Possible
