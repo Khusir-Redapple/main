@@ -125,18 +125,7 @@ class _Tables {
 
     //Check Table Exists
     checkTableExists(room) {
-        // for (var i = 0; i < this.tables.length; i++) {
-        //     if (this.tables[i].room == room) {
-        //         return {
-        //             status: true,
-        //             start_at: parseInt(this.tables[i].turn_start_at),
-        //             current_turn: this.tables[i].current_turn,
-        //         };
-        //     }
-        // }
-        
-        // New implementation
-        this.tables.map(function(element,i) {
+        for (var i = 0; i < this.tables.length; i++) {
             if (this.tables[i].room == room) {
                 return {
                     status: true,
@@ -144,7 +133,7 @@ class _Tables {
                     current_turn: this.tables[i].current_turn,
                 };
             }
-        })
+        }
         return {
             status: false,
         };
