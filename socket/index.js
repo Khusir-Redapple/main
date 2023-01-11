@@ -10,7 +10,7 @@ var logger = require('../api/service/logger');
 var requestTemplate = require('../api/service/request-template');
 const { _Tables } = require('./utils/_tables');
 var _tab = new _Tables();
-var config = require('../config');
+var config = require('../config')
 var ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = function (io) {
@@ -48,7 +48,6 @@ module.exports = function (io) {
                 let us = await User.findOne({
                     'token': params.token,//need to change according we get in game 
                 });
-                console.log({us});
                 if (!us) {
                      var rezObj = {
                         status: 1,
@@ -90,6 +89,7 @@ module.exports = function (io) {
                 console.log('TS1 ::', 'joinRes', socket.id, JSON.stringify(rezObj));
                 return callback(rezObj);
             } catch (err) {
+                console.log('ERR', err);
                 if (typeof callback == 'function')
                     return callback({
                         status: 0,
@@ -176,7 +176,6 @@ module.exports = function (io) {
                 socket.data_name = us.name;
                 socket.join(socket.data_id);
                 await Socketz.updateSocket(us._id, socket);
-                //Socketz.updateSocket(us._id, socket);
                 await User.findOneAndUpdate(
                     {
                         _id: ObjectId(us._id),
@@ -202,7 +201,6 @@ module.exports = function (io) {
                 socket.data_name = us.name;
                 socket.join(socket.data_id);
                 await Socketz.updateSocket(us._id, socket);
-                //Socketz.updateSocket(us._id, socket);
             }
             var myId = Socketz.getId(socket.id);
             if (!myId) {
@@ -282,7 +280,7 @@ module.exports = function (io) {
                         } else if(winnerData.time) {
                             io.to(start.room).emit('gameTime', {status:1, status_code: 200, data : winnerData });
                         }        
-                    },1000) //2000               
+                    },1000)//2000               
                 }
                 else{
                     await Socketz.sleep(11000);
@@ -339,16 +337,18 @@ module.exports = function (io) {
             console.log(socket.data_name, " Rolled ", params.dice_value);
             var myId = Socketz.getId(socket.id);
             var rez = await _TableInstance.tournamntDiceRolled(socket, params, myId);
-            //console.log('tournamnt_dice_rolled callback', new Date());
+            console.log('tournamnt_dice_rolled callback', new Date());
             callback(rez.callback);
             if (rez.callback.status == 1) processEvents(rez);
         });
 
         socket.on('tournament_move_made', async (params, callback) => {
-            //console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
+            // console.trace("TS1 ::", 'tournament_move_made', socket.id, JSON.stringify(params));
+            console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
+
             var myId = Socketz.getId(socket.id);
             var rez = await _TableInstance.moveTourney(params, myId);
-            //console.log("TS2 ::", 'makeMove callback', rez);
+            console.log("TS2 ::", 'makeMove callback', rez);
             callback(rez.callback);
             if (rez.callback.status == 1) processEvents(rez);
         });

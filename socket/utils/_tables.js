@@ -127,16 +127,18 @@ class _Tables {
     checkTableExists(room) {
         for (var i = 0; i < this.tables.length; i++) {
             if (this.tables[i].room == room) {
-                return {
+                let res = {
                     status: true,
                     start_at: parseInt(this.tables[i].turn_start_at),
                     current_turn: this.tables[i].current_turn,
                 };
+                return res;
             }
         }
-        return {
+        let res = {
             status: false,
         };
+        return res;
     }
 
      //Seat on tournament table
@@ -284,6 +286,7 @@ class _Tables {
                             !this.tables[i].users[pl].is_left
                         ) {
                             // console.log('You are playing on this table', this.tables[i]);
+
                             var rez = {
                                 status: 1,
                                 tokens: this.tables[i].users.map((user) => {
@@ -571,7 +574,8 @@ class _Tables {
                     }
                 }
             }
-        }        
+        }
+        
     }
     addBonusPoints(room, id, points, length, type) {
         let bonusPoint = points * length;
