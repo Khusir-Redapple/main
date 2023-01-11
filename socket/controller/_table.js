@@ -140,7 +140,7 @@ module.exports = {
                 //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
                 await _tab.scrapTurn(params.room, myPos);
                 // DICE_ROLL TO NEXT
-                let timer = 1500;
+                let timer = 3000;
                 let nextPos = await _tab.getNextPosition(params.room, myPos);
                 await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
