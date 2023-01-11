@@ -92,7 +92,7 @@ module.exports = {
             let event = {
                 type: 'room_including_me',
                 room: params.room,
-                delay: 3000,//2200,
+                delay: 2000,//2000,
                 name: 'make_diceroll',
                 data: {
                     room: params.room,
@@ -109,7 +109,7 @@ module.exports = {
         }
         if (movePossible) {
             console.log('[MOVE POSSIBLE DICE ROLLED]');
-            let timer = 500; //1500
+            let timer = 1500; //1500
             var myPos = await _tab.getMyPosition(params.room, id);
             //  MAKE_MOVE TO ME
             let nextPos = await _tab.getNextPosition(params.room, myPos);        
