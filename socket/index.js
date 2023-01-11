@@ -175,8 +175,8 @@ module.exports = function (io) {
                 socket.data_id = us._id.toString();
                 socket.data_name = us.name;
                 socket.join(socket.data_id);
-                //await Socketz.updateSocket(us._id, socket);
-                Socketz.updateSocket(us._id, socket);
+                await Socketz.updateSocket(us._id, socket);
+                //Socketz.updateSocket(us._id, socket);
                 await User.findOneAndUpdate(
                     {
                         _id: ObjectId(us._id),
@@ -201,8 +201,8 @@ module.exports = function (io) {
                 socket.data_id = us._id.toString();
                 socket.data_name = us.name;
                 socket.join(socket.data_id);
-                // await Socketz.updateSocket(us._id, socket);
-                Socketz.updateSocket(us._id, socket);
+                await Socketz.updateSocket(us._id, socket);
+                //Socketz.updateSocket(us._id, socket);
             }
             var myId = Socketz.getId(socket.id);
             if (!myId) {
