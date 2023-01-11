@@ -120,7 +120,7 @@ module.exports = function (io) {
             }
 
             var rez = await _TableInstance.reconnectIfPlaying(myId);
-            // console.log("<<<<<< JOINPREVRES >>>>", JSON.stringify(rez, undefined, 2));
+            console.log("<<<<<< JOINPREVIOUS >>>>", JSON.stringify(rez, undefined, 2));
             socket.join(rez.table.room);
             console.log('TS1 ::', 'JOIN_PREV_RES', socket.id, JSON.stringify(rez));
             return callback(rez);
