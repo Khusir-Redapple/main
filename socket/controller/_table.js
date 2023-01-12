@@ -399,14 +399,15 @@ module.exports = {
                                 //         }
                                 //     }
                                 // }
-                                
-                                // new implementation on 12-01-23
+
+                                // New implementation on 12-01-23
                                 endGame.map(gameData,j => tableD.players.map((players,k) => 
                                 {
                                     if (gameData[j].id.toString() == players[k].id.toString()) 
                                     {
                                         tableD.players[k].rank = endGame[j].rank;
                                         tableD.players[k].pl += endGame[j].amount;
+                                        console.log('<<<<<<< RANK UPDATE : 1 >>>>>>');
                                     }
                                 }))
 
@@ -1064,14 +1065,25 @@ module.exports = {
                                 // console.log('tableD::', tableD);
 
                                 if (tableD) {
-                                    for (let j = 0; j < endGame.length; j++) {
-                                        for (let k = 0; k < tableD.players.length; k++) {
-                                            if (endGame[j].id.toString() == tableD.players[k].id.toString()) {
-                                                tableD.players[k].rank = endGame[j].rank;
-                                                tableD.players[k].pl += endGame[j].amount;
-                                            }
+                                    // for (let j = 0; j < endGame.length; j++) {
+                                    //     for (let k = 0; k < tableD.players.length; k++) {
+                                    //         if (endGame[j].id.toString() == tableD.players[k].id.toString()) {
+                                    //             tableD.players[k].rank = endGame[j].rank;
+                                    //             tableD.players[k].pl += endGame[j].amount;
+                                    //         }
+                                    //     }
+                                    // }
+
+                                    // New implementation on 12-01-23
+                                    endGame.map(gameData,j => tableD.players.map((players,k) => 
+                                    {
+                                        if (gameData[j].id.toString() == players[k].id.toString()) 
+                                        {
+                                            tableD.players[k].rank = endGame[j].rank;
+                                            tableD.players[k].pl += endGame[j].amount;
+                                            console.log('<<<<<<< RANK UPDATE : 2 >>>>>>');
                                         }
-                                    }
+                                    }))
 
                                     tableD.game_completed_at = new Date().getTime();
 
