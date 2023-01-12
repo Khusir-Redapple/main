@@ -109,7 +109,7 @@ module.exports = {
         }
         if (movePossible) {
             console.log('[MOVE POSSIBLE DICE ROLLED]');
-            let timer = 1500; //1500
+            let timer = 150; // it was 500
             var myPos = await _tab.getMyPosition(params.room, id);
             //  MAKE_MOVE TO ME
             let nextPos = await _tab.getNextPosition(params.room, myPos);        
@@ -140,7 +140,7 @@ module.exports = {
                 //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
                 await _tab.scrapTurn(params.room, myPos);
                 // DICE_ROLL TO NEXT
-                let timer = 3000;
+                let timer = 1500;
                 let nextPos = await _tab.getNextPosition(params.room, myPos);
                 await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
@@ -169,9 +169,8 @@ module.exports = {
                 // Send 'roll' to same player
                 let DICE_ROLLED = await _tab.rollDice();
                 var myPos = await _tab.getMyPosition(params.room, id);
-                // console.log('[DICE ROLLED SIX]', DICE_ROLLED, myPos);
+                console.log('[DICE ROLLED SIX]======>>>', DICE_ROLLED, myPos);
                 await _tab.diceRolled(params.room, myPos, DICE_ROLLED);
-
                 await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1);
                 let dices_rolled = await _tab.gePlayerDices(params.room, myPos);
                 // console.log('[DICE ROLLED SIX]', dices_rolled);
@@ -190,7 +189,6 @@ module.exports = {
                         extra_move_animation:true
                     },
                 };
-
                 resObj.events.push(event);
             }
 
