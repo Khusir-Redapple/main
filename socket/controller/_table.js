@@ -1076,6 +1076,7 @@ module.exports = {
                                     // }
                                     
                                     // New implementation on 12-01-23
+                                    console.log(">>>>>>>>>>>>>>>", gameData, tableD);
                                     endGame.map((gameData,j) => {
                                         tableD.players.map((players,k) => {
                                             if (gameData[j].id.toString() == players[k].id.toString()) 
