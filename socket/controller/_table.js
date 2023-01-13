@@ -391,29 +391,16 @@ module.exports = {
                             // console.log('tableD::', tableD);
 
                             if (tableD) {
-                                // for (let j = 0; j < endGame.length; j++) {
-                                //     for (let k = 0; k < tableD.players.length; k++) {
-                                //         if (endGame[j].id.toString() == tableD.players[k].id.toString()) {
-                                //             tableD.players[k].rank = endGame[j].rank;
-                                //             tableD.players[k].pl += endGame[j].amount;
-                                //         }
-                                //     }
-                                // }
-
-                                // New implementation on 12-01-23
-                                endGame.map((gameData,j) => {
-                                    tableD.players.map((players,k) => {
-                                        if (gameData[j].id.toString() == players[k].id.toString()) 
-                                        {
+                                for (let j = 0; j < endGame.length; j++) {
+                                    for (let k = 0; k < tableD.players.length; k++) {
+                                        if (endGame[j].id.toString() == tableD.players[k].id.toString()) {
                                             tableD.players[k].rank = endGame[j].rank;
                                             tableD.players[k].pl += endGame[j].amount;
-                                            console.log('<<<<<<< RANK UPDATE : 2 >>>>>>');
                                         }
-                                    })
-                                })
+                                    }
+                                }                               
 
                                 tableD.game_completed_at = new Date().getTime();
-
                                 tableD
                                     .save()
                                     .then((d) => { 
@@ -1060,36 +1047,19 @@ module.exports = {
                             // Check if EndGame Possible
                             var endGame = _tab.isThisTheEnd(params.room,tableD.win_amount);
                             if (endGame) {
-                                // Update values in user wallets & table data [DB]
-                                
-
-                                // console.log('tableD::', tableD);
+                                // Update values in user wallets & table data [DB]                                
 
                                 if (tableD) {
-                                    // for (let j = 0; j < endGame.length; j++) {
-                                    //     for (let k = 0; k < tableD.players.length; k++) {
-                                    //         if (endGame[j].id.toString() == tableD.players[k].id.toString()) {
-                                    //             tableD.players[k].rank = endGame[j].rank;
-                                    //             tableD.players[k].pl += endGame[j].amount;
-                                    //         }
-                                    //     }
-                                    // }
-                                    
-                                    // New implementation on 12-01-23
-                                    console.log(">>>>>>>>>>>>>>>", gameData, tableD);
-                                    endGame.map((gameData,j) => {
-                                        tableD.players.map((players,k) => {
-                                            if (gameData[j].id.toString() == players[k].id.toString()) 
-                                            {
+                                    for (let j = 0; j < endGame.length; j++) {
+                                        for (let k = 0; k < tableD.players.length; k++) {
+                                            if (endGame[j].id.toString() == tableD.players[k].id.toString()) {
                                                 tableD.players[k].rank = endGame[j].rank;
                                                 tableD.players[k].pl += endGame[j].amount;
-                                                console.log('<<<<<<< RANK UPDATE : 2 >>>>>>');
                                             }
-                                        })
-                                    })
+                                        }
+                                    }
 
                                     tableD.game_completed_at = new Date().getTime();
-
                                     tableD
                                         .save()
                                         .then((d) => {
