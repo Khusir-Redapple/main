@@ -1073,7 +1073,7 @@ module.exports = {
                                     //         }
                                     //     }
                                     // }
-
+                                    console.log({tableD, gameData});
                                     // New implementation on 12-01-23
                                     endGame.map(gameData,j => tableD.players.map((players,k) => 
                                     {
