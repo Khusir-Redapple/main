@@ -120,9 +120,8 @@ module.exports = function (io) {
             }
 
             var rez = await _TableInstance.reconnectIfPlaying(myId);
-            console.log("<<<<<< JOINPREVIOUS >>>>", JSON.stringify(rez, undefined, 2));
             // If no room to join the game.
-            rez.table.room ? socket.join(rez.table.room) : socket.join();
+            rez?.table?.room ? socket.join(rez.table.room) : socket.join();
             // socket.join(rez.table.room) // previously it was     
             console.log('TS1 ::', 'JOIN_PREV_RES', socket.id, JSON.stringify(rez));
             return callback(rez);
@@ -350,9 +349,9 @@ module.exports = function (io) {
 
             var myId = Socketz.getId(socket.id);
             var rez = await _TableInstance.moveTourney(params, myId);
-            console.log("TS2 ::", 'makeMove callback', rez);
-            callback(rez.callback);
-            if (rez.callback.status == 1) processEvents(rez);
+            console.log("TS2 ::", 'makeMove callback =============>>>>', rez);
+            callback(rez?.callback);
+            if (rez?.callback?.status == 1) processEvents(rez);
         });
 
         //Skip Turn
