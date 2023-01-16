@@ -1291,15 +1291,26 @@ class _Tables {
     }
 
     deductLife(room, id) {
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
-                for (let j = 0; j < this.tables[i].users.length; j++) {
-                    if (this.tables[i].users[j].id == id) {
-                        this.tables[i].users[j].life--;
-                    }
-                }
+        // for (let i = 0; i < this.tables.length; i++) {
+        //     if (this.tables[i].room == room) {
+        //         for (let j = 0; j < this.tables[i].users.length; j++) {
+        //             if (this.tables[i].users[j].id == id) {
+        //                 this.tables[i].users[j].life--;
+        //             }
+        //         }
+        //     }
+        // }
+
+        // new implementation 
+        this.tables.filter(async function(tableData) {
+            return tableData.room == room;
+        }).map(async function(tableUsers) {
+            if(tableUsers.users.id == id){
+                tableUsers.users.life--;
             }
-        }
+        });
+
+
         var gamePlayDataIndex = this.gamePlayData.findIndex((x)=>x.room == room);
         console.log("this.gamePlayData[gamePlayDataIndex].data.life_lost0 >",this.gamePlayData[gamePlayDataIndex].data.life_lost,this.gamePlayData[gamePlayDataIndex].data.lives_left)
         this.gamePlayData[gamePlayDataIndex].data.life_lost += 1
