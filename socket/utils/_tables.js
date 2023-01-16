@@ -1291,7 +1291,7 @@ class _Tables {
     }
 
     deductLife(room, id) {
-        console.log(`TABLE:: >>>>> ${this.tables}`);
+        console.log('TABLE:: >>>>> ',this.tables);
         // for (let i = 0; i < this.tables.length; i++) {
         //     if (this.tables[i].room == room) {
         //         for (let j = 0; j < this.tables[i].users.length; j++) {
