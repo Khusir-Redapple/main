@@ -389,16 +389,24 @@ module.exports = {
                         if (endGame) {
                             // Update values in user wallets & table data [DB]
                             // console.log('tableD::', tableD);
-
                             if (tableD) {
-                                for (let j = 0; j < endGame.length; j++) {
-                                    for (let k = 0; k < tableD.players.length; k++) {
-                                        if (endGame[j].id.toString() == tableD.players[k].id.toString()) {
-                                            tableD.players[k].rank = endGame[j].rank;
-                                            tableD.players[k].pl += endGame[j].amount;
+                                // for (let j = 0; j < endGame.length; j++) {
+                                //     for (let k = 0; k < tableD.players.length; k++) {
+                                //         if (endGame[j].id.toString() == tableD.players[k].id.toString()) {
+                                //             tableD.players[k].rank = endGame[j].rank;
+                                //             tableD.players[k].pl += endGame[j].amount;
+                                //         }
+                                //     }
+                                // }
+                                console.log("GAME END :: >>>>>>>");
+                                endGame.map((eGame) => {
+                                    tableD.players.map((playersTable) => {
+                                        if (eGame.id.toString() == playersTable.id.toString()) {
+                                            playersTable.rank = eGame.rank;
+                                            playersTable.pl += eGame.amount;
                                         }
-                                    }
-                                }                               
+                                    });
+                                });                    
 
                                 tableD.game_completed_at = new Date().getTime();
                                 tableD

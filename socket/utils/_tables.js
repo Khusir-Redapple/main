@@ -74,8 +74,6 @@ class _Tables {
 
     // Check Seat Available
     checkSeatAvailable(room) {
-        // for debugging
-        console.log(`This Table :: ${this.tables}`);
         var count = 0;
         var noPlayers = 0;
         // console.log('ROOM', room);
