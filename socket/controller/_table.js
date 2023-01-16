@@ -1060,13 +1060,11 @@ module.exports = {
                                     //     }
                                     // }
                                     console.log(`PL:: <<<<<<<< END GAME >>>>>>>>>`);
-                                    console.log({endGame});
-                                    console.log(`${tableD}`);
-                                    endGame.map((eGame,j) => {
-                                        tableD.players.map((playersTable,k) => {
-                                            if (eGame[j].id.toString() == playersTable.players[k].id.toString()) {
-                                                playersTable.players[k].rank = eGame[j].rank;
-                                                playersTable.players[k].pl += eGame[j].amount;
+                                    endGame.map((eGame) => {
+                                        tableD.players.map((playersTable) => {
+                                            if (eGame.id.toString() == playersTable.id.toString()) {
+                                                playersTable.rank = eGame.rank;
+                                                playersTable.pl += eGame.amount;
                                             }
                                         })
                                     })
