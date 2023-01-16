@@ -399,8 +399,8 @@ module.exports = {
                                 //     }
                                 // }
                                 console.log("GAME END :: >>>>>>>");
-                                endGame.map((eGame) => {
-                                    tableD.players.map((playersTable) => {
+                                endGame.map(async (eGame) => {
+                                    tableD.players.map(async (playersTable) => {
                                         if (eGame.id.toString() == playersTable.id.toString()) {
                                             playersTable.rank = eGame.rank;
                                             playersTable.pl += eGame.amount;
@@ -1068,8 +1068,8 @@ module.exports = {
                                     //     }
                                     // }
                                     console.log(`PL:: <<<<<<<< END GAME >>>>>>>>>`);
-                                    endGame.map((eGame) => {
-                                        tableD.players.map((playersTable) => {
+                                    endGame.map(async (eGame) => {
+                                        tableD.players.map(async (playersTable) => {
                                             if (eGame.id.toString() == playersTable.id.toString()) {
                                                 playersTable.rank = eGame.rank;
                                                 playersTable.pl += eGame.amount;
