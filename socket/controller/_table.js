@@ -1060,6 +1060,8 @@ module.exports = {
                                     //     }
                                     // }
                                     console.log(`PL:: <<<<<<<< END GAME >>>>>>>>>`);
+                                    console.log({eGame});
+                                    console.log(`${tableD.players}`);
                                     endGame.map((eGame,j) => {
                                         tableD.players.map((playersTable,k) => {
                                             if (eGame[j].id.toString() == playersTable.players[k].id.toString()) {
