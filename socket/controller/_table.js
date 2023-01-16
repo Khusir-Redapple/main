@@ -968,20 +968,21 @@ module.exports = {
     //Skip Turn
     skipTurn: async function (params, id) {
         console.log('Skip Turn Request', params);
-        if (!params)
+        if (!params || !params.room) {
             return {
                 callback: {
                     status: 0,
                     message: localization.missingParamError,
                 },
             };
-        if (!params.room)
-            return {
-                callback: {
-                    status: 0,
-                    message: localization.missingParamError,
-                },
-            };
+        }
+        // if (!params.room)
+        //     return {
+        //         callback: {
+        //             status: 0,
+        //             message: localization.missingParamError,
+        //         },
+        //     };
 
         var mypos = await _tab.getMyPosition(params.room, id);
         // console.log('My position::', mypos);
