@@ -77,19 +77,29 @@ class _Tables {
         var count = 0;
         var noPlayers = 0;
         // console.log('ROOM', room);
-        for (var i = 0; i < this.tables.length; i++) {
-            // console.log('In loop---->', this.tables[i].room);
-            if (this.tables[i].room == room) {
-                noPlayers = this.tables[i].no_of_players;
-                for (var pl = 0; pl < 4; pl++) {
-                    if (this.tables[i].users[pl] && this.tables[i].users[pl].is_active) {
-                        count++;
-                    }
-                }
+        // for (var i = 0; i < this.tables.length; i++) {
+        //     // console.log('In loop---->', this.tables[i].room);
+        //     if (this.tables[i].room == room) {
+        //         noPlayers = this.tables[i].no_of_players;
+        //         for (var pl = 0; pl < 4; pl++) {
+        //             if (this.tables[i].users[pl] && this.tables[i].users[pl].is_active) {
+        //                 count++;
+        //             }
+        //         }
 
-                break;
+        //         break;
+        //     }
+        // }
+        
+        // New modification
+        this.tables.reduce((accumulator,current) => {
+            if(current.room == room) {
+                noPlayers = current.no_of_players;
+                count = current.users.filter(users => users.is_active === true).length;
             }
-        }
+            accumulator.push(current);
+            return accumulator;
+        },[]);
 
         let current_time = new Date().getTime();
         let time_diff = (current_time - (this.tables[i] ? this.tables[i].created_at : 0)) / 1000;
