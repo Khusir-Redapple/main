@@ -1291,18 +1291,27 @@ class _Tables {
     }
 
     deductLife(room, id) {
-        console.log('TABLE:: >>>>> ',this.tables[0].users);
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
-                for (let j = 0; j < this.tables[i].users.length; j++) {
-                    if (this.tables[i].users[j].id == id) {
-                        this.tables[i].users[j].life--;
-                    }
-                }
-            }
-        }
+        // console.log('TABLE:: >>>>> ',this.tables[0].users);
+        // for (let i = 0; i < this.tables.length; i++) {
+        //     if (this.tables[i].room == room) {
+        //         for (let j = 0; j < this.tables[i].users.length; j++) {
+        //             if (this.tables[i].users[j].id == id) {
+        //                 this.tables[i].users[j].life--;
+        //             }
+        //         }
+        //     }
+        // }
 
-        // new implementation        
+        // New modification with same result
+        this.tables = this.tables.reduce((prev,curr) => {
+            if(curr.room == room){
+                let idx = curr.users.findIndex(element => element.id == id);
+                curr.users[idx].life--;
+            }
+            prev.push(curr);
+            return prev;
+        },[]);
+
         var gamePlayDataIndex = this.gamePlayData.findIndex((x)=>x.room == room);
         console.log("this.gamePlayData[gamePlayDataIndex].data.life_lost0 >",this.gamePlayData[gamePlayDataIndex].data.life_lost,this.gamePlayData[gamePlayDataIndex].data.lives_left)
         this.gamePlayData[gamePlayDataIndex].data.life_lost += 1
