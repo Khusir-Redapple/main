@@ -137,11 +137,11 @@ class _Tables {
                 //let count = 0;
                 noPlayers = currentValue.no_of_players;
                 count = currentValue.users.filter(users => users.is_active === true).length;
-                if (count < noPlayers) return { room: currentValue.room, timerStart: 60 };
             }
             accumulator.push(currentValue);
             return accumulator;
         },[]);
+        if (count < noPlayers) return { room: currentValue.room, timerStart: 60 };
 
         return false;
     }
