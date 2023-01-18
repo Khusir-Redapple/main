@@ -90,7 +90,6 @@ class _Tables {
         //         break;
         //     }
         // }
-        console.log('SEAT AVAILABLE :: >>>',this.tables[0].users);
         // New modification
         this.tables.reduce((accumulator,current) => {
             if(current.room == room) {
