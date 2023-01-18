@@ -107,42 +107,27 @@ class _Tables {
     }
 
     checkTournamentTable(room_fee, no_of_players) {
-        // for (var i = 0; i < this.tables.length; i++) {
-        //     console.log('room_fee', room_fee, no_of_players);
-        //     console.log('TABCHECK', i, this.tables[i]);
+        for (var i = 0; i < this.tables.length; i++) {
+            console.log('room_fee', room_fee, no_of_players);
+            console.log('TABCHECK', i, this.tables[i]);
 
-        //     if (
-        //         this.tables[i].room_fee == room_fee &&
-        //         this.tables[i].no_of_players == no_of_players
-        //     ) {
-        //         var count = 0;
-        //         var noPlayers = this.tables[i].no_of_players;
+            if (
+                this.tables[i].room_fee == room_fee &&
+                this.tables[i].no_of_players == no_of_players
+            ) {
+                var count = 0;
+                var noPlayers = this.tables[i].no_of_players;
 
-        //         for (var pl = 0; pl < 4; pl++)
-        //             if (this.tables[i].users[pl] && this.tables[i].users[pl].is_active) count++;
+                for (var pl = 0; pl < 4; pl++)
+                    if (this.tables[i].users[pl] && this.tables[i].users[pl].is_active) count++;
 
-        //         console.log('Tournament :Inside Function Count::', count);
-        //         console.log('Tournament :Inside Function No of Pl::', noPlayers);
-        //         console.log('Tournament :Inside Function Room::', this.tables[i].room);
+                console.log('Tournament :Inside Function Count::', count);
+                console.log('Tournament :Inside Function No of Pl::', noPlayers);
+                console.log('Tournament :Inside Function Room::', this.tables[i].room);
 
-        //         if (count < noPlayers) return { room: this.tables[i].room, timerStart: 60 };
-        //     }
-        // }
-
-        // New implment
-        let count = 0;
-        let noPlayers = 0;
-        this.tables.reduce(function(accumulator, currentValue) {
-            if(currentValue.room_fee == room_fee && currentValue.no_of_players == no_of_players){
-                //let count = 0;
-                noPlayers = currentValue.no_of_players;
-                count = currentValue.users.filter(users => users.is_active === true).length;
+                if (count < noPlayers) return { room: this.tables[i].room, timerStart: 60 };
             }
-            accumulator.push(currentValue);
-            return accumulator;
-        },[]);
-        if (count < noPlayers) return { room: currentValue.room, timerStart: 60 };
-
+        }
         return false;
     }
 
