@@ -255,34 +255,19 @@ class _Tables {
     //To check user already playing in another room / table
     alreadyPlaying(id) {
         console.log('AlreadyPlaying Started >>', id,this.tables.length);
-        // for (var i = 0; i < this.tables.length; i++) {
-        //     // console.log('AlreadyPlaying Started >>',  this.tables[i]);
-        //     for (var pl = 0; pl < this.tables[i].users.length; pl++) {
-        //         if (this.tables[i].users[pl].id) {
-        //             if (this.tables[i].users[pl].id.toString() == id.toString() && !this.tables[i].users[pl].is_left) {
-        //                 // console.log('You are playing on this table', this.tables[i]);
-        //                 return true;
-        //             }
-        //         }
-        //     }
-        // }
-        // return false;
-
-         // Iterating the this.table objects
-         let result = this.tables.map(function(elements){
-            // searching records into users object.
-            let index = elements.users.findIndex(user => user.id.toString() == id.toString() && !user.is_left);
-            // if records not found.
-            if(index == -1){
-                 return false;
+        for (var i = 0; i < this.tables.length; i++) {
+            // console.log('AlreadyPlaying Started >>',  this.tables[i]);
+            for (var pl = 0; pl < this.tables[i].users.length; pl++) {
+                if (this.tables[i].users[pl].id) {
+                    console.log('USERS :: >>', this.tables[i]);
+                    if (this.tables[i].users[pl].id.toString() == id.toString() && !this.tables[i].users[pl].is_left) {
+                        // console.log('You are playing on this table', this.tables[i]);
+                        return true;
+                    }
+                }
             }
-            // if records found.
-            return true;
-       });
-       // returning the final result.
-       console.log(this.tables[0].users);
-       console.log('MAP ::', result.toString());
-       return result.toString();
+        }
+        return false;
     }
     alreadyPlayingTable(id) {
         // console.log('AlreadyPlaying Started >>', id);
