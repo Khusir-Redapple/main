@@ -280,7 +280,7 @@ class _Tables {
             return true;
        });
        // returning the final result.
-       console.log(this.tables);
+       console.log(this.tables[0].users);
        console.log('MAP ::', result.toString());
        return result.toString();
     }
