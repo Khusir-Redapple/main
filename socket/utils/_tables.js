@@ -221,20 +221,30 @@ class _Tables {
         return false;
     }
     setTableData(room, user){
-        console.log("setTableData >>>",room, user.name,this.tables)
-        for (var i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
-                console.log("In Room >>")
-                for (var pl = 0; pl < this.tables[i].users.length; pl++) {
-                    // console.log(this.tables[i].users[pl].id == user._id,this.tables[i].users[pl].id ,user._id)
-                    if (this.tables[i].users[pl].id == user._id.toString()) {
-                        this.tables[i].users[pl].is_joined = true;
-                        console.log("In user >>",pl)
-                        return true;
-                    }
-                }                               
+        console.log("setTableData :: >>>",room, user.name,this.tables)
+        // for (var i = 0; i < this.tables.length; i++) {
+        //     if (this.tables[i].room == room) {
+        //         console.log("In Room >>")
+        //         for (var pl = 0; pl < this.tables[i].users.length; pl++) {
+        //             // console.log(this.tables[i].users[pl].id == user._id,this.tables[i].users[pl].id ,user._id)
+        //             if (this.tables[i].users[pl].id == user._id.toString()) {
+        //                 this.tables[i].users[pl].is_joined = true;
+        //                 console.log("In user >>",pl)
+        //                 return true;
+        //             }
+        //         }                               
+        //     }
+        // }
+
+        // For debugging
+        this.table = this.tables.reduce(function(accumulator, currentValue) {
+            if(currentValue.room == room) {               
+                let idx = currentValue.users.findIndex(element => element.id == user._id.toString());
+                currentValue.users[idx].is_joined = true;
             }
-        }
+            accumulator.push(currentValue);
+            return accumulator;
+        },[]);
     }
     tableInfo(){
         console.log('AlreadyPlaying Started >>',this.tables.length);
