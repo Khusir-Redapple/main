@@ -280,6 +280,7 @@ class _Tables {
             return true;
        });
        // returning the final result.
+       console.log('MAP ::', result.toString());
        return result.toString();
     }
     alreadyPlayingTable(id) {
