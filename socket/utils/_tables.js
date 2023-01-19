@@ -236,7 +236,7 @@ class _Tables {
         //     }
         // }
 
-        // For debugging
+        // New modification
         this.table = this.tables.reduce(function(accumulator, currentValue) {
             if(currentValue.room == room) {               
                 let idx = currentValue.users.findIndex(element => element.id == user._id.toString());
@@ -255,18 +255,32 @@ class _Tables {
     //To check user already playing in another room / table
     alreadyPlaying(id) {
         console.log('AlreadyPlaying Started >>', id,this.tables.length);
-        for (var i = 0; i < this.tables.length; i++) {
-            // console.log('AlreadyPlaying Started >>',  this.tables[i]);
-            for (var pl = 0; pl < this.tables[i].users.length; pl++) {
-                if (this.tables[i].users[pl].id) {
-                    if (this.tables[i].users[pl].id.toString() == id.toString() && !this.tables[i].users[pl].is_left) {
-                        // console.log('You are playing on this table', this.tables[i]);
-                        return true;
-                    }
-                }
+        // for (var i = 0; i < this.tables.length; i++) {
+        //     // console.log('AlreadyPlaying Started >>',  this.tables[i]);
+        //     for (var pl = 0; pl < this.tables[i].users.length; pl++) {
+        //         if (this.tables[i].users[pl].id) {
+        //             if (this.tables[i].users[pl].id.toString() == id.toString() && !this.tables[i].users[pl].is_left) {
+        //                 // console.log('You are playing on this table', this.tables[i]);
+        //                 return true;
+        //             }
+        //         }
+        //     }
+        // }
+        // return false;
+
+         // Iterating the this.table objects
+         let result = this.tables.map(function(elements){
+            // searching records into users object.
+            let index = elements.users.findIndex(user => user.id.toString() == id.toString() && !user.is_left);
+            // if records not found.
+            if(index == -1){
+                 return false;
             }
-        }
-        return false;
+            // if records found.
+            return true;
+       });
+       // returning the final result.
+       return result.toString();
     }
     alreadyPlayingTable(id) {
         // console.log('AlreadyPlaying Started >>', id);
