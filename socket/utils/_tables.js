@@ -823,21 +823,38 @@ class _Tables {
     }
 
     getNextPosition(room, pos) {
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
-                for (let j = pos + 1; j < this.tables[i].users.length; j++) {
-                    if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
-                        return j;
-                    }
-                }
-                for (let j = 0; j < pos; j++) {
-                    if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
-                        return j;
-                    }
-                }
-            }
+        // for (let i = 0; i < this.tables.length; i++) {
+        //     if (this.tables[i].room == room) {
+        //         for (let j = pos + 1; j < this.tables[i].users.length; j++) {
+        //             if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
+        //                 return j;
+        //             }
+        //         }
+        //         for (let j = 0; j < pos; j++) {
+        //             if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
+        //                 return j;
+        //             }
+        //         }
+        //     }
+        // }
+        // return -1;
+
+        // New modification
+        let i = this.tables.findIndex(element => element.room == room);
+        if(i == -1){
+             return -1;
         }
-        return -1;
+        for (let j = pos + 1; j < this.tables[i].users.length; j++) {
+             if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
+                 return j;
+             }
+        }
+        for (let j = 0; j < pos; j++) {
+             if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
+                 return j;
+             }
+        }
+
     }
 
     tourneyCanIKill(room, id, token_index, myPos) {
