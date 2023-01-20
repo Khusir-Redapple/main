@@ -259,7 +259,6 @@ class _Tables {
             // console.log('AlreadyPlaying Started >>',  this.tables[i]);
             for (var pl = 0; pl < this.tables[i].users.length; pl++) {
                 if (this.tables[i].users[pl].id) {
-                    console.log('USERS :: >>', this.tables[i]);
                     if (this.tables[i].users[pl].id.toString() == id.toString() && !this.tables[i].users[pl].is_left) {
                         // console.log('You are playing on this table', this.tables[i]);
                         return true;
@@ -723,6 +722,8 @@ class _Tables {
     updateCurrentTurn(room, pos, type, prev, move) {
         for (let i = 0; i < this.tables.length; i++) {
             if (this.tables[i].room == room) {
+                //for debugging.....
+                console.log('updateCurrentTurn >>>:: ', this.tables[i].users[pos]);
                 if (prev != -1) {
                     this.tables[i].users[prev].dices_rolled = [];
                     this.tables[i].users[pos].turn += 1;                    
