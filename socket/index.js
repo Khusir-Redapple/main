@@ -442,6 +442,7 @@ module.exports = function (io) {
                 if (rez.events.length > 0) {
                     // console.log('rez.event.length', rez.events.length);
                     for (const d of rez.events) {
+                        console.log('DELAYED :: ', d.delay);
                         setTimeout(
                             async function () {
                                 if(d.name == 'make_move') {
