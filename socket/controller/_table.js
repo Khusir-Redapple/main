@@ -1642,7 +1642,7 @@ module.exports = {
                 },
             };
         }
-    },10000);
+    },5000);
     },
     getGameUsersData: async function (data) {
         
