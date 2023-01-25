@@ -804,7 +804,8 @@ module.exports = {
                 }]
             }
 
-        await requestTemplate.post( `matchmakingFailed`, reqData) 
+        await requestTemplate.post( `matchmakingFailed`, reqData);
+        console.log('BEFORE API calling :: ', rez);
         if (!rez.res) {
             return {
                 callback: {

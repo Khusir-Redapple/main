@@ -25,7 +25,7 @@ module.exports = function (io) {
         });
         // New connection to Socket with Auth
         socket.on('join', async (params, callback) => {
-            // console.log("SOCKET REGISTER CALLED", socket.id);
+            console.log("SOCKET REGISTER CALLED", socket.id);
             console.log('TS1 ::', 'join', socket.id, JSON.stringify(params));
             try {
                 // params = JSON.parse(params);
@@ -157,7 +157,7 @@ module.exports = function (io) {
             params.room_fee = verifyUser.amount.toString();
             params.no_of_players = verifyUser.participants.toString();//data.no_of_players;
             let payout = await calculateWinAmount(verifyUser.amount, verifyUser.payoutConfig);
-            console.log("payout -- ",payout)
+            console.log("payout -- ",payout);
             params.winningAmount = payout.payoutConfig;
             params.totalWinning = payout.totalWinning;
             
