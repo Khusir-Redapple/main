@@ -1318,7 +1318,7 @@ module.exports = {
     },
 
     startIfPossibleTournament: async function (params) {
-        setTimeout(() => { 
+        setTimeout(async () => { 
             // console.log('StartIfPossible request IN', params);
 
             if (!params) return false;
