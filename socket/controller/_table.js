@@ -811,8 +811,7 @@ module.exports = {
                 callback: {
                     status: 1,
                     message: refund != '' ? refund : localization.ServerError,
-                    refund:refund,
-                    isThis : 'hopping..',
+                    refund:refund
                 },
                 events: [
                     {
@@ -1319,29 +1318,31 @@ module.exports = {
     },
 
     startIfPossibleTournament: async function (params) {
-        // console.log('StartIfPossible request IN', params);
+        setTimeout(() => { 
+            // console.log('StartIfPossible request IN', params);
 
-        if (!params) return false;
+            if (!params) return false;
 
-        if (!params.room) return false;
+            if (!params.room) return false;
 
-        var start = await _tab.tournamentStartGame(params.room);
-        // console.log('AFTER START ==>');
-        
-        let tableD = await Table.findOne({ room: params.room });
-        if (tableD) {
-            var dt = new Date();
-            dt.setSeconds( dt.getSeconds() + 7);
-            tableD.game_started_at = new Date(dt).getTime() ;
-            tableD.turn_start_at = new Date(dt).getTime();
-            await tableD.save();      
-            console.log("startIfPossibleTournament Start Time- ",new Date(tableD.game_started_at),tableD.game_started_at)
-            let  timeToAdd = new Date(new Date().getTime() + config.gameTime*60000);
-            var seconds = (timeToAdd - new Date().getTime()) / 1000;  
-            console.log(timeToAdd,new Date().getTime(),seconds)
-            start.timeToCompleteGame = seconds;
-        }
-        return start;
+            var start = await _tab.tournamentStartGame(params.room);
+            // console.log('AFTER START ==>');
+            
+            let tableD = await Table.findOne({ room: params.room });
+            if (tableD) {
+                var dt = new Date();
+                dt.setSeconds( dt.getSeconds() + 7);
+                tableD.game_started_at = new Date(dt).getTime() ;
+                tableD.turn_start_at = new Date(dt).getTime();
+                await tableD.save();      
+                console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at),tableD.game_started_at)
+                let  timeToAdd = new Date(new Date().getTime() + config.gameTime*60000);
+                var seconds = (timeToAdd - new Date().getTime()) / 1000;  
+                console.log(timeToAdd,new Date().getTime(),seconds)
+                start.timeToCompleteGame = seconds;
+            }
+            return start;
+        },5000);
     },
 
 
