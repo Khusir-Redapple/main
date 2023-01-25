@@ -806,7 +806,7 @@ module.exports = {
 
         await requestTemplate.post( `matchmakingFailed`, reqData);
         console.log('BEFORE API calling :: ', rez);
-        if (!rez.res) {
+        if (rez.res) {
             return {
                 callback: {
                     status: 1,
