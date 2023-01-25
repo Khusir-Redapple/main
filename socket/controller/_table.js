@@ -1436,7 +1436,6 @@ module.exports = {
     },
 
     joinTournament: async function (params, myId) {
-        setTimeout(async function() { 
         console.log('Join tournament GAME', params,myId);
 
         params = _.pick(params, ['no_of_players', 'room_fee','winningAmount','totalWinning']);
@@ -1642,7 +1641,6 @@ module.exports = {
                 },
             };
         }
-    },5000);
     },
     getGameUsersData: async function (data) {
         
