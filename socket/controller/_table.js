@@ -1342,7 +1342,7 @@ module.exports = {
                 start.timeToCompleteGame = seconds;
             }
             return start;
-        },5000);
+        },15000);
     },
 
 
