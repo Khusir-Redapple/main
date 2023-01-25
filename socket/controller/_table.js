@@ -1317,8 +1317,7 @@ module.exports = {
         }
     },
 
-    startIfPossibleTournament: async function (params) {
-        setTimeout(async () => { 
+    startIfPossibleTournament: async function (params) { 
             // console.log('StartIfPossible request IN', params);
 
             if (!params) return false;
@@ -1342,7 +1341,6 @@ module.exports = {
                 start.timeToCompleteGame = seconds;
             }
             return start;
-        },15000);
     },
 
 
@@ -1438,6 +1436,7 @@ module.exports = {
     },
 
     joinTournament: async function (params, myId) {
+        setTimeout(async function() { 
         console.log('Join tournament GAME', params,myId);
 
         params = _.pick(params, ['no_of_players', 'room_fee','winningAmount','totalWinning']);
@@ -1643,6 +1642,7 @@ module.exports = {
                 },
             };
         }
+    },10000);
     },
     getGameUsersData: async function (data) {
         
