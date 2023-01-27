@@ -261,8 +261,21 @@ module.exports = function (io) {
                             message: startGame.error,
                         });
                     }
-                    await Socketz.sleep(5000);
+                    await Socketz.sleep(7000);
+                    // er agai check korte hobe..
                     await startTournament(start,socket); 
+                    /** 
+                     *  Debugg for here
+                     * 
+                     * 
+                     * 
+                     * 
+                     * 
+                     * 
+                     * 
+                     * 
+                     * 
+                     */
                     setInterval(async function(){
                         var data = {
                             room : start.room
@@ -290,7 +303,12 @@ module.exports = function (io) {
                         // 'players.id': ObjectId(myId)
                         
                     });
-                    console.log("tableD >>>",tableD)
+
+                    
+
+                    console.log("tableD >>>",tableD.players.length ,  tableD.no_of_players)
+
+
                     if (tableD && tableD.players.length < tableD.no_of_players){
                         
                         // const params = {
@@ -377,7 +395,7 @@ module.exports = function (io) {
             };
             //call api to cut money 
             io.to(start.room).emit('startGame', start);
-            console.log("AFter startGame fire - ", new Date())
+            console.log("AFter startGame fire - ", new Date());
             setInterval(async function () {
                 // console.log('Checking Timeout');
 
