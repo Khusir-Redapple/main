@@ -297,7 +297,7 @@ module.exports = function (io) {
                     },1000)//2000               
                 }
                 else{
-                    await Socketz.sleep(11000);
+                    await Socketz.sleep(14000);
                     var tableD = await Table.findOne({
                         room: params_data.room
                         // 'players.id': ObjectId(myId)
