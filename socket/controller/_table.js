@@ -1397,12 +1397,13 @@ module.exports = {
         return user_id;
     },
 
-    reconnectIfPlaying: async function (id) {
-        if (!Service.validateObjectId(id)) false;
+    reconnectIfPlaying: async function (id) 
+    {
+        console.log('User Playing On Table');
+        //if (!Service.validateObjectId(id)) false;
         var us = await User.findById(id);
-
+        console.log('USERS DETAILS BY ID', us);
         var alreadyPlaying = _tab.alreadyPlayingTable(us._id);
-
         if (alreadyPlaying.status == 1) {
             var tab = await Table.findOne({ room: alreadyPlaying.table.room, 'players.id': id });
             if (!tab) {
@@ -1412,17 +1413,16 @@ module.exports = {
                 return {
                     status: 0,
                 };
-            } else{
+            } else {
                 console.log(tab)
                 alreadyPlaying.status = 1;
                 return alreadyPlaying;
             } 
-        } else {
-            
+        } 
+        else 
+        {
             return alreadyPlaying;
         }
-
-        // console.log('User Playing On Table', alreadyPlaying);
     },
 
     getTokens: async function (room, id) {

@@ -77,6 +77,8 @@ module.exports = function (io) {
 
                 //Check already playing
                 var rez = await _TableInstance.reconnectIfPlaying(us._id);
+                console.log('PLAYER ID :: >>>', us._id);
+                console.log('ALREADY PLAYING OR NOT :: >>>', rez);
 
                 var rezObj = {
                     status: 1,
@@ -303,12 +305,8 @@ module.exports = function (io) {
                         // 'players.id': ObjectId(myId)
                         
                     });
-
-                    
-
-                    console.log("tableD >>>",tableD.players.length ,  tableD.no_of_players)
-
-
+                    // for testing                  
+                    console.log("tableD >>>",tableD.players.length ,  tableD.no_of_players);
                     if (tableD && tableD.players.length < tableD.no_of_players){
                         
                         // const params = {

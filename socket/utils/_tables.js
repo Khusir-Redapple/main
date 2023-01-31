@@ -270,6 +270,7 @@ class _Tables {
     }
     alreadyPlayingTable(id) {
         // console.log('AlreadyPlaying Started >>', id);
+        console.log('THIS.TABLES DATA :: ', this.tables[0].users);
         for (var i = 0; i < this.tables.length; i++) {
             for (var pl = 0; pl < this.tables[i].users.length; pl++) {
                 if (this.tables[i].users[pl].id) {
