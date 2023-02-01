@@ -272,7 +272,7 @@ class _Tables {
         // for logDNA 
         var logData = {
             level: 'debugg',
-            meta: this.tables[0].users
+            meta: this.tables
           };        
         logDNA.log('If already playing This.tables', logData);
 
