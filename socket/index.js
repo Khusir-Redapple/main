@@ -12,11 +12,19 @@ const { _Tables } = require('./utils/_tables');
 var _tab = new _Tables();
 var config = require('../config')
 var ObjectId = require('mongoose').Types.ObjectId;
+const logDNA = require('../api/service/logDNA'); 
 
 module.exports = function (io) {
     io.on('connection', function (socket) {
         console.log('TS1 ::', 'connect', socket.id);
         // console.log(`New User Connected : D : ${socket.id}`);
+
+        // for logDNA 
+        let logData = {
+            level: 'debugg',
+            meta: {'socketId' : socket.id}                         
+        };        
+        logDNA.log('DEVICE :: connected', logData);
 
         socket.removeAllListeners();
 

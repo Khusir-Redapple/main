@@ -28,6 +28,7 @@
     "jsonwebtoken": "^8.4.0",
     "lodash": "^4.17.11",
     "log4js": "^6.1.0",
+    "logdna": "^3.5.3",
     "moment": "^2.24.0",
     "mongodb-backup": "^1.6.9",
     "mongodb-restore": "^1.6.2",

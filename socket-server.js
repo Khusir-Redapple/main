@@ -47,7 +47,7 @@ app.use('/hello', function(req, res) {
 // const server = https.createServer(options,app);
 const server = http.createServer(app);
 const socket = require('socket.io')(server);
-require('./socket')(socket);
+// require('./socket')(socket);
 
 /**
  *	Server bootup section
@@ -60,7 +60,7 @@ try {
         console.log("IAWS_REGION-", AWS_REGION)
         var ssm = new AWS.SSM({region: AWS_REGION});
         console.log('SSM===>', ssm)
-        var Names =  process.env.NODE_ENV != 'production' ? ["/staging/ludo/mongodb/host","/staging/ludo/mongodb/password","/staging/ludo/mongodb/port","/staging/ludo/mongodb/username"] : ["/prod/ludo/docdb/host","/prod/ludo/docdb/password","/prod/ludo/docdb/port","/prod/ludo/docdb/username"];
+        var Names =  process.env.NODE_ENV != 'production' ? ["/staging/ludo/mongodb/host","/staging/ludo/mongodb/password","/staging/ludo/mongodb/port","/staging/ludo/mongodb/username","/staging/ludo/logDNA"] : ["/prod/ludo/docdb/host","/prod/ludo/docdb/password","/prod/ludo/docdb/port","/prod/ludo/docdb/username","/prod/ludo/logDNA"];
         let keys = [];
         // eslint-disable-next-line no-console
 
@@ -86,9 +86,12 @@ try {
                     process.env.DB_PASS = keys[1] ? keys[1] : process.env.DB_PASS;
                     process.env.DB_PORT = keys[2] ? keys[2] : process.env.DB_PORT;
                     process.env.DB_USER = keys[3] ? keys[3] : process.env.DB_USER;
-                    process.env.DB_NAME = process.env.DB_NAME ? process.env.DB_NAME : 'nostra_playing'
-                    
+                    process.env.DB_NAME = process.env.DB_NAME ? process.env.DB_NAME : 'nostra_playing';
+                    // FOR logDNA
+                    process.env.LOG_DNA_API_KEY = keys[4] ? keys[4] : process.env.LOG_DNA_API_KEY;               
                     console.log("SSM PARAMS - ",  process.env.DB_HOST,process.env.DB_PASS, process.env.DB_PORT, process.env.DB_USER );
+                    // Moved here from top of file for availble logDNA apiKey. 
+                    require('./socket')(socket);
                     // DB Connect
                     setTimeout(function(){
                         let dbConnectionUrl = process.env.NODE_ENV != 'production' ? `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}` : `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false`; //process.env.MONGO_LOCAL;

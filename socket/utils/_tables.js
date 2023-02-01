@@ -4,7 +4,7 @@ var logger = require('../../api/service/logger');
 const { sendMessage } = require('../../socket/controller/message_controllers');
 const { Console } = require('console');
 const { kill } = require('process');
-
+const logDNA   = require('../../api/service/logDNA');
 class _Tables {
     constructor() {
         this.tables = tableObject;
@@ -269,8 +269,14 @@ class _Tables {
         return false;
     }
     alreadyPlayingTable(id) {
-        // console.log('AlreadyPlaying Started >>', id);
-        console.log('THIS.TABLES DATA :: ', JSON.stringify(this.tables));
+        // for logDNA 
+        var logData = {
+            level: 'debugg',
+            meta: this.tables[0].users
+          };        
+        logDNA.log('If already playing This.tables', logData);
+
+        console.log('THIS.TABLES DATA :: ', this.tables[0].users);
         for (var i = 0; i < this.tables.length; i++) {
             for (var pl = 0; pl < this.tables[i].users.length; pl++) {
                 if (this.tables[i].users[pl].id) {
