@@ -35,6 +35,13 @@ module.exports = function (io) {
         socket.on('join', async (params, callback) => {
             console.log("SOCKET REGISTER CALLED", socket.id);
             console.log('TS1 ::', 'join', socket.id, JSON.stringify(params));
+            // for logDNA 
+            let logData = {
+                level: 'debugg',
+                meta: {'socketId' : socket.id, 'params' : params}                    
+            };        
+            logDNA.log('JOIN :: event', logData);
+
             try {
                 // params = JSON.parse(params);
 
@@ -99,7 +106,13 @@ module.exports = function (io) {
                 console.log('TS1 ::', 'joinRes', socket.id, JSON.stringify(rezObj));
                 return callback(rezObj);
             } catch (err) {
-                console.log('ERR', err);
+                // for logDNA 
+                let logData = {
+                    level: 'error',
+                    meta: {'error' : err, 'params' : params}                    
+                };        
+                logDNA.log('JOIN :: Event :: Error', logData);
+                
                 if (typeof callback == 'function')
                     return callback({
                         status: 0,
