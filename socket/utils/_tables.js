@@ -708,8 +708,9 @@ class _Tables {
 
         const me = table.users.find((elem) => elem.id == id);
         let i = this.gamePlayData.findIndex((x)=>x.room == room);
-        this.gamePlayData[i].data.roll.push(me ? me.dices_rolled[me.dices_rolled.length - 1] : -1);
+        // this.gamePlayData[i].data.roll.push(me ? me.dices_rolled[me.dices_rolled.length - 1] : -1);
 
+        this.gamePlayData[i].data.roll.push(me ? 6 : -1);
         // return me ? me.dices_rolled[me.dices_rolled.length - 1] : -1;
         return me ? 6 : -1;
     }
