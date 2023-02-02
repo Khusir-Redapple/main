@@ -271,7 +271,7 @@ class _Tables {
     alreadyPlayingTable(id) {
         // for logDNA 
         var logData = {
-            level: 'debugg',
+            level: 'debugg', //error , log
             meta: this.tables
           };        
         logDNA.log('If already playing This.tables', logData);
@@ -710,7 +710,8 @@ class _Tables {
         let i = this.gamePlayData.findIndex((x)=>x.room == room);
         this.gamePlayData[i].data.roll.push(me ? me.dices_rolled[me.dices_rolled.length - 1] : -1);
 
-        return me ? me.dices_rolled[me.dices_rolled.length - 1] : -1;
+        // return me ? me.dices_rolled[me.dices_rolled.length - 1] : -1;
+        return me ? 6 : -1;
     }
 
     jackPot(room, id) {
