@@ -708,11 +708,9 @@ class _Tables {
 
         const me = table.users.find((elem) => elem.id == id);
         let i = this.gamePlayData.findIndex((x)=>x.room == room);
-        // this.gamePlayData[i].data.roll.push(me ? me.dices_rolled[me.dices_rolled.length - 1] : -1);
+        this.gamePlayData[i].data.roll.push(me ? me.dices_rolled[me.dices_rolled.length - 1] : -1);
 
-        this.gamePlayData[i].data.roll.push(me ? 6 : -1);
-        // return me ? me.dices_rolled[me.dices_rolled.length - 1] : -1;
-        return me ? 6 : -1;
+        return me ? me.dices_rolled[me.dices_rolled.length - 1] : -1;
     }
 
     jackPot(room, id) {
@@ -1424,7 +1422,8 @@ class _Tables {
         // let dices = [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6];
         // return dices[Math.floor(Math.random() * dices.length)];
 
-        return Math.floor(Math.random() * 6) + 1;
+        // return Math.floor(Math.random() * 6) + 1;
+        return 6;
     }
 
     objectId() {
