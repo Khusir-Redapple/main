@@ -19,8 +19,13 @@ class MessageController {
                 // MessageGroupId: id,
                 // MessageDeduplicationId: id,
             };
-            console.log("sendMessage data >",params)
+            //console.log("sendMessage data >",params)
+            let user = await User.findOne({
+                'numeric_id': params.User,
+            });
+            params.lobbyId = user.lobbyId;
             let result = await sqsSendMessage(params);
+            //console.log('lobbyId data', params);
             return result;
         } catch(error) {
             console.log("SQS sendMessage ERROR : ",error)

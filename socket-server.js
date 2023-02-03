@@ -61,6 +61,8 @@ try {
         var ssm = new AWS.SSM({region: AWS_REGION});
         console.log('SSM===>', ssm)
         var Names =  process.env.NODE_ENV != 'production' ? ["/staging/ludo/mongodb/host","/staging/ludo/mongodb/password","/staging/ludo/mongodb/port","/staging/ludo/mongodb/username","/staging/ludo/logDNA"] : ["/prod/ludo/docdb/host","/prod/ludo/docdb/password","/prod/ludo/docdb/port","/prod/ludo/docdb/username","/prod/ludo/logDNA"];
+        // [for image push]
+        //var Names =  process.env.NODE_ENV != 'production' ? ["/staging/ludo/docdb/host","/staging/ludo/docdb/password","/staging/ludo/docdb/port","/staging/ludo/docdb/username","/staging/ludo/logDNA"] : ["/prod/ludo/docdb/host","/prod/ludo/docdb/password","/prod/ludo/docdb/port","/prod/ludo/docdb/username","/prod/ludo/logDNA"];
         let keys = [];
         // eslint-disable-next-line no-console
 

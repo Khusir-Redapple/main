@@ -169,7 +169,7 @@ module.exports = function (io) {
             // params.amount = 2; // data.room_fee;
             // params.room_fee = "2";
             // let payout = await calculateWinAmount(params.amount, params.payoutConfig);
-            let verifyUser = await requestTemplate.post(`verifyuser`, { token: data.token })
+            let verifyUser = await requestTemplate.post(`verifyuser`, { token: data.token });
             if(!verifyUser.isSuccess){
                 return callback({
                     status: 0,
@@ -184,7 +184,7 @@ module.exports = function (io) {
             params.winningAmount = payout.payoutConfig;
             params.totalWinning = payout.totalWinning;
             
-            console.log("params >>>>>",params)
+            console.log("params >>>>>",params);
             if(!params || !params.user_id) {
                 return callback({
                     status: 0,
@@ -206,7 +206,8 @@ module.exports = function (io) {
                     },
                     {
                         $set: {
-                            'token': data.token
+                            'token': data.token,
+                            'lobbyId' : verifyUser.lobbyId
                         },
                     }
                 );
@@ -215,6 +216,7 @@ module.exports = function (io) {
                 var newUser = new User({
                     name: params.user_name,
                     numeric_id:params.user_id.toString(),
+                    lobbyId : verifyUser.lobbyId,
                     profilepic: params.profile_pic,
                     token: params.token
                 });
@@ -351,7 +353,7 @@ module.exports = function (io) {
                         }  
                         // let users = await removePlayer(tableD);
                         // params.table.users = users;//tableD.players;
-                        // console.log(" Users::: ",params.table.users)
+                        // console.log("Users::: ",params.table.users);
                         // let reqData = await _TableInstance.getGameUsersData(params);
                         // await requestTemplate.post( `matchmakingFailed`, reqData) 
                     }
@@ -473,7 +475,7 @@ module.exports = function (io) {
             }
         }
         async function processEvents(rez) {
-            // console.log("EVENT PROCESSING STARTED", rez);
+            // console.log("EVENT PROCESSING STARTED", rez.events);
             if (_.isArray(rez.events)) {
                 console.log('rez.event', JSON.stringify(rez.events));
                 if (rez.events.length > 0) {

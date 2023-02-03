@@ -11,6 +11,10 @@ var UserModel = new Schema({
         type: String,
         required: true
     },
+    lobbyId : {
+        type : Number,
+        required : true
+    },
     profilepic: {
         type: String,
         trim: true

@@ -781,7 +781,7 @@ class _Tables {
     async sedAndResetGamePlayData(room){
         // console.log("IN sedAndResetGamePlayData - ")
         let i = this.gamePlayData.findIndex((x)=>x.room == room);
-        console.log(" this.gamePlayData  -- ", this.gamePlayData[i])
+        console.log("this.gamePlayData ::  -- ", this.gamePlayData[i]);
         const sqsData = await sendMessage(this.gamePlayData[i])
         // console.log("sqsData Data >>",sqsData)
         //send through SQS
