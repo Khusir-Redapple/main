@@ -3,7 +3,7 @@
 const {
     sqsSendMessage
 } = require('../../api/operations/sqs_operations');
-
+const { User }  = require('../../api/models/user');
 
 class MessageController {
 
@@ -19,16 +19,22 @@ class MessageController {
                 // MessageGroupId: id,
                 // MessageDeduplicationId: id,
             };
-            //console.log("sendMessage data >",params)
-            let user = await User.findOne({
-                'numeric_id': params.User,
+            console.log("sendMessage data:: >",params);
+            // JSON to object convert
+            let parseData = JSON.parse(params.MessageBody);
+            // db search for lobbyId
+            let userData = await User.findOne({
+                numeric_id : parseData.User
             });
-            params.lobbyId = user.lobbyId;
-            let result = await sqsSendMessage(params);
-            //console.log('lobbyId data', params);
+            // To add lobbyId in existing object   
+            parseData.lobbyId = userData.lobbyId;
+            // To build final object
+            let finalParams = { MessageBody : JSON.stringify(parseData)};
+            console.log("after adding lobbyId:: >",finalParams)      
+            let result = await sqsSendMessage(finalParams);
             return result;
         } catch(error) {
-            console.log("SQS sendMessage ERROR : ",error)
+            console.log("SQS sendMessage ERROR :: ",error)
             return false;
         }
     }
