@@ -1518,7 +1518,7 @@ module.exports = {
         if(params.startTime) secTime = Math.round(params.startTime / 1000) - Math.round(new Date().getTime() / 1000) + 5;
         var timerStart = secTime;
         var tableX;
-        let isAnyTabelEmpty;
+        //let isAnyTabelEmpty;
         var room_code;
         if (!isAnyTableEmpty) {
             // console.log('No Public Table Found');
@@ -1589,9 +1589,9 @@ module.exports = {
             //isAnyTabelEmpty = room_code;
         } else {
             tableX = await Table.findOne({
-                room: room_code,
+                room: isAnyTableEmpty,
             });
-            console.log('ROOM SEARCH INTO TABLES :: ', room_code, tableX);
+            console.log('ROOM SEARCH INTO TABLES :: ', isAnyTableEmpty, tableX);
             // for logDNA 
             let logData = {
                 level: 'debugg',
@@ -1603,7 +1603,7 @@ module.exports = {
                 // for logDNA 
                 let logData = {
                     level: 'debugg',
-                    meta: {'room_no' : room_code}                    
+                    meta: {'room_no' : isAnyTableEmpty}                    
                 };        
                 logDNA.log('ROOM NOT FOUND IN TABLE', logData);
 
