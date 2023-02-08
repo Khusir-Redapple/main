@@ -1519,7 +1519,7 @@ module.exports = {
         var timerStart = secTime;
         var tableX;
         //let isAnyTabelEmpty;
-        var room_code;
+        let room_code;
         if (!isAnyTableEmpty) {
             // console.log('No Public Table Found');
             var room = await Service.randomNumber(6);
@@ -1619,9 +1619,10 @@ module.exports = {
         //Tabel Found
         var us = await User.findById(myId);
         let optional = 0;
-        console.log("seatOnTableforTourney >>>",us)
-        var seatOnTable = _tab.seatOnTableforTourney(room_code, us, optional);
-
+        isAnyTableEmptyForTourament = isAnyTableEmpty ? isAnyTableEmpty : room_code ? room_code: '';
+        console.log("seatOnTableforTourney >>>",us, isAnyTableEmptyForTourament)
+        var seatOnTable = _tab.seatOnTableforTourney(isAnyTableEmptyForTourament, us, optional);
+        console.log('seatOnTable ::', seatOnTable);
         if (seatOnTable) {
             var callbackRes = {
                 status: 1,
@@ -1660,10 +1661,10 @@ module.exports = {
                 events: [
                     {
                         type: 'room_excluding_me',
-                        room: room_code,
+                        room: isAnyTableEmptyForTourament,
                         name: 'playerJoin',
                         data: {
-                            room: room_code,
+                            room: isAnyTableEmptyForTourament,
                             name: us.name,
                             profile: us.profilepic,
                             position: seatOnTable.pos,
