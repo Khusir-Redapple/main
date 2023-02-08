@@ -1519,6 +1519,7 @@ module.exports = {
         var timerStart = secTime;
         var tableX;
         let isAnyTabelEmpty;
+        var room_code;
         if (!isAnyTableEmpty) {
             // console.log('No Public Table Found');
             var room = await Service.randomNumber(6);
@@ -1561,7 +1562,7 @@ module.exports = {
                 };
             }
 
-            var room_code = await _tab.createTableforTourney(tableX);
+            room_code = await _tab.createTableforTourney(tableX);
             // for logDNA 
             let logData = {
                 level: 'debugg',
