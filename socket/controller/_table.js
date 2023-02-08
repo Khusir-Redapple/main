@@ -1585,16 +1585,23 @@ module.exports = {
                 };
             }
 
-            isAnyTabelEmpty = room_code;
+            //isAnyTabelEmpty = room_code;
         } else {
             tableX = await Table.findOne({
-                room: isAnyTabelEmpty,
+                room: room_code,
             });
+            // for logDNA 
+            let logData = {
+                level: 'debugg',
+                meta: {'roomCode' : room_code, 'params' : tableX}                    
+            };        
+            logDNA.log('CREATE TABLE FOR TOURNAMENT', logData);
+
             if (!tableX) {
                 // for logDNA 
                 let logData = {
                     level: 'debugg',
-                    meta: {'room_no' : isAnyTabelEmpty}                    
+                    meta: {'room_no' : room_code}                    
                 };        
                 logDNA.log('ROOM NOT FOUND IN TABLE', logData);
 
@@ -1611,7 +1618,7 @@ module.exports = {
         var us = await User.findById(myId);
         let optional = 0;
         console.log("seatOnTableforTourney >>>",us)
-        var seatOnTable = _tab.seatOnTableforTourney(isAnyTabelEmpty, us, optional);
+        var seatOnTable = _tab.seatOnTableforTourney(room_code, us, optional);
 
         if (seatOnTable) {
             var callbackRes = {
@@ -1651,10 +1658,10 @@ module.exports = {
                 events: [
                     {
                         type: 'room_excluding_me',
-                        room: isAnyTabelEmpty,
+                        room: room_code,
                         name: 'playerJoin',
                         data: {
-                            room: isAnyTabelEmpty,
+                            room: room_code,
                             name: us.name,
                             profile: us.profilepic,
                             position: seatOnTable.pos,
