@@ -1590,12 +1590,13 @@ module.exports = {
             tableX = await Table.findOne({
                 room: room_code,
             });
+            console.log('ROOM SEARCH INTO TABLES :: ', room_code, tableX);
             // for logDNA 
             let logData = {
                 level: 'debugg',
-                meta: {'roomCode' : room_code, 'params' : tableX}                    
+                meta: {'params' : tableX}                    
             };        
-            logDNA.log('CREATE TABLE FOR TOURNAMENT', logData);
+            logDNA.log('TABLE EXISTS.?', logData);
 
             if (!tableX) {
                 // for logDNA 
