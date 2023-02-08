@@ -1620,7 +1620,14 @@ module.exports = {
         var us = await User.findById(myId);
         let optional = 0;
         isAnyTableEmptyForTourament = isAnyTableEmpty ? isAnyTableEmpty : room_code ? room_code: '';
-        console.log("seatOnTableforTourney >>>",us, isAnyTableEmptyForTourament)
+        console.log("seatOnTableforTourney >>>",us, isAnyTableEmptyForTourament);
+        // for logDNA 
+        let logData = {
+            level: 'debugg',
+            meta: {'params' : isAnyTableEmptyForTourament}                    
+        };        
+        logDNA.log('ROOM GENERATION FAILURE', logData);
+
         var seatOnTable = _tab.seatOnTableforTourney(isAnyTableEmptyForTourament, us, optional);
         console.log('seatOnTable ::', seatOnTable);
         if (seatOnTable) {
