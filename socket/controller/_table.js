@@ -9,7 +9,7 @@ var logger = require('../../api/service/logger');
 var ObjectId = require('mongoose').Types.ObjectId;
 var requestTemplate = require('../../api/service/request-template');
 var _ = require('lodash');
-
+const logDNA = require('../../api/service/logDNA'); 
 const { _Tables } = require('../utils/_tables');
 var _tab = new _Tables();
 
@@ -1518,7 +1518,7 @@ module.exports = {
         if(params.startTime) secTime = Math.round(params.startTime / 1000) - Math.round(new Date().getTime() / 1000) + 5;
         var timerStart = secTime;
         var tableX;
-
+        let isAnyTabelEmpty;
         if (!isAnyTableEmpty) {
             // console.log('No Public Table Found');
             var room = await Service.randomNumber(6);
@@ -1528,8 +1528,12 @@ module.exports = {
                     room: room,
                 });
 
-                if (data.length > 0) room = await Service.randomNumber(6);
-                else break;
+                if (data.length > 0) {
+                    room = await Service.randomNumber(6);
+                }
+                else {
+                    break;
+                }
             }
             
             if(params) {
@@ -1540,9 +1544,15 @@ module.exports = {
             params.created_at = new Date().getTime();
             console.log("params >>>>",params)
             var table = new Table(params);
-            tableX = await table.save();
-
+            tableX = await table.save();           
             if (!tableX) {
+                // for logDNA 
+                let logData = {
+                    level: 'debugg',
+                    meta: {'params' : params}                    
+                };        
+                logDNA.log('TABLE GENERATE ERROR', logData);
+
                 return {
                     callback: {
                         status: 0,
@@ -1554,6 +1564,13 @@ module.exports = {
             var room_code = await _tab.createTableforTourney(tableX);
 
             if (!room_code) {
+                // for logDNA 
+                let logData = {
+                    level: 'debugg',
+                    meta: {'room code' : room_code, 'params' : tableX}                    
+                };        
+                logDNA.log('CREATE TABLE FOR TOURNAMENT', logData);
+
                 return {
                     callback: {
                         status: 0,
@@ -1568,6 +1585,13 @@ module.exports = {
                 room: isAnyTabelEmpty,
             });
             if (!tableX) {
+                // for logDNA 
+                let logData = {
+                    level: 'debugg',
+                    meta: {'room_no' : isAnyTabelEmpty}                    
+                };        
+                logDNA.log('ROOM NOT FOUND IN TABLE', logData);
+
                 return {
                     callback: {
                         status: 0,
@@ -1634,6 +1658,12 @@ module.exports = {
             };
             
         } else {
+            // for logDNA 
+            let logData = {
+                level: 'debugg',
+                meta: {'TableData' : seatOnTable}                    
+            };        
+            logDNA.log('Error in joining game', logData);
             return {
                 callback: {
                     status: 0,
