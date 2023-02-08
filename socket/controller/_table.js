@@ -1562,12 +1562,18 @@ module.exports = {
             }
 
             var room_code = await _tab.createTableforTourney(tableX);
-
+            // for logDNA 
+            let logData = {
+                level: 'debugg',
+                meta: {'room_no' : room_code}                    
+            };        
+            logDNA.log('ROOM CODE', logData);
+            console.log('ROOM CODE:: ', room_code);
             if (!room_code) {
                 // for logDNA 
                 let logData = {
                     level: 'debugg',
-                    meta: {'room code' : room_code, 'params' : tableX}                    
+                    meta: {'roomCode' : room_code, 'params' : tableX}                    
                 };        
                 logDNA.log('CREATE TABLE FOR TOURNAMENT', logData);
 
