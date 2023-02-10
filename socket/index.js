@@ -159,7 +159,7 @@ module.exports = function (io) {
             } catch { 
                 return callback({
                     status: 0,
-                    message: 'Error occured while joining previous room.',
+                    message: 'Removed from game',
                 });
             }
         });
