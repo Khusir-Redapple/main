@@ -124,14 +124,14 @@ module.exports = function (io) {
         socket.on('join_previous', async (params, callback) => {
             // console.log("PARAMS", params);
             console.log('TS1 ::', 'join_previous', socket.id, JSON.stringify(params));
-            //var myId = Socketz.getId(socket.id);
+            var myId = Socketz.getId(socket.id);
 
             // new modification
             try {
-                let us = await User.findOne({
-                    'token': params.token,
-                });
-                let myId = us._id;
+                // let us = await User.findOne({
+                //     'token': params.token,
+                // });
+                //let myId = us._id;
 
                 if (!myId) {
                     console.log(
