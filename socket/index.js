@@ -124,30 +124,44 @@ module.exports = function (io) {
         socket.on('join_previous', async (params, callback) => {
             // console.log("PARAMS", params);
             console.log('TS1 ::', 'join_previous', socket.id, JSON.stringify(params));
-            var myId = Socketz.getId(socket.id);
-            if (!myId) {
-                console.log(
-                    'TS1 ::',
-                    'JOIN_PREV_RES',
-                    socket.id,
-                    JSON.stringify({
+            //var myId = Socketz.getId(socket.id);
+
+            // new modification
+            try {
+                let us = await User.findOne({
+                    'token': params.token,
+                });
+                let myId = us._id;
+
+                if (!myId) {
+                    console.log(
+                        'TS1 ::',
+                        'JOIN_PREV_RES',
+                        socket.id,
+                        JSON.stringify({
+                            status: 0,
+                            message: 'SOCKET_DISCONNECTED',
+                        })
+                    );
+                    // console.log('socket disconnected');
+                    return callback({
                         status: 0,
-                        message: 'SOCKET_DISCONNECTED',
-                    })
-                );
-                // console.log('socket disconnected');
+                        message: 'Something went wrong!',
+                    });
+                }
+                var rez = await _TableInstance.reconnectIfPlaying(myId);
+                // If no room to join the game.
+                rez.table.room ? socket.join(rez.table.room) : socket.join();
+                // socket.join(rez.table.room) // previously it was     
+                console.log('TS1 ::', 'JOIN_PREV_RES', socket.id, JSON.stringify(rez));
+                return callback(rez);
+
+            } catch { 
                 return callback({
                     status: 0,
-                    message: 'Something went wrong!',
+                    message: 'Error occured while joining previous room.',
                 });
             }
-
-            var rez = await _TableInstance.reconnectIfPlaying(myId);
-            // If no room to join the game.
-            rez.table.room ? socket.join(rez.table.room) : socket.join();
-            // socket.join(rez.table.room) // previously it was     
-            console.log('TS1 ::', 'JOIN_PREV_RES', socket.id, JSON.stringify(rez));
-            return callback(rez);
         });
         socket.on('go_in_background', async () => {
             // console.log("PLAYER IN BG NOW", socket);
