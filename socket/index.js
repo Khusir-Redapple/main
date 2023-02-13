@@ -125,14 +125,13 @@ module.exports = function (io) {
             // console.log("PARAMS", params);
             console.log('TS1 ::', 'join_previous', socket.id, JSON.stringify(params));
             var myId = Socketz.getId(socket.id);
-
+            
             // new modification
             try {
                 // let us = await User.findOne({
                 //     'token': params.token,
                 // });
-                //let myId = us._id;
-
+                // let myId = us._id;
                 if (!myId) {
                     console.log(
                         'TS1 ::',
@@ -150,6 +149,12 @@ module.exports = function (io) {
                     });
                 }
                 var rez = await _TableInstance.reconnectIfPlaying(myId);
+                if(rez.status == 0) {
+                    return callback({
+                        status: 0,
+                        message: 'Table not found.',
+                    })
+                }
                 // If no room to join the game.
                 rez.table.room ? socket.join(rez.table.room) : socket.join();
                 // socket.join(rez.table.room) // previously it was     
@@ -159,7 +164,7 @@ module.exports = function (io) {
             } catch { 
                 return callback({
                     status: 0,
-                    message: 'Removed from game',
+                    message: 'You ware removed from game.',
                 });
             }
         });
