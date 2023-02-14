@@ -74,7 +74,7 @@ module.exports = {
         console.log("sixCounts : ", sixCounts);
         // IF 3 times 6
         // To check pwan index should't grater then 50.        
-        if (sixCounts == 2 && dices_rolled[0] == 6 && movePossible) {
+        if (sixCounts == 2 && dices_rolled[0] == 6 && movePossible == true) {
             //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
             await _tab.scrapTurn(params.room, myPos);
             // DICE_ROLL TO NEXT
