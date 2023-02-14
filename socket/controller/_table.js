@@ -28,7 +28,7 @@ module.exports = {
 
         // CHECK IF I EXIST IN THIS ROOM
         var myPos = await _tab.getMyPosition(params.room, id);
-        console.log("position", myPos); process.exit();
+        console.log("position", myPos);
         if (myPos == -1) return { callback: { status: 0, message: localization.noDataFound } };
         let check = _tab.isCurrentTurnMine(params.room, myPos);
         if(!check){
