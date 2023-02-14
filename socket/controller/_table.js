@@ -28,7 +28,7 @@ module.exports = {
 
         // CHECK IF I EXIST IN THIS ROOM
         var myPos = await _tab.getMyPosition(params.room, id);
-        console.log("position", myPos);
+        console.log("position", myPos); process.exit();
         if (myPos == -1) return { callback: { status: 0, message: localization.noDataFound } };
         let check = _tab.isCurrentTurnMine(params.room, myPos);
         if(!check){
@@ -73,7 +73,12 @@ module.exports = {
         let sixCounts = await _tab.getSix(params.room, id);
         console.log("sixCounts : ", sixCounts);
         // IF 3 times 6
-        
+        // To check pwan index should't grater then 50.
+
+
+
+
+
         if (sixCounts == 2 && dices_rolled[0] == 6) {
             //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
             await _tab.scrapTurn(params.room, myPos);

@@ -125,7 +125,7 @@ module.exports = function (io) {
             // console.log("PARAMS", params);
             console.log('TS1 ::', 'join_previous', socket.id, JSON.stringify(params));
             var myId = Socketz.getId(socket.id);
-            
+
             // new modification
             try {
                 // let us = await User.findOne({
@@ -410,6 +410,17 @@ module.exports = function (io) {
             console.log("TS2 ::", 'makeMove callback =============>>>>', rez);
             callback(rez.callback);
             if (rez.callback.status == 1) processEvents(rez);
+        });
+
+        /**
+         *  gameGo - this event fire after GO screen
+         * 
+         * @param  - contains user token.
+         * @callback - contains game play data.
+         */
+        socket.on('gameGo', (params,callback) => {
+            // business logic goes here
+            
         });
 
         //Skip Turn
