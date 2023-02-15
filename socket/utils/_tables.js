@@ -1440,7 +1440,8 @@ class _Tables {
         // let dices = [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6];
         // return dices[Math.floor(Math.random() * dices.length)];
 
-        return Math.floor(Math.random() * 6) + 1;
+        //return Math.floor(Math.random() * 6) + 1;
+        return 6;
     }
 
     objectId() {
