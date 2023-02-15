@@ -1012,6 +1012,19 @@ class _Tables {
         return false;
     }
 
+    // To get user dice rolled value
+    getDiceValue(room, id) {
+        const table = this.tables.find((elem) => elem.room == room);
+        if (!table) return 0;
+        const me = table.users.find((elem) => elem.id == id);
+        if (!me) return 0;
+        for (let k = 0; k < me.tokens.length; k++) {
+            for (const dice_value of me.dices_rolled) {
+                return dice_value;
+            }
+        }
+    }
+
     isMovePossibleExact(dice_value, room, id, token_index) {
         const table = this.tables.find((elem) => elem.room == room);
         // console.log("table finding time in isMovePossibleExact", ((new Date()) - startDate));

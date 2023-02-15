@@ -71,10 +71,48 @@ module.exports = {
 
         const jackPOT = await _tab.jackPot(params.room, id);
         let sixCounts = await _tab.getSix(params.room, id);
-        console.log("sixCounts : ", sixCounts);
-        // IF 3 times 6
-        // To check pwan index should't grater then 50.  
+        console.log("sixCounts : ", sixCounts);        
+        
+        /**
+         * To check current dice rolled value is 6 and move not possible. 
+         * then user should't get next chance.
+         */
+        const currentDiceValue = await _tab.getDiceValue(params.room, id);
+        if (currentDiceValue == 6 && movePossible == false) {
+            //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
+            await _tab.scrapTurn(params.room, myPos);
+            // DICE_ROLL TO NEXT
+            let sixCounts =  await _tab.setSix(params.room, id);
+            console.log("set six...0")
+            let nextPos = await _tab.getNextPosition(params.room, myPos);
+            await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
+            let DICE_ROLLED =  await _tab.rollDice();
+            await _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
+            let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
+            await _tab.sedAndResetGamePlayData(params.room);
 
+            // SEND EVENT
+            
+            let event = {
+                type: 'room_including_me',
+                room: params.room,
+                delay: 2000,//2000,
+                name: 'make_diceroll',
+                data: {
+                    room: params.room,
+                    position: nextPos,
+                    tokens: await _tab.getTokens(params.room),
+                    dice: DICE_ROLLED,
+                    dices_rolled: dices_rolled,
+                    turn_start_at: config.turnTimer,
+                    extra_move_animation: false
+                },
+            };
+            await _tab.clearDices(params.room, myPos);
+            resObj.events.push(event);
+        }
+
+        // IF 3 times 6
         if (sixCounts == 2 && dices_rolled[0] == 6) {
             //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
             await _tab.scrapTurn(params.room, myPos);
@@ -187,7 +225,7 @@ module.exports = {
                         dice: DICE_ROLLED,
                         dices_rolled: dices_rolled,
                         turn_start_at: config.turnTimer,
-                        extra_move_animation:false // previously it was true
+                        extra_move_animation:true
                     },
                 };
                 resObj.events.push(event);
