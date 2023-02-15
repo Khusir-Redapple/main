@@ -73,8 +73,9 @@ module.exports = {
         let sixCounts = await _tab.getSix(params.room, id);
         console.log("sixCounts : ", sixCounts);
         // IF 3 times 6
-        // To check pwan index should't grater then 50.        
-        if (sixCounts == 2 && dices_rolled[0] == 6 && movePossible == true) {
+        // To check pwan index should't grater then 50.  
+
+        if (sixCounts == 2 && dices_rolled[0] == 6) {
             //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
             await _tab.scrapTurn(params.room, myPos);
             // DICE_ROLL TO NEXT
@@ -132,7 +133,7 @@ module.exports = {
             };
             resObj.events.push(event);
         }
-        // ELSE
+        // ELSE // if both are false
         if (!movePossible && !jackPOT) {
             console.log('[MOVE IMPOSSIBLE DICE ROLLED]');
             if (DICE_ROLLED != 6) {
@@ -186,7 +187,7 @@ module.exports = {
                         dice: DICE_ROLLED,
                         dices_rolled: dices_rolled,
                         turn_start_at: config.turnTimer,
-                        extra_move_animation:true
+                        extra_move_animation:false // previously it was true
                     },
                 };
                 resObj.events.push(event);

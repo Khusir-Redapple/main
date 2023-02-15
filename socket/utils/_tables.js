@@ -998,7 +998,12 @@ class _Tables {
 
         for (let k = 0; k < me.tokens.length; k++) {
             for (const dice_value of me.dices_rolled) {
-                if (me.tokens[k] != 56 && me.tokens[k] + dice_value <= 56) {
+                // if (me.tokens[k] != 56 && me.tokens[k] + dice_value <= 56) {
+                //     return true;
+                // }
+
+                // new implemention for pawn should't get chance to another move, If there is no enough index.
+                if (me.tokens[k] + dice_value <= 56) {
                     return true;
                 }
             }
