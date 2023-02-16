@@ -207,45 +207,12 @@ module.exports = {
          * when the movable pawn has less than 6 steps to move then we are getting extra move
          */
         if (dices_rolled[0] == 6 && movePossible == false) {
-            // //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
-            // await _tab.scrapTurn(params.room, myPos);
-            // // DICE_ROLL TO NEXT
-            // //let sixCounts =  await _tab.setSix(params.room, id);
-            // console.log("set six...0")
-            // let nextPos = await _tab.getNextPosition(params.room, myPos);
-            // await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
-            // let DICE_ROLLED =  await _tab.rollDice();
-            // await _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
-            // let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
-            // await _tab.sedAndResetGamePlayData(params.room);
-
-            // // SEND EVENT
-            
-            // let event = {
-            //     type: 'room_including_me',
-            //     room: params.room,
-            //     delay: 2000,//2000,
-            //     name: 'make_diceroll',
-            //     data: {
-            //         room: params.room,
-            //         position: nextPos,
-            //         tokens: await _tab.getTokens(params.room),
-            //         dice: DICE_ROLLED,
-            //         dices_rolled: dices_rolled,
-            //         turn_start_at: config.turnTimer,
-            //         extra_move_animation: false
-            //     },
-            // };
-            // await _tab.clearDices(params.room, myPos);
-            // resObj.events.push(event);
-
-
             // Bug No : 37::
-            
              //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
              await _tab.scrapTurn(params.room, myPos);
+             // set six to array
+             await _tab.setSix(params.room, id);
              // DICE_ROLL TO NEXT
-             let timer = 1500;
              let nextPos = await _tab.getNextPosition(params.room, myPos);
              await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
              let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
@@ -255,7 +222,7 @@ module.exports = {
              let event = {
                  type: 'room_including_me',
                  room: params.room,
-                 delay: timer,
+                 delay: 2000,
                  name: 'make_diceroll',
                  data: {
                      room: params.room,
@@ -267,7 +234,9 @@ module.exports = {
                      extra_move_animation:false
                  },
              };
-             resObj.events.push(event);
+
+            await _tab.clearDices(params.room, myPos);
+            resObj.events.push(event);
         }
 
         let events = {
