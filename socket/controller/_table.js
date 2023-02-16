@@ -211,7 +211,6 @@ module.exports = {
              //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
              await _tab.scrapTurn(params.room, myPos);
              // set six to array
-             await _tab.setSix(params.room, id);
              // DICE_ROLL TO NEXT
              let nextPos = await _tab.getNextPosition(params.room, myPos);
              await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
