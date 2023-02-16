@@ -206,34 +206,40 @@ module.exports = {
          * Bug No: 37
          * when the movable pawn has less than 6 steps to move then we are getting extra move
          */
-        if (dices_rolled[0] == 6 && movePossible == false) {
-            // Bug No : 37::
-             //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
-             await _tab.scrapTurn(params.room, myPos);
-             // DICE_ROLL TO NEXT
-             let nextPos = await _tab.getNextPosition(params.room, myPos);
-            // await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
-             let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
-             let DICE_ROLLED = await _tab.rollDice();
-             await _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
-             await _tab.sedAndResetGamePlayData(params.room);
-             let event = {
-                 type: 'room_including_me',
-                 room: params.room,
-                 delay: 2000,
-                 name: 'make_diceroll',
-                 data: {
-                     room: params.room,
-                     position: nextPos,
-                     tokens: _tab.getTokens(params.room),
-                     dice: DICE_ROLLED,
-                     dices_rolled: dices_rolled,
-                     turn_start_at: config.turnTimer,
-                     extra_move_animation:false
-                 },
-             };
-            resObj.events.push(event);
-        }
+        // if (dices_rolled[0] == 6 && movePossible == false) {
+        //     // Bug No : 37::
+        //      //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
+        //     _tab.scrapTurn(params.room, myPos);             
+
+        //      // DICE_ROLL TO NEXT
+        //      let nextPos = await _tab.getNextPosition(params.room, myPos);
+
+        //     // added to 
+        //    _tab.scrapTurn(params.room, nextPos);
+        //    _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
+
+        //     // await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
+        //      let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
+        //      let DICE_ROLLED = await _tab.rollDice();
+        //      await _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
+        //      await _tab.sedAndResetGamePlayData(params.room);
+        //      let event = {
+        //          type: 'room_including_me',
+        //          room: params.room,
+        //          delay: 2000,
+        //          name: 'make_diceroll',
+        //          data: {
+        //              room: params.room,
+        //              position: nextPos,
+        //              tokens: _tab.getTokens(params.room),
+        //              dice: DICE_ROLLED,
+        //              dices_rolled: dices_rolled,
+        //              turn_start_at: config.turnTimer,
+        //              extra_move_animation:false
+        //          },
+        //      };
+        //     resObj.events.push(event);
+        // }
 
         let events = {
             type: 'room_including_me',
@@ -344,34 +350,35 @@ module.exports = {
                     const winnerData = await this.checkwinnerOfTournament(params.room);
                     console.log("Below Winner Data --1--",winnerData)
                     if(winnerData)  resObj.events.push(winnerData);
-                } else {
-                    console.log('[DICE VALUE SIX]');
-                    // Send 'roll' to same player
-                    await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1);
-                    let DICE_ROLLED = await _tab.rollDice();
-                    // console.log('[DICE VALUE SIX]', DICE_ROLLED);
-                    await _tab.diceRolled(params.room, myPos, DICE_ROLLED);
-                    let dices_rolled = await _tab.gePlayerDices(params.room, myPos);
-                    // console.log('[DICE VALUE SIX]', dices_rolled, myPos);
-                    // SEND EVENT
-                    let event = {
-                        type: 'room_including_me',
-                        room: params.room,
-                        delay: 1500,
-                        name: 'make_diceroll',
-                        data: {
-                            room: params.room,
-                            position: myPos,
-                            tokens: await _tab.getTokens(params.room),
-                            dice: DICE_ROLLED,
-                            dices_rolled: dices_rolled,
-                            turn_start_at: config.turnTimer,
-                            extra_move_animation:true
-                        },
-                    };
-
-                    resObj.events.push(event);
                 }
+                // } else {
+                //     console.log('[DICE VALUE SIX]');
+                //     // Send 'roll' to same player
+                //     await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1);
+                //     let DICE_ROLLED = await _tab.rollDice();
+                //     // console.log('[DICE VALUE SIX]', DICE_ROLLED);
+                //     await _tab.diceRolled(params.room, myPos, DICE_ROLLED);
+                //     let dices_rolled = await _tab.gePlayerDices(params.room, myPos);
+                //     // console.log('[DICE VALUE SIX]', dices_rolled, myPos);
+                //     // SEND EVENT
+                //     let event = {
+                //         type: 'room_including_me',
+                //         room: params.room,
+                //         delay: 1500,
+                //         name: 'make_diceroll',
+                //         data: {
+                //             room: params.room,
+                //             position: myPos,
+                //             tokens: await _tab.getTokens(params.room),
+                //             dice: DICE_ROLLED,
+                //             dices_rolled: dices_rolled,
+                //             turn_start_at: config.turnTimer,
+                //             extra_move_animation:true
+                //         },
+                //     };
+
+                //     resObj.events.push(event);
+                // }
 
             } else {
                 console.log('[MOVE POSSIBLE EXACT]');
