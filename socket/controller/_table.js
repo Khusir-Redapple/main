@@ -212,7 +212,7 @@ module.exports = {
              await _tab.scrapTurn(params.room, myPos);
              // DICE_ROLL TO NEXT
              let nextPos = await _tab.getNextPosition(params.room, myPos);
-             await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
+            // await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
              let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
              let DICE_ROLLED = await _tab.rollDice();
              await _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
