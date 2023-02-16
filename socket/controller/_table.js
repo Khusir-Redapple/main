@@ -210,7 +210,6 @@ module.exports = {
             // Bug No : 37::
              //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
              await _tab.scrapTurn(params.room, myPos);
-             // set six to array
              // DICE_ROLL TO NEXT
              let nextPos = await _tab.getNextPosition(params.room, myPos);
              await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
@@ -233,8 +232,6 @@ module.exports = {
                      extra_move_animation:false
                  },
              };
-
-            await _tab.clearDices(params.room, myPos);
             resObj.events.push(event);
         }
 
