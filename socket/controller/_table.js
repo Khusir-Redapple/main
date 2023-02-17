@@ -550,12 +550,23 @@ module.exports = {
                             };
                             resObj.events.push(event);
 
-                            // Add Bonus as much as Killed Token Length
-                            let sixCounts = _tab.setSix(params.room, id);
-                            _tab.addBonus(params.room, id, canIKill.length,"Kill");
-                            _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus')
-                            moveBonusCheck = true;
-                            killed = true;
+                            /**
+                             * Bug NO: 39
+                             * If a cut/home happens with a six, then only one extra move should be given
+                             */
+
+                            // If cut/home happen with 6, then only one extra move given. not two
+                            if(params.dice_value == 6) {
+                                moveBonusCheck = true;
+                                killed = true;
+                            } else {
+                                // Add Bonus as much as Killed Token Length
+                                let sixCounts = _tab.setSix(params.room, id);
+                                _tab.addBonus(params.room, id, canIKill.length,"Kill");
+                                _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus')
+                                moveBonusCheck = true;
+                                killed = true;
+                            }
                         }
                         // Else [!canIKill]
                         else {
