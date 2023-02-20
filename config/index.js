@@ -246,7 +246,7 @@ const config =  function () {
         ]
     ];
 
-    this.safeZone = [1, 14, 27, 40];
+    this.safeZone = [1, 14, 27, 40, 22];
     this.starPosition  = [21];
     this.gameTime = 15; //15;
     this.turnTimer = 10; // Dice roll time, 10 sec.
