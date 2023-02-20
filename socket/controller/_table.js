@@ -410,9 +410,19 @@ module.exports = {
                 // if CURRENT_POSITION == 56
                 if (token_position == 56) {
                     console.log('[BEFORE HOME]');
+                    /**
+                     * Bug NO: 39
+                     * If a cut/home happens with a six, then only one extra move should be given
+                    */
+                     if(params.dice_value != 6) {
                     // Add Bonus
-                    _tab.addBonus(params.room, id, 1,"Home");
-                    _tab.addBonusPoints(params.room, id, 50 , 1, 'home_base_bonus')
+                        _tab.addBonus(params.room, id, 1,"Home");
+                        _tab.addBonusPoints(params.room, id, 50 , 1, 'home_base_bonus');
+                    } else {
+                        _tab.setSix(room, id);
+                        _tab.addBonus(params.room, id, 1,"Home");
+                        _tab.addBonusPoints(params.room, id, 50 , 1, 'home_base_bonus');
+                    }
                     // Check if allHome
                     const allHome = _tab.allHome(params.room, id);
                     if (allHome) {
