@@ -435,6 +435,7 @@ module.exports = function (io) {
         });
 
         socket.on('disconnect', async () => {
+            logDNA.log('DEVICE :: Disconnected', logData);
             console.log('TS1 ::', 'disconnect', socket.id);
             var myId = Socketz.getId(socket.id);
             // console.log('user disconnected', socket.id, myId);

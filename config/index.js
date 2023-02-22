@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+const dotenv = require('dotenv').config();
 const config =  function () {
     this.port = process.env.PORT || 3000;
     this.pre = process.env.PRE;
