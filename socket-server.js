@@ -39,10 +39,6 @@ app.use('/hello', function(req, res) {
     console.log("hello",req.headers,);
     // res.send("hello",req.headers,);
 });
-
-app.use('/health-check', function(req, res) {
-    res.status(200).write('Health Check pass!');
-});
 // const options = {
 //     key: fs.readFileSync('../../../etc/letsencrypt/live/multiplayer.staging-server.in/privkey.pem'),
 //     cert: fs.readFileSync('../../../etc/letsencrypt/live/multiplayer.staging-server.in/fullchain.pem')
