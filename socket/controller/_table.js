@@ -576,7 +576,7 @@ module.exports = {
                         }
                         // Else [!canIKill]
                         else {
-                            moveBonusCheck = true;
+                            moveBonusCheck = false;
                         }
                         console.log("Above Winner Data ----")
                         const winnerData = await this.checkwinnerOfTournament(params.room);
