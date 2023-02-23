@@ -9,6 +9,8 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 var logger = require('./api/service/logger');
 var fs = require('fs');
+// log DNA
+const logDNA = require('./api/service/logDNA');
 // generate custom token 
 morgan.token('host', function (req) {
     return req.hostname;
@@ -59,7 +61,14 @@ try {
         let AWS_REGION = process.env.AWS_REGION || 'ap-south-2';
         console.log("IAWS_REGION-", AWS_REGION)
         var ssm = new AWS.SSM({region: AWS_REGION});
-        console.log('SSM===>', ssm)
+        console.log('SSM===>', ssm);
+        // for logDNA 
+        let logData = {
+            level: 'debugg',
+            meta: {'params' : ssm}                         
+        };        
+        logDNA.log('SSM :: Params', logData);
+
         var Names =  process.env.NODE_ENV != 'production' ? ["/staging/ludo/mongodb/host","/staging/ludo/mongodb/password","/staging/ludo/mongodb/port","/staging/ludo/mongodb/username","/staging/ludo/logDNA"] : ["/prod/ludo/docdb/host","/prod/ludo/docdb/password","/prod/ludo/docdb/port","/prod/ludo/docdb/username","/prod/ludo/logDNA"];
         // [for image push]
         //var Names =  process.env.NODE_ENV != 'production' ? ["/staging/ludo/docdb/host","/staging/ludo/docdb/password","/staging/ludo/docdb/port","/staging/ludo/docdb/username","/staging/ludo/logDNA"] : ["/prod/ludo/docdb/host","/prod/ludo/docdb/password","/prod/ludo/docdb/port","/prod/ludo/docdb/username","/prod/ludo/logDNA"];
@@ -115,7 +124,13 @@ try {
                     },500)
                 }
             } catch (error) {
-                 console.log("SSM Get Params error - ",error) 
+                 console.log("SSM Get Params error - ",error);
+                 // for log DNA
+                 let logData = {
+                    level: 'debugg',
+                    meta: {'params' : ssm}                         
+                };        
+                logDNA.log('SSM :: Params error', logData);                 
             }
         }
         await getParams(Names, 0)
@@ -124,6 +139,12 @@ try {
    
 } catch (err) {
     logger.info('DBCONNECT ERROR', err);
+    // for log DNA
+    let logData = {
+        level: 'debugg',
+        meta: {'params' : err}                         
+    };        
+    logDNA.log('DB :: Connection error', logData);
 }
 
 module.exports = server;

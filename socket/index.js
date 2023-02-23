@@ -152,7 +152,7 @@ module.exports = function (io) {
                 if(rez.status == 0) {
                     return callback({
                         status: 0,
-                        message: 'Table not found.',
+                        message: 'Table not found 2.',
                     })
                 }
                 // If no room to join the game.

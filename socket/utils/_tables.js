@@ -309,7 +309,7 @@ class _Tables {
         }
         var rez = {
             status: 0,
-            message: "Table not found."
+            message: "Table not found 1."
         };
         return rez;
     }
