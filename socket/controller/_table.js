@@ -566,10 +566,10 @@ module.exports = {
                                 moveBonusCheck = true;
                                 killed = true;
                             } 
-                            else if(config.safeZone.includes(token_index)) {
-                                moveBonusCheck = true;
-                                killed = false;
-                            }
+                            // else if(config.safeZone.includes(token_index)) {
+                            //     moveBonusCheck = true;
+                            //     killed = false;
+                            // }
                             else {
                                 // Add Bonus as much as Killed Token Length
                                 let sixCounts = _tab.setSix(params.room, id);
