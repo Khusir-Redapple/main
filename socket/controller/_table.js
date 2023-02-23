@@ -566,10 +566,6 @@ module.exports = {
                                 moveBonusCheck = true;
                                 killed = true;
                             } 
-                            // else if(config.safeZone.includes(token_index)) {
-                            //     moveBonusCheck = true;
-                            //     killed = false;
-                            // }
                             else {
                                 // Add Bonus as much as Killed Token Length
                                 let sixCounts = _tab.setSix(params.room, id);
@@ -577,6 +573,14 @@ module.exports = {
                                 _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus')
                                 moveBonusCheck = true;
                                 killed = true;
+                            }
+                            /**
+                             * Bug no : 59
+                             * Random Bug - Getting extra move after rolling 1.
+                             */
+                            if(config.safeZone.includes(token_index)) {
+                                moveBonusCheck = true;
+                                killed = false;
                             }
                         }
                         // Else [!canIKill]
