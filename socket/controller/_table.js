@@ -566,7 +566,7 @@ module.exports = {
                                 moveBonusCheck = true;
                                 killed = true;
                             } 
-                            else if(token_index.includes(config.safeZone)) {
+                            else if(config.safeZone.includes(token_index)) {
                                 moveBonusCheck = true;
                                 killed = false;
                             }
