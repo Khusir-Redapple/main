@@ -573,15 +573,7 @@ module.exports = {
                                 _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus')
                                 moveBonusCheck = true;
                                 killed = true;
-                            }
-                            /**
-                             * Bug no : 59
-                             * Random Bug - Getting extra move after rolling 1.
-                             */
-                            if(config.safeZone.includes(token_index)) {
-                                moveBonusCheck = true;
-                                killed = false;
-                            }
+                            }                        
                         }
                         // Else [!canIKill]
                         else {
