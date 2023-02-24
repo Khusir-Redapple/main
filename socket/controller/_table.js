@@ -62,6 +62,7 @@ module.exports = {
                 room: params.room,
                 dice_value: DICE_ROLLED,
                 dices_rolled: dices_rolled,
+                skip_dice:false
             },
         };
         // console.log('EVENT_PUSHED', event);
@@ -110,7 +111,8 @@ module.exports = {
                     dice: DICE_ROLLED,
                     dices_rolled: dices_rolled,
                     turn_start_at: config.turnTimer,
-                    extra_move_animation: false
+                    extra_move_animation: false,
+                    skip_dice : true
                 },
             };
             await _tab.clearDices(params.room, myPos);
@@ -136,7 +138,8 @@ module.exports = {
                     room: params.room,
                     position: myPos,
                     dices_rolled: dices_roll,
-                    turn_start_at: config.turnTimer
+                    turn_start_at: config.turnTimer,
+                    skip_dice : false
                 },
             };
             resObj.events.push(event);
@@ -168,7 +171,8 @@ module.exports = {
                         dice: DICE_ROLLED,
                         dices_rolled: dices_rolled,
                         turn_start_at: config.turnTimer,
-                        extra_move_animation:false
+                        extra_move_animation:false,
+                        skip_dice : true
                     },
                 };
                 resObj.events.push(event);
@@ -201,7 +205,8 @@ module.exports = {
                         dice: DICE_ROLLED,
                         dices_rolled: dices_rolled,
                         turn_start_at: config.turnTimer,
-                        extra_move_animation:false
+                        extra_move_animation:false,
+                        skip_dice: true
                     },
                 };
                 resObj.events.push(event);
@@ -230,7 +235,8 @@ module.exports = {
                         dice: DICE_ROLLED,
                         dices_rolled: dices_rolled,
                         turn_start_at: config.turnTimer,
-                        extra_move_animation:true
+                        extra_move_animation:true,
+                        skip_dice: false
                     },
                 };
                 resObj.events.push(event);
