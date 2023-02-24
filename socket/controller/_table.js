@@ -1701,6 +1701,7 @@ module.exports = {
                 table: seatOnTable.table,
                 position: seatOnTable.pos,
                 timerStart: timerStart,
+                default_diceroll_timer : config.turnTimer // bugg_no_65
             };
 
             var player = {
