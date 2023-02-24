@@ -531,6 +531,7 @@ class _Tables {
                             dice: DICE_ROLLED,
                             turn_start_at: config.turnTimer,
                             possition: pl,
+                            default_diceroll_timer : config.turnTimer // bug_no_65
                         };
                         this.sedAndResetGamePlayData(room);
                         return resObj;
