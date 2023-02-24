@@ -447,9 +447,6 @@ module.exports = function (io) {
             };
             //call api to cut money 
             io.to(start.room).emit('startGame', start);
-            
-            //24. Game start animation - 1,2,3 GO
-            await Socketz.sleep(4000);
             console.log("AFter startGame fire - ", new Date());
             setInterval(async function () {
                 // console.log('Checking Timeout');
