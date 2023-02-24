@@ -135,7 +135,7 @@ module.exports = {
             else await _tab.updateCurrentTurn(params.room, myPos, 'move', -1,1);
             let dices_roll = await _tab.gePlayerDices(params.room, myPos);    
             // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
-            resObj.callback.skip_dice = true;
+            resObj.callback.skip_dice = false;
 
             let event = {
                 type: 'room_including_me',
