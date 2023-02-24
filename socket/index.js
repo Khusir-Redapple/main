@@ -450,7 +450,7 @@ module.exports = function (io) {
             console.log("AFter startGame fire - ", new Date());
             
             //Point No.24. Game start animation - 1,2,3 GO
-            await Socketz.sleep(4000);
+            //await Socketz.sleep(4000);
 
             setInterval(async function () {
                 // console.log('Checking Timeout');
