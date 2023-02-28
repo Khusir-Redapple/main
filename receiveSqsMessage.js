@@ -11,8 +11,7 @@ const sqs = new AWS.SQS();
 var params = {
   VisibilityTimeout: 400,
   WaitTimeSeconds: 20,
-  // QueueUrl: 'https://sqs.ap-south-1.amazonaws.com/478885374249/gamePlayDataQueue',
-  QueueUrl: 'https://sqs.ap-south-1.amazonaws.com/478885374249/stage-ludo-game-events'
+  QueueUrl: process.env.SQS_URL
 };
 
 sqs.receiveMessage(params, function(err, data) {
