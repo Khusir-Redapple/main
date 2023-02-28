@@ -29,7 +29,8 @@ class MessageOperations {
         return new Promise((resolve, reject) => {
             params = { ...commonQueueParams, ...params };
             sqsAwsInstance.sendMessage(params, function (error, data) {
-                console.log("data >>>",data)
+                console.log("data >>>",data);
+                console.log("error >>>",error);
                 if (error) {
                     reject(error);
                 }
