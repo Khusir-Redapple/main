@@ -4,7 +4,7 @@ const {
     sqsSendMessage
 } = require('../../api/operations/sqs_operations');
 const { User }  = require('../../api/models/user');
-
+const logDNA   = require('../../api/service/logDNA');
 class MessageController {
 
     /**
@@ -32,8 +32,22 @@ class MessageController {
             let finalParams = { MessageBody : JSON.stringify(parseData)};
             console.log("after adding lobbyId:: >",finalParams)      
             let result = await sqsSendMessage(finalParams);
+            // for SQS Success
+            var logData = {
+                level: 'debugg',
+                meta: result
+            };        
+            logDNA.log('SQS sendMessage Success', logData);
+
             return result;
         } catch(error) {
+            // for SQS Success
+            var logData = {
+                level: 'debugg',
+                meta: error
+            };        
+            logDNA.log('SQS sendMessage ERROR', logData);
+            
             console.log("SQS sendMessage ERROR :: ",error)
             return false;
         }
