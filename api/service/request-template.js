@@ -2,7 +2,7 @@ const axios = require('axios').default;
 const queryString = require('query-string');
 const config = require('../../config')
 var Service = require('../../api/service');
-
+const logDNA   = require('../../api/service/logDNA');
 async function call(path, method, body, headers = {}) {
     
     try{
@@ -28,6 +28,12 @@ async function call(path, method, body, headers = {}) {
 
     } catch (err) {
         console.log(err);
+        // for logDNA 
+        var logData = {
+            level: 'debugg',
+            meta: err
+          };        
+        logDNA.log('verifyUserError', logData);
         return { isSuccess: false } ;
 
     }
