@@ -11,7 +11,7 @@ const config = require('../../config/index')
 const sqsAwsInstance = new aws.SQS();
 
 const commonQueueParams = {
-    QueueUrl: config.QUEUE_URL,
+    QueueUrl: process.env.SQS_URL,
 };
 
 class MessageOperations {

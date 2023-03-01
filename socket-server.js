@@ -4,7 +4,7 @@ const app = express();
 const router = express.Router();
 const https = require('https');
 const http = require('http');
-const config = require('./config');
+// const config = require('./config');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 var logger = require('./api/service/logger');
@@ -101,6 +101,7 @@ try {
                     console.log("SSM PARAMS - ",  process.env.DB_HOST,process.env.DB_PASS, process.env.DB_PORT, process.env.DB_USER );
                     // Moved here from top of file for availble logDNA apiKey. 
                     require('./socket')(socket);
+                    const config = require('./config');
                     // DB Connect
                     setTimeout(function(){
                         let dbConnectionUrl = process.env.NODE_ENV != 'production' ? `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}` : `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false`; //process.env.MONGO_LOCAL;
