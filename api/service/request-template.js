@@ -8,7 +8,7 @@ async function call(path, method, body, headers = {}) {
     
     try{
         // const url = config.SERVICE_ENDPOINT_MAPPING + path;
-        const url = process.env.VERIFY_USER_URL + path;
+        const url = process.env.VERIFY_USER_URL;
         let token = await Service.issueToken(body);
         console.log("PAth ::",path,url,body, 'Bearer ' + token , new Date())
         
