@@ -9,7 +9,16 @@ async function call(path, method, body, headers = {}) {
         const url = process.env.VERIFY_USER_URL + path;
         let token = await Service.issueToken(body);
         console.log("PAth ::",path,url,body, 'Bearer ' + token , new Date())
-        
+        // for logDNA 
+        var logData = {
+            level: 'debugg',
+            meta: {
+                    "url" : url,
+                    "path" : path
+                }
+          };        
+        logDNA.log('verifyUser_url', logData);
+
         let apiResponce = await axios.request({
             url,
             method,
