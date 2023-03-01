@@ -61,9 +61,9 @@ try {
         console.log("IAWS_REGION-", AWS_REGION)
         var ssm = new AWS.SSM({region: AWS_REGION});
         console.log('SSM===>', ssm);
-        //var Names =  process.env.NODE_ENV != 'production' ? ["/staging/ludo/mongodb/host","/staging/ludo/mongodb/password","/staging/ludo/mongodb/port","/staging/ludo/mongodb/username","/staging/ludo/logDNA","/staging/ludo/queueurl"] : ["/prod/ludo/docdb/host","/prod/ludo/docdb/password","/prod/ludo/docdb/port","/prod/ludo/docdb/username","/prod/ludo/logDNA","/prod/ludo/queueurl"];
+        var Names =  process.env.NODE_ENV != 'production' ? ["/staging/ludo/mongodb/host","/staging/ludo/mongodb/password","/staging/ludo/mongodb/port","/staging/ludo/mongodb/username","/staging/ludo/logDNA","/staging/ludo/queueurl","/staging/ludo/ludoapiurl"] : ["/prod/ludo/docdb/host","/prod/ludo/docdb/password","/prod/ludo/docdb/port","/prod/ludo/docdb/username","/prod/ludo/logDNA","/prod/ludo/queueurl","/prod/ludo/ludoapiurl"];
         // [for image push]
-        var Names =  process.env.NODE_ENV != 'production' ? ["/staging/ludo/docdb/host","/staging/ludo/docdb/password","/staging/ludo/docdb/port","/staging/ludo/docdb/username","/staging/ludo/logDNA","/staging/ludo/queueurl"] : ["/prod/ludo/docdb/host","/prod/ludo/docdb/password","/prod/ludo/docdb/port","/prod/ludo/docdb/username","/prod/ludo/logDNA","/prod/ludo/queueurl"];
+        //var Names =  process.env.NODE_ENV != 'production' ? ["/staging/ludo/docdb/host","/staging/ludo/docdb/password","/staging/ludo/docdb/port","/staging/ludo/docdb/username","/staging/ludo/logDNA","/staging/ludo/queueurl","/staging/ludo/ludoapiurl"] : ["/prod/ludo/docdb/host","/prod/ludo/docdb/password","/prod/ludo/docdb/port","/prod/ludo/docdb/username","/prod/ludo/logDNA","/prod/ludo/queueurl","/prod/ludo/ludoapiurl"];
         let keys = [];
         // eslint-disable-next-line no-console
 
@@ -94,6 +94,9 @@ try {
                     process.env.LOG_DNA_API_KEY = keys[4] ? keys[4] : process.env.LOG_DNA_API_KEY;
                     // FOR SQS URL
                     process.env.SQS_URL = keys[5] ? keys[5] : process.env.SQS_URL;
+                    // FOR VERIFY USER URL
+                    process.env.VERIFY_USER_URL = keys[6] ? keys[6] : process.env.VERIFY_USER_URL;
+                    console.log('VERIFY URL>>>', process.env.VERIFY_USER_URL);
                     console.log('SQS>>>', process.env.SQS_URL);           
                     console.log("SSM PARAMS - ",  process.env.DB_HOST,process.env.DB_PASS, process.env.DB_PORT, process.env.DB_USER );
                     // Moved here from top of file for availble logDNA apiKey. 
