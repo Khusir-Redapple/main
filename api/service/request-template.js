@@ -2,13 +2,10 @@ const axios = require('axios').default;
 const queryString = require('query-string');
 const config = require('../../config')
 var Service = require('../../api/service');
-// const { SERVICE_ENDPOINT_MAPPING, SERVICE_NAME } = require('../util/constants');
 
 async function call(path, method, body, headers = {}) {
     
     try{
-        // const url = config.SERVICE_ENDPOINT_MAPPING + path;
-        console.log('PATH >>>>', path);
         const url = process.env.VERIFY_USER_URL + path;
         let token = await Service.issueToken(body);
         console.log("PAth ::",path,url,body, 'Bearer ' + token , new Date())

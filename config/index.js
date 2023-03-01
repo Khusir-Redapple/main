@@ -253,10 +253,8 @@ const config =  function () {
     this.countDownTime = 30; // previously it was 10 sec
     this.pawnMoveTimer = 0.08;
     this.noOfPlayersInTournament = [2, 3, 4];
-    this.SERVICE_ENDPOINT_MAPPING = process.env.VERIFY_USER_URL;
     this.apiSecret = 'bTF07U8mdS0XCu8ayywRfRlp3/IepPR9CQrIAwc0';
     this.VISIBILITY_TIMEOUT = 600;
-    //this.QUEUE_URL = 'https://sqs.ap-south-2.amazonaws.com/478885374249/stage-ludo-game-events';
 };
 
 module.exports = new config();
