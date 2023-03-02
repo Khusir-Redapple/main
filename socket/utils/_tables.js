@@ -300,7 +300,8 @@ class _Tables {
                             current_turn_type: this.tables[i].current_turn_type,
                             position: this.tables[i].users[pl].position,
                             dices_rolled: this.tables[i].users[this.tables[i].current_turn].dices_rolled,
-                            timeToCompleteGame: timeToAdd + 8 - diffT,
+                            // timeToCompleteGame: timeToAdd + 8 - diffT,
+                            timeToCompleteGame: timeToAdd,
                             default_diceroll_timer : config.turnTimer - diff // bug_no_ 65
                         };
                         return rez;
