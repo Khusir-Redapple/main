@@ -980,7 +980,7 @@ module.exports = {
                     };
                     rez_finalObj.events.push(event);
                     let reqData = await this.getEndGameData(event.data, tableD.room_fee);
-                    console.log("reqData >>>>",reqData)
+                    console.log("reqData 2 >>>>",reqData)
                     let startGame = await requestTemplate.post( `endgame`, reqData)
                     if(!startGame.isSuccess){
                         return { callback: { status: 0, message:startGame.error } };
@@ -1188,7 +1188,7 @@ module.exports = {
                                 };
                                 rez_finalObj.events.push(event);
                                 let reqData = await this.getEndGameData(event.data, tableD.room_fee);
-                                console.log("reqData >>>>",reqData)
+                                console.log("reqData 3 >>>>",reqData)
                                 let startGame = await requestTemplate.post(`endgame`, reqData)
                                 if(!startGame.isSuccess){
                                     return { callback: { status: 0, message:startGame.error } };
@@ -1424,8 +1424,7 @@ module.exports = {
                 let  timeToAdd = new Date(new Date().getTime() + config.gameTime*60000);
                 var seconds = (timeToAdd - new Date().getTime()) / 1000;  
                 console.log(timeToAdd,new Date().getTime(),seconds)
-                // start.timeToCompleteGame = seconds;
-                start.timeToCompleteGame = config.gameTime * 60;
+                start.timeToCompleteGame = seconds;
             }
             return start;
     },
