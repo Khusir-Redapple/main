@@ -1086,7 +1086,7 @@ module.exports = {
             var check = _tab.isCurrentTurnMine(params.room, mypos);
 
             if (check) {
-                // _tab.deductLife(params.room, id);
+                _tab.deductLife(params.room, id);
                 var checkLife = await _tab.getMyLife(params.room, id);
 
                 // console.log('Current Life::', checkLife);
