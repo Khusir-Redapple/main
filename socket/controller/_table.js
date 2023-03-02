@@ -1425,7 +1425,7 @@ module.exports = {
                 var seconds = (timeToAdd - new Date().getTime()) / 1000;  
                 console.log(timeToAdd,new Date().getTime(),seconds)
                 // start.timeToCompleteGame = seconds;
-                start.timeToCompleteGame = 600;
+                start.timeToCompleteGame = config.gameTime * 60;;
             }
             return start;
     },
