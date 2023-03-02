@@ -325,11 +325,11 @@ module.exports = {
             var tableD = await Table.findOne({
                 room: params.room,
             });
-            const gameStartTime = tableD.game_started_at;
-            let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000)); 
-            console.log("timeInsecond > ",timeInsecond)
-            const time = _tab.setGameTime(params.room, timeInsecond)
-            console.log("after setGametime",time)
+            //const gameStartTime = tableD.game_started_at;
+            //let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000)); 
+            //console.log("timeInsecond > ",timeInsecond)
+            //const time = _tab.setGameTime(params.room, timeInsecond)
+            //console.log("after setGametime",time)
             if (!movePossibleExact) {
                 console.log('[NOT MOVE IMPOSSIBLE EXACT]');
                 // if (params.dice_value != 6) {
