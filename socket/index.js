@@ -305,7 +305,7 @@ module.exports = function (io) {
                             message: startGame.error,
                         });
                     }
-                    await Socketz.sleep(7000);
+                    //await Socketz.sleep(7000);
                     // er agai check korte hobe..
                     await startTournament(start,socket); 
                     /** 
