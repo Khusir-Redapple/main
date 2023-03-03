@@ -248,13 +248,13 @@ const config =  function () {
 
     this.safeZone = [1, 14, 27, 40, 22, 35, 9, 48]; // Pawn safe Zone. previously is was : 1, 14, 27, 40 
     this.starPosition  = [21];
-    this.gameTime = 3; //15 Game EndTime is 15 minutes
+    this.gameTime = 10; //15 Game EndTime is 15 minutes
     this.turnTimer = 10; // Dice roll time, 10 sec.
     this.countDownTime = 30; // previously it was 10 sec
     this.pawnMoveTimer = 0.08;
     this.noOfPlayersInTournament = [2, 3, 4];
-    this.apiSecret = 'bTF07U8mdS0XCu8ayywRfRlp3/IepPR9CQrIAwc0'; // staging
-    //this.apiSecret = 'wHlkdSHPmwalKdMSZpqglsJVUWInyueAXXdashjdbhbshdcasDWpfHT9Lord5hIvA'; // prod
+    //this.apiSecret = 'bTF07U8mdS0XCu8ayywRfRlp3/IepPR9CQrIAwc0'; // staging
+    this.apiSecret = 'wHlkdSHPmwalKdMSZpqglsJVUWInyueAXXdashjdbhbshdcasDWpfHT9Lord5hIvA'; // prod
     this.VISIBILITY_TIMEOUT = 600;
 };
 
