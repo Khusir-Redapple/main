@@ -307,6 +307,16 @@ module.exports = function (io) {
                     }
                     //await Socketz.sleep(7000);
                     // er agai check korte hobe..
+                    // added below code 310 - 319
+                    let tableD = await Table.findOne({ room: params.room });
+                    if (tableD) {
+                        var dt = new Date();
+                        dt.setSeconds( dt.getSeconds());
+                        tableD.game_started_at = new Date(dt).getTime() ;
+                        tableD.turn_start_at = new Date(dt).getTime();
+                        await tableD.save();
+                    }
+
                     await startTournament(start,socket); 
                     /** 
                      *  Debugg for here
