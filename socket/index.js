@@ -312,7 +312,7 @@ module.exports = function (io) {
                     if (tableD) {
                         var dt = new Date();
                         dt.setSeconds( dt.getSeconds());
-                        tableD.game_started_at = new Date(dt).getTime() ;
+                        tableD.game_started_at = new Date(dt).getTime();
                         tableD.turn_start_at = new Date(dt).getTime();
                         await tableD.save();
                     }
