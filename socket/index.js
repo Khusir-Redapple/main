@@ -412,7 +412,7 @@ module.exports = function (io) {
         });
 
         socket.on('tournament_move_made', async (params, callback) => {
-            // console.trace("TS1 ::", 'tournament_move_made', socket.id, JSON.stringify(params));
+            console.trace("Tournament_move_made ::", JSON.stringify(params));
             console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
 
             var myId = Socketz.getId(socket.id);
