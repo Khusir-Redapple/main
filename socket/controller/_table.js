@@ -441,6 +441,11 @@ module.exports = {
                         _tab.addBonus(params.room, id, 1,"Home");
                         _tab.addBonusPoints(params.room, id, 50 , 1, 'home_base_bonus');
                     }
+                    else if(params.dice_value == 6) {
+                        // Add Bonus
+                            _tab.addBonus(params.room, id, 0,"Home");
+                            _tab.addBonusPoints(params.room, id, 50 , 1, 'home_base_bonus');
+                    }
                     // Check if allHome
                     const allHome = _tab.allHome(params.room, id);
                     if (allHome) {
@@ -587,6 +592,8 @@ module.exports = {
                             if(params.dice_value == 6) {
                                 moveBonusCheck = true;
                                 killed = true;
+                                _tab.addBonus(params.room, id, 0,"Kill");
+                                _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus')
                             } 
                             else {
                                 // Add Bonus as much as Killed Token Length
