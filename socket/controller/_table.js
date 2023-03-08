@@ -1426,10 +1426,14 @@ module.exports = {
             let tableD = await Table.findOne({ room: params.room });
             if (tableD) {
                 var dt = new Date();
-                dt.setSeconds( dt.getSeconds() + 7);
-                //tableD.game_started_at = new Date(dt).getTime();
-                tableD.game_started_at = '123456';
+                //dt.setSeconds( dt.getSeconds() + 7);
+                // tableD.game_started_at = new Date(dt).getTime();
+                // tableD.turn_start_at = new Date(dt).getTime();
+
+                dt.setSeconds( dt.getSeconds() + 10);
+                tableD.game_started_at = new Date(dt).getTime();
                 tableD.turn_start_at = new Date(dt).getTime();
+                
                 await tableD.save();      
                 console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at),tableD.game_started_at)
                 let  timeToAdd = new Date(new Date().getTime() + config.gameTime*60000);
