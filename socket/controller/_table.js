@@ -594,11 +594,14 @@ module.exports = {
                                 killed = true;
                                 _tab.addBonus(params.room, id, 0,"Kill");
                                 _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus')
-                            } 
-                            else {
+                            } else {
                                 // Add Bonus as much as Killed Token Length
                                 let sixCounts = _tab.setSix(params.room, id);
-                                _tab.addBonus(params.room, id, canIKill.length,"Kill");
+                                // bugNo: 79 user should no offer more then two dice roll
+                                if(canIKill.length >= 1) {
+                                    _tab.addBonus(params.room, id, 1,"Kill");
+                                }
+                                // _tab.addBonus(params.room, id, canIKill.length, "Kill");                            
                                 _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus')
                                 moveBonusCheck = true;
                                 killed = true;
