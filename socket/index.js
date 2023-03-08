@@ -305,31 +305,20 @@ module.exports = function (io) {
                             message: startGame.error,
                         });
                     }
-                    //await Socketz.sleep(7000);
+                    // if tournament possible
+                    await startTournament(start,socket);
+
                     // er agai check korte hobe..
-                    // added below code 310 - 319
+                    // added below code 315 - 320
                     let tableD = await Table.findOne({ room: params.room });
+                    // If table exits then update the gameTime in DB.
                     if (tableD) {
                         var dt = new Date();
                         dt.setSeconds( dt.getSeconds());
-                        tableD.game_started_at = new Date(dt).getTime();
+                        tableD.game_started_at = '123456';
                         tableD.turn_start_at = new Date(dt).getTime();
                         await tableD.save();
                     }
-
-                    await startTournament(start,socket); 
-                    /** 
-                     *  Debugg for here
-                     * 
-                     * 
-                     * 
-                     * 
-                     * 
-                     * 
-                     * 
-                     * 
-                     * 
-                     */
                     setInterval(async function(){
                         var data = {
                             room : start.room
