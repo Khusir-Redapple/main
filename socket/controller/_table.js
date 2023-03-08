@@ -1427,7 +1427,8 @@ module.exports = {
             if (tableD) {
                 var dt = new Date();
                 dt.setSeconds( dt.getSeconds() + 7);
-                tableD.game_started_at = new Date(dt).getTime() ;
+                //tableD.game_started_at = new Date(dt).getTime();
+                tableD.game_started_at = '123456';
                 tableD.turn_start_at = new Date(dt).getTime();
                 await tableD.save();      
                 console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at),tableD.game_started_at)
