@@ -899,8 +899,8 @@ module.exports = {
                     "isRefund": params.isRefund ? params.isRefund  : false
                 }]
             }
-
-        await requestTemplate.post( `matchmakingFailed`, reqData);
+        //Bug_no: 79 comment this line for testing.
+        //await requestTemplate.post( `matchmakingFailed`, reqData);
         console.log('BEFORE API calling :: ', rez);
         if (!rez.res) {
             return {
