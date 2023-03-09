@@ -1440,7 +1440,22 @@ class _Tables {
     }
 
     rollDice() {
-        return Math.floor(Math.random() * 6) + 1;
+        // return Math.floor(Math.random() * 6) + 1;
+
+        /**
+         * New implementation for Dice Roll improvement.
+         */
+        let uniqueNum = 0;
+        const usedNums = [];
+        while (uniqueNum === 0) {
+            const randomNum = Math.floor(Math.random() * 6) + 1;
+            if (!usedNums.includes(randomNum)) {
+                usedNums.push(randomNum);
+                uniqueNum = randomNum;
+            }
+        }
+
+        return uniqueNum;
     }
 
     objectId() {
