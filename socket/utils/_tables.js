@@ -682,9 +682,6 @@ class _Tables {
         if (!me) return 0;
         else return me.six_counts;
     }
-
-
-
     scrapTurn(room, pos) {
         for (let i = 0; i < this.tables.length; i++) {
             if (this.tables[i].room == room) {
@@ -856,12 +853,12 @@ class _Tables {
         }
         for (let j = pos + 1; j < this.tables[i].users.length; j++) {
              if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
-                 return j;
+                 console.log('USER INDEX ====>', j); return j;
              }
         }
         for (let j = 0; j < pos; j++) {
              if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
-                 return j;
+                console.log('USER INDEX ====>', j); return j;
              }
         }
 

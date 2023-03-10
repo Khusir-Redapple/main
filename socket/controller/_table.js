@@ -756,7 +756,7 @@ module.exports = {
             let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));  
             var winnerInfo;  
             console.log("checkwinnerOfTournament >>>",tableD.win_amount,timeInsecond)
-            if(timeInsecond >= config.gameTime * 60) {//300
+            if(timeInsecond >= config.gameTime * 60) {
                 winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount); 
             }
             // console.log("Final winner Info >>",winnerInfo) 
