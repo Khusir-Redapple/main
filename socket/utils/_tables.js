@@ -765,6 +765,7 @@ class _Tables {
 
 
     gePlayerDices(room, pos) {
+        console.log('USER INDEX ====>', pos);
         var index = this.tables.findIndex((x)=>x.room == room);
         if (index >= 0) {
             console.log("gePlayerDices - ",this.tables[index].users[pos])
@@ -853,12 +854,12 @@ class _Tables {
         }
         for (let j = pos + 1; j < this.tables[i].users.length; j++) {
              if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
-                 console.log('USER INDEX ====>', j); return j;
+                return j;
              }
         }
         for (let j = 0; j < pos; j++) {
              if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
-                console.log('USER INDEX ====>', j); return j;
+                return j;
              }
         }
 

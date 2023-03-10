@@ -21,7 +21,6 @@ module.exports = function (io)
      */
     io.on('connection', function (socket)
     {
-        console.log('TS1 ::', 'connect', socket.id);
         // for logDNA 
         let logData = {
             level: 'debugg',
