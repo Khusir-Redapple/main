@@ -249,9 +249,9 @@ const config    =  function () {
     this.countDownTime  = 30; // previously it was 10 sec.
     this.pawnMoveTimer  = 0.08; // Pawn move timer.
     this.noOfPlayersInTournament = [2, 3, 4]; //Game start if no of player matches in array value.
-    //this.apiSecret = 'bTF07U8mdS0XCu8ayywRfRlp3/IepPR9CQrIAwc0'; // staging
+    this.apiSecret = 'bTF07U8mdS0XCu8ayywRfRlp3/IepPR9CQrIAwc0'; // staging
     //this.apiSecret = 'wHlkdSHPmwalKdMSZpqglsJVUWInyueAXXdashjdbhbshdcasDWpfHT9Lord5hIvA'; // prod
-    this.apiSecret      = process.env.API_SECRET_KEY; //  Access key for https://ludoapi.nostragamus.in/ludo/v1/ endpoints
+    // this.apiSecret      = process.env.API_SECRET_KEY; //  Access key for https://ludoapi.nostragamus.in/ludo/v1/ endpoints
     this.VISIBILITY_TIMEOUT     = 600;
 };
 
