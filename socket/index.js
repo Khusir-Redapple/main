@@ -1,18 +1,14 @@
-var _               = require('lodash');
-var {Sockets}       = require('./helper/sockets');
-var _TableInstance  = require('./controller/_table');
-var Table           = require('./../api/models/table');
-var {User}          = require('./../api/models/user');
-var localization    = require('./../api/service/localization');
-// var randomString = require('random-string');
-var Socketz         = new Sockets();
-// var logger       = require('../api/service/logger');
-var requestTemplate = require('../api/service/request-template');
-// const {_Tables}  = require('./utils/_tables');
-// var _tab         = new _Tables();
-var config          = require('../config');
-var ObjectId        = require('mongoose').Types.ObjectId;
-const logDNA        = require('../api/service/logDNA');
+const _               = require('lodash');
+const {Sockets}       = require('./helper/sockets');
+const _TableInstance  = require('./controller/_table');
+const Table           = require('./../api/models/table');
+const {User}          = require('./../api/models/user');
+const localization    = require('./../api/service/localization');
+const Socketz         = new Sockets();
+const requestTemplate = require('../api/service/request-template');
+const config          = require('../config');
+const ObjectId        = require('mongoose').Types.ObjectId;
+const logDNA          = require('../api/service/logDNA');
 
 module.exports = function (io)
 {
@@ -56,15 +52,6 @@ module.exports = function (io)
             {
                 if (!params.token)
                 {
-                    console.log(
-                        'TS1 ::',
-                        'joinRes',
-                        socket.id,
-                        JSON.stringify({
-                            status: 0,
-                            message: 'No Token provided',
-                        })
-                    );
                     return callback({
                         status: 0,
                         message: 'No Token provided',
@@ -93,7 +80,6 @@ module.exports = function (io)
                         },
                     }
                 );
-                console.log("us>>>>", us)
                 socket.data_id = us._id.toString();
                 socket.data_name = us.name;
                 socket.join(socket.data_id);
@@ -138,17 +124,7 @@ module.exports = function (io)
             try
             {
                 if (!myId)
-                {
-                    console.log(
-                        'TS1 ::',
-                        'JOIN_PREV_RES',
-                        socket.id,
-                        JSON.stringify({
-                            status: 0,
-                            message: 'SOCKET_DISCONNECTED',
-                        })
-                    );
-                    return callback({
+                {   return callback({
                         status: 0,
                         message: 'Something went wrong!',
                     });
@@ -162,8 +138,7 @@ module.exports = function (io)
                     })
                 }
                 // If no room to join the game.
-                rez.table.room ? socket.join(rez.table.room) : socket.join();    
-                console.log('TS1 ::', 'JOIN_PREV_RES', socket.id, JSON.stringify(rez));
+                rez.table.room ? socket.join(rez.table.room) : socket.join();
                 return callback(rez);
 
             } catch {
@@ -175,8 +150,12 @@ module.exports = function (io)
         });
         socket.on('go_in_background', async () =>
         {
-            // console.log("PLAYER IN BG NOW", socket);
-            console.log('TS1 ::', 'go_in_background', socket.id);
+            // for logDNA 
+            let logData = {
+                level: 'debugg',
+                meta: {'socketId': socket.id}
+            };
+            logDNA.log('user_go_in_background', logData);
             socket.leaveAll();
         });
 
@@ -410,14 +389,14 @@ module.exports = function (io)
             callback(rez.callback);
             processEvents(rez);
         });
-
+        // This event for Socket Disconnect.
         socket.on('disconnect', async () =>
         {
             logDNA.log('DEVICE :: Disconnected', logData);
-            console.log('TS1 ::', 'disconnect', socket.id);
             var myId = Socketz.getId(socket.id);
             await Socketz.userGone(socket.id);
         });
+
         async function startTournament(start, socket)
         {
             var params_data = {
