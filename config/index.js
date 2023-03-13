@@ -1,12 +1,8 @@
-const dotenv = require('dotenv').config();
-const config =  function () {
-    this.port = process.env.PORT || 3000;
-    this.pre = process.env.PRE;
-    this.pre = process.env.PRE;
-    // console.log("DB STRING - ",  process.env.DB_USER,process.env.DB_PASS, process.env.DB_HOST, process.env.DB_USER, process.env.DB_PORT)
-    // this.dbConnectionUrl = process.env.NODE_ENV != 'production' ? `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}` : `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false`; //process.env.MONGO_LOCAL;
-    // this.dbConnectionUrl = `mongodb://localhost:27017/nostra_playing`; //process.env.MONGO_LOCAL;
-    
+const dotenv    = require('dotenv').config();
+const config    =  function () {
+    this.port   = process.env.PORT || 3000;
+    this.pre    = process.env.PRE;
+    this.pre    = process.env.PRE;
     this.MOVE_PATH = [
         [
             1,
@@ -246,16 +242,17 @@ const config =  function () {
         ]
     ];
 
-    this.safeZone = [1, 14, 27, 40, 22, 35, 9, 48]; // Pawn safe Zone. previously is was : 1, 14, 27, 40 
-    this.starPosition  = [21];
-    this.gameTime = 10; //15 Game EndTime is 15 minutes
-    this.turnTimer = 10; // Dice roll time, 10 sec.
-    this.countDownTime = 30; // previously it was 10 sec
-    this.pawnMoveTimer = 0.08;
-    this.noOfPlayersInTournament = [2, 3, 4];
-    this.apiSecret = 'bTF07U8mdS0XCu8ayywRfRlp3/IepPR9CQrIAwc0'; // staging
+    this.safeZone       = [1, 14, 27, 40, 22, 35, 9, 48]; // Pawn safe Zone.
+    this.starPosition   = [21]; // Pawn start position.
+    this.gameTime       = 10; // Game EndTime is 10 minutes.
+    this.turnTimer      = 10; // Dice roll time 10 sec.
+    this.countDownTime  = 30; // previously it was 10 sec.
+    this.pawnMoveTimer  = 0.08; // Pawn move timer.
+    this.noOfPlayersInTournament = [2, 3, 4]; //Game start if no of player matches in array value.
+    //this.apiSecret = 'bTF07U8mdS0XCu8ayywRfRlp3/IepPR9CQrIAwc0'; // staging
     //this.apiSecret = 'wHlkdSHPmwalKdMSZpqglsJVUWInyueAXXdashjdbhbshdcasDWpfHT9Lord5hIvA'; // prod
-    this.VISIBILITY_TIMEOUT = 600;
+    this.apiSecret      = process.env.API_SECRET_KEY; //  Access key for https://ludoapi.nostragamus.in/ludo/v1/ endpoints
+    this.VISIBILITY_TIMEOUT     = 600;
 };
 
 module.exports = new config();

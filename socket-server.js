@@ -1,77 +1,67 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const app = express();
-const router = express.Router();
-const https = require('https');
-const http = require('http');
-const config = require('./config');
-const mongoose = require('mongoose');
-const morgan = require('morgan');
-var logger = require('./api/service/logger');
-var fs = require('fs');
-
-// generate custom token 
+const express       = require('express');
+const bodyParser    = require('body-parser');
+const app           = express();
+const router        = express.Router();
+const http          = require('http');
+const mongoose      = require('mongoose');
+const morgan        = require('morgan');
+const logger        = require('./api/service/logger');
+let   logDNA        = {};
+// Generate custom token 
 morgan.token('host', function (req) {
     return req.hostname;
 });
-
 // setup the logger 
 app.use(morgan(':method :host :url :status :res[content-length] - :response-time ms'));
-
-app.use(function (req, res, next) {
+// Appling acces rule for end user.
+app.use(function (req, res, next)
+{
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
-
 require('./routes/index')(router);
-
 app.use(
     bodyParser.urlencoded({
         extended: true,
         type: 'application/x-www-form-urlencoded'
     })
 );
-
+// Appling middelware.
 app.use(bodyParser.json());
+// Appling router.
 app.use('/', router);
-app.use('/hello', function(req, res) {
-    logger.info('404 Hit>',req.method, req.url, req.body);
-    console.log("hello",req.headers,);
-    // res.send("hello",req.headers,);
+// Appling dummy hello route.
+app.use('/hello', function (req, res)
+{
+    logger.info('404 Hit>', req.method, req.url, req.body);
 });
-// const options = {
-//     key: fs.readFileSync('../../../etc/letsencrypt/live/multiplayer.staging-server.in/privkey.pem'),
-//     cert: fs.readFileSync('../../../etc/letsencrypt/live/multiplayer.staging-server.in/fullchain.pem')
-// };
-  
-// const server = https.createServer(options,app);
+// Creating server
 const server = http.createServer(app);
 const socket = require('socket.io')(server);
-// require('./socket')(socket);
 
 /**
  *	Server bootup section
  **/
-try {
+try
+{
     const AWS = require('aws-sdk');
-    (async() => { 
+    (async () =>
+    {
         AWS.config = new AWS.Config();
         let AWS_REGION = process.env.AWS_REGION || 'ap-south-2';
         console.log("IAWS_REGION-", AWS_REGION)
-        var ssm = new AWS.SSM({region: AWS_REGION});
-        console.log('SSM===>', ssm);
-        var Names =  process.env.NODE_ENV != 'production' ? ["/staging/ludo/mongodb/host","/staging/ludo/mongodb/password","/staging/ludo/mongodb/port","/staging/ludo/mongodb/username","/staging/ludo/logDNA","/staging/ludo/queueurl","/staging/ludo/ludoapiurl"] : ["/prod/ludo/docdb/host","/prod/ludo/docdb/password","/prod/ludo/docdb/port","/prod/ludo/docdb/username","/prod/ludo/logDNA","/prod/ludo/queueurl","/prod/ludo/ludoapiurl"];
-        // [for image push]
-        //var Names =  process.env.NODE_ENV != 'production' ? ["/staging/ludo/docdb/host","/staging/ludo/docdb/password","/staging/ludo/docdb/port","/staging/ludo/docdb/username","/staging/ludo/logDNA","/staging/ludo/queueurl","/staging/ludo/ludoapiurl"] : ["/prod/ludo/docdb/host","/prod/ludo/docdb/password","/prod/ludo/docdb/port","/prod/ludo/docdb/username","/prod/ludo/logDNA","/prod/ludo/queueurl","/prod/ludo/ludoapiurl"];
+        let ssm = new AWS.SSM({region: AWS_REGION});
+        console.log('SSM===>', ssm.config);
+        let Names = process.env.NODE_ENV != 'production' ? ["/staging/ludo/docdb/host", "/staging/ludo/docdb/password", "/staging/ludo/docdb/port", "/staging/ludo/docdb/username", "/staging/ludo/logDNA", "/staging/ludo/queueurl", "/staging/ludo/ludoapiurl", "/staging/ludo/ludoapiSecretkey"] : ["/prod/ludo/docdb/host", "/prod/ludo/docdb/password", "/prod/ludo/docdb/port", "/prod/ludo/docdb/username", "/prod/ludo/logDNA", "/prod/ludo/queueurl", "/prod/ludo/ludoapiurl", "/prod/ludo/ludoapiSecretkey"];
         let keys = [];
-        // eslint-disable-next-line no-console
-
-        const getParams = async (Names,i) => {
-            try {           
+        const getParams = async (Names, i) =>
+        {
+            try
+            {
                 console.log("getParams called", Names.length, i)
-                if(i < Names.length){
-                    // console.log(`Getting secret for ${Names[i]}`);
+                if (i < Names.length)
+                {
                     const params = {
                         Name: Names[i],
                         WithDecryption: true,
@@ -81,10 +71,11 @@ try {
                     console.log("[SSM Result] - ", result);
                     keys.push(result.Parameter.Value);
                     i++;
-                    getParams(Names,i);
+                    getParams(Names, i);
                 }
-                else{
-                    console.log("All final keys- ",keys)
+                else
+                {
+                    // Read the value from SSM in AWS
                     process.env.DB_HOST = keys[0] ? keys[0] : process.env.DB_HOST;
                     process.env.DB_PASS = keys[1] ? keys[1] : process.env.DB_PASS;
                     process.env.DB_PORT = keys[2] ? keys[2] : process.env.DB_PORT;
@@ -96,41 +87,58 @@ try {
                     process.env.SQS_URL = keys[5] ? keys[5] : process.env.SQS_URL;
                     // FOR VERIFY USER URL
                     process.env.VERIFY_USER_URL = keys[6] ? keys[6] : process.env.VERIFY_USER_URL;
-                    console.log('VERIFY URL>>>', process.env.VERIFY_USER_URL);
-                    console.log('SQS>>>', process.env.SQS_URL);           
-                    console.log("SSM PARAMS - ",  process.env.DB_HOST,process.env.DB_PASS, process.env.DB_PORT, process.env.DB_USER );
+                    // API_SECRET_KEY for https://ludoapi.nostragamus.in/ludo/v1/ endpoints
+                    process.env.API_SECRET_KEY = keys[7] ? keys[7] : process.env.API_SECRET_KEY;
                     // Moved here from top of file for availble logDNA apiKey. 
                     require('./socket')(socket);
+                    let config = require('./config');
+                    logDNA = require('./api/service/logDNA');
                     // DB Connect
-                    setTimeout(function(){
-                        let dbConnectionUrl = process.env.NODE_ENV != 'production' ? `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}` : `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false`; //process.env.MONGO_LOCAL;
-                        console.log("DB STRING - ",  process.env.DB_USER,process.env.DB_PASS, process.env.DB_HOST, process.env.DB_USER, process.env.DB_PORT)
+                    setTimeout(function ()
+                    {
+                        let dbConnectionUrl = process.env.NODE_ENV != 'production' ? `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}` : `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false`;
+                        // console.log("DB STRING - ", process.env.DB_USER, process.env.DB_PASS, process.env.DB_HOST, process.env.DB_USER, process.env.DB_PORT)
                         mongoose.set('useCreateIndex', true);
                         mongoose.connect(
-                            // "mongodb://localhost:$27017/nostra_playing",
                             `${dbConnectionUrl}`,
-                            { useNewUrlParser: true},
-                            d => {
+                            {useNewUrlParser: true},
+                            d =>
+                            {
                                 if (d) return logger.info(`ERROR CONNECTING TO DB ${dbConnectionUrl}`, d, dbConnectionUrl);
                                 logger.info(`Connected to ${process.env.NODE_ENV} database: `, `${dbConnectionUrl}`);
-                                server.listen(config.port, async function (err) {
-                                    if (err) throw err 
+                                server.listen(config.port, async function (err)
+                                {
+                                    if (err) throw err
                                     logger.info('Socket Server listening at PORT:' + config.port);
                                 });
                             }
                         );
-                    },500)
+                    }, 500)
                 }
-            } catch (error) {
-                 console.log("SSM Get Params error - ",error);                
+            } catch (error)
+            {
+                console.log("SSM Get Params error - ", error);
+                // logger for logDNA
+                let logData = {
+                    level: 'debugg', //error and log are availble tag.
+                    meta: error,
+                  };
+                logDNA.log('SSM Get Params error', logData);
             }
         }
         await getParams(Names, 0)
     })()
-    
-   
-} catch (err) {
-    logger.info('DBCONNECT ERROR', err);
+
+
+} catch (error)
+{
+    logger.info('DBCONNECT ERROR', error);
+    // logger for logDNA
+    let logData = {
+        level: 'debugg', //error and log are availble tag.
+        meta: error,
+      };
+    logDNA.log('DBCONNECT ERROR', logData);
 }
 
 module.exports = server;

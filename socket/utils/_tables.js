@@ -742,11 +742,10 @@ class _Tables {
                 else{
                     this.tables[i].current_turn = pos;
                     this.tables[i].turn_start_at = new Date().getTime();
-                    console.log("Line 701 turn set : ", new Date().getTime(),new Date())
+                    console.log("Line 701 turn set : ", new Date().getTime(),new Date());
 
                     this.tables[i].current_turn_type = type;
                 }
-                // console.log("updateCurrentTurn >>>>",move,this.tables[i])
             }
         }
         
@@ -755,17 +754,13 @@ class _Tables {
         for (let i = 0; i < this.tables.length; i++) {
             if (this.tables[i].room == room) {
                 this.tables[i].turn_start_at = new Date().getTime();
-                console.log("Line 714 turn set : ", new Date().getTime(),new Date())
-
-                // console.log("updateCurrentTurn >>>>",this.tables[i].turn_start_at)
+                console.log("Line 714 turn set : ", new Date().getTime(),new Date());
             }
         }
-        
     }
 
 
     gePlayerDices(room, pos) {
-        console.log('USER INDEX ====>', pos);
         var index = this.tables.findIndex((x)=>x.room == room);
         if (index >= 0) {
             console.log("gePlayerDices - ",this.tables[index].users[pos])
@@ -783,10 +778,9 @@ class _Tables {
         // console.log("IN sedAndResetGamePlayData - ")
         let i = this.gamePlayData.findIndex((x)=>x.room == room);
         console.log("this.gamePlayData ::  -- ", this.gamePlayData[i]);
-        const sqsData = await sendMessage(this.gamePlayData[i])
-        // console.log("sqsData Data >>",sqsData)
+        const sqsData = await sendMessage(this.gamePlayData[i]);
         //send through SQS
-        this.resetGamePlayData(i, room)
+        this.resetGamePlayData(i, room);
     }
     
     resetGamePlayData(i, room){
