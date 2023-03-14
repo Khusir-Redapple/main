@@ -304,7 +304,7 @@ module.exports = function (io)
                         {
                             clearInterval(this);
                         }
-                        const winnerData = await _TableInstance.checkwinnerOfTournament(start.room,1);
+                        const winnerData = await _TableInstance.checkwinnerOfTournament(start.room);
                         console.log("Below Winner Data -after timer--", winnerData)
                         if (winnerData.name && winnerData.name == 'end_game')
                         {
@@ -491,22 +491,23 @@ module.exports = function (io)
                                 // To switch dice roll to next user and to keep gamePlay continue for consistancy dice roll.
                                 // Bug fixing.
                                 if(d.name == 'make_diceroll') {
-                                    // let roomData = await Table.findOne({
-                                    //     room: d.room,
-                                    // });
-                                    // let gameStartTime = roomData.game_started_at;
-                                    // let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));  
-                                    // // If time going to end but dice roll inconsistency then game should running.
-                                    // if(timeInsecond >= config.gameTime * 60) {
-                                    //      if(d.data.position == 0){
-                                    //         let currentDate = new Date();
-                                    //         currentDate.setSeconds(currentDate.getSeconds() + 10);
-                                    //         roomData.game_started_at = new Date(currentDate).getTime();
-                                    //         roomData.save();
-                                    //         console.log(':: ROOM DATA :: ', roomData);
-                                    //      }
-                                    // }
-                                    console.log(':: TURN CHANGED ::');
+                                    // && d.data.position == 0
+                                    let roomData = await Table.findOne({
+                                        room: d.room,
+                                    });
+                                    let gameStartTime = roomData.game_started_at;
+                                    let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));  
+                                    // If time going to end but dice roll inconsistency then game should running.
+                                    if(timeInsecond >= config.gameTime * 60) {
+                                         if(d.data.position == 0){
+                                            let currentDate = new Date();
+                                            currentDate.setSeconds(currentDate.getSeconds() + 10);
+                                            roomData.game_started_at = new Date(currentDate).getTime();
+                                            roomData.save();
+                                            console.log(':: ROOM DATA :: ', roomData);
+                                         }
+                                    }
+                                    console.log(':: TURN CHANGE ::');
                                 }                               
                                 
                                 // existing implementation.

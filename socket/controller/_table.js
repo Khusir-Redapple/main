@@ -1,14 +1,17 @@
-const { User }  = require('./../../api/models/user');
-const Table     = require('./../../api/models/table');
-const Service   = require('./../../api/service');
-const config    = require('./../../config');
-const localization = require('./../../api/service/localization');
-const ObjectId  = require('mongoose').Types.ObjectId;
-const requestTemplate = require('../../api/service/request-template');
-const _         = require('lodash');
-const logDNA    = require('../../api/service/logDNA'); 
+var { User } = require('./../../api/models/user');
+var Table = require('./../../api/models/table');
+// var { Transaction } = require('./../../api/models/transaction');
+var Service = require('./../../api/service');
+var config = require('./../../config');
+var localization = require('./../../api/service/localization');
+// const uniqid = require('uniqid');
+// var logger = require('../../api/service/logger');
+var ObjectId = require('mongoose').Types.ObjectId;
+var requestTemplate = require('../../api/service/request-template');
+var _ = require('lodash');
+const logDNA = require('../../api/service/logDNA'); 
 const { _Tables } = require('../utils/_tables');
-const _tab      = new _Tables();
+var _tab = new _Tables();
 
 
 module.exports = {
@@ -363,7 +366,7 @@ module.exports = {
                         },
                     };
                     resObj.events.push(event);
-                    const winnerData = await this.checkwinnerOfTournament(params.room, nextPos);
+                    const winnerData = await this.checkwinnerOfTournament(params.room);
                     console.log("Below Winner Data --1--",winnerData)
                     if(winnerData)  resObj.events.push(winnerData);
                 
@@ -609,7 +612,7 @@ module.exports = {
                             moveBonusCheck = true;
                         }
                         console.log("Above Winner Data ----")
-                        const winnerData = await this.checkwinnerOfTournament(params.room, nextPos);
+                        const winnerData = await this.checkwinnerOfTournament(params.room);
                         console.log("Below Winner Data ----",winnerData)
                         if(winnerData)  resObj.events.push(winnerData);
                     } catch (error) {
@@ -743,7 +746,7 @@ module.exports = {
             // console.log('ERROR', err);
         }
     },
-    checkwinnerOfTournament: async function(room,playerPosition){
+    checkwinnerOfTournament: async function(room){
         var tableD = await Table.findOne({
             room: room,
         });
@@ -753,28 +756,7 @@ module.exports = {
             var winnerInfo;  
             console.log("checkwinnerOfTournament >>>",tableD.win_amount,timeInsecond)
             if(timeInsecond >= config.gameTime * 60) {
-                // New implementation
-                // To switch dice roll to next user and to keep gamePlay continue for consistancy dice roll.
-                // Bug fixing.
-                if(playerPosition == 0) {
-                    winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
-                } else {
-                    let currentDate = new Date();
-                    currentDate.setSeconds(currentDate.getSeconds() + 10);
-                    
-                    await Table.findOneAndUpdate(
-                        {
-                            room: room,
-                        },
-                        {
-                            $set: {
-                                game_started_at: new Date(currentDate).getTime()
-                            }
-                        }
-                    );
-                    console.log(':: GAME END TIME UPDATED TO 10 SEC :: ');
-                }
-                 
+                winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount); 
             }
             // console.log("Final winner Info >>",winnerInfo) 
             if(winnerInfo) {
