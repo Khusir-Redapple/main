@@ -486,15 +486,31 @@ module.exports = function (io)
                     {
                         setTimeout(
                             async function ()
-                            {
-                                // to track dice roll to next user
-
-                                if(d.name == 'make_diceroll'){
+                            {   
+                                // New implementation
+                                // To switch dice roll to next user and to keep gamePlay continue for consistancy dice roll.
+                                // Bug fixing.
+                                if(d.name == 'make_diceroll') {
+                                    // && d.data.position == 0
+                                    let roomData = await Table.findOne({
+                                        room: d.room,
+                                    });
+                                    let gameStartTime = roomData.game_started_at;
+                                    let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));  
+                                    // If time going to end but dice roll inconsistency then game should running.
+                                    if(timeInsecond >= config.gameTime * 60) {
+                                         if(d.data.position == 0){
+                                            let currentDate = new Date();
+                                            currentDate.setSeconds(currentDate.getSeconds() + 10);
+                                            roomData.game_started_at = new Date(currentDate).getTime();
+                                            roomData.save();
+                                            console.log(':: ROOM DATA :: ', roomData);
+                                         }
+                                    }
                                     console.log(':: TURN CHANGE ::');
-                                }
+                                }                               
                                 
-                                
-                                
+                                // existing implementation.
                                 if (d.name == 'make_move')
                                 {
                                     let params_data = {

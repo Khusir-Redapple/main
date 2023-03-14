@@ -751,7 +751,6 @@ module.exports = {
             room: room,
         });
         if (tableD) {
-            // console.log(tableD.no_of_players,tableD.win_amount)
             const gameStartTime = tableD.game_started_at;
             let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));  
             var winnerInfo;  
