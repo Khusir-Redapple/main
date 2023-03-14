@@ -487,6 +487,14 @@ module.exports = function (io)
                         setTimeout(
                             async function ()
                             {
+                                // to track dice roll to next user
+
+                                if(d.name == 'make_diceroll'){
+                                    console.log(':: TURN CHANGE ::');
+                                }
+                                
+                                
+                                
                                 if (d.name == 'make_move')
                                 {
                                     let params_data = {

@@ -683,7 +683,6 @@ class _Tables {
         else return me.six_counts;
     }
     scrapTurn(room, pos) {
-        console.log('RA :: SWITCH DICE ROLL TURN', pos);
         for (let i = 0; i < this.tables.length; i++) {
             if (this.tables[i].room == room) {
                 this.tables[i].users[pos].dices_rolled = [];
