@@ -304,7 +304,7 @@ module.exports = function (io)
                         {
                             clearInterval(this);
                         }
-                        const winnerData = await _TableInstance.checkwinnerOfTournament(start.room);
+                        const winnerData = await _TableInstance.checkwinnerOfTournament(start.room, 1);
                         console.log("Below Winner Data -after timer--", winnerData)
                         if (winnerData.name && winnerData.name == 'end_game')
                         {

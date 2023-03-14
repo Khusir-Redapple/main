@@ -366,7 +366,7 @@ module.exports = {
                         },
                     };
                     resObj.events.push(event);
-                    const winnerData = await this.checkwinnerOfTournament(params.room);
+                    const winnerData = await this.checkwinnerOfTournament(params.room, nextPos);
                     console.log("Below Winner Data --1--",winnerData)
                     if(winnerData)  resObj.events.push(winnerData);
                 
@@ -612,7 +612,7 @@ module.exports = {
                             moveBonusCheck = true;
                         }
                         console.log("Above Winner Data ----")
-                        const winnerData = await this.checkwinnerOfTournament(params.room);
+                        const winnerData = await this.checkwinnerOfTournament(params.room,myPos);
                         console.log("Below Winner Data ----",winnerData)
                         if(winnerData)  resObj.events.push(winnerData);
                     } catch (error) {
@@ -746,7 +746,7 @@ module.exports = {
             // console.log('ERROR', err);
         }
     },
-    checkwinnerOfTournament: async function(room){
+    checkwinnerOfTournament: async function(room, playerPosition){
         var tableD = await Table.findOne({
             room: room,
         });
@@ -756,7 +756,24 @@ module.exports = {
             var winnerInfo;  
             console.log("checkwinnerOfTournament >>>",tableD.win_amount,timeInsecond)
             if(timeInsecond >= config.gameTime * 60) {
-                winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount); 
+                if(playerPosition == 0) {
+                    winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
+                } else {
+                    let currentDate = new Date();
+                    currentDate.setSeconds(currentDate.getSeconds() + 10);
+                    
+                    await Table.findOneAndUpdate(
+                        {
+                            room: room,
+                        },
+                        {
+                            $set: {
+                                game_started_at: new Date(currentDate).getTime()
+                            }
+                        }
+                    );
+                    console.log(':: GAME END TIME UPDATED TO 10 SEC :: ');
+                } 
             }
             // console.log("Final winner Info >>",winnerInfo) 
             if(winnerInfo) {
