@@ -683,6 +683,7 @@ class _Tables {
         else return me.six_counts;
     }
     scrapTurn(room, pos) {
+        console.log('RA :: SWITCH DICE ROLL TURN', pos);
         for (let i = 0; i < this.tables.length; i++) {
             if (this.tables[i].room == room) {
                 this.tables[i].users[pos].dices_rolled = [];
@@ -1337,7 +1338,6 @@ class _Tables {
     }
 
     isCurrentTurnMine(room, position) {
-        console.log('PLAYER :: CHANGE TURN TO NEXT PLAYER ::', position);
         const table = this.tables.find((elem) => elem.room == room);
         if (!table) return false;
         return table.current_turn == position;
