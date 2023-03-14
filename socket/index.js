@@ -479,7 +479,7 @@ module.exports = function (io)
         {
             if (_.isArray(rez.events))
             {
-                console.log('rez.event', JSON.stringify(rez.events));
+                console.log('Process Events ::: ', JSON.stringify(rez.events));
                 if (rez.events.length > 0)
                 {
                     for (const d of rez.events)

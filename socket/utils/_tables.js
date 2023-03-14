@@ -534,7 +534,7 @@ class _Tables {
                             possition: pl,
                             default_diceroll_timer : config.turnTimer // bug_no_65
                         };
-                        this.sedAndResetGamePlayData(room);
+                        this.sendToSqsAndResetGamePlayData(room);
                         return resObj;
                     }
                 }
@@ -762,22 +762,16 @@ class _Tables {
 
     gePlayerDices(room, pos) {
         var index = this.tables.findIndex((x)=>x.room == room);
-        if (index >= 0) {
-            console.log("gePlayerDices - ",this.tables[index].users[pos])
-            
+        if (index >= 0) {           
             let i = this.gamePlayData.findIndex((x)=>x.room == room);
-            console.log(this.gamePlayData[i], this.tables[index].users[pos].dices_rolled)
-            this.gamePlayData[i].data.User =  this.tables[index].users[pos].numeric_id
-
+            this.gamePlayData[i].data.User =  this.tables[index].users[pos].numeric_id;
             return this.tables[index].users[pos].dices_rolled;
         }
-        
         return [];
     }
-    async sedAndResetGamePlayData(room){
-        // console.log("IN sedAndResetGamePlayData - ")
+    async sendToSqsAndResetGamePlayData(room){
         let i = this.gamePlayData.findIndex((x)=>x.room == room);
-        console.log("this.gamePlayData ::  -- ", this.gamePlayData[i]);
+        console.log("gamePlayData ::  -- ", this.gamePlayData[i]);
         const sqsData = await sendMessage(this.gamePlayData[i]);
         //send through SQS
         this.resetGamePlayData(i, room);
@@ -1343,10 +1337,9 @@ class _Tables {
     }
 
     isCurrentTurnMine(room, position) {
+        console.log('CHANGE TURN TO NEXT PLAYER ::', position);
         const table = this.tables.find((elem) => elem.room == room);
-
         if (!table) return false;
-
         return table.current_turn == position;
     }
 

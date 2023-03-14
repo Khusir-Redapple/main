@@ -4,8 +4,8 @@ var Table = require('./../../api/models/table');
 var Service = require('./../../api/service');
 var config = require('./../../config');
 var localization = require('./../../api/service/localization');
-const uniqid = require('uniqid');
-var logger = require('../../api/service/logger');
+// const uniqid = require('uniqid');
+// var logger = require('../../api/service/logger');
 var ObjectId = require('mongoose').Types.ObjectId;
 var requestTemplate = require('../../api/service/request-template');
 var _ = require('lodash');
@@ -98,7 +98,7 @@ module.exports = {
             let DICE_ROLLED =  await _tab.rollDice();
             await _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
             let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
-            await _tab.sedAndResetGamePlayData(params.room);
+            await _tab.sendToSqsAndResetGamePlayData(params.room);
 
             // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
             resObj.callback.skip_dice = true;
@@ -166,7 +166,7 @@ module.exports = {
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
                 let DICE_ROLLED = await _tab.rollDice();
                 await _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
-                await _tab.sedAndResetGamePlayData(params.room);
+                await _tab.sendToSqsAndResetGamePlayData(params.room);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = true;
 
@@ -203,7 +203,7 @@ module.exports = {
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
                 let DICE_ROLLED = await _tab.rollDice();
                 await _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
-                await _tab.sedAndResetGamePlayData(params.room);
+                await _tab.sendToSqsAndResetGamePlayData(params.room);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = true;
                 let event = {
@@ -348,7 +348,7 @@ module.exports = {
                     _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
                     // SEND EVENT
 
-                    await _tab.sedAndResetGamePlayData(params.room);
+                    await _tab.sendToSqsAndResetGamePlayData(params.room);
 
                     let event = {
                         type: 'room_including_me',
@@ -531,7 +531,7 @@ module.exports = {
                             let DICE_ROLLED = _tab.rollDice();
                             _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
 
-                            await _tab.sedAndResetGamePlayData(params.room);
+                            await _tab.sendToSqsAndResetGamePlayData(params.room);
 
                             // SEND EVENT
                             let event = {
@@ -707,7 +707,7 @@ module.exports = {
                             let DICE_ROLLED = _tab.rollDice();
                             _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
 
-                            await _tab.sedAndResetGamePlayData(params.room);
+                            await _tab.sendToSqsAndResetGamePlayData(params.room);
                             // SEND EVENT
                             let event = {
                                 type: 'room_including_me',
@@ -1008,7 +1008,7 @@ module.exports = {
                     let DICE_ROLLED = _tab.rollDice();
                     _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
 
-                    await _tab.sedAndResetGamePlayData(params.room);
+                    await _tab.sendToSqsAndResetGamePlayData(params.room);
                     // SEND EVENT
                     let event = {
                         type: 'room_including_me',
@@ -1043,7 +1043,7 @@ module.exports = {
                         let DICE_ROLLED = _tab.rollDice();
                         _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
 
-                        await _tab.sedAndResetGamePlayData(params.room);
+                        await _tab.sendToSqsAndResetGamePlayData(params.room);
 
                         let event = {
                             type: 'room_including_me',
@@ -1216,7 +1216,7 @@ module.exports = {
                                 let DICE_ROLLED = _tab.rollDice();
                                 _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
 
-                                await _tab.sedAndResetGamePlayData(params.room);
+                                await _tab.sendToSqsAndResetGamePlayData(params.room);
 
                                 // SEND EVENT
                                 let event = {
@@ -1252,7 +1252,7 @@ module.exports = {
                                     let DICE_ROLLED = _tab.rollDice();
                                     _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
 
-                                    await _tab.sedAndResetGamePlayData(params.room);
+                                    await _tab.sendToSqsAndResetGamePlayData(params.room);
 
                                     let event = {
                                         type: 'room_including_me',
@@ -1338,7 +1338,7 @@ module.exports = {
                             let DICE_ROLLED = _tab.rollDice();
                             _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
 
-                            await _tab.sedAndResetGamePlayData(params.room);
+                            await _tab.sendToSqsAndResetGamePlayData(params.room);
                             
                             let event = {
                                 type: 'room_including_me',
