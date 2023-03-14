@@ -1337,7 +1337,7 @@ class _Tables {
     }
 
     isCurrentTurnMine(room, position) {
-        console.log('CHANGE TURN TO NEXT PLAYER ::', position);
+        console.log('PLAYER :: CHANGE TURN TO NEXT PLAYER ::', position);
         const table = this.tables.find((elem) => elem.room == room);
         if (!table) return false;
         return table.current_turn == position;
