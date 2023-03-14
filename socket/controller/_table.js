@@ -756,24 +756,25 @@ module.exports = {
             var winnerInfo;  
             console.log("checkwinnerOfTournament >>>",tableD.win_amount,timeInsecond)
             if(timeInsecond >= config.gameTime * 60) {
-                if(playerPosition == 0) {
-                    winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
-                } else {
-                    let currentDate = new Date();
-                    currentDate.setSeconds(currentDate.getSeconds() + 10);
+                console.log(':: GAMEEND USER POSITION', playerPosition);
+                // if(playerPosition == 0) {
+                //     winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
+                // } else {
+                //     let currentDate = new Date();
+                //     currentDate.setSeconds(currentDate.getSeconds() + 10);
                     
-                    await Table.findOneAndUpdate(
-                        {
-                            room: room,
-                        },
-                        {
-                            $set: {
-                                game_started_at: new Date(currentDate).getTime()
-                            }
-                        }
-                    );
-                    console.log(':: GAME END TIME UPDATED TO 10 SEC :: ');
-                } 
+                //     await Table.findOneAndUpdate(
+                //         {
+                //             room: room,
+                //         },
+                //         {
+                //             $set: {
+                //                 game_started_at: new Date(currentDate).getTime()
+                //             }
+                //         }
+                //     );
+                //     console.log(':: GAME END TIME UPDATED TO 10 SEC :: ');
+                // } 
             }
             // console.log("Final winner Info >>",winnerInfo) 
             if(winnerInfo) {
