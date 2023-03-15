@@ -363,7 +363,7 @@ module.exports = {
                         },
                     };
                     resObj.events.push(event);
-                    const winnerData = await this.checkwinnerOfTournament(params.room, nextPos);
+                    const winnerData = await this.checkwinnerOfTournament(params.room);
                     console.log("Below Winner Data --1--",winnerData)
                     if(winnerData)  resObj.events.push(winnerData);
                 
@@ -609,7 +609,7 @@ module.exports = {
                             moveBonusCheck = true;
                         }
                         console.log("Above Winner Data ----")
-                        const winnerData = await this.checkwinnerOfTournament(params.room,nextPos);
+                        const winnerData = await this.checkwinnerOfTournament(params.room);
                         console.log("Below Winner Data ----",winnerData)
                         if(winnerData)  resObj.events.push(winnerData);
                     } catch (error) {
@@ -743,7 +743,7 @@ module.exports = {
             // console.log('ERROR', err);
         }
     },
-    checkwinnerOfTournament: async function(room, playerPosition){
+    checkwinnerOfTournament: async function(room){
         var tableD = await Table.findOne({
             room: room,
         });
@@ -752,7 +752,6 @@ module.exports = {
             let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));  
             var winnerInfo;  
             console.log("checkwinnerOfTournament >>>",tableD.win_amount,timeInsecond);
-            console.log(':: GAMEEND USER POSITION', playerPosition);
             if(timeInsecond >= config.gameTime * 60) {
                 // if(playerPosition == 0) {
                 //     winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
@@ -771,7 +770,8 @@ module.exports = {
                 //         }
                 //     );
                 //     console.log(':: GAME END TIME UPDATED TO 10 SEC :: ');
-                // } 
+                // }
+                winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount); 
             }
             // console.log("Final winner Info >>",winnerInfo) 
             if(winnerInfo) {
