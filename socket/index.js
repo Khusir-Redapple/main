@@ -296,7 +296,7 @@ module.exports = function (io)
                     let tableD = await Table.findOne({room: params.room});
                     setInterval(async function ()
                     {
-                        var data = {
+                        let data = {
                             room: start.room
                         }
                         checkTabel = await _TableInstance.istableExists(data);
@@ -304,11 +304,11 @@ module.exports = function (io)
                         {
                             clearInterval(this);
                         }
-                        const winnerData = await _TableInstance.checkwinnerOfTournament(start.room, 1);
+                        const winnerData = await _TableInstance.checkwinnerOfTournament(start.room, 'One');
                         console.log("Below Winner Data -after timer--", winnerData)
                         if (winnerData.name && winnerData.name == 'end_game')
                         {
-                            var resObj = {events: []};
+                            let resObj = {events: []};
                             resObj.events.push(winnerData);
                             processEvents(resObj);
 

@@ -334,10 +334,7 @@ module.exports = {
                 console.log('[NOT MOVE IMPOSSIBLE EXACT]');
                 // if (params.dice_value != 6) {
                 if (params.dice_value == 6) {
-                    // console.log('[DICE VALUE NOT SIX]');
-                    // //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
-                    // let sixCounts = _tab.setSix(params.room, id);
-                    // console.log("set six...1")
+                    //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
                     _tab.scrapTurn(params.room, myPos);
                     // DICE_ROLL TO NEXT
                     let nextPos = _tab.getNextPosition(params.room, myPos);
@@ -612,7 +609,7 @@ module.exports = {
                             moveBonusCheck = true;
                         }
                         console.log("Above Winner Data ----")
-                        const winnerData = await this.checkwinnerOfTournament(params.room,myPos);
+                        const winnerData = await this.checkwinnerOfTournament(params.room,nextPos);
                         console.log("Below Winner Data ----",winnerData)
                         if(winnerData)  resObj.events.push(winnerData);
                     } catch (error) {
@@ -754,9 +751,9 @@ module.exports = {
             const gameStartTime = tableD.game_started_at;
             let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));  
             var winnerInfo;  
-            console.log("checkwinnerOfTournament >>>",tableD.win_amount,timeInsecond)
+            console.log("checkwinnerOfTournament >>>",tableD.win_amount,timeInsecond);
+            console.log(':: GAMEEND USER POSITION', playerPosition);
             if(timeInsecond >= config.gameTime * 60) {
-                console.log(':: GAMEEND USER POSITION', playerPosition);
                 // if(playerPosition == 0) {
                 //     winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
                 // } else {
