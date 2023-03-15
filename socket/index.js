@@ -46,7 +46,7 @@ module.exports = function (io)
                 level: 'debugg',
                 meta: {'socketId': socket.id, 'params': params}
             };
-            logDNA.log('JOIN :: event', logData);
+            logDNA.log('SOCKET JOIN CALLED', logData);
 
             try
             {

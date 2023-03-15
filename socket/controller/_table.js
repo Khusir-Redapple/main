@@ -1,17 +1,14 @@
-var { User } = require('./../../api/models/user');
-var Table = require('./../../api/models/table');
-// var { Transaction } = require('./../../api/models/transaction');
-var Service = require('./../../api/service');
-var config = require('./../../config');
-var localization = require('./../../api/service/localization');
-// const uniqid = require('uniqid');
-// var logger = require('../../api/service/logger');
-var ObjectId = require('mongoose').Types.ObjectId;
-var requestTemplate = require('../../api/service/request-template');
-var _ = require('lodash');
-const logDNA = require('../../api/service/logDNA'); 
-const { _Tables } = require('../utils/_tables');
-var _tab = new _Tables();
+const _             = require('lodash');
+const { User }      = require('./../../api/models/user');
+const Table         = require('./../../api/models/table');
+let Service         = require('./../../api/service');
+const config        = require('./../../config');
+const localization  = require('./../../api/service/localization');
+let ObjectId        = require('mongoose').Types.ObjectId;
+const requestTemplate = require('../../api/service/request-template');
+const logDNA        = require('../../api/service/logDNA'); 
+const { _Tables }   = require('../utils/_tables');
+const _tab          = new _Tables();
 
 
 module.exports = {
