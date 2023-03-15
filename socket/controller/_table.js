@@ -1580,7 +1580,8 @@ module.exports = {
     joinTournament: async function (params, myId) {
         console.log('Join tournament GAME', params,myId);
         // for logDNA 
-        let logData = {
+        let logData = {};
+        logData = {
             level: 'debugg',
             meta: {'params' : {'Data' : params, 'MyId' : myId}}                    
         };        
@@ -1636,7 +1637,7 @@ module.exports = {
         });
         console.log("Already Played in This Tournament ::::", tableD);
          // for logDNA 
-         let logData = {
+         logData = {
             level: 'debugg',
             meta: {'params' : tableD}                    
         };        
@@ -1647,7 +1648,7 @@ module.exports = {
             for(let i=0; i<players.length; i++){
                 console.log("You are in This Tournament ::::", players[i].id == myId , players[i].id , myId, players[i].is_active)
                 // for logDNA 
-                let logData = {
+                logData = {
                     level: 'debugg',
                     meta: {'params' : { 'True' : players[i].id == myId, 'PlayerId' : players[i].id, 'MyId' : myId} }                    
                 };        
@@ -1676,7 +1677,7 @@ module.exports = {
         var checkTourneyRes = _tab.checkTournamentTable(params.room_fee, params.no_of_players);
         console.log('Tabel Found::', checkTourneyRes,params.winningAmount);
         // for logDNA 
-        let logData = {
+        logData = {
             level: 'debugg',
             meta: {'params' : checkTourneyRes}                    
         };        
@@ -1717,7 +1718,7 @@ module.exports = {
             tableX = await table.save();           
             if (!tableX) {
                 // for logDNA 
-                let logData = {
+                logData = {
                     level: 'debugg',
                     meta: {'params' : params}                    
                 };        
@@ -1733,7 +1734,7 @@ module.exports = {
 
             room_code = await _tab.createTableforTourney(tableX);
             // for logDNA 
-            let logData = {
+            logData = {
                 level: 'debugg',
                 meta: {'room_no' : room_code}                    
             };        
@@ -1762,7 +1763,7 @@ module.exports = {
             });
             console.log('ROOM SEARCH INTO TABLES :: ', isAnyTableEmpty, tableX);
             // for logDNA 
-            let logData = {
+            logData = {
                 level: 'debugg',
                 meta: {'params' : tableX}                    
             };        
@@ -1770,7 +1771,7 @@ module.exports = {
 
             if (!tableX) {
                 // for logDNA 
-                let logData = {
+                logData = {
                     level: 'debugg',
                     meta: {'room_no' : isAnyTableEmpty}                    
                 };        
@@ -1791,7 +1792,7 @@ module.exports = {
         isAnyTableEmptyForTourament = isAnyTableEmpty ? isAnyTableEmpty : room_code ? room_code: '';
         console.log("seatOnTableforTourney >>>",us, isAnyTableEmptyForTourament);
         // for logDNA 
-        let logData = {
+        logData = {
             level: 'debugg',
             meta: {'params' : isAnyTableEmptyForTourament}                    
         };        
@@ -1800,7 +1801,7 @@ module.exports = {
         var seatOnTable = _tab.seatOnTableforTourney(isAnyTableEmptyForTourament, us, optional);
         console.log('seatOnTable ::', seatOnTable);
         // for logDNA 
-        let logData = {
+        logData = {
             level: 'debugg',
             meta: seatOnTable,
         };
@@ -1859,7 +1860,7 @@ module.exports = {
             
         } else {
             // for logDNA 
-            let logData = {
+            logData = {
                 level: 'debugg',
                 meta: {'TableData' : seatOnTable}                    
             };        
