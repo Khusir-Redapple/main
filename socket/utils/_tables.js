@@ -1,26 +1,27 @@
-const config = require('./../../config');
-var { tableObject, gamePlayObject } = require('./tableObject');
-var logger = require('../../api/service/logger');
-const { sendMessage } = require('../../socket/controller/message_controllers');
-const { Console } = require('console');
-const { kill } = require('process');
-const logDNA   = require('../../api/service/logDNA');
-class _Tables {
-    constructor() {
+const config        = require('./../../config');
+var {tableObject, gamePlayObject} = require('./tableObject');
+const {sendMessage} = require('../../socket/controller/message_controllers');
+const logDNA        = require('../../api/service/logDNA');
+let logger          = {};
+class _Tables
+{
+    constructor()
+    {
         this.tables = tableObject;
         this.gamePlayData = gamePlayObject;
     }
-
     //create table for tournament
-    createTableforTourney(table) {
+    createTableforTourney(table)
+    {
         let playData = {
             room: table.room,
             created_at: table.created_at,
             data: {}
         };
         this.gamePlayData.push(playData);
-        return new Promise((resolve) => {
-            var table_i = {
+        return new Promise((resolve) =>
+        {
+            let table_i = {
                 room: table.room,
                 created_at: table.created_at,
                 room_fee: table.room_fee,
@@ -33,14 +34,15 @@ class _Tables {
                 turn_start_at: 0,
                 no_of_players: table.no_of_players,
                 users: [],
-               
+
             };
-            let colour = [0,1,2,3]
-            for (var pl = 0; pl < 4; pl++) {
+            let colour = [0, 1, 2, 3]
+            for (var pl = 0; pl < 4; pl++)
+            {
                 let random_number = Math.floor(Math.random() * colour.length);
                 let random_colour = colour[random_number];
-                colour.splice(random_number, 1); 
-                console.log("Random colour is  : ",random_number,random_colour,colour,table_i.room )
+                colour.splice(random_number, 1);
+                console.log("Random colour is  : ", random_number, random_colour, colour, table_i.room)
                 table_i.users[pl] = {
                     id: '',
                     numeric_id: '',
@@ -50,22 +52,22 @@ class _Tables {
                     is_active: false,
                     is_done: false,
                     is_left: false,
-                    is_joined:false,
+                    is_joined: false,
                     rank: 0,
                     life: 3,
                     turn: 1,
                     dices_rolled: [],
                     bonus_dice: 0,
                     six_counts: 0,
-                    tokens: [0,0,0,0],
+                    tokens: [0, 0, 0, 0],
                     points: 0,
                     bonusPoints: 0,
-                    moves:0,
-                    token_colour:random_colour
+                    moves: 0,
+                    token_colour: random_colour
                 };
                 // console.log('BEFORE GENERATING TABLE', table_i.users[pl]);
             }
-           
+
             this.tables.push(table_i);
             console.log('New table generated', table_i.room);
             resolve(table_i.room);
@@ -73,82 +75,55 @@ class _Tables {
     }
 
     // Check Seat Available
-    checkSeatAvailable(room) {
-        var count = 0;
-        var noPlayers = 0;
-        // console.log('ROOM', room);
-        // for (var i = 0; i < this.tables.length; i++) {
-        //     // console.log('In loop---->', this.tables[i].room);
-        //     if (this.tables[i].room == room) {
-        //         noPlayers = this.tables[i].no_of_players;
-        //         for (var pl = 0; pl < 4; pl++) {
-        //             if (this.tables[i].users[pl] && this.tables[i].users[pl].is_active) {
-        //                 count++;
-        //             }
-        //         }
-
-        //         break;
-        //     }
-        // }
+    checkSeatAvailable(room)
+    {
+        let count = 0;
+        let noPlayers = 0;
         // New modification
-        this.tables.reduce((accumulator,current) => {
-            if(current.room == room) {
+        this.tables.reduce((accumulator, current) =>
+        {
+            if (current.room == room)
+            {
                 noPlayers = current.no_of_players;
                 count = current.users.filter(users => users.is_active === true).length;
             }
             accumulator.push(current);
             return accumulator;
-        },[]);
+        }, []);
 
         let current_time = new Date().getTime();
         let time_diff = (current_time - (this.tables[i] ? this.tables[i].created_at : 0)) / 1000;
 
-        return { flag: count < noPlayers, timerStart: 240 - time_diff };
+        return {flag: count < noPlayers, timerStart: 240 - time_diff};
     }
 
-    checkTournamentTable(room_fee, no_of_players) {
-        // for (var i = 0; i < this.tables.length; i++) {
-        //     console.log('room_fee', room_fee, no_of_players);
-        //     console.log('TABCHECK', i, this.tables[i]);
-
-        //     if (
-        //         this.tables[i].room_fee == room_fee &&
-        //         this.tables[i].no_of_players == no_of_players
-        //     ) {
-        //         var count = 0;
-        //         var noPlayers = this.tables[i].no_of_players;
-
-        //         for (var pl = 0; pl < 4; pl++)
-        //             if (this.tables[i].users[pl] && this.tables[i].users[pl].is_active) count++;
-
-        //         console.log('Tournament :Inside Function Count::', count);
-        //         console.log('Tournament :Inside Function No of Pl::', noPlayers);
-        //         console.log('Tournament :Inside Function Room::', this.tables[i].room);
-
-        //         if (count < noPlayers) return { room: this.tables[i].room, timerStart: 60 };
-        //     }
-        // }
-
+    checkTournamentTable(room_fee, no_of_players)
+    {
         // new modification equivalent to above code.
         let count, noPlayers, room = 0;
-        this.tables.reduce(function(accumulator, currentValue) {
-            if(currentValue.room_fee == room_fee && currentValue.no_of_players == no_of_players){
-                noPlayers   = currentValue.no_of_players;
-                count       = currentValue.users.filter(users => users.is_active === true).length;
-                room        = currentValue.room;
+        this.tables.reduce(function (accumulator, currentValue)
+        {
+            if (currentValue.room_fee == room_fee && currentValue.no_of_players == no_of_players)
+            {
+                noPlayers = currentValue.no_of_players;
+                count = currentValue.users.filter(users => users.is_active === true).length;
+                room = currentValue.room;
             }
             accumulator.push(currentValue);
             return accumulator;
-        },[]);
-        if (count < noPlayers)  return { room: room, timerStart: 60 };
+        }, []);
+        if (count < noPlayers) return {room: room, timerStart: 60};
 
         return false;
     }
 
     //Check Table Exists
-    checkTableExists(room) {
-        for (var i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
+    checkTableExists(room)
+    {
+        for (var i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
                 let res = {
                     status: true,
                     start_at: parseInt(this.tables[i].turn_start_at),
@@ -163,29 +138,36 @@ class _Tables {
         return res;
     }
 
-     //Seat on tournament table
-    seatOnTableforTourney(room, user) {
-        var index = this.tables.findIndex(function(data, i){
+    //Seat on tournament table
+    seatOnTableforTourney(room, user)
+    {
+        let index = this.tables.findIndex(function (data, i)
+        {
             return data.room == room
         });
-        var filteredTable = this.tables.filter((x)=>x.room == room);
-        if (filteredTable.length > 0) {
-            var count = 0;
-            var noPlayers = filteredTable[0].no_of_players;
+        let filteredTable = this.tables.filter((x) => x.room == room);
+        if (filteredTable.length > 0)
+        {
+            let count = 0;
+            let noPlayers = filteredTable[0].no_of_players;
 
             for (var pl = 0; pl < 4; pl++)
                 if (filteredTable[0].users[pl] && filteredTable[0].users[pl].is_active) count++;
 
             if (count >= noPlayers) return false;
 
-            var pos = -1;
-            if (!filteredTable[0].users[0].is_active) {
+            let pos = -1;
+            if (!filteredTable[0].users[0].is_active)
+            {
                 pos = 0;
-            } else if (!filteredTable[0].users[2].is_active) {
+            } else if (!filteredTable[0].users[2].is_active)
+            {
                 pos = 2;
-            } else if (!filteredTable[0].users[1].is_active) {
+            } else if (!filteredTable[0].users[1].is_active)
+            {
                 pos = 1;
-            } else if (!filteredTable[0].users[3].is_active) {
+            } else if (!filteredTable[0].users[3].is_active)
+            {
                 pos = 3;
             }
 
@@ -204,10 +186,10 @@ class _Tables {
                 dices_rolled: [],
                 bonus_dice: 0,
                 six_counts: 0,
-                tokens: [0,0,0,0],
-                points:0,
-                bonusPoints:0,
-                moves:0,
+                tokens: [0, 0, 0, 0],
+                points: 0,
+                bonusPoints: 0,
+                moves: 0,
                 token_colour: filteredTable[0].users[pos].token_colour
             };
             this.tables[index] = filteredTable[0];
@@ -220,47 +202,42 @@ class _Tables {
         }
         return false;
     }
-    setTableData(room, user){
-        console.log("setTableData :: >>>",room, user.name,this.tables)
-        // for (var i = 0; i < this.tables.length; i++) {
-        //     if (this.tables[i].room == room) {
-        //         console.log("In Room >>")
-        //         for (var pl = 0; pl < this.tables[i].users.length; pl++) {
-        //             // console.log(this.tables[i].users[pl].id == user._id,this.tables[i].users[pl].id ,user._id)
-        //             if (this.tables[i].users[pl].id == user._id.toString()) {
-        //                 this.tables[i].users[pl].is_joined = true;
-        //                 console.log("In user >>",pl)
-        //                 return true;
-        //             }
-        //         }                               
-        //     }
-        // }
-
+    setTableData(room, user)
+    {
+        console.log("setTableData :: >>>", room, user.name, this.tables);
         // New modification
-        this.table = this.tables.reduce(function(accumulator, currentValue) {
-            if(currentValue.room == room) {               
+        this.table = this.tables.reduce(function (accumulator, currentValue)
+        {
+            if (currentValue.room == room)
+            {
                 let idx = currentValue.users.findIndex(element => element.id == user._id.toString());
                 currentValue.users[idx].is_joined = true;
             }
             accumulator.push(currentValue);
             return accumulator;
-        },[]);
+        }, []);
     }
-    tableInfo(){
-        console.log('AlreadyPlaying Started >>',this.tables.length);
-        for (var i = 0; i < this.tables.length; i++) {
+    tableInfo()
+    {
+        console.log('AlreadyPlaying Started >>', this.tables.length);
+        for (let i = 0; i < this.tables.length; i++)
+        {
             console.log('totaltables', this.tables[i]);
         }
     }
     //To check user already playing in another room / table
-    alreadyPlaying(id) {
-        console.log('AlreadyPlaying Started >>', id,this.tables.length);
-        for (var i = 0; i < this.tables.length; i++) {
+    alreadyPlaying(id)
+    {
+        console.log('AlreadyPlaying Started >>', id, this.tables.length);
+        for (let i = 0; i < this.tables.length; i++)
+        {
             // console.log('AlreadyPlaying Started >>',  this.tables[i]);
-            for (var pl = 0; pl < this.tables[i].users.length; pl++) {
-                if (this.tables[i].users[pl].id) {
-                    if (this.tables[i].users[pl].id.toString() == id.toString() && !this.tables[i].users[pl].is_left) {
-                        // console.log('You are playing on this table', this.tables[i]);
+            for (let pl = 0; pl < this.tables[i].users.length; pl++)
+            {
+                if (this.tables[i].users[pl].id)
+                {
+                    if (this.tables[i].users[pl].id.toString() == id.toString() && !this.tables[i].users[pl].is_left)
+                    {
                         return true;
                     }
                 }
@@ -268,33 +245,38 @@ class _Tables {
         }
         return false;
     }
-    alreadyPlayingTable(id) {
-        // for logDNA 
-        var logData = {
-            level: 'debugg', //error , log
+    alreadyPlayingTable(id)
+    {
+        // for logDNA logger
+        logger = {
+            level: 'debugg',
             meta: this.tables
-          };        
-        logDNA.log('If already playing This.tables', logData);
+        };
+        logDNA.log('If already playing This.tables', logger);
 
         // console.log('THIS.TABLES DATA :: ', this.tables[0].users);
-        for (var i = 0; i < this.tables.length; i++) {
-            for (var pl = 0; pl < this.tables[i].users.length; pl++) {
-                if (this.tables[i].users[pl].id) {
-                    if (this.tables[i].users[pl].id.toString() == id.toString() && !this.tables[i].users[pl].is_left) {
+        for (var i = 0; i < this.tables.length; i++)
+        {
+            for (var pl = 0; pl < this.tables[i].users.length; pl++)
+            {
+                if (this.tables[i].users[pl].id)
+                {
+                    if (this.tables[i].users[pl].id.toString() == id.toString() && !this.tables[i].users[pl].is_left)
+                    {
                         // console.log('You are playing on this table', this.tables[i]);
 
                         var curr_ = new Date().getTime();
                         var diff = (curr_ - this.tables[i].turn_start_at) / 1000;
                         var diff_ = (curr_ - this.tables[i].created_at) / 1000;
-                        var diffT= (curr_ - this.tables[i].game_started_at) / 1000;
+                        var diffT = (curr_ - this.tables[i].game_started_at) / 1000;
                         let timeToAdd = config.gameTime * 60;
                         // let gamecompleteTime = timeToAdd.getTime() - curr_ ;
-                        console.log('[alreadyPlayingTable]- ', curr_, this.tables[i].turn_start_at, 30 - diff,timeToAdd,diffT,timeToAdd-diffT);
+                        console.log('[alreadyPlayingTable]- ', curr_, this.tables[i].turn_start_at, 30 - diff, timeToAdd, diffT, timeToAdd - diffT);
                         var rez = {
                             status: 1,
                             table: this.tables[i],
-                            turn_start_at:  config.turnTimer - diff,//10 - diff,
-                            timerStart: 60 - diff_ ,
+                            turn_start_at: config.turnTimer - diff,//10 - diff,
+                            timerStart: 60 - diff_,
                             game_started: !(this.tables[i].turn_start_at == 0),
                             current_turn: this.tables[i].current_turn,
                             current_turn_type: this.tables[i].current_turn_type,
@@ -302,7 +284,7 @@ class _Tables {
                             dices_rolled: this.tables[i].users[this.tables[i].current_turn].dices_rolled,
                             // timeToCompleteGame: timeToAdd + 8 - diffT,
                             timeToCompleteGame: timeToAdd,
-                            default_diceroll_timer : config.turnTimer - diff // bug_no_ 65
+                            default_diceroll_timer: config.turnTimer - diff // bug_no_ 65
                         };
                         return rez;
                     }
@@ -315,22 +297,29 @@ class _Tables {
         };
         return rez;
     }
-    
-    getTokRoom(room, id) {
+
+    getTokRoom(room, id)
+    {
         // console.log('getTokRoom Started >>', id);
-        for (var i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
-                for (var pl = 0; pl < this.tables[i].users.length; pl++) {
-                    if (this.tables[i].users[pl].id) {
+        for (var i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
+                for (var pl = 0; pl < this.tables[i].users.length; pl++)
+                {
+                    if (this.tables[i].users[pl].id)
+                    {
                         if (
                             this.tables[i].users[pl].id.toString() == id.toString() &&
                             !this.tables[i].users[pl].is_left
-                        ) {
+                        )
+                        {
                             // console.log('You are playing on this table', this.tables[i]);
 
                             var rez = {
                                 status: 1,
-                                tokens: this.tables[i].users.map((user) => {
+                                tokens: this.tables[i].users.map((user) =>
+                                {
                                     return {
                                         user_id: user.id,
                                         tokens: user.tokens,
@@ -349,12 +338,17 @@ class _Tables {
         return rez;
     }
 
-    leaveIfPlaying(id) {
+    leaveIfPlaying(id)
+    {
         // console.log('AlreadyPlaying Started >>', id);
-        for (var i = 0; i < this.tables.length; i++) {
-            for (var pl = 0; pl < this.tables[i].users.length; pl++) {
-                if (this.tables[i].users[pl].id) {
-                    if (this.tables[i].users[pl].id.toString() == id.toString()) {
+        for (var i = 0; i < this.tables.length; i++)
+        {
+            for (var pl = 0; pl < this.tables[i].users.length; pl++)
+            {
+                if (this.tables[i].users[pl].id)
+                {
+                    if (this.tables[i].users[pl].id.toString() == id.toString())
+                    {
                         // console.log('You are playing on this table', this.tables[i]);
                         return this.tables[i].room;
                     }
@@ -364,7 +358,8 @@ class _Tables {
         return false;
     }
 
-    isRankOccupied(room, rank) {
+    isRankOccupied(room, rank)
+    {
         var startDate = new Date();
         var my_tab = this.tables.find((d) => d.room == room);
         // console.log("table finding time in isRankOccupied", ((new Date()) - startDate));
@@ -373,16 +368,22 @@ class _Tables {
     }
 
     //Leave Room
-    leave(room, id) {
+    leave(room, id)
+    {
         console.log('Leave Room Started', id);
-        for (var i = 0; i < this.tables.length; i++) {
+        for (var i = 0; i < this.tables.length; i++)
+        {
             // console.log('TABLE FOUND - ',this.tables,id);
-            if (this.tables[i].room == room) {
-                console.log('TABLE FOUND - ',this.tables[i],id);
-                for (var pl = 0; pl < this.tables[i].users.length; pl++) {
-                    if (this.tables[i].users[pl].id.toString() == id.toString()) {
+            if (this.tables[i].room == room)
+            {
+                console.log('TABLE FOUND - ', this.tables[i], id);
+                for (var pl = 0; pl < this.tables[i].users.length; pl++)
+                {
+                    if (this.tables[i].users[pl].id.toString() == id.toString())
+                    {
                         console.log('USER FOUND');
-                        if (this.tables[i].turn_start_at == 0) {
+                        if (this.tables[i].turn_start_at == 0)
+                        {
                             this.tables[i].users[pl] = {
                                 id: '',
                                 numeric_id: '',
@@ -401,14 +402,17 @@ class _Tables {
                             };
 
                             var count = 0;
-                            for (var k = 0; k < 4; k++) {
-                                if (this.tables[i].users[k] && this.tables[i].users[k].is_active) {
+                            for (var k = 0; k < 4; k++)
+                            {
+                                if (this.tables[i].users[k] && this.tables[i].users[k].is_active)
+                                {
                                     count++;
                                 }
                             }
                             // console.log('Count-->', count);
 
-                            if (count == 0) {
+                            if (count == 0)
+                            {
                                 this.tables.splice(i, 1);
                             }
 
@@ -419,13 +423,15 @@ class _Tables {
                             };
                         }
                         this.tables[i].users[pl].life = 0;
-                        if (!this.tables[i].users[pl].is_done) {
+                        if (!this.tables[i].users[pl].is_done)
+                        {
                             this.tables[i].users[pl].is_left = true;
                             this.tables[i].users[pl].is_done = true;
 
                             let rank = this.tables[i].no_of_players;
 
-                            while (this.isRankOccupied(room, rank)) {
+                            while (this.isRankOccupied(room, rank))
+                            {
                                 rank--;
                                 if (rank == 1) break;
                             }
@@ -438,7 +444,8 @@ class _Tables {
                                 position: pl,
                                 rank: rank,
                             };
-                        } else {
+                        } else
+                        {
                             this.tables[i].users[pl].is_left = true;
                             return {
                                 res: true,
@@ -446,7 +453,8 @@ class _Tables {
                                 rank: this.tables[i].users[pl].rank,
                             };
                         }
-                    } else {
+                    } else
+                    {
                         // console.log(this.tables[i].users[pl].id + ' != ' + id);
                     }
                 }
@@ -460,15 +468,21 @@ class _Tables {
         };
     }
 
-    leaveIf(room, id) {
+    leaveIf(room, id)
+    {
         // console.log('Leave Room Started', id);
-        for (var i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
+        for (var i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
                 // console.log('TABLE FOUND');
-                for (var pl = 0; pl < this.tables[i].users.length; pl++) {
-                    if (this.tables[i].users[pl].id == id) {
+                for (var pl = 0; pl < this.tables[i].users.length; pl++)
+                {
+                    if (this.tables[i].users[pl].id == id)
+                    {
                         // console.log('USER FOUND');
-                        if (this.tables[i].turn_start_at == 0) {
+                        if (this.tables[i].turn_start_at == 0)
+                        {
                             this.tables[i].users[pl] = {
                                 id: '',
                                 numeric_id: '',
@@ -491,8 +505,8 @@ class _Tables {
                                 flag: 1,
                             };
                         }
-                       
-                    } 
+
+                    }
                 }
                 return {
                     res: false,
@@ -504,24 +518,29 @@ class _Tables {
         };
     }
     //Start Game
-    async tournamentStartGame(room) {
-        for (var i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room === room) {
+    async tournamentStartGame(room)
+    {
+        for (var i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room === room)
+            {
                 var canStart = await this.canStartGame(i);
                 if (!canStart) return false;
                 var dt = new Date();
-                dt.setSeconds( dt.getSeconds() + 4);
-                for (let pl = 0; pl < this.tables[i].users.length; pl++) {
-                    if (this.tables[i].users[pl].is_active) {
+                dt.setSeconds(dt.getSeconds() + 4);
+                for (let pl = 0; pl < this.tables[i].users.length; pl++)
+                {
+                    if (this.tables[i].users[pl].is_active)
+                    {
                         this.tables[i].current_turn = pl;
                         this.tables[i].current_turn_type = 'roll';
                         this.tables[i].turn_start_at = new Date(dt).getTime(); //new Date().getTime();
-                        console.log("Line 471 turn set : ", new Date(dt).getTime(),new Date(dt))
+                        console.log("Line 471 turn set : ", new Date(dt).getTime(), new Date(dt))
                         this.tables[i].game_started_at = new Date(dt).getTime();//new Date().getTime();
                         let DICE_ROLLED = this.rollDice();
                         this.tables[i].users[pl].turn = 1;
 
-                        if(this.tables[i].users[pl].dices_rolled.length == 0)
+                        if (this.tables[i].users[pl].dices_rolled.length == 0)
                             this.tables[i].users[pl].dices_rolled.push(DICE_ROLLED);
 
                         var resObj = {
@@ -532,13 +551,13 @@ class _Tables {
                             dice: DICE_ROLLED,
                             turn_start_at: config.turnTimer,
                             possition: pl,
-                            default_diceroll_timer : config.turnTimer // bug_no_65
+                            default_diceroll_timer: config.turnTimer // bug_no_65
                         };
                         this.sendToSqsAndResetGamePlayData(room);
                         return resObj;
                     }
                 }
-            
+
             }
         }
 
@@ -546,9 +565,12 @@ class _Tables {
     }
 
     //Abort Game
-    async abortGame(room) {
-        for (var i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
+    async abortGame(room)
+    {
+        for (var i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
                 this.tables.splice(i, 1);
                 console.log('SPLICED', this.tables);
             }
@@ -558,9 +580,11 @@ class _Tables {
     }
 
     //Can Start Game?
-    async canStartGame(i) {
+    async canStartGame(i)
+    {
         var players = 0;
-        for (let pl = 0; pl < this.tables[i].users.length; pl++) {
+        for (let pl = 0; pl < this.tables[i].users.length; pl++)
+        {
             if (this.tables[i].users[pl].is_active) players++;
         }
 
@@ -568,18 +592,21 @@ class _Tables {
         else return false;
     }
 
-    diceRolled(room, pos, DICE_ROLLED) {
-        var index = this.tables.findIndex((x)=>x.room == room);
-        if (index >= 0) {
-            console.log("diceRolled - ",this.tables[index].users[pos].dices_rolled.length, this.tables[index].users[pos].dices_rolled)
-            if(this.tables[index].users[pos].dices_rolled.length > 0)
+    diceRolled(room, pos, DICE_ROLLED)
+    {
+        var index = this.tables.findIndex((x) => x.room == room);
+        if (index >= 0)
+        {
+            console.log("diceRolled - ", this.tables[index].users[pos].dices_rolled.length, this.tables[index].users[pos].dices_rolled)
+            if (this.tables[index].users[pos].dices_rolled.length > 0)
                 this.tables[index].users[pos].dices_rolled = [];
             this.tables[index].users[pos].dices_rolled.push(DICE_ROLLED);
             console.log('DICE ROLL UPDATED', this.tables[index].users[pos].dices_rolled);
         }
     }
 
-    getBonus(room, id) {
+    getBonus(room, id)
+    {
         const table = this.tables.find((elem) => elem.room == room);
 
         if (!table) return 0;
@@ -590,11 +617,16 @@ class _Tables {
         else return me.bonus_dice;
     }
 
-    useBonus(room, id) {
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
-                for (let j = 0; j < this.tables[i].users.length; j++) {
-                    if (this.tables[i].users[j].id == id) {
+    useBonus(room, id)
+    {
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
+                for (let j = 0; j < this.tables[i].users.length; j++)
+                {
+                    if (this.tables[i].users[j].id == id)
+                    {
                         if (this.tables[i].users[j].bonus_dice > 0) this.tables[i].users[j].bonus_dice--;
                     }
                 }
@@ -602,14 +634,19 @@ class _Tables {
         }
     }
 
-    addBonus(room, id, length,type) {
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
-                for (let j = 0; j < this.tables[i].users.length; j++) {
-                    if (this.tables[i].users[j].id == id) {
+    addBonus(room, id, length, type)
+    {
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
+                for (let j = 0; j < this.tables[i].users.length; j++)
+                {
+                    if (this.tables[i].users[j].id == id)
+                    {
                         this.tables[i].users[j].bonus_dice += length;
                         console.log('Bonus updated', this.tables[i].users[j].bonus_dice);
-                        var gamePlayDataIndex = this.gamePlayData.findIndex((x)=>x.room == room);
+                        var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
                         this.gamePlayData[gamePlayDataIndex].data.extra_roll = 1
                         this.gamePlayData[gamePlayDataIndex].data.extra_roll_count += 1
                         this.gamePlayData[gamePlayDataIndex].data.extra_roll_reason.push(type)
@@ -617,14 +654,19 @@ class _Tables {
                 }
             }
         }
-        
+
     }
-    addBonusPoints(room, id, points, length, type) {
+    addBonusPoints(room, id, points, length, type)
+    {
         let bonusPoint = points * length;
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
-                for (let j = 0; j < this.tables[i].users.length; j++) {
-                    if (this.tables[i].users[j].id == id) {
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
+                for (let j = 0; j < this.tables[i].users.length; j++)
+                {
+                    if (this.tables[i].users[j].id == id)
+                    {
                         console.log('Before Bonus Points updated- ', this.tables[i].users[j].bonusPoints);
                         this.tables[i].users[j].bonusPoints += bonusPoint;
                         console.log('After Bonus Points updated- ', this.tables[i].users[j].bonusPoints);
@@ -634,19 +676,25 @@ class _Tables {
         }
         var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
         this.gamePlayData[gamePlayDataIndex].data[type] = bonusPoint;
-        if(type == 'home_base_bonus'){
+        if (type == 'home_base_bonus')
+        {
             this.gamePlayData[gamePlayDataIndex].data.home_base = 1;
             this.gamePlayData[gamePlayDataIndex].data.home_base = 1;
         }
     }
-    addSix(room, id) {
-        for (let i = 0; i < this.tables.length; i++) {
+    addSix(room, id)
+    {
+        for (let i = 0; i < this.tables.length; i++)
+        {
             // console.log("id we got", id)
-            if (this.tables[i].room == room) {
+            if (this.tables[i].room == room)
+            {
                 // console.log("room we got", room)
-                for (let j = 0; j < this.tables[i].users.length; j++) {
+                for (let j = 0; j < this.tables[i].users.length; j++)
+                {
                     // console.log("id we got", this.tables[i].users[j])
-                    if (this.tables[i].users[j].id == id) {
+                    if (this.tables[i].users[j].id == id)
+                    {
                         this.tables[i].users[j].six_counts += 1;
                         console.log('Six updated', this.tables[i].users[j].six_counts);
                     }
@@ -655,14 +703,19 @@ class _Tables {
         }
     }
 
-    setSix(room, id) {
-        for (let i = 0; i < this.tables.length; i++) {
+    setSix(room, id)
+    {
+        for (let i = 0; i < this.tables.length; i++)
+        {
             // console.log("id we got", id)
-            if (this.tables[i].room == room) {
+            if (this.tables[i].room == room)
+            {
                 // console.log("room we got", room)
-                for (let j = 0; j < this.tables[i].users.length; j++) {
+                for (let j = 0; j < this.tables[i].users.length; j++)
+                {
                     // console.log("id we got", this.tables[i].users[j].id,this.tables[i].users[j].six_counts)
-                    if (this.tables[i].users[j].id == id) {
+                    if (this.tables[i].users[j].id == id)
+                    {
                         this.tables[i].users[j].six_counts = 0;
                         console.log('Six updated', this.tables[i].users[j].six_counts);
                     }
@@ -671,7 +724,8 @@ class _Tables {
         }
     }
 
-    getSix(room, id) {
+    getSix(room, id)
+    {
         console.log("in six counts....");
         const table = this.tables.find((elem) => elem.room == room);
 
@@ -682,38 +736,44 @@ class _Tables {
         if (!me) return 0;
         else return me.six_counts;
     }
-    scrapTurn(room, pos) {
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
+    scrapTurn(room, pos)
+    {
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
                 this.tables[i].users[pos].dices_rolled = [];
             }
         }
     }
 
-    getMyPosition(room, id) {
+    getMyPosition(room, id)
+    {
         const table = this.tables.find((elem) => elem.room == room);
- 
+
         if (!table) return -1;
 
         const me = table.users.find((elem) => elem.id == id);
- 
+
         return me ? table.users.indexOf(me) : -1;
     }
 
-    getMyDice(room, id) {
+    getMyDice(room, id)
+    {
         const table = this.tables.find((elem) => elem.room == room);
         // console.log("table finding time in getMyDice ", ((new Date()) - startDate));
 
         if (!table) return -1;
 
         const me = table.users.find((elem) => elem.id == id);
-        let i = this.gamePlayData.findIndex((x)=>x.room == room);
+        let i = this.gamePlayData.findIndex((x) => x.room == room);
         this.gamePlayData[i].data.roll.push(me ? me.dices_rolled[me.dices_rolled.length - 1] : -1);
 
         return me ? me.dices_rolled[me.dices_rolled.length - 1] : -1;
     }
 
-    jackPot(room, id) {
+    jackPot(room, id)
+    {
         const table = this.tables.find((elem) => elem.room == room);
 
         if (!table) return false;
@@ -726,137 +786,147 @@ class _Tables {
         );
     }
 
-    updateCurrentTurn(room, pos, type, prev, move) {
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
+    updateCurrentTurn(room, pos, type, prev, move)
+    {
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
                 //for debugging.....
                 console.log('updateCurrentTurn >>>:: ', this.tables[i].users[pos]);
-                if (prev != -1) {
+                if (prev != -1)
+                {
                     this.tables[i].users[prev].dices_rolled = [];
-                    this.tables[i].users[pos].turn += 1;                    
+                    this.tables[i].users[pos].turn += 1;
                 }
-                if(move){
-                    this.tables[i].current_turn_type = type; 
+                if (move)
+                {
+                    this.tables[i].current_turn_type = type;
                     this.tables[i].current_turn = pos;
                 }
-                else{
+                else
+                {
                     this.tables[i].current_turn = pos;
                     this.tables[i].turn_start_at = new Date().getTime();
-                    console.log("Line 701 turn set : ", new Date().getTime(),new Date());
+                    console.log("Line 701 turn set : ", new Date().getTime(), new Date());
 
                     this.tables[i].current_turn_type = type;
                 }
             }
         }
-        
+
     }
-    updateCurrentTime(room) {
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
+    updateCurrentTime(room)
+    {
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
                 this.tables[i].turn_start_at = new Date().getTime();
-                console.log("Line 714 turn set : ", new Date().getTime(),new Date());
+                console.log("Line 714 turn set : ", new Date().getTime(), new Date());
             }
         }
     }
 
 
-    gePlayerDices(room, pos) {
-        var index = this.tables.findIndex((x)=>x.room == room);
-        if (index >= 0) {           
-            let i = this.gamePlayData.findIndex((x)=>x.room == room);
-            this.gamePlayData[i].data.User =  this.tables[index].users[pos].numeric_id;
+    gePlayerDices(room, pos)
+    {
+        var index = this.tables.findIndex((x) => x.room == room);
+        if (index >= 0)
+        {
+            let i = this.gamePlayData.findIndex((x) => x.room == room);
+            this.gamePlayData[i].data.User = this.tables[index].users[pos].numeric_id;
             return this.tables[index].users[pos].dices_rolled;
         }
         return [];
     }
-    async sendToSqsAndResetGamePlayData(room){
-        let i = this.gamePlayData.findIndex((x)=>x.room == room);
+    async sendToSqsAndResetGamePlayData(room)
+    {
+        let i = this.gamePlayData.findIndex((x) => x.room == room);
         console.log("gamePlayData ::  -- ", this.gamePlayData[i]);
         const sqsData = await sendMessage(this.gamePlayData[i]);
         //send through SQS
         this.resetGamePlayData(i, room);
     }
-    
-    resetGamePlayData(i, room){
-        var index = this.tables.findIndex((x)=>x.room == room);
-        if (index >= 0) {
+
+    resetGamePlayData(i, room)
+    {
+        var index = this.tables.findIndex((x) => x.room == room);
+        if (index >= 0)
+        {
             let user = this.tables[index].users[this.tables[index].current_turn];
-            console.log("Table >>",this.tables[index] )
+            console.log("Table >>", this.tables[index])
             this.gamePlayData[i].data.User = user.numeric_id,
-            this.gamePlayData[i].data.turn =  user.turn ,
-            this.gamePlayData[i].data.roll = [] ,
-            this.gamePlayData[i].data.pawn = 0 , 
-            this.gamePlayData[i].data.move = 0 ,
-            this.gamePlayData[i].data.total_move = 0 ,
-            this.gamePlayData[i].data.cut = 0,
-            this.gamePlayData[i].data.cut_player = 0 ,
-            this.gamePlayData[i].data.cut_pawn = 0, 
-            this.gamePlayData[i].data.cut_move = 0,
-            this.gamePlayData[i].data.cut_bonus =0 ,
-            this.gamePlayData[i].data.home_base = 0,
-            this.gamePlayData[i].data.home_base_bonus =0 ,
-            this.gamePlayData[i].data.extra_roll = 0 ,
-            this.gamePlayData[i].data.extra_roll_count = 0,
-            this.gamePlayData[i].data.extra_roll_reason = [],
-            this.gamePlayData[i].data.checkpoint = 0,
-            this.gamePlayData[i].data.player_score = user.points + user.bonusPoints ,
-            this.gamePlayData[i].data.life_lost = 3 - user.life , 
-            this.gamePlayData[i].data.lives_left = user.life ,
-            this.gamePlayData[i].data.pawn_positions = user.tokens,
-            this.gamePlayData[i].data.game_time = 0 ,
-            this.gamePlayData[i].data.room_id = room, 
-            this.gamePlayData[i].data.timestamp = new Date().getTime()  
+                this.gamePlayData[i].data.turn = user.turn,
+                this.gamePlayData[i].data.roll = [],
+                this.gamePlayData[i].data.pawn = 0,
+                this.gamePlayData[i].data.move = 0,
+                this.gamePlayData[i].data.total_move = 0,
+                this.gamePlayData[i].data.cut = 0,
+                this.gamePlayData[i].data.cut_player = 0,
+                this.gamePlayData[i].data.cut_pawn = 0,
+                this.gamePlayData[i].data.cut_move = 0,
+                this.gamePlayData[i].data.cut_bonus = 0,
+                this.gamePlayData[i].data.home_base = 0,
+                this.gamePlayData[i].data.home_base_bonus = 0,
+                this.gamePlayData[i].data.extra_roll = 0,
+                this.gamePlayData[i].data.extra_roll_count = 0,
+                this.gamePlayData[i].data.extra_roll_reason = [],
+                this.gamePlayData[i].data.checkpoint = 0,
+                this.gamePlayData[i].data.player_score = user.points + user.bonusPoints,
+                this.gamePlayData[i].data.life_lost = 3 - user.life,
+                this.gamePlayData[i].data.lives_left = user.life,
+                this.gamePlayData[i].data.pawn_positions = user.tokens,
+                this.gamePlayData[i].data.game_time = 0,
+                this.gamePlayData[i].data.room_id = room,
+                this.gamePlayData[i].data.timestamp = new Date().getTime()
             // console.log("this.gamePlayData[i] - ",this.gamePlayData[i])
-        } 
+        }
     }
-    clearDices(room, pos) {
+    clearDices(room, pos)
+    {
         console.log("in the clear divces");
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
                 this.tables[i].users[pos].dices_rolled = [];
             }
         }
     }
 
-    getNextPosition(room, pos) {
-        // for (let i = 0; i < this.tables.length; i++) {
-        //     if (this.tables[i].room == room) {
-        //         for (let j = pos + 1; j < this.tables[i].users.length; j++) {
-        //             if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
-        //                 return j;
-        //             }
-        //         }
-        //         for (let j = 0; j < pos; j++) {
-        //             if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
-        //                 return j;
-        //             }
-        //         }
-        //     }
-        // }
-        // return -1;
-
+    getNextPosition(room, pos)
+    {
         // New modification
         let i = this.tables.findIndex(element => element.room == room);
-        if(i == -1){
-             return -1;
+        if (i == -1)
+        {
+            return -1;
         }
-        for (let j = pos + 1; j < this.tables[i].users.length; j++) {
-             if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
+        for (let j = pos + 1; j < this.tables[i].users.length; j++)
+        {
+            if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done)
+            {
                 return j;
-             }
+            }
         }
-        for (let j = 0; j < pos; j++) {
-             if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
+        for (let j = 0; j < pos; j++)
+        {
+            if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done)
+            {
                 return j;
-             }
+            }
         }
 
     }
 
-    tourneyCanIKill(room, id, token_index, myPos) {
+    tourneyCanIKill(room, id, token_index, myPos)
+    {
         var tab_pos = 0;
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
                 tab_pos = i;
             }
         }
@@ -875,10 +945,14 @@ class _Tables {
 
         var dead_possible = [];
         var i = tab_pos;
-        for (let j = 0; j < this.tables[i].users.length; j++) {
-            if (this.tables[i].users[j].id != id) {
-                for (let k = 0; k < this.tables[i].users[j].tokens.length; k++) {
-                    if (this.tables[i].users[j].tokens[k] != -1 && !this.tables[i].users[j].is_left) {
+        for (let j = 0; j < this.tables[i].users.length; j++)
+        {
+            if (this.tables[i].users[j].id != id)
+            {
+                for (let k = 0; k < this.tables[i].users[j].tokens.length; k++)
+                {
+                    if (this.tables[i].users[j].tokens[k] != -1 && !this.tables[i].users[j].is_left)
+                    {
                         let other_token_position = config.MOVE_PATH[j][this.tables[i].users[j].tokens[k]];
                         console.log(
                             'KILLER',
@@ -889,11 +963,12 @@ class _Tables {
                             'POSITION',
                             other_token_position,
                             'safeZone',
-                            this.tables[i].users[j].tokens[k], 
+                            this.tables[i].users[j].tokens[k],
                             this.tables[i].users[j].tokens[k] != config.starPosition[0]
 
                         );
-                        if (other_token_position == actual_token_position && this.tables[i].users[j].tokens[k] != config.starPosition[0]) {
+                        if (other_token_position == actual_token_position && this.tables[i].users[j].tokens[k] != config.starPosition[0])
+                        {
                             dead_possible.push({
                                 user: j,
                                 token: k,
@@ -905,94 +980,99 @@ class _Tables {
         }
 
         console.log('DEAD POSSIBLE', dead_possible);
-        
+
         var us = [];
         let safe_user = []
-        
-        for(let i=0; i<dead_possible.length; i++) {
-            console.log("dead_possible.length : ",dead_possible.length)
-            console.log("us : ",us, i)
-            console.log("dead_possible[i].user : ",dead_possible[i].user)
-            if (us.indexOf(dead_possible[i].user) > -1) {
+
+        for (let i = 0; i < dead_possible.length; i++)
+        {
+            console.log("dead_possible.length : ", dead_possible.length)
+            console.log("us : ", us, i)
+            console.log("dead_possible[i].user : ", dead_possible[i].user)
+            if (us.indexOf(dead_possible[i].user) > -1)
+            {
                 // dead_possible = dead_possible.filter((e) => e.user != dead_possible[i].user);
                 safe_user.push(dead_possible[i].user)
-                console.log("dead_possible : ",dead_possible , "safe_user >>",safe_user)
+                console.log("dead_possible : ", dead_possible, "safe_user >>", safe_user)
                 // i = 0;
                 // continue; 
-            } else {
-                console.log("else dead_possible[i].user : ",dead_possible[i].user)
+            } else
+            {
+                console.log("else dead_possible[i].user : ", dead_possible[i].user)
                 us.push(dead_possible[i].user);
             }
             // i++;
         }
 
-        for(let i=0; i<safe_user.length; i++) {
-            for(let j=0; j<dead_possible.length; j++){
-                console.log("safe_user[i] >>>>", i , safe_user[i], "dead_possible[j].user >>>>", j, dead_possible[j].user)
+        for (let i = 0; i < safe_user.length; i++)
+        {
+            for (let j = 0; j < dead_possible.length; j++)
+            {
+                console.log("safe_user[i] >>>>", i, safe_user[i], "dead_possible[j].user >>>>", j, dead_possible[j].user)
                 dead_possible = dead_possible.filter((e) => safe_user[i] != e.user);
             }
-        } 
+        }
 
-        console.log('After loop DEAD POSSIBLE Tourney' , dead_possible);
-        if(dead_possible.length){
-            var gamePlayDataIndex = this.gamePlayData.findIndex((x)=>x.room == room);
+        console.log('After loop DEAD POSSIBLE Tourney', dead_possible);
+        if (dead_possible.length)
+        {
+            var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
             this.gamePlayData[gamePlayDataIndex].data.cut = 1;
-        } 
+        }
 
-        for (i = 0; i < dead_possible.length; i++) {
+        for (i = 0; i < dead_possible.length; i++)
+        {
             let checkPointActivated = false;
             let token_position = this.tables[tab_pos].users[dead_possible[i].user].tokens[dead_possible[i].token];
-            console.log("Token Poisition - ",token_position)
-            if(token_position >= config.starPosition[0])  checkPointActivated = true;
-            console.log("My Points >>> ",this.tables[tab_pos].users[myPos].points,this.tables[tab_pos].users[dead_possible[i].user],checkPointActivated)
+            console.log("Token Poisition - ", token_position)
+            if (token_position >= config.starPosition[0]) checkPointActivated = true;
+            console.log("My Points >>> ", this.tables[tab_pos].users[myPos].points, this.tables[tab_pos].users[dead_possible[i].user], checkPointActivated)
             // this.tables[tab_pos].users[dead_possible[i].user].points = this.tables[tab_pos].users[dead_possible[i].user].points - this.tables[tab_pos].users[dead_possible[i].user].tokens[dead_possible[i].token];
             dead_possible[i].checkPointActivated = checkPointActivated;
-            this.gamePlayData[gamePlayDataIndex].data["cut_player "+i] = dead_possible[i].user;
-            this.gamePlayData[gamePlayDataIndex].data["cut_pawn "+i]  = dead_possible[i].token;
+            this.gamePlayData[gamePlayDataIndex].data["cut_player " + i] = dead_possible[i].user;
+            this.gamePlayData[gamePlayDataIndex].data["cut_pawn " + i] = dead_possible[i].token;
             // console.log("this.gamePlayData[gamePlayDataIndex].data >",this.gamePlayData[gamePlayDataIndex].data)
-            if(checkPointActivated){
-                
+            if (checkPointActivated)
+            {
+
                 let cutPoint = this.tables[tab_pos].users[dead_possible[i].user].tokens[dead_possible[i].token];
                 this.tables[tab_pos].users[dead_possible[i].user].tokens[dead_possible[i].token] = config.starPosition[0];
                 dead_possible[i].tokenIndex = config.starPosition[0];
                 dead_possible[i].movebleBox = cutPoint - config.starPosition[0];
-                console.log("KILL TOKEN INDEX UPDATE _ ",this.tables[tab_pos].users[dead_possible[i].user].points,cutPoint, typeof cutPoint)
+                console.log("KILL TOKEN INDEX UPDATE _ ", this.tables[tab_pos].users[dead_possible[i].user].points, cutPoint, typeof cutPoint)
                 this.tables[tab_pos].users[dead_possible[i].user].points = this.tables[tab_pos].users[dead_possible[i].user].points - cutPoint + config.starPosition[0];
-                console.log("AFTER KILL TOKEN INDEX UPDATE _",this.tables[tab_pos].users[dead_possible[i].user].tokens[dead_possible[i].token],this.tables[tab_pos].users[dead_possible[i].user].points )
-                this.gamePlayData[gamePlayDataIndex].data["cut_move "+i] = cutPoint + " - " + config.starPosition[0];
+                console.log("AFTER KILL TOKEN INDEX UPDATE _", this.tables[tab_pos].users[dead_possible[i].user].tokens[dead_possible[i].token], this.tables[tab_pos].users[dead_possible[i].user].points)
+                this.gamePlayData[gamePlayDataIndex].data["cut_move " + i] = cutPoint + " - " + config.starPosition[0];
             }
-            else{ 
+            else
+            {
                 dead_possible[i].movebleBox = this.tables[tab_pos].users[dead_possible[i].user].tokens[dead_possible[i].token];
                 this.tables[tab_pos].users[dead_possible[i].user].points -= this.tables[tab_pos].users[dead_possible[i].user].tokens[dead_possible[i].token]; //commented above line and replace with this line
                 this.tables[tab_pos].users[dead_possible[i].user].tokens[dead_possible[i].token] = 0;
                 dead_possible[i].tokenIndex = 0;
-                this.gamePlayData[gamePlayDataIndex].data["cut_move "+i] = dead_possible[i].movebleBox + " - 0"
-                
+                this.gamePlayData[gamePlayDataIndex].data["cut_move " + i] = dead_possible[i].movebleBox + " - 0"
+
             }
-            console.log("My Points >>> ",this.tables[tab_pos].users[myPos].points,this.tables[tab_pos].users[dead_possible[i].user].points,this.tables[tab_pos].users[dead_possible[i].user].tokens)
+            console.log("My Points >>> ", this.tables[tab_pos].users[myPos].points, this.tables[tab_pos].users[dead_possible[i].user].points, this.tables[tab_pos].users[dead_possible[i].user].tokens)
         }
-        console.log("dead_possible >new>>>",dead_possible)
+        console.log("dead_possible >new>>>", dead_possible)
         return dead_possible.length > 0 ? dead_possible : false;
     }
 
-    isMovePossible(room, id) {
+    isMovePossible(room, id)
+    {
 
         const table = this.tables.find((elem) => elem.room == room);
-
         if (!table) return false;
-
         const me = table.users.find((elem) => elem.id == id);
-
         if (!me) return false;
 
-        for (let k = 0; k < me.tokens.length; k++) {
-            for (const dice_value of me.dices_rolled) {
-                // if (me.tokens[k] != 56 && me.tokens[k] + dice_value <= 56) {
-                //     return true;
-                // }
-
-                // new implemention for pawn should't get chance to another move, If there is no enough index.
-                if (me.tokens[k] + dice_value <= 56) {
+        for (let k = 0; k < me.tokens.length; k++)
+        {
+            for (const dice_value of me.dices_rolled)
+            {  // new implemention for pawn should't get chance to another move, If there is no enough index.
+                if (me.tokens[k] + dice_value <= 56)
+                {
                     return true;
                 }
             }
@@ -1002,69 +1082,77 @@ class _Tables {
     }
 
     // To get user dice rolled value
-    getDiceValue(room, id) {
+    getDiceValue(room, id)
+    {
         const table = this.tables.find((elem) => elem.room == room);
         if (!table) return 0;
         const me = table.users.find((elem) => elem.id == id);
         if (!me) return 0;
-        for (let k = 0; k < me.tokens.length; k++) {
-            for (const dice_value of me.dices_rolled) {
+        for (let k = 0; k < me.tokens.length; k++)
+        {
+            for (const dice_value of me.dices_rolled)
+            {
                 return dice_value;
             }
         }
     }
 
-    isMovePossibleExact(dice_value, room, id, token_index) {
-        const table = this.tables.find((elem) => elem.room == room);
-        // console.log("table finding time in isMovePossibleExact", ((new Date()) - startDate));
-
+    isMovePossibleExact(dice_value, room, id, token_index)
+    {
+        const table = this.tables.find((elem) => elem.room == room);        
         if (!table) return false;
-        const me = table.users.find((elem) => elem.id == id);
-        // console.log("table finding time in isMovePossibleExact ", ((new Date()) - startDate));
-
+        const me = table.users.find((elem) => elem.id == id);        
         if (!me) return false;
-
         if (me.dices_rolled.indexOf(dice_value) == -1) return false;
-
-        for (let k = 0; k < me.tokens.length; k++) {
-            if (me.tokens[token_index] == -1) {
+        for (let k = 0; k < me.tokens.length; k++)
+        {
+            if (me.tokens[token_index] == -1)
+            {
                 return dice_value == 1 || dice_value == 6;
-            } else {
+            } else
+            {
                 return !(me.tokens[token_index] + dice_value > 56);
             }
         }
     }
 
-    setGameTime(room, time) {
-        console.log("setGameTime : ",room, time)
-        if(time < 0) time = 0;
+    setGameTime(room, time)
+    {
+        console.log("setGameTime : ", room, time);
+        if (time < 0) time = 0;
         let gameTime = config.gameTime * 60 - time;
         let minutes = Math.floor(gameTime / 60);
         let seconds = gameTime - minutes * 60;
-        var gamePlayDataIndex = this.gamePlayData.findIndex((x)=>x.room == room);
-        console.log("GAMETIME :", minutes + ":" + seconds)
+        let gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
+        console.log("GAMETIME :", minutes + ":" + seconds);
         this.gamePlayData[gamePlayDataIndex].data.game_time = minutes + ":" + seconds;
         return true;
     }
 
-    makeMoveForTournament(dice_value, room, id, token_index) {
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
-                for (let j = 0; j < this.tables[i].users.length; j++) {
-                    if (this.tables[i].users[j].id == id) {
-                        console.log('PENDING DICES BEFORE', this.tables[i].users[j].dices_rolled,this.tables[i].users[j].points,dice_value);
+    makeMoveForTournament(dice_value, room, id, token_index)
+    {
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
+                for (let j = 0; j < this.tables[i].users.length; j++)
+                {
+                    if (this.tables[i].users[j].id == id)
+                    {
+                        console.log('PENDING DICES BEFORE', this.tables[i].users[j].dices_rolled, this.tables[i].users[j].points, dice_value);
 
-                        if (this.tables[i].users[j].tokens[token_index] + dice_value <= 56) {
+                        if (this.tables[i].users[j].tokens[token_index] + dice_value <= 56)
+                        {
                             this.tables[i].users[j].tokens[token_index] += dice_value;
                             //Update points for tournament
-                            this.tables[i].users[j].points =  this.tables[i].users[j].points+ dice_value;
-                            
+                            this.tables[i].users[j].points = this.tables[i].users[j].points + dice_value;
+
                             this.tables[i].users[j].dices_rolled.splice(
                                 this.tables[i].users[j].dices_rolled.indexOf(dice_value),
                                 1
                             );
-                            console.log('PENDING DICES AFTER', this.tables[i].users[j].dices_rolled,this.tables[i].users[j].points);
-                            var gamePlayDataIndex = this.gamePlayData.findIndex((x)=>x.room == room);
+                            console.log('PENDING DICES AFTER', this.tables[i].users[j].dices_rolled, this.tables[i].users[j].points);
+                            var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
                             this.gamePlayData[gamePlayDataIndex].data.pawn = token_index + 1
                             this.gamePlayData[gamePlayDataIndex].data.move = dice_value
                             this.gamePlayData[gamePlayDataIndex].data.points = dice_value
@@ -1072,14 +1160,15 @@ class _Tables {
                             this.gamePlayData[gamePlayDataIndex].data.player_score = this.tables[i].users[j].points + this.tables[i].users[j].bonusPoint
                             this.gamePlayData[gamePlayDataIndex].data.pawn_positions = this.tables[i].users[j].tokens
                             // console.log("GAME PLAY DATA > ", this.gamePlayData[gamePlayDataIndex])
-                            return {token_position:this.tables[i].users[j].tokens[token_index],points:this.tables[i].users[j].points,bonusPoints: this.tables[i].users[j].bonusPoints };
-                        } else {
+                            return {token_position: this.tables[i].users[j].tokens[token_index], points: this.tables[i].users[j].points, bonusPoints: this.tables[i].users[j].bonusPoints};
+                        } else
+                        {
                             this.tables[i].users[j].dices_rolled.splice(
                                 this.tables[i].users[j].dices_rolled.indexOf(dice_value),
                                 1
                             );
-                            console.log('PENDING DICES AFTER', this.tables[i].users[j].dices_rolled,this.tables[i].users[j].points);
-                            return {token_position:this.tables[i].users[j].tokens[token_index],points:this.tables[i].users[j].points,bonusPoints: this.tables[i].users[j].bonusPoints};
+                            console.log('PENDING DICES AFTER', this.tables[i].users[j].dices_rolled, this.tables[i].users[j].points);
+                            return {token_position: this.tables[i].users[j].tokens[token_index], points: this.tables[i].users[j].points, bonusPoints: this.tables[i].users[j].bonusPoints};
                         }
                     }
                 }
@@ -1087,27 +1176,33 @@ class _Tables {
         }
         return -1;
     }
-    EndOfTournament(room,amount) {
-        console.log("room,amount >>",room,amount[1])
-        for (let i = 0; i < this.tables.length; i++) {
-            let pointArray = [];
-            let winner = []
-            if (this.tables[i].room == room) {
-                for (let j = 0; j < this.tables[i].users.length; j++) {
-                    pointArray.push(this.tables[i].users[j].points + this.tables[i].users[j].bonusPoints );
+    EndOfTournament(room, amount)
+    {
+        console.log("room,amount >>", room, amount[1])
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            const pointArray = [];
+            const winner = []
+            if (this.tables[i].room == room)
+            {
+                for (let j = 0; j < this.tables[i].users.length; j++)
+                {
+                    pointArray.push(this.tables[i].users[j].points + this.tables[i].users[j].bonusPoints);
                 }
-                console.log("pointArray >>>",pointArray)
+                console.log("pointArray >>>", pointArray)
                 var maxPoints = (Math.max(...pointArray));
-                console.log("maxPoints >>>",maxPoints)
+                console.log("maxPoints >>>", maxPoints)
                 var count = 0;
                 let point = pointArray;
-                point.sort((a, b) => b-a);
+                point.sort((a, b) => b - a);
                 let otherRank;
-                this.tables[i].users.forEach(function(user) {  
-                    console.log("Points ....",user.points , user.bonusPoints,maxPoints ,point)
-                    if(user.points + user.bonusPoints == maxPoints){
-                        count ++,
-                        otherRank = 1
+                this.tables[i].users.forEach(function (user)
+                {
+                    console.log("Points ....", user.points, user.bonusPoints, maxPoints, point)
+                    if (user.points + user.bonusPoints == maxPoints)
+                    {
+                        count++,
+                        otherRank = 1;
                     }
                     // else{
                     //     for(let j=1; j<=point.length; j++){
@@ -1116,26 +1211,32 @@ class _Tables {
                     // }                     
                 });
                 // if(count > 1) amount = amount/count; //tie case
-               
-                for (let k = 0; k < this.tables[i].users.length; k++) {
-                    for(let j=0 ; j< point.length; j++){
-                        console.log("HERE - ",point[j], this.tables[i].users[k].points + this.tables[i].users[k].bonusPoints)
-                        if(point[j] == this.tables[i].users[k].points + this.tables[i].users[k].bonusPoints) 
+
+                for (let k = 0; k < this.tables[i].users.length; k++)
+                {
+                    for (let j = 0; j < point.length; j++)
+                    {
+                        console.log("HERE - ", point[j], this.tables[i].users[k].points + this.tables[i].users[k].bonusPoints)
+                        if (point[j] == this.tables[i].users[k].points + this.tables[i].users[k].bonusPoints) 
                         {
-                            otherRank = j+1;
+                            otherRank = j + 1;
                             break;
                         };
                     }
-                    let winAmount = 0; 
-                    if(typeof amount != 'undefined' && otherRank == 1 && amount[1]) {
-                        winAmount =  otherRank == 1 ? amount[1] : 0;
-                    }else if(typeof amount != 'undefined' && otherRank == 2 && amount[2]) {
-                        winAmount =  otherRank == 2 ? amount[2] : 0;
-                    } else if(typeof amount != 'undefined' && otherRank == 3 && amount[3]) {
-                        winAmount =  otherRank == 3 ? amount[3] : 0;
+                    let winAmount = 0;
+                    if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
+                    {
+                        winAmount = otherRank == 1 ? amount[1] : 0;
+                    } else if (typeof amount != 'undefined' && otherRank == 2 && amount[2])
+                    {
+                        winAmount = otherRank == 2 ? amount[2] : 0;
+                    } else if (typeof amount != 'undefined' && otherRank == 3 && amount[3])
+                    {
+                        winAmount = otherRank == 3 ? amount[3] : 0;
                     }
-                    console.log("User's final rank ::::",  otherRank)
-                    if(this.tables[i].users[k].points + this.tables[i].users[k].bonusPoints  == maxPoints){
+                    console.log("User's final rank ::::", otherRank)
+                    if (this.tables[i].users[k].points + this.tables[i].users[k].bonusPoints == maxPoints)
+                    {
                         this.tables[i].players_won += 1;
                         this.tables[i].players_done += 1;
                         this.tables[i].users[k].is_done = true;
@@ -1148,9 +1249,10 @@ class _Tables {
                             id: this.tables[i].users[k].id,
                             amount: winAmount,
                             score: this.tables[i].users[k].points + this.tables[i].users[k].bonusPoints
-                        });                    
-                    }else{  
-                                            
+                        });
+                    } else
+                    {
+
                         this.tables[i].players_done += 1;
                         this.tables[i].users[k].is_done = true;
                         this.tables[i].users[k].rank = otherRank;
@@ -1162,28 +1264,35 @@ class _Tables {
                             id: this.tables[i].users[k].id,
                             amount: winAmount,
                             score: this.tables[i].users[k].points + this.tables[i].users[k].bonusPoints
-                        });   
+                        });
                     }
-                } 
+                }
                 this.tables = this.tables.filter((t) => t.room != room);
-                console.log("winner >>>",winner,this.tables)
-                return winner;          
+                console.log("winner >>>", winner, this.tables)
+                return winner;
             }
         }
         return false;
     }
-    allHome(room, id) {
+    allHome(room, id)
+    {
         var sum = 0;
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
-                for (let j = 0; j < this.tables[i].users.length; j++) {
-                    if (this.tables[i].users[j].id == id) {
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
+                for (let j = 0; j < this.tables[i].users.length; j++)
+                {
+                    if (this.tables[i].users[j].id == id)
+                    {
                         // console.log('Tokens:', this.tables[i].users[j].tokens);
-                        for (var z = 0; z < 4; z++) {
+                        for (var z = 0; z < 4; z++)
+                        {
                             sum = sum + this.tables[i].users[j].tokens[z];
                         }
 
-                        if (sum == 224) {
+                        if (sum == 224)
+                        {
                             this.tables[i].players_won += 1;
                             this.tables[i].players_done += 1;
                             this.tables[i].users[j].is_done = true;
@@ -1200,44 +1309,55 @@ class _Tables {
         }
         return false;
     }
-    calculateUserRank(i, userData) {
+    calculateUserRank(i, userData)
+    {
         let pointArray = []
-        for (let j = 0; j < this.tables[i].users.length; j++) {
-            pointArray.push(this.tables[i].users[j].points + this.tables[i].users[j].bonusPoints );
+        for (let j = 0; j < this.tables[i].users.length; j++)
+        {
+            pointArray.push(this.tables[i].users[j].points + this.tables[i].users[j].bonusPoints);
         }
-        console.log("calculateUserRank pointArray >>>",pointArray)
+        console.log("calculateUserRank pointArray >>>", pointArray)
         var maxPoints = (Math.max(...pointArray));
-        console.log("calculateUserRank maxPoints >>>",maxPoints)
+        console.log("calculateUserRank maxPoints >>>", maxPoints)
         let point = pointArray;
-        point.sort((a, b) => b-a);
-       
-        for (let k = 0; k < this.tables[i].users.length; k++) {
-            for(let j=0 ; j< point.length; j++){
-                console.log("calculateUserRank HERE - ",point[j], this.tables[i].users[k].points + this.tables[i].users[k].bonusPoints)
-                if(point[j] == this.tables[i].users[k].points + this.tables[i].users[k].bonusPoints && userData.id == this.tables[i].users[k].id) 
+        point.sort((a, b) => b - a);
+
+        for (let k = 0; k < this.tables[i].users.length; k++)
+        {
+            for (let j = 0; j < point.length; j++)
+            {
+                console.log("calculateUserRank HERE - ", point[j], this.tables[i].users[k].points + this.tables[i].users[k].bonusPoints)
+                if (point[j] == this.tables[i].users[k].points + this.tables[i].users[k].bonusPoints && userData.id == this.tables[i].users[k].id) 
                 {
-                    this.tables[i].users[k].rank = j+1;
+                    this.tables[i].users[k].rank = j + 1;
                     break;
                 };
             }
         }
     }
-    isThisTheEnd(room,win_amount) {
-        console.log("isThisTheEnd>> ",room,win_amount)
-        var rank = [];
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
-                for (let j = 0; j < this.tables[i].users.length; j++) {
-                    let amount = 0 ;
-                    if(this.tables[i].users[j].rank == 0 && this.tables[i].users[j].numeric_id != '') this.calculateUserRank(i, this.tables[i].users[j])
-                    if(typeof win_amount != 'undefined' && this.tables[i].users[j].rank == 1 && win_amount[1]) {
-                        amount =  this.tables[i].users[j].rank == 1 ? win_amount[1] : 0;
-                    }else if(typeof win_amount != 'undefined' && this.tables[i].users[j].rank == 2 && win_amount[2]) {
-                        amount =  this.tables[i].users[j].rank == 2 ? win_amount[2] : 0;
-                    } else if(typeof win_amount != 'undefined' && this.tables[i].users[j].rank == 3 && win_amount[3]) {
-                        amount =  this.tables[i].users[j].rank == 3 ? win_amount[3] : 0;
+    isThisTheEnd(room, win_amount)
+    {
+        console.log("isThisTheEnd>> ", room, win_amount)
+        const rank = [];
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
+                for (let j = 0; j < this.tables[i].users.length; j++)
+                {
+                    let amount = 0;
+                    if (this.tables[i].users[j].rank == 0 && this.tables[i].users[j].numeric_id != '') this.calculateUserRank(i, this.tables[i].users[j])
+                    if (typeof win_amount != 'undefined' && this.tables[i].users[j].rank == 1 && win_amount[1])
+                    {
+                        amount = this.tables[i].users[j].rank == 1 ? win_amount[1] : 0;
+                    } else if (typeof win_amount != 'undefined' && this.tables[i].users[j].rank == 2 && win_amount[2])
+                    {
+                        amount = this.tables[i].users[j].rank == 2 ? win_amount[2] : 0;
+                    } else if (typeof win_amount != 'undefined' && this.tables[i].users[j].rank == 3 && win_amount[3])
+                    {
+                        amount = this.tables[i].users[j].rank == 3 ? win_amount[3] : 0;
                     }
-                    console.log("for score >>>>",this.tables[i].users[j])
+                    console.log("for score >>>>", this.tables[i].users[j])
                     rank.push({
                         player_index: this.tables[i].users[j].position,
                         name: this.tables[i].users[j].name,
@@ -1245,46 +1365,57 @@ class _Tables {
                         rank: this.tables[i].users[j].rank,
                         amount: amount,
                         id: this.tables[i].users[j].id,
-                        score:this.tables[i].users[j].points + this.tables[i].users[j].bonusPoints
+                        score: this.tables[i].users[j].points + this.tables[i].users[j].bonusPoints
                     });
                 }
- 
-                if (this.tables[i].no_of_players == 2 || this.tables[i].no_of_players == 3) {
-                    if (this.tables[i].players_won == 1) {
+
+                if (this.tables[i].no_of_players == 2 || this.tables[i].no_of_players == 3)
+                {
+                    if (this.tables[i].players_won == 1)
+                    {
                         this.tables = this.tables.filter((t) => t.room != room);
-                        console.log('After Splice::',room);
-                        console.log('End rank::', rank);
-                        console.log('Tables::',this.tables);
+                        //console.log('After Splice::', room);
+                        //console.log('End rank::', rank);
+                        //console.log('Tables::', this.tables);
                         return rank;
                     } else return false;
                 }
-                else if (this.tables[i].no_of_players == 4) {
-                    if (this.tables[i].players_won == 2) {
+                else if (this.tables[i].no_of_players == 4)
+                {
+                    if (this.tables[i].players_won == 2)
+                    {
                         this.tables = this.tables.filter((t) => t.room != room);
-                        console.log("this.tables  >>0>",this.tables ,rank)
+                        console.log("this.tables  >>0>", this.tables, rank)
                         return rank;
-                    } else if (this.tables[i].players_done >= 3 && this.tables[i].players_won == 1) {
-                        for (let j = 0; j < this.tables[i].users.length; j++) {
-                            if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done) {
+                    } else if (this.tables[i].players_done >= 3 && this.tables[i].players_won == 1)
+                    {
+                        for (let j = 0; j < this.tables[i].users.length; j++)
+                        {
+                            if (this.tables[i].users[j].is_active && !this.tables[i].users[j].is_done)
+                            {
                                 this.tables[i].players_won += 1;
                                 this.tables[i].players_done += 1;
                                 this.tables[i].users[j].is_done = true;
                                 this.tables[i].users[j].rank = this.tables[i].players_won;
-                                
+
                             }
                         }
 
-                        rank = [];
-                        for (let j = 0; j < this.tables[i].users.length; j++) {
+                        //rank = [];
+                        for (let j = 0; j < this.tables[i].users.length; j++)
+                        {
                             // let amount = 0 ;
                             // if(typeof win_amount != 'undefined') amount =  this.tables[i].users[j].rank == 1 ? win_amount : 0;
-                            let amount = 0 ;
-                            if(typeof win_amount != 'undefined' && this.tables[i].users[j].rank == 1 && win_amount[1]) {
-                                amount =  this.tables[i].users[j].rank == 1 ? win_amount[1] : 0;
-                            }else if(typeof win_amount != 'undefined' && this.tables[i].users[j].rank == 2 && win_amount[2]) {
-                                amount =  this.tables[i].users[j].rank == 2 ? win_amount[2] : 0;
-                            } else if(typeof win_amount != 'undefined' && this.tables[i].users[j].rank == 3 && win_amount[3]) {
-                                amount =  this.tables[i].users[j].rank == 3 ? win_amount[3] : 0;
+                            let amount = 0;
+                            if (typeof win_amount != 'undefined' && this.tables[i].users[j].rank == 1 && win_amount[1])
+                            {
+                                amount = this.tables[i].users[j].rank == 1 ? win_amount[1] : 0;
+                            } else if (typeof win_amount != 'undefined' && this.tables[i].users[j].rank == 2 && win_amount[2])
+                            {
+                                amount = this.tables[i].users[j].rank == 2 ? win_amount[2] : 0;
+                            } else if (typeof win_amount != 'undefined' && this.tables[i].users[j].rank == 3 && win_amount[3])
+                            {
+                                amount = this.tables[i].users[j].rank == 3 ? win_amount[3] : 0;
                             }
                             rank.push({
                                 player_index: this.tables[i].users[j].position,
@@ -1293,11 +1424,11 @@ class _Tables {
                                 rank: this.tables[i].users[j].rank,
                                 amount: amount,
                                 id: this.tables[i].users[j].id,
-                                score:this.tables[i].users[j].points + this.tables[i].users[j].bonusPoints
+                                score: this.tables[i].users[j].points + this.tables[i].users[j].bonusPoints
                             });
                         }
                         this.tables = this.tables.filter((t) => t.room != room);
-                        console.log("this.tables  >1>>",this.tables,rank )
+                        console.log("this.tables  >1>>", this.tables, rank)
                         return rank;
                     } else return false;
                 }
@@ -1306,21 +1437,27 @@ class _Tables {
         return false;
     }
 
-    checkOnlyPlayerLeft(room) {
+    checkOnlyPlayerLeft(room)
+    {
         // console.log('CHECKING PLAYERS LEFT');
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
                 console.log("checkOnlyPlayerLeft : Step 1: ")
-                if (this.tables[i].no_of_players - this.tables[i].players_done == 1) {
+                if (this.tables[i].no_of_players - this.tables[i].players_done == 1)
+                {
                     console.log("checkOnlyPlayerLeft : Step 2: ")
-                    for (let j = 0; j < this.tables[i].users.length; j++) {
+                    for (let j = 0; j < this.tables[i].users.length; j++)
+                    {
                         // console.log('USER', this.tables[i].users[j]);
-                        console.log("checkOnlyPlayerLeft : Step 3: ", this.tables[i].users[j].is_active ,!this.tables[i].users[j].is_done ,!this.tables[i].users[j].is_left)
+                        console.log("checkOnlyPlayerLeft : Step 3: ", this.tables[i].users[j].is_active, !this.tables[i].users[j].is_done, !this.tables[i].users[j].is_left)
                         if (
                             this.tables[i].users[j].is_active &&
                             !this.tables[i].users[j].is_done &&
                             !this.tables[i].users[j].is_left
-                        ) {
+                        )
+                        {
                             this.tables[i].players_won += 1;
                             this.tables[i].players_done += 1;
                             this.tables[i].users[j].is_done = true;
@@ -1336,94 +1473,89 @@ class _Tables {
         return false;
     }
 
-    isCurrentTurnMine(room, position) {
+    isCurrentTurnMine(room, position)
+    {
         const table = this.tables.find((elem) => elem.room == room);
         if (!table) return false;
         return table.current_turn == position;
     }
 
-    getMyLife(room, id) {
+    getMyLife(room, id)
+    {
         const table = this.tables.find((elem) => elem.room == room);
-
         if (!table) return 0;
-
         const me = table.users.find((elem) => elem.id == id);
-
         if (!me) return 0;
         return me.life;
     }
 
-    deductLife(room, id) {
-        // console.log('TABLE:: >>>>> ',this.tables[0].users);
-        // for (let i = 0; i < this.tables.length; i++) {
-        //     if (this.tables[i].room == room) {
-        //         for (let j = 0; j < this.tables[i].users.length; j++) {
-        //             if (this.tables[i].users[j].id == id) {
-        //                 this.tables[i].users[j].life--;
-        //             }
-        //         }
-        //     }
-        // }
-
+    deductLife(room, id)
+    {
         // New modification with same result
-        this.tables = this.tables.reduce((prev,curr) => {
-            if(curr.room == room){
+        this.tables = this.tables.reduce((prev, curr) =>
+        {
+            if (curr.room == room)
+            {
                 let idx = curr.users.findIndex(element => element.id == id);
                 curr.users[idx].life--;
             }
             prev.push(curr);
             return prev;
-        },[]);
+        }, []);
 
-        var gamePlayDataIndex = this.gamePlayData.findIndex((x)=>x.room == room);
-        console.log("this.gamePlayData[gamePlayDataIndex].data.life_lost0 >",this.gamePlayData[gamePlayDataIndex].data.life_lost,this.gamePlayData[gamePlayDataIndex].data.lives_left)
+        let gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
+        console.log("this.gamePlayData[gamePlayDataIndex].data.life_lost0 >", this.gamePlayData[gamePlayDataIndex].data.life_lost, this.gamePlayData[gamePlayDataIndex].data.lives_left)
         this.gamePlayData[gamePlayDataIndex].data.life_lost += 1
         this.gamePlayData[gamePlayDataIndex].data.lives_left -= 1
-        console.log("this.gamePlayData[gamePlayDataIndex].data.life_lost1 >",this.gamePlayData[gamePlayDataIndex].data.life_lost,this.gamePlayData[gamePlayDataIndex].data.lives_left)
+        console.log("this.gamePlayData[gamePlayDataIndex].data.life_lost1 >", this.gamePlayData[gamePlayDataIndex].data.life_lost, this.gamePlayData[gamePlayDataIndex].data.lives_left)
 
     }
 
-    getMyIdByPosition(room, position) {
+    getMyIdByPosition(room, position)
+    {
         const table = this.tables.find((elem) => elem.room == room);
-
         if (!table) return 0;
         return table.users[position] ? table.users[position].id : -1;
     }
 
-    getTokens(room) {
-        var table = this.tables.find((elem) => elem.room == room);
-        if (!table) {
-            // console.log("TOKENS NOT FOUND", room, tables.length);
+    getTokens(room)
+    {
+        let table = this.tables.find((elem) => elem.room == room);
+        if (!table)
+        {
             return [];
         }
-        var tokens = table.users.map((user) => {
+        let tokens = table.users.map((user) =>
+        {
             return {
                 user_id: user.id,
                 tokens: user.tokens,
-                points:user.points
+                points: user.points
             };
         });
-        // console.log("TOKENS RETURNED", tokens);
         return tokens;
     }
-    getPoints(room){
+    getPoints(room)
+    {
         let table = this.tables.find((elem) => elem.room == room);
-        if (!table) {
-            // console.log("TOKENS NOT FOUND", room, tables.length);
+        if (!table)
+        {
             return [];
         }
-        var points = table.users.map((user) => {
+        let points = table.users.map((user) =>
+        {
             return {
                 user_id: user.id,
-                score:user.points + user.bonusPoints ,
-                points:user.points,
-                bonusPoints:user.bonusPoints
+                score: user.points + user.bonusPoints,
+                points: user.points,
+                bonusPoints: user.bonusPoints
             };
         });
         return points;
     }
 
-    rollDice() {
+    rollDice()
+    {
         // return Math.floor(Math.random() * 6) + 1;
 
         /**
@@ -1431,18 +1563,20 @@ class _Tables {
          */
         let uniqueNum = 0;
         const usedNums = [];
-        while (uniqueNum === 0) {
+        while (uniqueNum === 0)
+        {
             const randomNum = Math.floor(Math.random() * 6) + 1;
-            if (!usedNums.includes(randomNum)) {
+            if (!usedNums.includes(randomNum))
+            {
                 usedNums.push(randomNum);
                 uniqueNum = randomNum;
             }
         }
-
         return uniqueNum;
     }
 
-    objectId() {
+    objectId()
+    {
         const os = require('os');
         const crypto = require('crypto');
 
@@ -1453,23 +1587,28 @@ class _Tables {
 
         return seconds + machineId + processId + counter;
     }
-    checkPointActive(room, myPos) {
+    checkPointActive(room, myPos)
+    {
         console.log("checkPointActive -- ")
         let tab_pos = 0;
         let checkPointActivated = false;
-        for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].room == room) {
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
                 tab_pos = i;
             }
         }
-        console.log("checkPointActive 1 - ",tab_pos,myPos)
-        for (let k = 0; k < this.tables[tab_pos].users[myPos].tokens.length; k++) {
-            console.log("this.tables[tab_pos].users[myPos].tokens[k] - ",this.tables[tab_pos].users[myPos].tokens[k])
-            if (this.tables[tab_pos].users[myPos].tokens[k] != -1) {
-                
+        console.log("checkPointActive 1 - ", tab_pos, myPos)
+        for (let k = 0; k < this.tables[tab_pos].users[myPos].tokens.length; k++)
+        {
+            console.log("this.tables[tab_pos].users[myPos].tokens[k] - ", this.tables[tab_pos].users[myPos].tokens[k])
+            if (this.tables[tab_pos].users[myPos].tokens[k] != -1)
+            {
+
                 let token_position = this.tables[tab_pos].users[myPos].tokens[k];
-                console.log("token position - ",token_position,config.starPosition[0])
-                if(token_position >= config.starPosition[0])  checkPointActivated = true;
+                console.log("token position - ", token_position, config.starPosition[0])
+                if (token_position >= config.starPosition[0]) checkPointActivated = true;
                 console.log(
                     'checkPointActivated',
                     checkPointActivated,
@@ -1479,8 +1618,8 @@ class _Tables {
 
             }
         }
-        var gamePlayDataIndex = this.gamePlayData.findIndex((x)=>x.room == room);
-        this.gamePlayData[gamePlayDataIndex].data.checkpoint =  checkPointActivated ? true : false;
+        var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
+        this.gamePlayData[gamePlayDataIndex].data.checkpoint = checkPointActivated ? true : false;
         return checkPointActivated;
     }
 }
