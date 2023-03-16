@@ -9,12 +9,16 @@ const requestTemplate = require('../../api/service/request-template');
 const logDNA        = require('../../api/service/logDNA'); 
 const { _Tables }   = require('../utils/_tables');
 const _tab          = new _Tables();
-
+var logger          = {};
 
 module.exports = {
     //Roll dice for tournament
     tournamntDiceRolled: async function (socket, params, id) {
-          // INIT
+        logger = {
+            level: 'debugg',
+            meta: {'socket' : socket, 'data' : params, 'id' : id},
+          };
+        logDNA.log('Dice roll events', logger);
         // console.log('DICE ROLLED', params);
         let isJackpot = false;
         var resObj = { callback: { status: 1, message: localization.success }, events: [] };
@@ -272,7 +276,12 @@ module.exports = {
 
     //Move Made
     moveTourney: async function (params, id) {
-        // console.log('Move Made', params);
+        logger = {
+            level: 'debugg',
+            meta: {'data' : params, 'id' : id},
+          };
+        logDNA.log('Pawn move made', logger);
+
         try {
             // VALIDATION
             if (!params) {
@@ -610,7 +619,12 @@ module.exports = {
                         console.log("Below Winner Data ----",winnerData)
                         if(winnerData)  resObj.events.push(winnerData);
                     } catch (error) {
-                        console.lof("CATCH ERROR _ ",error)
+                        console.lof("CATCH ERROR _ ",error);
+                        logger = {
+                            level: 'error',
+                            meta: error,
+                          };
+                        logDNA.log('Pawn move error', logger);
                     }
                     
                 }
@@ -736,8 +750,13 @@ module.exports = {
             resObj.events.push(event);
             // console.trace('[MOVE_MADE]', JSON.stringify(resObj));
             return resObj;
-        } catch (err) {
-            // console.log('ERROR', err);
+        } catch (error) {
+            console.log('ERROR', error);
+            logger = {
+                level: 'debugg',
+                meta: error,
+              };
+            logDNA.log('Move turnament error', logger);
         }
     },
     checkwinnerOfTournament: async function(room){
@@ -821,7 +840,13 @@ module.exports = {
     // Quit Game / Leave Table
     leaveTable: async function (params, id, socket) {
         console.log('LeaveRequest Request IN', params);
-        var refund = '';
+        logger = {
+            level: 'debugg',
+            meta: {'data' : params, 'id': id, 'socket': socket},
+          };
+        logDNA.log('LeaveRequest', logger);
+
+        let refund = '';
         if (!Service.validateObjectId(id))
             return {
                 callback: {
@@ -1084,6 +1109,12 @@ module.exports = {
     //Skip Turn
     skipTurn: async function (params, id) {
         console.log('Skip Turn Request', params);
+        logger = {
+            level: 'debugg',
+            meta: {'data' : params, 'id': id},
+          };
+        logDNA.log('Skip turn request', logger);
+
         if (!params || !params.room) {
             return {
                 callback: {
@@ -1092,14 +1123,7 @@ module.exports = {
                 },
             };
         }
-        // if (!params.room)
-        //     return {
-        //         callback: {
-        //             status: 0,
-        //             message: localization.missingParamError,
-        //         },
-        //     };
-
+        
         var mypos = await _tab.getMyPosition(params.room, id);
         // console.log('My position::', mypos);
 
@@ -1505,6 +1529,11 @@ module.exports = {
     reconnectIfPlaying: async function (id) 
     {
         console.log('User Playing On Table');
+        logger = {
+            level: 'debugg',
+            meta: {'id': id},
+          };
+        logDNA.log('Reconnecting in tournament', logger);
         //if (!Service.validateObjectId(id)) false;
         var us = await User.findById(id);
         console.log('USERS DETAILS BY ID', us);
@@ -1542,6 +1571,12 @@ module.exports = {
 
     joinTournament: async function (params, myId) {
         console.log('Join tournament GAME', params,myId);
+        logger = {
+            level: 'debugg',
+            meta: {'data' : params, 'id': myId},
+          };
+        logDNA.log('Join tournament', logger);
+
         // for logDNA logger
         let logData = {};
         logData = {
@@ -1885,7 +1920,12 @@ module.exports = {
                 reqData.users.push(json)
             }
         }
-        console.log("getGameUsersData >",reqData)
+        console.log("getGameUsersData >",reqData);
+        logger = {
+            level: 'debugg',
+            meta: reqData,
+          };
+        logDNA.log('GameUser data', logger);
         return reqData;
     },
     getEndGameData: async function (data,room_fee) {
@@ -1909,7 +1949,12 @@ module.exports = {
                 reqData.users.push(json)
             }
         }
-        console.log("getEndGameData >",reqData)
+        console.log("getEndGameData >",reqData);
+        logger = {
+            level: 'debugg',
+            meta: reqData,
+          };
+        logDNA.log('GameEnd data', logger);
         return reqData;
     },
 };
