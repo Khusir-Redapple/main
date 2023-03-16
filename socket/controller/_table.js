@@ -14,8 +14,15 @@ const _tab          = new _Tables();
 module.exports = {
     //Roll dice for tournament
     tournamntDiceRolled: async function (socket, params, id) {
-          // INIT
-        // console.log('DICE ROLLED', params);
+        let logData = {
+            level: 'debugg',
+            meta: {'params' : {'params' : params, 'socket' : socket, 'id' : id}}                    
+        };        
+        logDNA.log('Dice rolled', logData);
+        // To remove object property from memory
+        delete logData['level'];
+        delete logData['meta'];
+
         let isJackpot = false;
         var resObj = { callback: { status: 1, message: localization.success }, events: [] };
 
@@ -78,11 +85,6 @@ module.exports = {
          * To check current dice rolled value is 6 and move not possible. 
          * then user should't get next chance.
          */
-        //const currentDiceValue = await _tab.getDiceValue(params.room, id);        
-        // if (currentDiceValue == 6 && movePossible == false) {
-
-
-
         // IF 3 times 6
         if (sixCounts == 2 && dices_rolled[0] == 6) {
             //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
@@ -272,7 +274,15 @@ module.exports = {
 
     //Move Made
     moveTourney: async function (params, id) {
-        // console.log('Move Made', params);
+        let logData = {
+            level: 'debugg',
+            meta: {'params' : {'params' : params, 'id' : id}}                    
+        };        
+        logDNA.log('Move made happans', logData);
+        // To remove object property from memory
+        delete logData['level'];
+        delete logData['meta'];
+
         try {
             // VALIDATION
             if (!params) {
@@ -322,11 +332,7 @@ module.exports = {
             var tableD = await Table.findOne({
                 room: params.room,
             });
-            //const gameStartTime = tableD.game_started_at;
-            //let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000)); 
-            //console.log("timeInsecond > ",timeInsecond)
-            //const time = _tab.setGameTime(params.room, timeInsecond)
-            //console.log("after setGametime",time)
+            
             if (!movePossibleExact) {
                 console.log('[NOT MOVE IMPOSSIBLE EXACT]');
                 // if (params.dice_value != 6) {
@@ -461,16 +467,7 @@ module.exports = {
                         var endGame = _tab.isThisTheEnd(params.room, tableD.win_amount);
                         if (endGame) {
                             // Update values in user wallets & table data [DB]
-                            // console.log('tableD::', tableD);
                             if (tableD) {
-                                // for (let j = 0; j < endGame.length; j++) {
-                                //     for (let k = 0; k < tableD.players.length; k++) {
-                                //         if (endGame[j].id.toString() == tableD.players[k].id.toString()) {
-                                //             tableD.players[k].rank = endGame[j].rank;
-                                //             tableD.players[k].pl += endGame[j].amount;
-                                //         }
-                                //     }
-                                // }
                                 console.log("GAME END :: >>>>>>>");
                                 endGame.map(async (eGame) => {
                                     tableD.players.map(async (playersTable) => {
@@ -559,7 +556,16 @@ module.exports = {
                     console.log("can i kill true.........")
                     try {
                         var canIKill = _tab.tourneyCanIKill(params.room, id, params.token_index, myPos);
-                        console.log("canIKill >>>",canIKill)
+                        console.log("canIKill >>>",canIKill);
+                        let logData = {
+                            level: 'debugg',
+                            meta: {'params' : canIKill}                    
+                        };        
+                        logDNA.log('Pawn killed', logData);
+                        // To remove object property from memory
+                        delete logData['level'];
+                        delete logData['meta'];
+
                         if (canIKill) {
                             console.log("canIKill true:::", canIKill[0])
                             if(canIKill[0].movebleBox < 15) killTimer = 2000;
@@ -610,7 +616,15 @@ module.exports = {
                         console.log("Below Winner Data ----",winnerData)
                         if(winnerData)  resObj.events.push(winnerData);
                     } catch (error) {
-                        console.lof("CATCH ERROR _ ",error)
+                        console.lof("CATCH ERROR _ ",error);
+                        let logData = {
+                            level: 'error',
+                            meta: {'params' : error}                    
+                        };        
+                        logDNA.log('Pawn kill error', logData);
+                        // To remove object property from memory
+                        delete logData['level'];
+                        delete logData['meta'];
                     }
                     
                 }
@@ -803,7 +817,6 @@ module.exports = {
                         game_data: winnerInfo,
                     },
                 };
-                console.log("event >4>>>",event)
                 let reqData = await this.getEndGameData(event.data,tableD.room_fee);
                 console.log("reqData >>>>",reqData)
                 let startGame = await requestTemplate.post(`endgame`, reqData)
@@ -821,6 +834,15 @@ module.exports = {
     // Quit Game / Leave Table
     leaveTable: async function (params, id, socket) {
         console.log('LeaveRequest Request IN', params);
+        let logData = {
+            level: 'debugg',
+            meta: {'params' : {'params' : params, 'id' : id, 'socket' : socket}}                    
+        };        
+        logDNA.log('LeaveRequest IN', logData);
+        // To remove object property from memory
+        delete logData['level'];
+        delete logData['meta'];
+
         var refund = '';
         if (!Service.validateObjectId(id))
             return {
@@ -1084,6 +1106,15 @@ module.exports = {
     //Skip Turn
     skipTurn: async function (params, id) {
         console.log('Skip Turn Request', params);
+        let logData = {
+            level: 'debugg',
+            meta: {'params' : {'params' : params, 'id' : id}}                    
+        };        
+        logDNA.log('Skip turn request', logData);
+        // To remove object property from memory
+        delete logData['level'];
+        delete logData['meta'];
+
         if (!params || !params.room) {
             return {
                 callback: {
@@ -1092,14 +1123,6 @@ module.exports = {
                 },
             };
         }
-        // if (!params.room)
-        //     return {
-        //         callback: {
-        //             status: 0,
-        //             message: localization.missingParamError,
-        //         },
-        //     };
-
         var mypos = await _tab.getMyPosition(params.room, id);
         // console.log('My position::', mypos);
 
@@ -1424,8 +1447,7 @@ module.exports = {
             if (!params.room) return false;
 
             var start = await _tab.tournamentStartGame(params.room);
-            // console.log('AFTER START ==>');
-            
+                      
             let tableD = await Table.findOne({ room: params.room });
             if (tableD) {
                 var dt = new Date();
@@ -1433,7 +1455,7 @@ module.exports = {
                 // tableD.game_started_at = new Date(dt).getTime();
                 // tableD.turn_start_at = new Date(dt).getTime();
 
-                dt.setSeconds( dt.getSeconds() + 10);
+                dt.setSeconds( dt.getSeconds());
                 tableD.game_started_at = new Date(dt).getTime();
                 tableD.turn_start_at = new Date(dt).getTime();
                 
@@ -1532,11 +1554,8 @@ module.exports = {
 
     getTokens: async function (room, id) {
         if (!Service.validateObjectId(id)) false;
-        var us = await User.findById(id);
-
-        var alreadyPlaying = _tab.getTokRoom(room, us._id);
-
-        // console.log('User Playing On Table', alreadyPlaying);
+        let us = await User.findById(id);
+        let alreadyPlaying = _tab.getTokRoom(room, us._id);
         return alreadyPlaying;
     },
 
@@ -1851,7 +1870,7 @@ module.exports = {
         } else {
             // for logDNA 
             logData = {
-                level: 'debugg',
+                level: 'error',
                 meta: {'TableData' : seatOnTable}                    
             };        
             logDNA.log('Error in joining game', logData);
@@ -1869,7 +1888,6 @@ module.exports = {
     getGameUsersData: async function (data) {
         
         let userData = data.table.users;
-        console.log("getGameUsersData >",data,userData)
         let reqData = {
             room: data.room,
             amount: data.table.room_fee.toString(),
@@ -1885,7 +1903,16 @@ module.exports = {
                 reqData.users.push(json)
             }
         }
-        console.log("getGameUsersData >",reqData)
+        console.log("getGameUsersData >",reqData);
+        let logData = {
+            level: 'debugg',
+            meta: {'params' : reqData}                    
+        };        
+        logDNA.log('Game user data', logData);
+        // To remove object property from memory
+        delete logData['level'];
+        delete logData['meta'];
+        // returning data
         return reqData;
     },
     getEndGameData: async function (data,room_fee) {
@@ -1895,7 +1922,6 @@ module.exports = {
             amount: room_fee.toString(),
             users : []
         }
-        console.log("getEndGameData > ",userData)
         for(let i=0;i<userData.length;i++){
             if(userData[i].id != ""){
                 var us = await User.findById(userData[i].id);
@@ -1909,7 +1935,15 @@ module.exports = {
                 reqData.users.push(json)
             }
         }
-        console.log("getEndGameData >",reqData)
+        console.log("getEndGameData >",reqData);
+        let logData = {
+            level: 'debugg',
+            meta: {'params' : reqData}                    
+        };        
+        logDNA.log('End game data', logData);
+        // To remove object property from memory
+        delete logData['level'];
+        delete logData['meta'];
         return reqData;
     },
 };
