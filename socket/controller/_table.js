@@ -1686,7 +1686,7 @@ module.exports = {
         }
 
         //Tabel Found
-        var us = await User.findById(myId);
+        //var us = await User.findById(myId);
         let optional = 0;
         isAnyTableEmptyForTourament = isAnyTableEmpty ? isAnyTableEmpty : room_code ? room_code: '';
         console.log("seatOnTableforTourney >>>",us, isAnyTableEmptyForTourament);
