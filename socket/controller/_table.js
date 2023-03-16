@@ -5,8 +5,7 @@ let Service         = require('./../../api/service');
 const config        = require('./../../config');
 const localization  = require('./../../api/service/localization');
 let ObjectId        = require('mongoose').Types.ObjectId;
-const requestTemplate = require('../../api/service/request-template');
-const logDNA        = require('../../api/service/logDNA'); 
+const requestTemplate = require('../../api/service/request-template'); 
 const { _Tables }   = require('../utils/_tables');
 const _tab          = new _Tables();
 
@@ -17,7 +16,7 @@ module.exports = {
           // INIT
         // console.log('DICE ROLLED', params);
         let isJackpot = false;
-        var resObj = { callback: { status: 1, message: localization.success }, events: [] };
+        let resObj = { callback: { status: 1, message: localization.success }, events: [] };
 
         // VALIDATE PARAMS
         if (!params) return { callback: { status: 0, message: localization.missingParamError } };
@@ -289,9 +288,9 @@ module.exports = {
             params.token_index = parseInt(params.token_index);
             params.dice_value = parseInt(params.dice_value);
 
-            var resObj = { callback: { status: 1, message: localization.success }, events: [] };
+            let resObj = { callback: { status: 1, message: localization.success }, events: [] };
 
-            var myPos = await _tab.getMyPosition(params.room, id);
+            let myPos = await _tab.getMyPosition(params.room, id);
             if (myPos == -1) return { callback: { status: 0, message: localization.noDataFound } };
             let params_data = {
                 room: params.room,
@@ -741,7 +740,7 @@ module.exports = {
         }
     },
     checkwinnerOfTournament: async function(room){
-        var tableD = await Table.findOne({
+        let tableD = await Table.findOne({
             room: room,
         });
         if (tableD) {
@@ -821,7 +820,7 @@ module.exports = {
     // Quit Game / Leave Table
     leaveTable: async function (params, id, socket) {
         console.log('LeaveRequest Request IN', params);
-        var refund = '';
+        let refund = '';
         if (!Service.validateObjectId(id))
             return {
                 callback: {
@@ -1385,7 +1384,7 @@ module.exports = {
 
     checkLeaveTable: async function (id) {
         // console.log('check leave teable');
-        var leaveIfPlaying = await _tab.leaveIfPlaying(id);
+        let leaveIfPlaying = await _tab.leaveIfPlaying(id);
 
         if (leaveIfPlaying) {
             var rez = _tab.leaveIf(leaveIfPlaying, id);
@@ -1423,7 +1422,7 @@ module.exports = {
 
             if (!params.room) return false;
 
-            var start = await _tab.tournamentStartGame(params.room);
+            let start = await _tab.tournamentStartGame(params.room);
             // console.log('AFTER START ==>');
             
             let tableD = await Table.findOne({ room: params.room });
@@ -1482,7 +1481,7 @@ module.exports = {
             return false;
         }
 
-        var tabelCheck = _tab.checkTableExists(params.room);
+        let tabelCheck = _tab.checkTableExists(params.room);
         // console.log('Table Exists', tabelCheck);
         return tabelCheck;
     },
@@ -1498,17 +1497,17 @@ module.exports = {
             return false;
         }
 
-        var user_id = await _tab.getMyIdByPosition(params.room, id);
-        return user_id;
+        return await _tab.getMyIdByPosition(params.room, id);
+        
     },
 
     reconnectIfPlaying: async function (id) 
     {
         console.log('User Playing On Table');
         //if (!Service.validateObjectId(id)) false;
-        var us = await User.findById(id);
+        let us = await User.findById(id);
         console.log('USERS DETAILS BY ID', us);
-        var alreadyPlaying = _tab.alreadyPlayingTable(us._id);
+        let alreadyPlaying = _tab.alreadyPlayingTable(us._id);
         if (alreadyPlaying.status == 1) {
             var tab = await Table.findOne({ room: alreadyPlaying.table.room, 'players.id': id });
             if (!tab) {
@@ -1532,9 +1531,9 @@ module.exports = {
 
     getTokens: async function (room, id) {
         if (!Service.validateObjectId(id)) false;
-        var us = await User.findById(id);
+        let us = await User.findById(id);
 
-        var alreadyPlaying = _tab.getTokRoom(room, us._id);
+        let alreadyPlaying = _tab.getTokRoom(room, us._id);
 
         // console.log('User Playing On Table', alreadyPlaying);
         return alreadyPlaying;
@@ -1542,17 +1541,6 @@ module.exports = {
 
     joinTournament: async function (params, myId) {
         console.log('Join tournament GAME', params,myId);
-        // for logDNA logger
-        let logData = {};
-        logData = {
-            level: 'debugg',
-            meta: {'params' : {'Data' : params, 'MyId' : myId}}                    
-        };        
-        logDNA.log('Join in GAME', logData);
-        // To remove object property from memory
-        delete logData['level'];
-        delete logData['meta'];
-
         params = _.pick(params, ['no_of_players', 'room_fee','winningAmount','totalWinning']);
         if (!params || !Service.validateObjectId(myId)){
             return {
@@ -1562,7 +1550,7 @@ module.exports = {
                 },
             };
         }
-        var us = await User.findById(myId);
+        let us = await User.findById(myId);
         if (!us) {
             console.log('Deactivated from tournament');
             return {
@@ -1573,7 +1561,7 @@ module.exports = {
             };
         }
 
-        var alreadyPlaying = _tab.alreadyPlaying(us._id);
+        let alreadyPlaying = _tab.alreadyPlaying(us._id);
         if (alreadyPlaying) {
             console.log('alreadyPlaying');
             return {
@@ -1602,31 +1590,10 @@ module.exports = {
             "game_completed_at": "-1"
         });
         console.log("Already Played in This Tournament ::::", tableD);
-         // for logDNA 
-         logData = {
-            level: 'debugg',
-            meta: {'params' : tableD}                    
-        };
-        // To remove object property from memory
-        delete logData['level'];
-        delete logData['meta'];
-                
-        logDNA.log('Already playing in the tournament', logData);
-
         if(tableD){
             let players = tableD.players;
             for(let i=0; i<players.length; i++){
                 console.log("You are in This Tournament ::::", players[i].id == myId , players[i].id , myId, players[i].is_active)
-                // for logDNA 
-                logData = {
-                    level: 'debugg',
-                    meta: {'params' : { 'True' : players[i].id == myId, 'PlayerId' : players[i].id, 'MyId' : myId} }                    
-                };        
-                logDNA.log('You are in this tournament', logData);
-                // To remove object property from memory
-                delete logData['level'];
-                delete logData['meta'];
-
                 if(players[i].id == myId && players[i].is_active == true){
                     return {
                         callback: {
@@ -1649,16 +1616,6 @@ module.exports = {
 
         var checkTourneyRes = _tab.checkTournamentTable(params.room_fee, params.no_of_players);
         console.log('Tabel Found::', checkTourneyRes,params.winningAmount);
-        // for logDNA 
-        logData = {
-            level: 'debugg',
-            meta: {'params' : checkTourneyRes}                    
-        };        
-        logDNA.log('Table found for tournament', logData);
-        // To remove object property from memory
-        delete logData['level'];
-        delete logData['meta'];
-
         var isAnyTableEmpty = checkTourneyRes ? checkTourneyRes.room : false;
         let secTime = config.countDownTime;
         if(params.startTime) secTime = Math.round(params.startTime / 1000) - Math.round(new Date().getTime() / 1000) + 5;
@@ -1693,16 +1650,6 @@ module.exports = {
             var table = new Table(params);
             tableX = await table.save();           
             if (!tableX) {
-                // for logDNA 
-                logData = {
-                    level: 'debugg',
-                    meta: {'params' : params}                    
-                };        
-                logDNA.log('TABLE GENERATE ERROR', logData);
-                // To remove object property from memory
-                delete logData['level'];
-                delete logData['meta'];
-
                 return {
                     callback: {
                         status: 0,
@@ -1712,24 +1659,8 @@ module.exports = {
             }
 
             room_code = await _tab.createTableforTourney(tableX);
-            // for logDNA 
-            logData = {
-                level: 'debugg',
-                meta: {'room_no' : room_code}                    
-            };        
-            logDNA.log('ROOM CODE', logData);
             console.log('ROOM CODE:: ', room_code);
             if (!room_code) {
-                // for logDNA 
-                let logData = {
-                    level: 'debugg',
-                    meta: {'roomCode' : room_code, 'params' : tableX}                    
-                };        
-                logDNA.log('CREATE TABLE FOR TOURNAMENT', logData);
-                // To remove object property from memory
-                delete logData['level'];
-                delete logData['meta'];
-
                 return {
                     callback: {
                         status: 0,
@@ -1744,26 +1675,7 @@ module.exports = {
                 room: isAnyTableEmpty,
             });
             console.log('ROOM SEARCH INTO TABLES :: ', isAnyTableEmpty, tableX);
-            // for logDNA 
-            logData = {
-                level: 'debugg',
-                meta: {'params' : tableX}                    
-            };        
-            logDNA.log('TABLE EXISTS.?', logData);
-            // To remove object property from memory
-            delete logData['level'];
-            delete logData['meta'];
-
             if (!tableX) {
-                // for logDNA 
-                logData = {
-                    level: 'debugg',
-                    meta: {'room_no' : isAnyTableEmpty}                    
-                };        
-                logDNA.log('ROOM NOT FOUND IN TABLE', logData);
-                // To remove object property from memory
-                delete logData['level'];
-                delete logData['meta'];
                 return {
                     callback: {
                         status: 0,
@@ -1778,25 +1690,8 @@ module.exports = {
         let optional = 0;
         isAnyTableEmptyForTourament = isAnyTableEmpty ? isAnyTableEmpty : room_code ? room_code: '';
         console.log("seatOnTableforTourney >>>",us, isAnyTableEmptyForTourament);
-        // for logDNA 
-        logData = {
-            level: 'debugg',
-            meta: {'params' : isAnyTableEmptyForTourament}                    
-        };        
-        logDNA.log('ROOM GENERATION FAILURE', logData);
-
         var seatOnTable = _tab.seatOnTableforTourney(isAnyTableEmptyForTourament, us, optional);
         console.log('seatOnTable ::', seatOnTable);
-        // for logDNA 
-        logData = {
-            level: 'debugg',
-            meta: seatOnTable,
-        };
-        logDNA.log('seat On Table', logData);
-        // To remove object property from memory
-        delete logData['level'];
-        delete logData['meta'];
-
         if (seatOnTable) {
             var callbackRes = {
                 status: 1,
@@ -1849,15 +1744,6 @@ module.exports = {
             };
             
         } else {
-            // for logDNA 
-            logData = {
-                level: 'debugg',
-                meta: {'TableData' : seatOnTable}                    
-            };        
-            logDNA.log('Error in joining game', logData);
-            // To remove object property from memory
-            delete logData['level'];
-            delete logData['meta'];
             return {
                 callback: {
                     status: 0,
