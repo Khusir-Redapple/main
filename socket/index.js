@@ -362,7 +362,7 @@ module.exports = function (io)
             let myId = Socketz.getId(socket.id);
             params.isRefund = false;
             let response = await _TableInstance.leaveTable(params, myId, socket);
-            callback(rez.callback);
+            callback(response.callback);
             if (response.callback && response.callback.status == 1) processEvents(response);
 
         });
