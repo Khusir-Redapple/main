@@ -9,7 +9,6 @@ const requestTemplate = require('../api/service/request-template');
 const config          = require('../config');
 const ObjectId        = require('mongoose').Types.ObjectId;
 const logDNA          = require('../api/service/logDNA');
-var logData           = {};
 module.exports = function (io)
 {
     /**
@@ -18,13 +17,11 @@ module.exports = function (io)
     io.on('connection', function (socket)
     {
         // for logDNA 
-        logData = {
+        let logData = {
             level: 'debugg',
             meta: {'socketId': socket.id}
         };
         logDNA.log('DEVICE :: connected', logData);
-        // To delete object
-        deleteObjectProperty(logData);
         // reset the socket connection for all listeners
         socket.removeAllListeners();
 
@@ -44,14 +41,13 @@ module.exports = function (io)
             var responseObj = {};
             console.log("SOCKET REGISTER CALLED", socket.id);
             console.log('TS1 ::', 'join', socket.id, JSON.stringify(params));
-                // for logDNA 
-                logData = {
-                    level: 'debugg',
-                    meta: {'socketId': socket.id, 'params': params}
-                };
-                logDNA.log('SOCKET JOIN CALLED', logData);
-            // To delete object
-            deleteObjectProperty(logData);
+            // for logDNA 
+            let logData = {
+                level: 'debugg',
+                meta: {'socketId': socket.id, 'params': params}
+            };
+            logDNA.log('SOCKET JOIN CALLED', logData);
+
             try
             {
                 if (!params.token)
@@ -92,15 +88,7 @@ module.exports = function (io)
                 us.save();
 
                 //Check if user already playing
-                let rez = await _TableInstance.reconnectIfPlaying(us._id);
-                // for logDNA 
-                logData = {
-                    level: 'debugg',
-                    meta: rez
-                };
-                logDNA.log('Reconnecting if playing', logData);
-                // To delete object
-                deleteObjectProperty(logData);
+                var rez = await _TableInstance.reconnectIfPlaying(us._id);
                 console.log('PLAYER ID :: >>>', us._id);
                 console.log('ALREADY PLAYING OR NOT :: >>>', rez);
 
@@ -117,13 +105,11 @@ module.exports = function (io)
             } catch (err)
             {
                 // for logDNA 
-                logData = {
+                let logData = {
                     level: 'error',
                     meta: {'error': err, 'params': params}
                 };
                 logDNA.log('JOIN :: Event :: Error', logData);
-                // To delete object
-                deleteObjectProperty(logData);
 
                 if (typeof callback == 'function')
                     return callback({
@@ -146,13 +132,6 @@ module.exports = function (io)
                     });
                 }
                 var rez = await _TableInstance.reconnectIfPlaying(myId);
-                logData = {
-                    level: 'debugg',
-                    meta: rez
-                };
-                logDNA.log('join previous',logData);
-                //To delete object 
-                deleteObjectProperty(logData);
                 if (rez.status == 0)
                 {
                     return callback({
@@ -191,19 +170,7 @@ module.exports = function (io)
                     message: localization.missingTokenError,
                 });
             }
-            logData = {
-                level: 'debugg',
-                meta: data
-            };
-            logDNA.log('Join tournament called',logData);
-
             let verifyUser = await requestTemplate.post(`verifyuser`, {token: data.token});
-
-            logData = {
-                level: 'debugg',
-                meta: verifyUser
-            };
-            logDNA.log('Verifyuser api called',logData);
             if (!verifyUser.isSuccess)
             {
                 return callback({
@@ -286,12 +253,6 @@ module.exports = function (io)
             }
             console.log("myId - ", myId)
             var rez = await _TableInstance.joinTournament(params, myId, socket);
-            logData = {
-                level: 'debugg',
-                meta: rez
-            };
-            logDNA.log('Join tournament data',logData);
-
             console.log("JoinTOurnament res >>>", rez.callback.status == 1)
             callback(rez.callback);
             if (rez.callback.status == 1)
@@ -304,11 +265,6 @@ module.exports = function (io)
                 };
 
                 var start = await _TableInstance.startIfPossibleTournament(params_data);
-                logData = {
-                    level: 'debugg',
-                    meta: start
-                };
-                logDNA.log('Start game possible',logData);
 
                 console.log("Start", start);
 
@@ -317,12 +273,6 @@ module.exports = function (io)
                     console.log("Start 1- ", start.table.users);
 
                     let reqData = await _TableInstance.getGameUsersData(start);
-                    logData = {
-                        level: 'debugg',
-                        meta: reqData
-                    };
-                    logDNA.log('game user data',logData);
-
                     let startGame = await requestTemplate.post(`startgame`, reqData)
 
                     if (!startGame.isSuccess)
@@ -341,17 +291,11 @@ module.exports = function (io)
                                         isRefund: true
                                     }
                                     var resp = await _TableInstance.leaveTable(data, start.table.users[i].id);
-                                    logData = {
-                                        level: 'debugg',
-                                        meta: resp
-                                    };
-                                    logDNA.log('User leave table ',logData);
-
                                     processEvents(resp);
                                     i++;
                                     leaveUser(i, start);
                                     // To delete object
-                                    deleteObjectProperty(logData);
+                                    // deleteObjectProperty(logData);
                                     // deleteObjectProperty(resp);
                                 }
                             }
@@ -419,9 +363,9 @@ module.exports = function (io)
         socket.on('leaveTable', async (params, callback) =>
         {
             console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
-            let myId = Socketz.getId(socket.id);
+            var myId = Socketz.getId(socket.id);
             params.isRefund = false;
-            let rez = await _TableInstance.leaveTable(params, myId, socket);
+            var rez = await _TableInstance.leaveTable(params, myId, socket);
             callback(rez.callback);
             if (rez.callback && rez.callback.status == 1) processEvents(rez);
 
@@ -431,8 +375,8 @@ module.exports = function (io)
         {
             console.log("TS1 ::", 'tournamnt_dice_rolled', socket.id, JSON.stringify(params), new Date());
             console.log(socket.data_name, " Rolled ", params.dice_value);
-            let myId = Socketz.getId(socket.id);
-            let rez = await _TableInstance.tournamntDiceRolled(socket, params, myId);
+            var myId = Socketz.getId(socket.id);
+            var rez = await _TableInstance.tournamntDiceRolled(socket, params, myId);
             console.log('tournamnt_dice_rolled callback', new Date());
             callback(rez.callback);
             if (rez.callback.status == 1) processEvents(rez);
@@ -443,8 +387,8 @@ module.exports = function (io)
             console.log("Tournament_move_made ::", JSON.stringify(params));
             console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
 
-            let myId = Socketz.getId(socket.id);
-            let rez = await _TableInstance.moveTourney(params, myId);
+            var myId = Socketz.getId(socket.id);
+            var rez = await _TableInstance.moveTourney(params, myId);
             console.log("TS2 ::", 'makeMove callback =============>>>>', rez);
             callback(rez.callback);
             if (rez.callback.status == 1) processEvents(rez);
@@ -453,8 +397,8 @@ module.exports = function (io)
         socket.on('skip_turn', async (params, callback) =>
         {
             console.log('TS1 ::', 'skip_turn', socket.id, JSON.stringify(params));
-            let myId = Socketz.getId(socket.id);
-            let rez = await _TableInstance.skipTurn(params, myId);
+            var myId = Socketz.getId(socket.id);
+            var rez = await _TableInstance.skipTurn(params, myId);
             console.log("SKIP TURN RES", rez);
             callback(rez.callback);
             processEvents(rez);
@@ -469,7 +413,7 @@ module.exports = function (io)
 
         async function startTournament(start, socket)
         {
-            let params_data = {
+            var params_data = {
                 room: start.room,
             };
             //call api to deduct money 
@@ -480,23 +424,23 @@ module.exports = function (io)
             {
                 // console.log('Checking Timeout');
 
-                let checkTabel = await _TableInstance.istableExists(params_data);
+                var checkTabel = await _TableInstance.istableExists(params_data);
                 if (!checkTabel.status)
                 {
                     clearInterval(this);
                 } else
                 {
-                    let currTime = parseInt(new Date().getTime());
+                    var currTime = parseInt(new Date().getTime());
                     if (currTime - checkTabel.start_at > (config.turnTimer + 1) * 1000)
                     {
                         console.log("IN timeOut ------------", new Date())
-                        let id_of_current_turn = await _TableInstance.getMyIdByPossition(
+                        var id_of_current_turn = await _TableInstance.getMyIdByPossition(
                             params_data,
                             checkTabel.current_turn
                         );
                         if (id_of_current_turn != -1)
                         {
-                            let rez = await _TableInstance.skipTurn(params_data, id_of_current_turn);
+                            var rez = await _TableInstance.skipTurn(params_data, id_of_current_turn);
                             processEvents(rez);
                         }
                     }
@@ -554,14 +498,11 @@ module.exports = function (io)
                 {
                     for (const d of rez.events)
                     {
-                        
-                        // for logDNA logger
-                        logData = {
+                        let logData = {
                             level: 'debugg',
                             meta: d
                         };
                         logDNA.log(d.name, logData);
-                        // To delete object
                         deleteObjectProperty(logData);
                         setTimeout(
                             async function ()
@@ -625,14 +566,13 @@ module.exports = function (io)
             }
         }
         /**
-         * The function used to delete object property
-         * @param {object} object 
+         * The function used to delete object
          */
-       function deleteObjectProperty(object) {
+        function deleteObjectProperty() {
             Object.keys(object).forEach(key => {
                 delete object[key];
             });
-       }
+        }
 
     });
 
