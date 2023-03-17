@@ -111,7 +111,7 @@ module.exports = function (io)
                 };
                 responseObj.joined = rez.status;
                 // To delete boject
-                deleteObjectProperty(rez);
+                // deleteObjectProperty(rez);
                 console.log('TS1 ::', 'joinRes', socket.id, JSON.stringify(responseObj));
                 return callback(responseObj);
             } catch (err)
@@ -225,7 +225,7 @@ module.exports = function (io)
             };
             logDNA.log('Calculate win ammount',logData);
             // To delete object
-            deleteObjectProperty(payout);
+            // deleteObjectProperty(payout);
             console.log("params >>>>>", params);
             if (!params || !params.user_id)
             {
@@ -273,7 +273,7 @@ module.exports = function (io)
                 socket.join(socket.data_id);
                 await Socketz.updateSocket(us._id, socket);
                 // To delete object
-                deleteObjectProperty(newUser);
+                // deleteObjectProperty(newUser);
             }
             var myId = Socketz.getId(socket.id);
             if (!myId)
@@ -352,7 +352,7 @@ module.exports = function (io)
                                     leaveUser(i, start);
                                     // To delete object
                                     deleteObjectProperty(logData);
-                                    deleteObjectProperty(resp);
+                                    // deleteObjectProperty(resp);
                                 }
                             }
                         }
