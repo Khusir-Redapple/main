@@ -294,9 +294,6 @@ module.exports = function (io)
                                     processEvents(resp);
                                     i++;
                                     leaveUser(i, start);
-                                    // To delete object
-                                    // deleteObjectProperty(logData);
-                                    // deleteObjectProperty(resp);
                                 }
                             }
                         }
@@ -307,7 +304,6 @@ module.exports = function (io)
                     }
                     // if tournament possible
                     await startTournament(start, socket);
-                    let tableD = await Table.findOne({room: params.room});
                     setInterval(async function ()
                     {
                         let data = {
@@ -335,7 +331,7 @@ module.exports = function (io)
                 else
                 {
                     await Socketz.sleep(16000);
-                    var tableD = await Table.findOne({
+                    let tableD = await Table.findOne({
                         room: params_data.room
                     });
                     if (tableD && tableD.players.length < tableD.no_of_players)
@@ -349,7 +345,7 @@ module.exports = function (io)
                                     gameNotStarted: 'true',
                                     isRefund: true
                                 }
-                                var rez = await _TableInstance.leaveTable(data, tableD.players[i].id);
+                                let rez = await _TableInstance.leaveTable(data, tableD.players[i].id);
                                 console.log("rez--", rez)
                                 processEvents(rez);
                             }
@@ -363,11 +359,11 @@ module.exports = function (io)
         socket.on('leaveTable', async (params, callback) =>
         {
             console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
-            var myId = Socketz.getId(socket.id);
+            let myId = Socketz.getId(socket.id);
             params.isRefund = false;
-            var rez = await _TableInstance.leaveTable(params, myId, socket);
+            let response = await _TableInstance.leaveTable(params, myId, socket);
             callback(rez.callback);
-            if (rez.callback && rez.callback.status == 1) processEvents(rez);
+            if (response.callback && response.callback.status == 1) processEvents(response);
 
         });
 
@@ -375,11 +371,11 @@ module.exports = function (io)
         {
             console.log("TS1 ::", 'tournamnt_dice_rolled', socket.id, JSON.stringify(params), new Date());
             console.log(socket.data_name, " Rolled ", params.dice_value);
-            var myId = Socketz.getId(socket.id);
-            var rez = await _TableInstance.tournamntDiceRolled(socket, params, myId);
+            let myId = Socketz.getId(socket.id);
+            let response = await _TableInstance.tournamntDiceRolled(socket, params, myId);
             console.log('tournamnt_dice_rolled callback', new Date());
-            callback(rez.callback);
-            if (rez.callback.status == 1) processEvents(rez);
+            callback(response.callback);
+            if (response.callback.status == 1) processEvents(response);
         });
 
         socket.on('tournament_move_made', async (params, callback) =>
@@ -387,27 +383,27 @@ module.exports = function (io)
             console.log("Tournament_move_made ::", JSON.stringify(params));
             console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
 
-            var myId = Socketz.getId(socket.id);
-            var rez = await _TableInstance.moveTourney(params, myId);
-            console.log("TS2 ::", 'makeMove callback =============>>>>', rez);
-            callback(rez.callback);
-            if (rez.callback.status == 1) processEvents(rez);
+            let myId = Socketz.getId(socket.id);
+            let response = await _TableInstance.moveTourney(params, myId);
+            console.log("TS2 ::", 'makeMove callback =============>>>>', response);
+            callback(response.callback);
+            if (response.callback.status == 1) processEvents(response);
         });
         //Skip Turn
         socket.on('skip_turn', async (params, callback) =>
         {
             console.log('TS1 ::', 'skip_turn', socket.id, JSON.stringify(params));
-            var myId = Socketz.getId(socket.id);
-            var rez = await _TableInstance.skipTurn(params, myId);
-            console.log("SKIP TURN RES", rez);
-            callback(rez.callback);
-            processEvents(rez);
+            let myId = Socketz.getId(socket.id);
+            let response = await _TableInstance.skipTurn(params, myId);
+            console.log("SKIP TURN RES", response);
+            callback(response.callback);
+            processEvents(response);
         });
         // This event for Socket Disconnect.
         socket.on('disconnect', async () =>
         {
             logDNA.log('DEVICE :: Disconnected', logData);
-            var myId = Socketz.getId(socket.id);
+            // var myId = Socketz.getId(socket.id);
             await Socketz.userGone(socket.id);
         });
 
@@ -422,9 +418,7 @@ module.exports = function (io)
 
             setInterval(async function ()
             {
-                // console.log('Checking Timeout');
-
-                var checkTabel = await _TableInstance.istableExists(params_data);
+                let checkTabel = await _TableInstance.istableExists(params_data);
                 if (!checkTabel.status)
                 {
                     clearInterval(this);
@@ -440,8 +434,8 @@ module.exports = function (io)
                         );
                         if (id_of_current_turn != -1)
                         {
-                            var rez = await _TableInstance.skipTurn(params_data, id_of_current_turn);
-                            processEvents(rez);
+                            let response = await _TableInstance.skipTurn(params_data, id_of_current_turn);
+                            processEvents(response);
                         }
                     }
                 }
