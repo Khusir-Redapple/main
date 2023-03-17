@@ -9,7 +9,7 @@ const requestTemplate = require('../api/service/request-template');
 const config          = require('../config');
 const ObjectId        = require('mongoose').Types.ObjectId;
 const logDNA          = require('../api/service/logDNA');
-let logData         = {};
+var logData           = {};
 module.exports = function (io)
 {
     /**
@@ -41,7 +41,7 @@ module.exports = function (io)
         // New connection to Socket with Auth
         socket.on('join', async (params, callback) =>
         {
-            const responseObj = {};
+            var responseObj = {};
             console.log("SOCKET REGISTER CALLED", socket.id);
             console.log('TS1 ::', 'join', socket.id, JSON.stringify(params));
                 // for logDNA 
