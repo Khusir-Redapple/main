@@ -560,7 +560,8 @@ module.exports = function (io)
             }
         }
         /**
-         * The function used to delete object
+         * The function used to delete object.
+         * @param {object} object 
          */
         function deleteObjectProperty(object) {
             Object.keys(object).forEach(key => {
