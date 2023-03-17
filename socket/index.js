@@ -568,7 +568,7 @@ module.exports = function (io)
         /**
          * The function used to delete object
          */
-        function deleteObjectProperty() {
+        function deleteObjectProperty(object) {
             Object.keys(object).forEach(key => {
                 delete object[key];
             });
