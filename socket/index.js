@@ -41,6 +41,7 @@ module.exports = function (io)
         // New connection to Socket with Auth
         socket.on('join', async (params, callback) =>
         {
+            const responseObj = {};
             console.log("SOCKET REGISTER CALLED", socket.id);
             console.log('TS1 ::', 'join', socket.id, JSON.stringify(params));
                 // for logDNA 
@@ -65,13 +66,13 @@ module.exports = function (io)
                 });
                 if (!us)
                 {
-                    var rezObj = {
+                    responseObj = {
                         status: 1,
                         message: 'Socket registered successfully',
                         server_time: new Date().getTime().toString(),
                         joined: 0
                     };
-                    return callback(rezObj);
+                    return callback(responseObj);
                 }
                 await User.findOneAndUpdate(
                     {
@@ -103,16 +104,16 @@ module.exports = function (io)
                 console.log('PLAYER ID :: >>>', us._id);
                 console.log('ALREADY PLAYING OR NOT :: >>>', rez);
 
-                let rezObj = {
+                responseObj = {
                     status: 1,
                     message: 'Socket registered successfully',
                     server_time: new Date().getTime().toString(),
                 };
-                rezObj.joined = rez.status;
+                responseObj.joined = rez.status;
                 // To delete boject
                 deleteObjectProperty(rez);
-                console.log('TS1 ::', 'joinRes', socket.id, JSON.stringify(rezObj));
-                return callback(rezObj);
+                console.log('TS1 ::', 'joinRes', socket.id, JSON.stringify(responseObj));
+                return callback(responseObj);
             } catch (err)
             {
                 // for logDNA 
