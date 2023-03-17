@@ -38,15 +38,15 @@ module.exports = function (io)
         // New connection to Socket with Auth
         socket.on('join', async (params, callback) =>
         {
-            var responseObj = {};
-            console.log("SOCKET REGISTER CALLED", socket.id);
+            let responseObj = {};
+            console.log("Socket join fired", socket.id);
             console.log('TS1 ::', 'join', socket.id, JSON.stringify(params));
             // for logDNA 
             let logData = {
                 level: 'debugg',
                 meta: {'socketId': socket.id, 'params': params}
             };
-            logDNA.log('SOCKET JOIN CALLED', logData);
+            logDNA.log('Socket join fired', logData);
 
             try
             {
@@ -502,7 +502,7 @@ module.exports = function (io)
                             level: 'debugg',
                             meta: d
                         };
-                        logDNA.log(d.name, logData);
+                        logDNA.log(`Event ${d.name} fired`, logData);
                         deleteObjectProperty(logData);
                         setTimeout(
                             async function ()
