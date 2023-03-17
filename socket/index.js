@@ -9,7 +9,7 @@ const requestTemplate = require('../api/service/request-template');
 const config          = require('../config');
 const ObjectId        = require('mongoose').Types.ObjectId;
 const logDNA          = require('../api/service/logDNA');
-const logData         = {};
+let logData         = {};
 module.exports = function (io)
 {
     /**
