@@ -24,7 +24,7 @@ module.exports = function (io)
     function GlobalError(error){
         // for logDNA 
         let logData = {
-            level: 'debugg',
+            level: 'error',
             meta: error
         };
         logDNA.log('Global error', logData);
