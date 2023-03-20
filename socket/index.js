@@ -11,6 +11,25 @@ const ObjectId        = require('mongoose').Types.ObjectId;
 const logDNA          = require('../api/service/logDNA');
 module.exports = function (io)
 {
+    
+    // If the Promise is rejected this will catch it.
+    process.on('unhandledRejection', error => {
+        GlobalError(error);
+    });
+    // Global Uncaught Exception.
+    process.on('uncaughtException', error => {
+        GlobalError(error);
+    });
+    //The function used to log unhandle exception.
+    function GlobalError(error){
+        // for logDNA 
+        let logData = {
+            level: 'debugg',
+            meta: error
+        };
+        logDNA.log('Global error', logData);
+    } 
+    
     /**
      * The Socket connection start here
      */
