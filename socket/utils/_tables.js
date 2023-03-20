@@ -1548,7 +1548,8 @@ class _Tables
                 user_id: user.id,
                 score: user.points + user.bonusPoints,
                 points: user.points,
-                bonusPoints: user.bonusPoints
+                bonusPoints: user.bonusPoints,
+                pawnScore : user.tokens
             };
         });
         return points;
