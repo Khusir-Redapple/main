@@ -23,11 +23,10 @@ module.exports = function (io)
     //The function used to log unhandle exception.
     function GlobalError(error){
         // for logDNA 
-        let logData = {
+        logDNA.log('Global error', {
             level: 'error',
             meta: error
-        };
-        logDNA.log('Global error', logData);
+        });
     } 
     
     /**
