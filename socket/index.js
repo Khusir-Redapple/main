@@ -235,8 +235,9 @@ module.exports = function (io)
                     },
                     {
                         $set: {
-                            'token': data.token,
-                            'lobbyId': verifyUser.lobbyId
+                            'token'     : data.token,
+                            'lobbyId'   : verifyUser.lobbyId,
+                            'joinedAt'  : new Date().getTime()
                         },
                     }
                 );
@@ -248,7 +249,8 @@ module.exports = function (io)
                     numeric_id: params.user_id.toString(),
                     lobbyId: verifyUser.lobbyId,
                     profilepic: params.profile_pic,
-                    token: params.token
+                    token: params.token,
+                    joinedAt : new Date().getTime()
                 });
                 console.log("newUser > ", newUser)
                 us = await newUser.save();

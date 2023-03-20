@@ -22,6 +22,10 @@ var UserModel = new Schema({
     token: {
         type: String,
         required: true
+    },
+    joinedAt:{
+        type: String,
+        required: true
     }
 });
 
