@@ -349,7 +349,7 @@ module.exports = function (io)
                 }
                 else
                 {
-                    await Socketz.sleep(16000);
+                    await Socketz.sleep(7000);
                     let tableD = await Table.findOne({
                         room: params_data.room
                     });
