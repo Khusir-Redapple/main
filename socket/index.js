@@ -94,7 +94,8 @@ module.exports = function (io)
                     },
                     {
                         $set: {
-                            'token': params.token
+                            'token'     : params.token,
+                            'joinedAt'  : new Date().getTime()
                         },
                     }
                 );
