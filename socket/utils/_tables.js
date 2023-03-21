@@ -920,7 +920,7 @@ class _Tables
 
     }
 
-    tourneyCanIKill(room, id, token_index, myPos)
+    CanIKill(room, id, token_index, myPos)
     {
         var tab_pos = 0;
         for (let i = 0; i < this.tables.length; i++)

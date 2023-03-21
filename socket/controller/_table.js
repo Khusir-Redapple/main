@@ -573,7 +573,7 @@ module.exports = {
                     console.log("can i kill true.........")
                     try
                     {
-                        var canIKill = _tab.tourneyCanIKill(params.room, id, params.token_index, myPos);
+                        var canIKill = _tab.CanIKill(params.room, id, params.token_index, myPos);
                         console.log("canIKill >>>", canIKill)
                         if (canIKill)
                         {
