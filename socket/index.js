@@ -394,7 +394,7 @@ module.exports = function (io)
             console.log(socket.data_name, " Rolled ", params.dice_value);
             let myId = Socketz.getId(socket.id);
             let response = await _TableInstance.tournamntDiceRolled(socket, params, myId);
-            console.log('tournamnt_dice_rolled callback', new Date());
+            console.log('tournamnt_dice_rolled callback', response.callback);
             callback(response.callback);
             if (response.callback.status == 1) processEvents(response);
         });
@@ -406,7 +406,7 @@ module.exports = function (io)
 
             let myId = Socketz.getId(socket.id);
             let response = await _TableInstance.moveTourney(params, myId);
-            console.log("TS2 ::", 'makeMove callback =============>>>>', response);
+            console.log('Tournament_move_made callback', response.callback);
             callback(response.callback);
             if (response.callback.status == 1) processEvents(response);
         });
