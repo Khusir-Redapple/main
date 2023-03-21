@@ -1055,7 +1055,8 @@ class _Tables
             }
             console.log("My Points >>> ", this.tables[tab_pos].users[myPos].points, this.tables[tab_pos].users[dead_possible[i].user].points, this.tables[tab_pos].users[dead_possible[i].user].tokens)
         }
-        console.log("dead_possible >new>>>", dead_possible)
+        console.log("dead_possible >new>>>", dead_possible);
+        console.log('KILL TABLE INFO ::', this.tables[tab_pos]);
         return dead_possible.length > 0 ? dead_possible : false;
     }
 
