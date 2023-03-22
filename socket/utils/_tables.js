@@ -38,26 +38,17 @@ class _Tables
             };
             let colour = [0, 1, 2, 3];
             // To setup prior dice value for users.
-            let diceValueInArray;
-            let randomRumber;
+            var randomRumber;
 
             for (var pl = 0; pl < 4; pl++)
             {
                 let random_number = Math.floor(Math.random() * colour.length);
                 let random_colour = colour[random_number];
                 colour.splice(random_number, 1);
-                
-                // first user random number generation.
+                // To setup random number to 0 position index user.
                 if(pl == 0) {
                     randomRumber = this.randomRumberGenerator(18);
-                    diceValueInArray = randomRumber;
-                    console.log('RAND - ' , randomRumber)
-                } else {
-                    // To apply fisher shuffle algorithm to other user.
-                    diceValueInArray =  this.fisherShuffleGenerator(randomRumber);
-                }
-                
-
+                }                 
                 table_i.users[pl] = {
                     id: '',
                     numeric_id: '',
@@ -79,13 +70,11 @@ class _Tables
                     bonusPoints: 0,
                     moves: 0,
                     token_colour: random_colour,
-                    diceValue : diceValueInArray
+                    diceValue : pl == 0 ? JSON.parse((JSON.stringify(randomRumber))) : JSON.parse((JSON.stringify(this.fisherShuffleGenerator(randomRumber))))
                 };
-                // console.log('BEFORE GENERATING TABLE', table_i.users[pl]);
             }
-
             this.tables.push(table_i);
-            console.log('New table generated', JSON.stringify(table_i));
+            // console.log('New table generated', JSON.stringify(table_i));
             resolve(table_i.room);
         });
     }
