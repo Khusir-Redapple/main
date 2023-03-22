@@ -42,7 +42,19 @@ class _Tables
                 let random_number = Math.floor(Math.random() * colour.length);
                 let random_colour = colour[random_number];
                 colour.splice(random_number, 1);
-                console.log("Random colour is  : ", random_number, random_colour, colour, table_i.room)
+                // To setup prior dice value for users.
+                let diceValueInArray;
+                let randomRumber;
+                // first user random number generation.
+                if(pl == 0) {
+                    randomRumber = this.randomRumberGenerator(25);
+                    diceValueInArray = randomRumber;
+                } else {
+                    // To apply fisher shuffle algorithm to other user.
+                    diceValueInArray =  this.fisherShuffleGenerator(randomRumber);
+                }
+                
+
                 table_i.users[pl] = {
                     id: '',
                     numeric_id: '',
@@ -63,13 +75,14 @@ class _Tables
                     points: 0,
                     bonusPoints: 0,
                     moves: 0,
-                    token_colour: random_colour
+                    token_colour: random_colour,
+                    diceValue : diceValueInArray
                 };
                 // console.log('BEFORE GENERATING TABLE', table_i.users[pl]);
             }
 
             this.tables.push(table_i);
-            console.log('New table generated', table_i.room);
+            console.log('New table generated', table_i);
             resolve(table_i.room);
         });
     }
@@ -670,6 +683,10 @@ class _Tables
                         console.log('Before Bonus Points updated- ', this.tables[i].users[j].bonusPoints);
                         this.tables[i].users[j].bonusPoints += bonusPoint;
                         console.log('After Bonus Points updated- ', this.tables[i].users[j].bonusPoints);
+                        // To update pawn kill count
+                        if(type == 'cut_bonus'){
+                            this.tables[i].users[j].pawnKillCount = 12;
+                        }
                     }
                 }
             }
@@ -1556,25 +1573,43 @@ class _Tables
         return points;
     }
 
+    /**
+     * The function used to take dice roll value.
+     * @returns number
+     */
     rollDice()
     {
-        // return Math.floor(Math.random() * 6) + 1;
+        return 4;
+        
+    }
 
-        /**
-         * New implementation for Dice Roll improvement.
-         */
-        let uniqueNum = 0;
-        const usedNums = [];
-        while (uniqueNum === 0)
-        {
-            const randomNum = Math.floor(Math.random() * 6) + 1;
-            if (!usedNums.includes(randomNum))
-            {
-                usedNums.push(randomNum);
-                uniqueNum = randomNum;
-            }
+    /**
+     * The function used to generate random number between 1 to 6.
+     * @param {number} number means how many numbers want to generate.
+     * @returns {random} array
+     */
+    randomRumberGenerator(number) {
+        let array = [];
+        while(number > 0){
+            array.push(Math.floor(Math.random() * 6) + 1);
+            number --;
         }
-        return uniqueNum;
+        return array;
+    }
+
+    /**
+     * The function based on Fisher-Yates algorithm.
+     * 
+     * @param {arr} array means it'll take input as array form.
+     * @returns {arr} array
+     */
+    fisherShuffleGenerator(arr) {
+        let i = arr.length;
+        while (--i > 0) {
+          let randIndex = Math.floor(Math.random() * (i + 1));
+          [arr[randIndex], arr[i]] = [arr[i], arr[randIndex]];
+        }
+        return arr;
     }
 
     objectId()
