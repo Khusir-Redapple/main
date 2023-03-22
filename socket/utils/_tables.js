@@ -36,19 +36,22 @@ class _Tables
                 users: [],
 
             };
-            let colour = [0, 1, 2, 3]
+            let colour = [0, 1, 2, 3];
+            // To setup prior dice value for users.
+            let diceValueInArray;
+            let randomRumber;
+
             for (var pl = 0; pl < 4; pl++)
             {
                 let random_number = Math.floor(Math.random() * colour.length);
                 let random_colour = colour[random_number];
                 colour.splice(random_number, 1);
-                // To setup prior dice value for users.
-                let diceValueInArray;
-                let randomRumber;
+                
                 // first user random number generation.
                 if(pl == 0) {
                     randomRumber = this.randomRumberGenerator(25);
                     diceValueInArray = randomRumber;
+                    console.log('RAND - ' , randomRumber)
                 } else {
                     // To apply fisher shuffle algorithm to other user.
                     diceValueInArray =  this.fisherShuffleGenerator(randomRumber);
