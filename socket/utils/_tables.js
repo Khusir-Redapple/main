@@ -49,7 +49,7 @@ class _Tables
                 
                 // first user random number generation.
                 if(pl == 0) {
-                    randomRumber = this.randomRumberGenerator(25);
+                    randomRumber = this.randomRumberGenerator(18);
                     diceValueInArray = randomRumber;
                     console.log('RAND - ' , randomRumber)
                 } else {
@@ -85,7 +85,7 @@ class _Tables
             }
 
             this.tables.push(table_i);
-            console.log('New table generated', table_i);
+            console.log('New table generated', JSON.stringify(table_i));
             resolve(table_i.room);
         });
     }
