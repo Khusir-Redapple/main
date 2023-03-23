@@ -47,7 +47,7 @@ class _Tables
                 colour.splice(random_number, 1);
                 // To setup random number to 0 position index user.
                 if(pl == 0) {
-                    randomRumber = this.randomRumberGenerator(18);
+                    randomRumber = this.randomRumberGenerator(70);
                 }                 
                 table_i.users[pl] = {
                     id: '',
@@ -1575,29 +1575,28 @@ class _Tables
     {
         console.log('USER ID ====>', user_id);
         let returnDiceValue = null;
-        let randomNumber = null;
         this.tables = this.tables.reduce((prev, curr) =>
         {
             if (curr.room == room)
             {                  
-                curr.users.map((userData) => {
-                    if(userData.position == 0) {
-                        randomNumber = userData.diceValue;
-                    }
-                })
+                // curr.users.map((userData) => {
+                //     if(userData.position == 0) {
+                //         randomNumber = userData.diceValue;
+                //     }
+                // })
                 let idx = curr.users.findIndex(element => element.id == user_id);
                 // pop from top of array and update the property value.
                 returnDiceValue = curr.users[idx].diceValue.shift();
 
-                if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
-                    randomNumber = this.randomRumberGenerator(18);
-                    curr.users[idx].diceValue = JSON.parse(JSON.stringify(randomNumber));
-                    curr.room.randomNumber = JSON.parse(JSON.stringify(randomNumber));
-                } else if(curr.users[idx].diceValue.length == 0) {
-                    //randomNumber = this.randomRumberGenerator(18);
-                    let ran = this.fisherShuffleGenerator(randomNumber)
-                    curr.users[idx].diceValue = JSON.parse(JSON.stringify(ran));
-                }
+                // if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
+                //     randomNumber = this.randomRumberGenerator(18);
+                //     curr.users[idx].diceValue = JSON.parse(JSON.stringify(randomNumber));
+                //     curr.room.randomNumber = JSON.parse(JSON.stringify(randomNumber));
+                // } else if(curr.users[idx].diceValue.length == 0) {
+                //     //randomNumber = this.randomRumberGenerator(18);
+                //     let ran = this.fisherShuffleGenerator(randomNumber)
+                //     curr.users[idx].diceValue = JSON.parse(JSON.stringify(ran));
+                // }
             }
             prev.push(curr);
             return prev;
