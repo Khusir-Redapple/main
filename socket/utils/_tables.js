@@ -1594,7 +1594,8 @@ class _Tables
                     curr.users[idx].diceValue = JSON.parse(JSON.stringify(randomNumber));
                     curr.room.randomNumber = JSON.parse(JSON.stringify(randomNumber));
                 } else if(curr.users[idx].diceValue.length == 0) {
-                    let ran = this.fisherShuffleGenerator(randomNumber)
+                    // let ran = this.fisherShuffleGenerator(randomNumber)
+                    let ran = this.randomRumberGenerator(5);
                     curr.users[idx].diceValue = JSON.parse(JSON.stringify(ran));
                 }
             }
