@@ -1587,7 +1587,7 @@ class _Tables
 
                 if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
                     randomNumber = this.randomRumberGenerator(5);                                     
-                    for(let i =0; i <= curr.users; i++) {
+                    for(let i =0; i <= curr.users.length; i++) {
                         if(curr.users[i].position == 0) {
                             curr.users[i].diceValue = JSON.parse(JSON.stringify(randomNumber));
                         } else {
