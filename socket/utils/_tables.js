@@ -1595,7 +1595,7 @@ class _Tables
             prev.push(curr);
             return prev;
         }, []);
-        return returnDiceValue;
+        return returnDiceValue ? returnDiceValue : 1;
     }
 
     /**
