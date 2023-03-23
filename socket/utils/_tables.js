@@ -1575,6 +1575,7 @@ class _Tables
     {
         console.log('USER ID ====>', user_id);
         let returnDiceValue = null;
+        let randomNumber    = null;
         this.tables = this.tables.reduce((prev, curr) =>
         {
             if (curr.room == room)
