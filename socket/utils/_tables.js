@@ -1575,12 +1575,21 @@ class _Tables
     {
         console.log('USER ID ====>', user_id);
         let returnDiceValue = null;
+        let randomNumber = null;
         this.tables = this.tables.reduce((prev, curr) =>
         {
             if (curr.room == room)
             {
                 let idx = curr.users.findIndex(element => element.id == user_id);
+                // pop from top of array and update the property value.
                 returnDiceValue = curr.users[idx].diceValue.shift();
+
+                if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
+                    randomNumber = this.randomRumberGenerator(18);
+                    curr.users[idx].diceValue = JSON.parse(JSON.stringify(randomNumber));
+                } else if(curr.users[idx].diceValue.length == 0) {
+                    curr.users[idx].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
+                }
             }
             prev.push(curr);
             return prev;
