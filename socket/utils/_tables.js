@@ -47,7 +47,7 @@ class _Tables
                 colour.splice(random_number, 1);
                 // To setup random number to 0 position index user.
                 if(pl == 0) {
-                    randomRumber = this.randomRumberGenerator(80);
+                    randomRumber = this.randomRumberGenerator(5);
                 }                 
                 table_i.users[pl] = {
                     id: '',
@@ -1580,18 +1580,20 @@ class _Tables
         {
             if (curr.room == room)
             {                  
-                console.log('KHUSIR ::', JSON.stringify(curr.users));
+                //console.log('KHUSIR ::', JSON.stringify(curr.users));
                 let idx = curr.users.findIndex(element => element.id == user_id);
                 // pop from top of array and update the property value.
                 returnDiceValue = curr.users[idx].diceValue.shift();
 
                 if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
-                    //randomNumber = this.randomRumberGenerator(5);
-                   // curr.users[idx].diceValue = JSON.parse(JSON.stringify(randomNumber));
-                   // curr.room.randomNumber = JSON.parse(JSON.stringify(randomNumber));
-                } else if(curr.users[idx].diceValue.length == 0) {
-                    //let ran = this.fisherShuffleGenerator(randomNumber)
-                   // curr.users[idx].diceValue = JSON.parse(JSON.stringify(ran));
+                    randomNumber = this.randomRumberGenerator(5);                                     
+                    for(let i =0; i <= curr.users; i++) {
+                        if(curr.users[i].position == 0) {
+                            curr.users[i].diceValue = JSON.parse(JSON.stringify(randomNumber));
+                        } else {
+                            curr.users[i].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
+                        }
+                    }
                 }
             }
             prev.push(curr);
