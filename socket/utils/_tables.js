@@ -1579,13 +1579,14 @@ class _Tables
         this.tables = this.tables.reduce((prev, curr) =>
         {
             if (curr.room == room)
-            {                  
-                //console.log('KHUSIR ::', JSON.stringify(curr.users));
+            {
                 let idx = curr.users.findIndex(element => element.id == user_id);
                 // pop from top of array and update the property value.
                 returnDiceValue = curr.users[idx].diceValue.shift();
 
                 if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
+                    randomNumber = this.randomRumberGenerator(5);
+                    curr.users[idx].diceValue = JSON.parse(JSON.stringify(randomNumber));
                     // randomNumber = this.randomRumberGenerator(5);                                     
                     // for(let i =0; i <= curr.users.length; i++) {
                     //     if(curr.users[i].position == 0) {
@@ -1595,16 +1596,6 @@ class _Tables
                     //     }
                     //     console.log('KHUSIR', curr.users[i].diceValue);
                     // }
-                    this.tables = curr.users.map(function(data) {
-                        if(data.position == 0) {
-                            randomNumber = this.randomRumberGenerator(5);
-                            data.diceValue = JSON.parse(JSON.stringify(randomNumber));
-                        } else {
-                            data.diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
-                        }
-                        console.log('KHUSIR ::', data);
-                        return data;
-                    })
                 }
             }
             prev.push(curr);
