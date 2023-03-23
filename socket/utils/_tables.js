@@ -47,7 +47,7 @@ class _Tables
                 colour.splice(random_number, 1);
                 // To setup random number to 0 position index user.
                 if(pl == 0) {
-                    randomRumber = this.randomRumberGenerator(5);
+                    randomRumber = this.randomNumberGenerator(18);
                 }                 
                 table_i.users[pl] = {
                     id: '',
@@ -1573,33 +1573,32 @@ class _Tables
      */
     rollDice(room, user_id)
     {
-        
-    try { 
-        let returnDiceValue = null;
-        let randomNumber    = null;
-        this.tables = this.tables.reduce((prev, curr) =>
-        {
-            if (curr.room == room)
+        try { 
+            let returnDiceValue = null;
+            let randomNumber    = null;
+            this.tables = this.tables.reduce((prev, curr) =>
             {
-                let idx = curr.users.findIndex(element => element.id == user_id);
-                // pop from top of array and update the property value.
-                returnDiceValue = curr.users[idx].diceValue.shift();
-
-                if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
-                    randomNumber = this.randomRumberGenerator(5);
-                    curr.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
-                    curr.users[1].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
-                    curr.users[2].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
-                    curr.users[3].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
+                if (curr.room == room)
+                {
+                    let idx = curr.users.findIndex(element => element.id == user_id);
+                    // pop from top of array and update the property value.
+                    returnDiceValue = curr.users[idx].diceValue.shift();
+                    // If the zero position of users dice value has ended then, update the new set of dice value. 
+                    if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
+                        randomNumber = this.randomNumberGenerator(18);
+                        curr.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
+                        curr.users[1].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
+                        curr.users[2].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
+                        curr.users[3].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
+                    }
                 }
-            }
-            prev.push(curr);
-            return prev;
-        }, []);
-        return returnDiceValue ? returnDiceValue : 1;
-    } catch(exception) {
-        return 1;
-    }
+                prev.push(curr);
+                return prev;
+            }, []);
+            return returnDiceValue;
+        } catch(exception) {
+            return 1;
+        }
     }
 
     /**
@@ -1607,7 +1606,7 @@ class _Tables
      * @param {number} number means how many numbers want to generate.
      * @returns {random} array
      */
-    randomRumberGenerator(number) {
+    randomNumberGenerator(number) {
         let array = [];
         while(number > 0){
             array.push(Math.floor(Math.random() * 6) + 1);
