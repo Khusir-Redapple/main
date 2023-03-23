@@ -1602,6 +1602,7 @@ class _Tables
                         } else {
                             data.diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
                         }
+                        console.log('KHUSIR ::', data);
                         return data;
                     })
                 }
