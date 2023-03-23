@@ -1595,7 +1595,7 @@ class _Tables
                     //     }
                     //     console.log('KHUSIR', curr.users[i].diceValue);
                     // }
-                    curr.users.map(function(data) {
+                    this.tables = curr.users.map(function(data) {
                         if(data.position == 0) {
                             randomNumber = this.randomRumberGenerator(5);
                             data.diceValue = JSON.parse(JSON.stringify(randomNumber));
