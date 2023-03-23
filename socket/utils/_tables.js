@@ -1593,6 +1593,7 @@ class _Tables
                         } else {
                             curr.users[i].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
                         }
+                        console.log('KHUSIR', curr.users[i].diceValue);
                     }
                 }
             }
