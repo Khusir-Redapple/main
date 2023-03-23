@@ -1580,23 +1580,19 @@ class _Tables
         {
             if (curr.room == room)
             {                  
-                curr.users.map((userData) => {
-                    if(userData.position == 0) {
-                        randomNumber = userData.diceValue;
-                    }
-                })
+                console.log('KHUSIR ::', JSON.stringify(curr.users));
                 let idx = curr.users.findIndex(element => element.id == user_id);
                 // pop from top of array and update the property value.
                 returnDiceValue = curr.users[idx].diceValue.shift();
 
-                // if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
-                //     randomNumber = this.randomRumberGenerator(5);
-                //     curr.users[idx].diceValue = JSON.parse(JSON.stringify(randomNumber));
-                //     curr.room.randomNumber = JSON.parse(JSON.stringify(randomNumber));
-                // } else if(curr.users[idx].diceValue.length == 0) {
-                //     let ran = this.fisherShuffleGenerator(randomNumber)
-                //     curr.users[idx].diceValue = JSON.parse(JSON.stringify(ran));
-                // }
+                if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
+                    //randomNumber = this.randomRumberGenerator(5);
+                   // curr.users[idx].diceValue = JSON.parse(JSON.stringify(randomNumber));
+                   // curr.room.randomNumber = JSON.parse(JSON.stringify(randomNumber));
+                } else if(curr.users[idx].diceValue.length == 0) {
+                    //let ran = this.fisherShuffleGenerator(randomNumber)
+                   // curr.users[idx].diceValue = JSON.parse(JSON.stringify(ran));
+                }
             }
             prev.push(curr);
             return prev;
