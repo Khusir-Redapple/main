@@ -1579,7 +1579,11 @@ class _Tables
         this.tables = this.tables.reduce((prev, curr) =>
         {
             if (curr.room == room)
-            {
+            {   
+                if(curr.room.randomNumber) {
+                    randomNumber = curr.room.randomNumber;
+                }                
+
                 let idx = curr.users.findIndex(element => element.id == user_id);
                 // pop from top of array and update the property value.
                 returnDiceValue = curr.users[idx].diceValue.shift();
@@ -1587,9 +1591,11 @@ class _Tables
                 if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
                     randomNumber = this.randomRumberGenerator(18);
                     curr.users[idx].diceValue = JSON.parse(JSON.stringify(randomNumber));
+                    curr.room.randomNumber = JSON.parse(JSON.stringify(randomNumber));
                 } else if(curr.users[idx].diceValue.length == 0) {
-                    randomNumber = this.randomRumberGenerator(18);
-                    curr.users[idx].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
+                    //randomNumber = this.randomRumberGenerator(18);
+                    let ran = this.fisherShuffleGenerator(randomNumber)
+                    curr.users[idx].diceValue = JSON.parse(JSON.stringify(ran));
                 }
             }
             prev.push(curr);
