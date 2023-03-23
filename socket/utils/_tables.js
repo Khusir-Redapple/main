@@ -1586,15 +1586,24 @@ class _Tables
                 returnDiceValue = curr.users[idx].diceValue.shift();
 
                 if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
-                    randomNumber = this.randomRumberGenerator(5);                                     
-                    for(let i =0; i <= curr.users.length; i++) {
-                        if(curr.users[i].position == 0) {
-                            curr.users[i].diceValue = JSON.parse(JSON.stringify(randomNumber));
+                    // randomNumber = this.randomRumberGenerator(5);                                     
+                    // for(let i =0; i <= curr.users.length; i++) {
+                    //     if(curr.users[i].position == 0) {
+                    //         curr.users[i].diceValue = JSON.parse(JSON.stringify(randomNumber));
+                    //     } else {
+                    //         curr.users[i].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
+                    //     }
+                    //     console.log('KHUSIR', curr.users[i].diceValue);
+                    // }
+                    curr.users.map(function(data) {
+                        if(data.position == 0) {
+                            randomNumber = this.randomRumberGenerator(5);
+                            data.diceValue = JSON.parse(JSON.stringify(randomNumber));
                         } else {
-                            curr.users[i].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
+                            data.diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
                         }
-                        console.log('KHUSIR', curr.users[i].diceValue);
-                    }
+                        return data;
+                    })
                 }
             }
             prev.push(curr);
