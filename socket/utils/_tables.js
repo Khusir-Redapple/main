@@ -177,7 +177,7 @@ class _Tables
             }
 
             if (pos == -1) return false;
-
+            let readDiceValue = filteredTable[0].users[pos].diceValue;
             filteredTable[0].users[pos] = {
                 id: user._id,
                 numeric_id: user.numeric_id,
@@ -195,7 +195,8 @@ class _Tables
                 points: 0,
                 bonusPoints: 0,
                 moves: 0,
-                token_colour: filteredTable[0].users[pos].token_colour
+                token_colour: filteredTable[0].users[pos].token_colour,
+                diceValue : readDiceValue
             };
             this.tables[index] = filteredTable[0];
             // if(pos == 2)  filteredTable[0].users[pos].tokens = [26,0,0,0];
@@ -542,7 +543,7 @@ class _Tables
                         this.tables[i].turn_start_at = new Date(dt).getTime(); //new Date().getTime();
                         console.log("Line 471 turn set : ", new Date(dt).getTime(), new Date(dt))
                         this.tables[i].game_started_at = new Date(dt).getTime();//new Date().getTime();
-                        let DICE_ROLLED = this.rollDice();
+                        let DICE_ROLLED = this.rollDice(room, this.tables[i].users[pl].id);
                         this.tables[i].users[pl].turn = 1;
 
                         if (this.tables[i].users[pl].dices_rolled.length == 0)
@@ -1566,13 +1567,25 @@ class _Tables
     }
 
     /**
-     * The function used to take dice roll value.
-     * @returns number
+     * The function used to return dice roll value.
+     * @param {room} and {user_id} number.
+     * @returns number.
      */
-    rollDice()
+    rollDice(room, user_id)
     {
-        return 4;
-        
+        console.log('USER ID ====>', user_id);
+        let returnDiceValue = null;
+        this.tables = this.tables.reduce((prev, curr) =>
+        {
+            if (curr.room == room)
+            {
+                let idx = curr.users.findIndex(element => element.id == user_id);
+                returnDiceValue = curr.users[idx].diceValue.shift();
+            }
+            prev.push(curr);
+            return prev;
+        }, []);
+        return returnDiceValue;
     }
 
     /**
