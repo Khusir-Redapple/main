@@ -1573,7 +1573,8 @@ class _Tables
      */
     rollDice(room, user_id)
     {
-        console.log('USER ID ====>', user_id);
+        
+    try { 
         let returnDiceValue = null;
         let randomNumber    = null;
         this.tables = this.tables.reduce((prev, curr) =>
@@ -1596,6 +1597,9 @@ class _Tables
             return prev;
         }, []);
         return returnDiceValue ? returnDiceValue : 1;
+    } catch(exception) {
+        return 1;
+    }
     }
 
     /**
