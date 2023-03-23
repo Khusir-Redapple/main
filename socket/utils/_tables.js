@@ -1588,6 +1588,7 @@ class _Tables
                     randomNumber = this.randomRumberGenerator(18);
                     curr.users[idx].diceValue = JSON.parse(JSON.stringify(randomNumber));
                 } else if(curr.users[idx].diceValue.length == 0) {
+                    randomNumber = this.randomRumberGenerator(18);
                     curr.users[idx].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
                 }
             }
