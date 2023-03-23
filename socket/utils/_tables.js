@@ -1579,11 +1579,12 @@ class _Tables
         this.tables = this.tables.reduce((prev, curr) =>
         {
             if (curr.room == room)
-            {   
-                if(curr.room.randomNumber) {
-                    randomNumber = curr.room.randomNumber;
-                }                
-
+            {                  
+                curr.users.map((userData) => {
+                    if(userData.position == 0) {
+                        randomNumber = userData.diceValue;
+                    }
+                })
                 let idx = curr.users.findIndex(element => element.id == user_id);
                 // pop from top of array and update the property value.
                 returnDiceValue = curr.users[idx].diceValue.shift();
