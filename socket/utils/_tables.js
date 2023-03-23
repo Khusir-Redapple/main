@@ -47,7 +47,7 @@ class _Tables
                 colour.splice(random_number, 1);
                 // To setup random number to 0 position index user.
                 if(pl == 0) {
-                    randomRumber = this.randomNumberGenerator(18);
+                    randomRumber = this.randomNumberGenerator(config.diceGenerateRange);
                 }                 
                 table_i.users[pl] = {
                     id: '',
@@ -1585,7 +1585,7 @@ class _Tables
                     returnDiceValue = curr.users[idx].diceValue.shift();
                     // If the zero position of users dice value has ended then, update the new set of dice value. 
                     if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
-                        randomNumber = this.randomNumberGenerator(18);
+                        randomNumber = this.randomNumberGenerator(config.diceGenerateRange);
                         curr.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
                         curr.users[1].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
                         curr.users[2].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
