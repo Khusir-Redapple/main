@@ -1586,16 +1586,10 @@ class _Tables
 
                 if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
                     randomNumber = this.randomRumberGenerator(5);
-                    curr.users[idx].diceValue = JSON.parse(JSON.stringify(randomNumber));
-                    // randomNumber = this.randomRumberGenerator(5);                                     
-                    // for(let i =0; i <= curr.users.length; i++) {
-                    //     if(curr.users[i].position == 0) {
-                    //         curr.users[i].diceValue = JSON.parse(JSON.stringify(randomNumber));
-                    //     } else {
-                    //         curr.users[i].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
-                    //     }
-                    //     console.log('KHUSIR', curr.users[i].diceValue);
-                    // }
+                    curr.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
+                    curr.users[1].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
+                    curr.users[2].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
+                    curr.users[3].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
                 }
             }
             prev.push(curr);
