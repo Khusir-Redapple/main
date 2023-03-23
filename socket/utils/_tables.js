@@ -1574,7 +1574,7 @@ class _Tables
     rollDice(room, user_id)
     {
         console.log('USER ID ====>', user_id);
-        let returnDiceValue = 1;
+        let returnDiceValue = null;
         try {
             this.tables = this.tables.reduce((prev, curr) =>
             {
