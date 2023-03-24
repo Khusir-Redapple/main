@@ -272,9 +272,7 @@ module.exports = function (io)
                     message: 'Something went wrong! ',
                 });
             }
-            console.log("myId - ", myId)
             var rez = await _TableInstance.joinTournament(params, myId, socket);
-            console.log("JoinTOurnament res >>>", rez.callback.status == 1)
             callback(rez.callback);
             if (rez.callback.status == 1)
             {
@@ -589,7 +587,6 @@ module.exports = function (io)
                 delete object[key];
             });
         }
-
     });
 
 };

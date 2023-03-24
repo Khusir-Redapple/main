@@ -1646,7 +1646,6 @@ module.exports = {
 
     joinTournament: async function (params, myId)
     {
-        console.log('Join tournament GAME', params, myId);
         params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning']);
         if (!params || !Service.validateObjectId(myId))
         {
@@ -1660,7 +1659,6 @@ module.exports = {
         let us = await User.findById(myId);
         if (!us)
         {
-            console.log('Deactivated from tournament');
             return {
                 callback: {
                     status: 0,
@@ -1672,7 +1670,6 @@ module.exports = {
         let alreadyPlaying = _tab.alreadyPlaying(us._id);
         if (alreadyPlaying)
         {
-            console.log('alreadyPlaying');
             return {
                 callback: {
                     status: 0,
@@ -1681,11 +1678,8 @@ module.exports = {
             };
         }
 
-
-        console.log("no_of_players >>> ", params.no_of_players, params.room_fee)
         if (_.isEmpty(params.no_of_players) || _.isEmpty(params.room_fee))
         {
-            console.log("Inside IF - ", _.isEmpty(params.no_of_players), _.isEmpty(params.room_fee))
             return {
                 callback: {
                     status: 0,
@@ -1694,18 +1688,16 @@ module.exports = {
             };
         }
         var tableD = await Table.findOne({
-            // tournamentId: params.tournamentId,
             'room_fee': params.room_fee,
             'players.id': ObjectId(myId),
             "game_completed_at": "-1"
         });
-        console.log("Already Played in This Tournament ::::", tableD);
+        
         if (tableD)
         {
             let players = tableD.players;
             for (let i = 0; i < players.length; i++)
             {
-                console.log("You are in This Tournament ::::", players[i].id == myId, players[i].id, myId, players[i].is_active)
                 if (players[i].id == myId && players[i].is_active == true)
                 {
                     return {
@@ -1729,7 +1721,6 @@ module.exports = {
         }
 
         var checkTourneyRes = _tab.checkTournamentTable(params.room_fee, params.no_of_players);
-        console.log('Tabel Found::', checkTourneyRes, params.winningAmount);
         var isAnyTableEmpty = checkTourneyRes ? checkTourneyRes.room : false;
         let secTime = config.countDownTime;
         if (params.startTime) secTime = Math.round(params.startTime / 1000) - Math.round(new Date().getTime() / 1000) + 5;
@@ -1765,7 +1756,6 @@ module.exports = {
             }
             params.room = room;
             params.created_at = new Date().getTime();
-            console.log("params >>>>", params)
             var table = new Table(params);
             tableX = await table.save();
             if (!tableX)
@@ -1777,9 +1767,7 @@ module.exports = {
                     },
                 };
             }
-
             room_code = await _tab.createTableforTourney(tableX);
-            console.log('ROOM CODE:: ', room_code);
             if (!room_code)
             {
                 return {
@@ -1796,7 +1784,7 @@ module.exports = {
             tableX = await Table.findOne({
                 room: isAnyTableEmpty,
             });
-            console.log('ROOM SEARCH INTO TABLES :: ', isAnyTableEmpty, tableX);
+
             if (!tableX)
             {
                 return {
@@ -1812,9 +1800,7 @@ module.exports = {
         //var us = await User.findById(myId);
         let optional = 0;
         isAnyTableEmptyForTourament = isAnyTableEmpty ? isAnyTableEmpty : room_code ? room_code : '';
-        console.log("seatOnTableforTourney >>>", us, isAnyTableEmptyForTourament);
         var seatOnTable = _tab.seatOnTableforTourney(isAnyTableEmptyForTourament, us, optional);
-        console.log('seatOnTable ::', seatOnTable);
         if (seatOnTable)
         {
             var callbackRes = {
@@ -1847,11 +1833,8 @@ module.exports = {
 
             //Save Player to DB
             if (!flag) tableX.players.push(player);
-
             tableX.created_at = new Date().getTime();
-            console.log("tableX >>", tableX)
             await tableX.save();
-
             return {
                 callback: callbackRes,
                 events: [
@@ -1901,7 +1884,6 @@ module.exports = {
                 reqData.users.push(json)
             }
         }
-        console.log("getGameUsersData >", reqData)
         return reqData;
     },
     getEndGameData: async function (data, room_fee)
@@ -1912,7 +1894,6 @@ module.exports = {
             amount: room_fee.toString(),
             users: []
         }
-        console.log("getEndGameData > ", userData)
         for (let i = 0; i < userData.length; i++)
         {
             if (userData[i].id != "")

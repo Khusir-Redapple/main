@@ -199,8 +199,6 @@ class _Tables
                 diceValue : readDiceValue
             };
             this.tables[index] = filteredTable[0];
-            // if(pos == 2)  filteredTable[0].users[pos].tokens = [26,0,0,0];
-            // console.log(filteredTable[0],filteredTable[0].users[pos],this.tables[index])
             return {
                 table: filteredTable[0],
                 pos: pos,
