@@ -1,8 +1,6 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-var config = require('../../config');
-
 var TableModel = new Schema({
     room: {
         type: String,
@@ -30,6 +28,10 @@ var TableModel = new Schema({
     },
     totalWinning :{
         type: Number
+    },
+    isGameCompleted : {
+        type: Boolean,
+        default: false
     },
     players: [{
         id: {

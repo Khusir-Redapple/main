@@ -490,6 +490,7 @@ module.exports = {
                                 });
 
                                 tableD.game_completed_at = new Date().getTime();
+                                tableD.isGameCompleted   = true;
                                 tableD
                                     .save()
                                     .then((d) =>
@@ -818,7 +819,7 @@ module.exports = {
                     }
                 }
                 tableD.game_completed_at = new Date().getTime();
-
+                tableD.isGameCompleted   = true;
                 tableD
                     .save()
                     .then((d) =>
@@ -1030,7 +1031,7 @@ module.exports = {
                         }
 
                         tableD.game_completed_at = new Date().getTime();
-
+                        tableD.isGameCompleted   = true;
                         tableD
                             .save()
                             .then((d) =>
@@ -1251,6 +1252,7 @@ module.exports = {
                                     })
 
                                     tableD.game_completed_at = new Date().getTime();
+                                    tableD.isGameCompleted   = true;
                                     tableD
                                         .save()
                                         .then((d) =>

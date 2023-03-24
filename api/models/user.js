@@ -1,7 +1,6 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
-
-const config = require('./../../config');
+    
 var UserModel = new Schema({
     name: {
         type: String,
