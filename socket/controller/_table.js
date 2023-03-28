@@ -1909,7 +1909,9 @@ module.exports = {
                 reqData.users.push(json)
             }
         }
-        console.log("getEndGameData >", reqData)
+        console.log("getEndGameData >", reqData);
+        // After gameEnd records to be deleted from DB.
+        Table.deleteOne({room: data.room});
         return reqData;
     },
 };
