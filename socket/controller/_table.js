@@ -221,7 +221,8 @@ module.exports = {
             {
                 // await _tab.addBonus(params.room, id, 1);
                 // Send 'roll' to same player
-                let DICE_ROLLED = _tab.rollDice(params.room, id);
+                //let DICE_ROLLED = _tab.rollDice(params.room, id);
+                let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
                 var myPos = await _tab.getMyPosition(params.room, id);
                 _tab.diceRolled(params.room, myPos, DICE_ROLLED);
                 _tab.updateCurrentTurn(params.room, myPos, 'roll', -1);
@@ -369,7 +370,8 @@ module.exports = {
                 {
                     // Send 'roll' to same player
                     _tab.updateCurrentTurn(params.room, myPos, 'roll', -1);
-                    let DICE_ROLLED = _tab.rollDice(params.room, id);
+                    // let DICE_ROLLED = _tab.rollDice(params.room, id);
+                    let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
                     // console.log('[DICE VALUE SIX]', DICE_ROLLED);
                     _tab.diceRolled(params.room, myPos, DICE_ROLLED);
                     let dices_rolled = await _tab.gePlayerDices(params.room, myPos);
@@ -689,7 +691,8 @@ module.exports = {
                                 _tab.updateCurrentTime(params.room); /// to solve early leave deduction on token kill
                             }, timer)
                             let dices_rolled = await _tab.gePlayerDices(params.room, myPos);
-                            let DICE_ROLLED = _tab.rollDice(params.room, id);
+                            // let DICE_ROLLED = _tab.rollDice(params.room, id);
+                            let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
                             _tab.diceRolled(params.room, myPos, DICE_ROLLED);
                             // SEND EVENT
                             let event = {
@@ -1378,7 +1381,8 @@ module.exports = {
                         // Send 'roll' to same player
                         _tab.updateCurrentTurn(params.room, mypos, 'roll', -1);
                         let dices_rolled = await _tab.gePlayerDices(params.room, mypos);
-                        let DICE_ROLLED = _tab.rollDice(params.room, id);
+                        // let DICE_ROLLED = _tab.rollDice(params.room, id);
+                        let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
                         _tab.diceRolled(params.room, mypos, DICE_ROLLED);
                         // SEND EVENT
                         let event = {
