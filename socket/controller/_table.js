@@ -343,8 +343,7 @@ module.exports = {
                     let DICE_ROLLED = _tab.rollDice(params.room, id);
                     _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
                     // SEND EVENT
-
-                    await _tab.sendToSqsAndResetGamePlayData(params.room);
+                    _tab.sendToSqsAndResetGamePlayData(params.room);
 
                     let event = {
                         type: 'room_including_me',
