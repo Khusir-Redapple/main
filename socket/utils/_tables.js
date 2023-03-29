@@ -1559,7 +1559,7 @@ class _Tables
      */
     rollDice(room, user_id)
     {
-        try { 
+        // try { 
             let returnDiceValue = null;
             let randomNumber    = null;
             this.tables = this.tables.reduce((prev, curr) =>
@@ -1581,17 +1581,18 @@ class _Tables
                 prev.push(curr);
                 return prev;
             }, []);
+            return returnDiceValue;
             //return returnDiceValue ? returnDiceValue : 1;
-            if(returnDiceValue){                
-                return returnDiceValue;
-            } else {
-                console.log('ERROR DICE ROLL :::');
-                return 1;
-            }
-        } catch(exception) {
-            console.log('ERROR DICE ROLL :::');
-            return 1;
-        }
+            // if(returnDiceValue){                
+            //     return returnDiceValue;
+            // } else {
+            //     console.log('ERROR DICE ROLL :::');
+            //     return 1;
+            // }
+        // } catch(exception) {
+        //     console.log('ERROR DICE ROLL :::');
+        //     return 1;
+        // }
     }
 
     /**
