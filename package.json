@@ -12,6 +12,8 @@
   "author": "Capermint",
   "license": "ISC",
   "dependencies": {
+    "artillery": "^2.0.0-31",
+    "artillery-engine-socketio-v3": "^1.1.2",
     "async-lock": "^1.3.1",
     "aws-sdk": "^2.390.0",
     "axios": "^0.27.2",
