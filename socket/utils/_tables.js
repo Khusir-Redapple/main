@@ -1559,7 +1559,7 @@ class _Tables
      */
     rollDice(room, user_id)
     {
-        // try { 
+        try { 
             let returnDiceValue = null;
             let randomNumber    = null;
             this.tables = this.tables.reduce((prev, curr) =>
@@ -1582,17 +1582,9 @@ class _Tables
                 return prev;
             }, []);
             return returnDiceValue;
-            //return returnDiceValue ? returnDiceValue : 1;
-            // if(returnDiceValue){                
-            //     return returnDiceValue;
-            // } else {
-            //     console.log('ERROR DICE ROLL :::');
-            //     return 1;
-            // }
-        // } catch(exception) {
-        //     console.log('ERROR DICE ROLL :::');
-        //     return 1;
-        // }
+        } catch(exception) {
+            logDNA.log('dice roll error', {level: 'debugg', meta: {room: room, userId: user_id}});
+        }
     }
 
     /**
