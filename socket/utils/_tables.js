@@ -1581,8 +1581,15 @@ class _Tables
                 prev.push(curr);
                 return prev;
             }, []);
-            return returnDiceValue ? returnDiceValue : 1;
+            //return returnDiceValue ? returnDiceValue : 1;
+            if(returnDiceValue){                
+                return returnDiceValue;
+            } else {
+                console.log('ERROR DICE ROLL :::');
+                return 1;
+            }
         } catch(exception) {
+            console.log('ERROR DICE ROLL :::');
             return 1;
         }
     }
