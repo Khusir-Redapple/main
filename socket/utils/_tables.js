@@ -539,7 +539,6 @@ class _Tables
                         this.tables[i].current_turn = pl;
                         this.tables[i].current_turn_type = 'roll';
                         this.tables[i].turn_start_at = new Date(dt).getTime(); //new Date().getTime();
-                        console.log("Line 471 turn set : ", new Date(dt).getTime(), new Date(dt))
                         this.tables[i].game_started_at = new Date(dt).getTime();//new Date().getTime();
                         let DICE_ROLLED = this.rollDice(room, this.tables[i].users[pl].id);
                         this.tables[i].users[pl].turn = 1;
@@ -601,11 +600,9 @@ class _Tables
         var index = this.tables.findIndex((x) => x.room == room);
         if (index >= 0)
         {
-            console.log("diceRolled - ", this.tables[index].users[pos].dices_rolled.length, this.tables[index].users[pos].dices_rolled)
             if (this.tables[index].users[pos].dices_rolled.length > 0)
                 this.tables[index].users[pos].dices_rolled = [];
             this.tables[index].users[pos].dices_rolled.push(DICE_ROLLED);
-            console.log('DICE ROLL UPDATED', this.tables[index].users[pos].dices_rolled);
         }
     }
 
@@ -734,13 +731,9 @@ class _Tables
 
     getSix(room, id)
     {
-        console.log("in six counts....");
         const table = this.tables.find((elem) => elem.room == room);
-
         if (!table) return 0;
         const me = table.users.find((elem) => elem.id == id);
-
-        console.log("counts of six", me.six_counts, me);
         if (!me) return 0;
         else return me.six_counts;
     }
@@ -769,10 +762,7 @@ class _Tables
     getMyDice(room, id)
     {
         const table = this.tables.find((elem) => elem.room == room);
-        // console.log("table finding time in getMyDice ", ((new Date()) - startDate));
-
         if (!table) return -1;
-
         const me = table.users.find((elem) => elem.id == id);
         let i = this.gamePlayData.findIndex((x) => x.room == room);
         this.gamePlayData[i].data.roll.push(me ? me.dices_rolled[me.dices_rolled.length - 1] : -1);
@@ -851,8 +841,7 @@ class _Tables
     async sendToSqsAndResetGamePlayData(room)
     {
         let i = this.gamePlayData.findIndex((x) => x.room == room);
-        console.log("gamePlayData ::  -- ", this.gamePlayData[i]);
-        const sqsData = await sendMessage(this.gamePlayData[i]);
+        sendMessage(this.gamePlayData[i]);
         //send through SQS
         this.resetGamePlayData(i, room);
     }
@@ -888,7 +877,6 @@ class _Tables
                 this.gamePlayData[i].data.game_time = 0,
                 this.gamePlayData[i].data.room_id = room,
                 this.gamePlayData[i].data.timestamp = new Date().getTime()
-            // console.log("this.gamePlayData[i] - ",this.gamePlayData[i])
         }
     }
     clearDices(room, pos)
@@ -1582,7 +1570,7 @@ class _Tables
                     // pop from top of array and update the property value.
                     returnDiceValue = curr.users[idx].diceValue.shift();
                     // If the zero position of users dice value has ended then, update the new set of dice value. 
-                    if(curr.users[idx].position == 0 && curr.users[idx].diceValue.length == 0) {
+                    if(curr.users[idx].diceValue.length == 0) {
                         randomNumber = this.randomNumberGenerator(config.diceGenerateRange);
                         curr.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
                         curr.users[1].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));

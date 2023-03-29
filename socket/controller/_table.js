@@ -22,7 +22,6 @@ module.exports = {
 
         // CHECK IF I EXIST IN THIS ROOM
         var myPos = await _tab.getMyPosition(params.room, id);
-        console.log("position", myPos);
         if (myPos == -1) return {callback: {status: 0, message: localization.noDataFound}};
         let check = _tab.isCurrentTurnMine(params.room, myPos);
         if (!check)
@@ -30,8 +29,8 @@ module.exports = {
             return {callback: {status: 0, message: localization.noDataFound}};
         }
         // GET DICE RANDOM
-        var DICE_ROLLED = await _tab.getMyDice(params.room, id);
-        console.log(socket.data_name, ' Rolled ', DICE_ROLLED);
+        let DICE_ROLLED = await _tab.getMyDice(params.room, id);
+        //console.log(socket.data_name, ' Rolled ', DICE_ROLLED);
         // console.log('MY DICE FOUND', DICE_ROLLED);
 
         if (DICE_ROLLED > 6 || DICE_ROLLED < 0) return {callback: {status: 0, message: localization.noDataFound}};
@@ -49,7 +48,7 @@ module.exports = {
         // ADD DICEROLLED EVENT 
         let event = {
             type: 'room_excluding_me',
-            delay: 0,//1500
+            delay: 0,
             room: params.room,
             name: 'dice_rolled',
             data: {
@@ -65,11 +64,11 @@ module.exports = {
 
         // console.log('EVENT_PUSHED', event);
         resObj.events.push(event);
-        var movePossible = await _tab.isMovePossible(params.room, id);
+        var movePossible = _tab.isMovePossible(params.room, id);
         // IF MOVE POSSIBLE FROM CURRENT DICES & Position
 
-        const jackPOT = await _tab.jackPot(params.room, id);
-        let sixCounts = await _tab.getSix(params.room, id);
+        const jackPOT = _tab.jackPot(params.room, id);
+        let sixCounts = _tab.getSix(params.room, id);
         console.log("sixCounts : ", sixCounts);
 
         /**
@@ -80,16 +79,15 @@ module.exports = {
         if (sixCounts == 2 && dices_rolled[0] == 6)
         {
             //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
-            await _tab.scrapTurn(params.room, myPos);
+            _tab.scrapTurn(params.room, myPos);
             // DICE_ROLL TO NEXT
-            let sixCounts = await _tab.setSix(params.room, id);
-            console.log("set six...0")
+            _tab.setSix(params.room, id);
             let nextPos = await _tab.getNextPosition(params.room, myPos);
-            await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
+            _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
             let DICE_ROLLED = _tab.rollDice(params.room, id);
-            await _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
+            _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
             let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
-            await _tab.sendToSqsAndResetGamePlayData(params.room);
+            _tab.sendToSqsAndResetGamePlayData(params.room);
 
             // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
             resObj.callback.skip_dice = true;
@@ -111,20 +109,19 @@ module.exports = {
                     skip_dice: true
                 },
             };
-            await _tab.clearDices(params.room, myPos);
+            _tab.clearDices(params.room, myPos);
             resObj.events.push(event);
         }
         if (movePossible)
         {
             console.log('[MOVE POSSIBLE DICE ROLLED]');
             let timer = 150; // previously it was 500
-            var myPos = await _tab.getMyPosition(params.room, id);
+            let myPos = await _tab.getMyPosition(params.room, id);
             //  MAKE_MOVE TO ME
             let nextPos = await _tab.getNextPosition(params.room, myPos);
-
             console.log("movePossible >>> sixcount >>", sixCounts, dices_rolled[0], myPos, dices_rolled)
-            if (sixCounts == 2 && dices_rolled[0] == 6) await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
-            else await _tab.updateCurrentTurn(params.room, myPos, 'move', -1, 1);
+            if (sixCounts == 2 && dices_rolled[0] == 6) _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
+            else _tab.updateCurrentTurn(params.room, myPos, 'move', -1, 1);
             let dices_roll = await _tab.gePlayerDices(params.room, myPos);
             // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
             resObj.callback.skip_dice = false;
@@ -152,15 +149,15 @@ module.exports = {
             {
                 console.log('[DICE ROLLED NOT SIX]');
                 //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
-                await _tab.scrapTurn(params.room, myPos);
+                _tab.scrapTurn(params.room, myPos);
                 // DICE_ROLL TO NEXT
                 let timer = 1500;
                 let nextPos = await _tab.getNextPosition(params.room, myPos);
-                await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
+                _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
                 let DICE_ROLLED = _tab.rollDice(params.room, id);
-                await _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
-                await _tab.sendToSqsAndResetGamePlayData(params.room);
+                _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
+                _tab.sendToSqsAndResetGamePlayData(params.room);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = true;
 
@@ -190,15 +187,15 @@ module.exports = {
             {
                 console.log('[DICE ROLLED NOT SIX]');
                 //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
-                await _tab.scrapTurn(params.room, myPos);
+                _tab.scrapTurn(params.room, myPos);
                 // DICE_ROLL TO NEXT
                 let timer = 1500;
                 let nextPos = await _tab.getNextPosition(params.room, myPos);
-                await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
+                _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
                 let DICE_ROLLED = _tab.rollDice(params.room, id);
-                await _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
-                await _tab.sendToSqsAndResetGamePlayData(params.room);
+                _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
+                _tab.sendToSqsAndResetGamePlayData(params.room);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = true;
                 let event = {
@@ -222,14 +219,12 @@ module.exports = {
 
             else
             {
-                console.log('[DICE ROLLED SIX]');
                 // await _tab.addBonus(params.room, id, 1);
                 // Send 'roll' to same player
                 let DICE_ROLLED = _tab.rollDice(params.room, id);
                 var myPos = await _tab.getMyPosition(params.room, id);
-                console.log('[DICE ROLLED SIX]======>>>', DICE_ROLLED, myPos);
-                await _tab.diceRolled(params.room, myPos, DICE_ROLLED);
-                await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1);
+                _tab.diceRolled(params.room, myPos, DICE_ROLLED);
+                _tab.updateCurrentTurn(params.room, myPos, 'roll', -1);
                 let dices_rolled = await _tab.gePlayerDices(params.room, myPos);
                 // console.log('[DICE ROLLED SIX]', dices_rolled);
 
@@ -343,7 +338,7 @@ module.exports = {
                     let nextPos = _tab.getNextPosition(params.room, myPos);
                     _tab.scrapTurn(params.room, nextPos);
                     _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
-                    let dices_rolled = _tab.gePlayerDices(params.room, nextPos);
+                    let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
                     let DICE_ROLLED = _tab.rollDice(params.room, id);
                     _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
                     // SEND EVENT
@@ -372,12 +367,11 @@ module.exports = {
 
                 } else
                 {
-                    console.log('[DICE VALUE SIX]');
                     // Send 'roll' to same player
-                    await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1);
+                    _tab.updateCurrentTurn(params.room, myPos, 'roll', -1);
                     let DICE_ROLLED = _tab.rollDice(params.room, id);
                     // console.log('[DICE VALUE SIX]', DICE_ROLLED);
-                    await _tab.diceRolled(params.room, myPos, DICE_ROLLED);
+                    _tab.diceRolled(params.room, myPos, DICE_ROLLED);
                     let dices_rolled = await _tab.gePlayerDices(params.room, myPos);
                     // console.log('[DICE VALUE SIX]', dices_rolled, myPos);
                     // SEND EVENT
@@ -407,7 +401,7 @@ module.exports = {
                 // Make move, Remove dicevalue & get CURRENT_POSITION of token
                 var resp = _tab.makeMoveForTournament(params.dice_value, params.room, id, params.token_index);
                 var token_position = resp.token_position;
-                let dices_rolled = _tab.gePlayerDices(params.room, myPos);
+                let dices_rolled = await _tab.gePlayerDices(params.room, myPos);
                 console.log('TOK POS----', token_position, dices_rolled);
                 let checkPointActivated = _tab.checkPointActive(params.room, myPos);
                 // let homeAnimation = (token_position == 56 ) : true ? false ;
@@ -534,11 +528,10 @@ module.exports = {
                             // DICE_ROLL TO NEXT
                             let nextPos = _tab.getNextPosition(params.room, myPos);
                             _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
-                            let dices_rolled = _tab.gePlayerDices(params.room, nextPos);
+                            let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
                             let DICE_ROLLED = _tab.rollDice(params.room, id);
                             _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
-
-                            await _tab.sendToSqsAndResetGamePlayData(params.room);
+                            _tab.sendToSqsAndResetGamePlayData(params.room);
 
                             // SEND EVENT
                             let event = {
@@ -657,7 +650,7 @@ module.exports = {
                             _tab.updateCurrentTime(params.room); /// to solve early leave deduction on token kill
                         }, timer)
 
-                        let dices_rolled = _tab.gePlayerDices(params.room, myPos);
+                        let dices_rolled = await _tab.gePlayerDices(params.room, myPos);
                         let event = {
                             type: 'room_including_me',
                             room: params.room,
@@ -695,7 +688,7 @@ module.exports = {
                             {
                                 _tab.updateCurrentTime(params.room); /// to solve early leave deduction on token kill
                             }, timer)
-                            let dices_rolled = _tab.gePlayerDices(params.room, myPos);
+                            let dices_rolled = await _tab.gePlayerDices(params.room, myPos);
                             let DICE_ROLLED = _tab.rollDice(params.room, id);
                             _tab.diceRolled(params.room, myPos, DICE_ROLLED);
                             // SEND EVENT
@@ -721,16 +714,15 @@ module.exports = {
                         {
                             console.log("in the SCRAP TURNB 22");
                             //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
-                            let sixCounts = _tab.setSix(params.room, id);
-                            console.log("set six...4")
+                            _tab.setSix(params.room, id);
                             _tab.scrapTurn(params.room, myPos);
                             let nextPos = _tab.getNextPosition(params.room, myPos);
                             _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
-                            let dices_rolled = _tab.gePlayerDices(params.room, nextPos);
+                            let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
                             let DICE_ROLLED = _tab.rollDice(params.room, id);
                             _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
 
-                            await _tab.sendToSqsAndResetGamePlayData(params.room);
+                            _tab.sendToSqsAndResetGamePlayData(params.room);
                             // SEND EVENT
                             let event = {
                                 type: 'room_including_me',
@@ -1073,11 +1065,11 @@ module.exports = {
                     // DICE_ROLL TO NEXT
                     let nextPos = _tab.getNextPosition(params.room, myPos);
                     _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
-                    let dices_rolled = _tab.gePlayerDices(params.room, nextPos);
+                    let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
                     let DICE_ROLLED = _tab.rollDice(params.room, id);
                     _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
 
-                    await _tab.sendToSqsAndResetGamePlayData(params.room);
+                    _tab.sendToSqsAndResetGamePlayData(params.room);
                     // SEND EVENT
                     let event = {
                         type: 'room_including_me',
@@ -1111,11 +1103,10 @@ module.exports = {
                         // nextPosition find & add event dice_roll
                         let nextPos = await _tab.getNextPosition(params.room, mypos);
                         _tab.updateCurrentTurn(params.room, nextPos, 'roll', mypos);
-                        let dices_rolled = _tab.gePlayerDices(params.room, nextPos);
+                        let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
                         let DICE_ROLLED = _tab.rollDice(params.room, id);
                         _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
-
-                        await _tab.sendToSqsAndResetGamePlayData(params.room);
+                        _tab.sendToSqsAndResetGamePlayData(params.room);
 
                         let event = {
                             type: 'room_including_me',
@@ -1155,13 +1146,6 @@ module.exports = {
                 },
             };
         }
-        // if (!params.room)
-        //     return {
-        //         callback: {
-        //             status: 0,
-        //             message: localization.missingParamError,
-        //         },
-        //     };
 
         var mypos = await _tab.getMyPosition(params.room, id);
         // console.log('My position::', mypos);
@@ -1231,7 +1215,7 @@ module.exports = {
                         if (checkOnlyPlayerLeft)
                         {
                             // Check if EndGame Possible
-                            var endGame = _tab.isThisTheEnd(params.room, tableD.win_amount);
+                            let endGame = _tab.isThisTheEnd(params.room, tableD.win_amount);
                             if (endGame)
                             {
                                 // Update values in user wallets & table data [DB]                                
@@ -1239,9 +1223,9 @@ module.exports = {
                                 if (tableD)
                                 {
                                     console.log(`PL:: <<<<<<<< END GAME >>>>>>>>>`);
-                                    endGame.map(async (eGame) =>
+                                    endGame.map((eGame) =>
                                     {
-                                        tableD.players.map(async (playersTable) =>
+                                        tableD.players.map((playersTable) =>
                                         {
                                             if (eGame.id.toString() == playersTable.id.toString())
                                             {
@@ -1294,11 +1278,10 @@ module.exports = {
                                 // DICE_ROLL TO NEXT
                                 let nextPos = _tab.getNextPosition(params.room, myPos);
                                 _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos);
-                                let dices_rolled = _tab.gePlayerDices(params.room, nextPos);
+                                let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
                                 let DICE_ROLLED = _tab.rollDice(params.room, id);
                                 _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
-
-                                await _tab.sendToSqsAndResetGamePlayData(params.room);
+                                _tab.sendToSqsAndResetGamePlayData(params.room);
 
                                 // SEND EVENT
                                 let event = {
@@ -1333,11 +1316,10 @@ module.exports = {
                                     // nextPosition find & add event dice_roll
                                     let nextPos = await _tab.getNextPosition(params.room, mypos);
                                     _tab.updateCurrentTurn(params.room, nextPos, 'roll', mypos);
-                                    let dices_rolled = _tab.gePlayerDices(params.room, nextPos);
+                                    let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
                                     let DICE_ROLLED = _tab.rollDice(params.room, id);
                                     _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
-
-                                    await _tab.sendToSqsAndResetGamePlayData(params.room);
+                                    _tab.sendToSqsAndResetGamePlayData(params.room);
 
                                     let event = {
                                         type: 'room_including_me',
@@ -1395,7 +1377,7 @@ module.exports = {
                         _tab.useBonus(params.room, id);
                         // Send 'roll' to same player
                         _tab.updateCurrentTurn(params.room, mypos, 'roll', -1);
-                        let dices_rolled = _tab.gePlayerDices(params.room, mypos);
+                        let dices_rolled = await _tab.gePlayerDices(params.room, mypos);
                         let DICE_ROLLED = _tab.rollDice(params.room, id);
                         _tab.diceRolled(params.room, mypos, DICE_ROLLED);
                         // SEND EVENT
@@ -1422,12 +1404,10 @@ module.exports = {
                         // nextPosition find & add event dice_roll
                         let nextPos = await _tab.getNextPosition(params.room, mypos);
                         _tab.updateCurrentTurn(params.room, nextPos, 'roll', mypos);
-                        let dices_rolled = _tab.gePlayerDices(params.room, nextPos);
+                        let dices_rolled = await _tab.gePlayerDices(params.room, nextPos);
                         let DICE_ROLLED = _tab.rollDice(params.room, id);
                         _tab.diceRolled(params.room, nextPos, DICE_ROLLED);
-
-                        await _tab.sendToSqsAndResetGamePlayData(params.room);
-
+                        _tab.sendToSqsAndResetGamePlayData(params.room);
                         let event = {
                             type: 'room_including_me',
                             room: params.room,
@@ -1911,7 +1891,7 @@ module.exports = {
         }
         console.log("getEndGameData >", reqData);
         // After gameEnd records to be deleted from DB.
-        Table.deleteOne({room: data.room});
+        await Table.deleteOne({room: data.room});
         return reqData;
     },
 };
