@@ -41,7 +41,8 @@ class Sockets
             socket: socket.id,
             socketIS: socket,
             status: 'online',
-            last_seen: 0
+            last_seen: 0,
+            //Validity : new Date(); // 20 minuts add. node schud..
         }
         // add and update based on condition.
         if(this.currentUsers.has(id)) {
@@ -112,7 +113,7 @@ class Sockets
         }
     }
 
-    userGone(id)
+    userGone(socket)
     {
         // for (let i = 0; i < this.currentUsers.length; i++)
         // {
@@ -124,7 +125,7 @@ class Sockets
         // }
        
         for (const [key, value] of this.currentUsers.entries()) {
-            if(value.socket == id) {
+            if(value.socket == socket) {
                 this.currentUsers.delete(key);
                 break;
             }

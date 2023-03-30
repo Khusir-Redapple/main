@@ -365,7 +365,8 @@ module.exports = function (io)
                                     isRefund: true
                                 }
                                 let rez = await _TableInstance.leaveTable(data, tableD.players[i].id);
-                                console.log("rez--", rez)
+                                console.log("rez--", rez);
+                                callback(rez.callback);
                                 processEvents(rez);
                             }
                         }
@@ -424,7 +425,7 @@ module.exports = function (io)
         {
             logDNA.log('DEVICE :: Disconnected', logData);
             // var myId = Socketz.getId(socket.id);
-            await Socketz.userGone(socket.id);
+            Socketz.userGone(socket.id);
         });
 
         async function startTournament(start, socket)
