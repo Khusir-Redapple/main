@@ -366,7 +366,6 @@ module.exports = function (io)
                                 }
                                 let rez = await _TableInstance.leaveTable(data, tableD.players[i].id);
                                 console.log("rez--", rez);
-                                callback(rez.callback);
                                 processEvents(rez);
                             }
                         }

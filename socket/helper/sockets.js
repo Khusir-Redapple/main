@@ -65,7 +65,7 @@ class Sockets
         //     }
         // }
         // return false;
-
+        console.log('total map =>', this.currentUsers , 'user =>', id);
         if(this.currentUsers.has(id)) {
             return this.currentUsers.get(id).socket;            
         } else {
