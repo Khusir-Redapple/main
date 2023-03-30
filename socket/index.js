@@ -102,7 +102,7 @@ module.exports = function (io)
                 socket.data_id = us._id.toString();
                 socket.data_name = us.name;
                 socket.join(socket.data_id);
-                await Socketz.updateSocket(us._id, socket);
+                Socketz.updateSocket(us._id, socket);
                 startTime = new Date();
                 us.save();
 
@@ -229,7 +229,7 @@ module.exports = function (io)
                 socket.data_id = us._id.toString();
                 socket.data_name = us.name;
                 socket.join(socket.data_id);
-                await Socketz.updateSocket(us._id, socket);
+                Socketz.updateSocket(us._id, socket);
                 await User.findOneAndUpdate(
                     {
                         _id: ObjectId(us._id),
@@ -259,7 +259,7 @@ module.exports = function (io)
                 socket.data_id = us._id.toString();
                 socket.data_name = us.name;
                 socket.join(socket.data_id);
-                await Socketz.updateSocket(us._id, socket);
+                Socketz.updateSocket(us._id, socket);
                 // To delete object
                 // deleteObjectProperty(newUser);
             }
@@ -379,6 +379,7 @@ module.exports = function (io)
         {
             console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
             let myId = Socketz.getId(socket.id);
+            Socketz.userGone(socket.id);
             params.isRefund = false;
             let response = await _TableInstance.leaveTable(params, myId, socket);
             callback(response.callback);
