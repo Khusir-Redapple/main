@@ -45,7 +45,7 @@ class Sockets
             //Validity : new Date(); // 20 minuts add. node schud..
         }
         // add and update based on condition.
-        if(this.currentUsers.has(id)) {
+        if(this.currentUsers.has(id.toString())) {
             this.currentUsers.set(id.toString(),userDataSet);            
         } else {
             this.currentUsers.set(id.toString(),userDataSet);
@@ -65,7 +65,7 @@ class Sockets
         //     }
         // }
         // return false;
-        console.log('total map =>', this.currentUsers , 'user =>', id);
+
         if(this.currentUsers.has(id.toString())) {
             return this.currentUsers.get(id.toString()).socket;            
         } else {
@@ -85,8 +85,8 @@ class Sockets
         // }
         // return false;
 
-        if(this.currentUsers.has(id)) {
-            return this.currentUsers.get(id).socketIS;            
+        if(this.currentUsers.has(id.toString())) {
+            return this.currentUsers.get(id.toString()).socketIS;            
         } else {
             return false;
         }
@@ -103,10 +103,10 @@ class Sockets
         // }
         // return false;
 
-        if(this.currentUsers.has(id)) {
+        if(this.currentUsers.has(id.toString())) {
             return {
-                status: this.currentUsers.get(id).status, 
-                last_seen: this.currentUsers.get(id).last_seen
+                status: this.currentUsers.get(id.toString()).status, 
+                last_seen: this.currentUsers.get(id.toString()).last_seen
             };            
         } else {
             return false;
@@ -125,7 +125,7 @@ class Sockets
         // }
        
         for (const [key, value] of this.currentUsers.entries()) {
-            if(value.socket == socket) {
+            if(value.socket == socket.toString()) {
                 this.currentUsers.delete(key);
                 break;
             }
@@ -146,7 +146,7 @@ class Sockets
         // Best for accessing both keys and their values
         let flag = false;
         for (const [key, value] of this.currentUsers.entries()) {
-            if(value.socket == socket) {
+            if(value.socket == socket.toString()) {
                 flag =  key.toString();
                 break;
             }
