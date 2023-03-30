@@ -46,9 +46,9 @@ class Sockets
         }
         // add and update based on condition.
         if(this.currentUsers.has(id)) {
-            this.currentUsers.set(id,userDataSet);            
+            this.currentUsers.set(id.toString(),userDataSet);            
         } else {
-            this.currentUsers.set(id,userDataSet);
+            this.currentUsers.set(id.toString(),userDataSet);
         }
         // return after add or updated.
         return true;
