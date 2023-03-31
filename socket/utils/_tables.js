@@ -2,6 +2,7 @@ const config        = require('./../../config');
 var {tableObject, gamePlayObject} = require('./tableObject');
 const {sendMessage} = require('../../socket/controller/message_controllers');
 const logDNA        = require('../../api/service/logDNA');
+const timeLib       = require('../helper/timeLib');
 let logger          = {};
 class _Tables
 {
@@ -33,6 +34,7 @@ class _Tables
                 current_turn_type: 'roll',
                 turn_start_at: 0,
                 no_of_players: table.no_of_players,
+                validity : timeLib.calculateExpTime(config.socketUserExpireTime),
                 users: [],
 
             };
@@ -232,7 +234,6 @@ class _Tables
     //To check user already playing in another room / table
     alreadyPlaying(id)
     {
-        console.log('AlreadyPlaying Started >>', id, this.tables.length);
         for (let i = 0; i < this.tables.length; i++)
         {
             // console.log('AlreadyPlaying Started >>',  this.tables[i]);
@@ -1614,6 +1615,23 @@ class _Tables
           [arr[randIndex], arr[i]] = [arr[i], arr[randIndex]];
         }
         return arr;
+    }
+
+    /**
+     *  The function used to remove room object from Global Object after given time frame.
+     *  The function invocking from corn job.
+     */
+    removeRoomDetailsFromTableObject() {
+        let indexs = this.tables.reduce(function(accumulator,currentValue,index) {
+            if(timeLib.checkExpTime(currentValue.validity)) {
+                 accumulator.push(index);         
+            }     
+            return accumulator;
+       },[])
+       // To delete object from Table array
+       indexs.map(function(index) {
+            this.tables.splice(index, 1);
+       });
     }
 
     objectId()

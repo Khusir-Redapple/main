@@ -22,6 +22,7 @@ class config
         this.countDownTime = 30; // previously it was 10 sec.
         this.pawnMoveTimer = 0.08; // Pawn move timer.
         this.noOfPlayersInTournament = [2, 3, 4]; //Game start if number of player matches in array value.
+        this.socketUserExpireTime = 180; // in seconds format 20 minutes equal to 1200 sec
     }
 }
 // Export the function to entire project.

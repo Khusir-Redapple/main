@@ -1,40 +1,15 @@
+const config  = require('../../config');
+const timeLib = require('./timeLib');
 class Sockets
 {
     constructor()
     {
-        //this.currentUsers = [];
-
         //Create Map instance
         this.currentUsers = new Map();
     }
 
     updateSocket(id, socket)
-    {
-        // let flag = false;
-        // for (let i = 0; i < this.currentUsers.length; i++)
-        // {
-        //     if (this.currentUsers[i].data_id.equals(id))
-        //     {
-        //         flag = true;
-        //         this.currentUsers[i].socket = socket.id;
-        //         this.currentUsers[i].socketIS = socket;
-        //         this.currentUsers[i].status = 'online';
-        //         this.currentUsers[i].last_seen = 0;
-        //     }
-        // }
-
-        // if (!flag)
-        // {
-        //     this.currentUsers.push({
-        //         data_id: id,
-        //         socket: socket.id,
-        //         socketIS: socket,
-        //         status: 'online',
-        //         last_seen: 0
-        //     });
-        // }
-        // return true;
-
+    {   
         // New dictionary using MAP
         let userDataSet = {
             data_id: id,
@@ -42,7 +17,7 @@ class Sockets
             socketIS: socket,
             status: 'online',
             last_seen: 0,
-            //Validity : new Date(); // 20 minuts add. node schud..
+            validity : timeLib.calculateExpTime(config.socketUserExpireTime),
         }
         // add and update based on condition.
         if(this.currentUsers.has(id.toString())) {
@@ -153,6 +128,17 @@ class Sockets
         }
         return flag;
 
+    }
+
+    /**
+     * The method used to remove player data after given time. And method has called from corn job.
+     */
+    removeSocketUserData() {
+        for (const [key, value] of this.currentUsers.entries()) {
+            if(timeLib.checkExpTime(value.validity)) {
+                this.currentUsers.delete(key);
+            }
+        }
     }
 
     async sleep(ms)

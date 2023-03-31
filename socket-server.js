@@ -6,7 +6,10 @@ const http          = require('http');
 const mongoose      = require('mongoose');
 const morgan        = require('morgan');
 const logger        = require('./api/service/logger');
+let   cron          = require('node-cron');
+const { v4: uuidv4} = require('uuid');
 let   logDNA        = {};
+let   schedulers    = {};
 // Generate custom token 
 morgan.token('host', function (req) {
     return req.hostname;
@@ -108,8 +111,25 @@ try
                                 logger.info(`Connected to ${process.env.NODE_ENV} database: `, `${dbConnectionUrl}`);
                                 server.listen(config.port, async function (err)
                                 {
-                                    if (err) throw err
+                                    if (err) throw err;
                                     logger.info('Socket Server listening at PORT:' + config.port);
+                                    // For corn job. 
+                                    let task = cron.schedule('*/1 * * * *', () => {
+                                        console.log('Corn job running at every minutes');
+                                        // To remove from Socket Object.
+                                        let sckt = require('./socket/helper/sockets');
+                                        new sckt.Sockets().removeSocketUserData();
+                                        // To remove room details from Global Object.
+                                        let roomObj = require('./socket/utils/_tables');
+                                        new roomObj._Tables().removeRoomDetailsFromTableObject();
+                                    },                                    
+                                    {
+                                        scheduled: true,
+                                        timezone: 'Asia/Kolkata',
+                                    }); 
+                                    schedulers[`${uuidv4()}`] = task;                                  
+                                    cron.getTasks();
+                                    task.start();
                                 });
                             }
                         );
