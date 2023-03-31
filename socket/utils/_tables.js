@@ -234,14 +234,31 @@ class _Tables
     //To check user already playing in another room / table
     alreadyPlaying(id)
     {
-        let data =  this.tables.reduce(function(acc,cur) {
-            let index = cur.users.findIndex(userDara => userDara.id.toString() == id.toString() && !userDara.is_left);
-            if(index == -1) {
-                 return false;
+        for (let i = 0; i < this.tables.length; i++)
+        {
+            for (let pl = 0; pl < this.tables[i].users.length; pl++)
+            {
+                if (this.tables[i].users[pl].id)
+                {
+                    if (this.tables[i].users[pl].id.toString() == id.toString() && !this.tables[i].users[pl].is_left)
+                    {
+                        return true;
+                    }
+                }
             }
-            return true;
-       },[]);
-       return data;
+        }
+
+        return false;
+
+    //     let data =  this.tables.reduce(function(acc,cur) {
+    //         let index = cur.users.findIndex(userDara => userDara.id.toString() == id.toString() && !userDara.is_left);
+    //         if(index == -1) {
+    //              return false;
+    //         }
+    //         return true;
+    //    },[]);
+    //    return false;
+    
     }
     alreadyPlayingTable(id)
     {
