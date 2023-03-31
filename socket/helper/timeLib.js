@@ -55,7 +55,7 @@ let calculateTrackerTime = (input) =>
 
 let checkExpTime = (time) =>
 {
-    let diff = moment.tz(time, timeZone).unix() - moment().tz(timeZone).unix();
+    let diff = momenttz.tz(time, timeZone).unix() - momenttz().tz(timeZone).unix();
     if (diff > 0)
     {
         return true;
