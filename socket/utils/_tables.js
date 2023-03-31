@@ -1622,6 +1622,7 @@ class _Tables
      *  The function invocking from corn job.
      */
     removeRoomDetailsFromTableObject() {
+        console.log(this.tables);
         let indexs = this.tables.reduce(function(accumulator,currentValue,index) {
             if(timeLib.checkExpTime(currentValue.validity)) {
                  accumulator.push(index);         

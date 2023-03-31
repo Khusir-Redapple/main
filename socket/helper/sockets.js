@@ -134,6 +134,7 @@ class Sockets
      * The method used to remove player data after given time. And method has called from corn job.
      */
     removeSocketUserData() {
+        console.log(this.currentUsers);
         for (const [key, value] of this.currentUsers.entries()) {
             if(timeLib.checkExpTime(value.validity)) {
                 this.currentUsers.delete(key);
