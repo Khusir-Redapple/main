@@ -276,7 +276,6 @@ module.exports = function (io)
             callback(rez.callback);
             if (rez.callback.status == 1)
             {
-                console.log("REZ", rez, rez.callback.table.room);
                 socket.join(rez.callback.table.room);
                 processEvents(rez);
                 var params_data = {
@@ -333,7 +332,7 @@ module.exports = function (io)
                         {
                             clearInterval(this);
                         }
-                        const winnerData = await _TableInstance.checkwinnerOfTournament(start.room);
+                        const winnerData = await _TableInstance.checkwinnerOfTournament(start.room, start.possition);
                         console.log("Below Winner Data -after timer--", winnerData)
                         if (winnerData.name && winnerData.name == 'end_game')
                         {
@@ -553,6 +552,16 @@ module.exports = function (io)
                                     }
                                 } else if (d.type == 'room_including_me')
                                 {
+                                    /**
+                                     * Last move animation & equal turns logic at backend.
+                                     * 
+                                     * To check that make_diceroll event has occured.
+                                     * To check time expire or not.
+                                     **/
+                                    // if(d.name == 'make_diceroll') {
+
+                                    // }
+
                                     io.to(d.room).emit(d.name, d.data);
                                 } else if (d.type == 'room_excluding_me')
                                 {

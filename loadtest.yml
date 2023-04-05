@@ -1,13 +1,13 @@
 # To use load testing => npm install artillery artillery-engine-socketio-v3
-# TO execute => npx artillery run config.yml
-# my-scenario.yml
+# TO execute => npx artillery run loadtest.yml
+
 config:
-  target: "http://localhost:3000/"
+  target: "http://127.0.0.1:3000/"
   phases:
     - duration: 1
-      arrivalRate: 42
+      arrivalRate: 4
   engines:
-   socketio-v3: {}
+   socketio-v2: {}
 # To load dynamic payload
   payload:
     # path is relative to the location of the test script
@@ -17,14 +17,14 @@ config:
 #Main scenario for emit events
 scenarios:
   - name: test-case
-    engine: socketio-v3
+    engine: socketio-v2
     flow:
       # wait for the WebSocket upgrade (optional)
       - think: 1
       # basic emit
       - emit:
-          channel: "join"
+          channel: "joinTournament"
           data:
-            token: "{{tokens}}"   
+            token: "{{tokens}}" 
       # do nothing for 30 seconds then disconnect
       - think: 30

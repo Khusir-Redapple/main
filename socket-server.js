@@ -115,7 +115,7 @@ try
                                     logger.info('Socket Server listening at PORT:' + config.port);
                                     // For corn job. 
                                     let task = cron.schedule('*/1 * * * *', () => {
-                                        console.log('Corn job running at every minutes');
+                                        // console.log('Corn job running at every minutes');
                                         // To remove from Socket Object.
                                         let sckt = require('./socket/helper/sockets');
                                         new sckt.Sockets().removeSocketUserData();
