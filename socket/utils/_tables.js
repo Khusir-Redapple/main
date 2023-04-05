@@ -750,7 +750,6 @@ class _Tables
     }
     scrapTurn(room, pos)
     {
-        console.log('SWITCH TURN::===>>>>', pos);
         for (let i = 0; i < this.tables.length; i++)
         {
             if (this.tables[i].room == room)

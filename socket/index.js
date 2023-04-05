@@ -556,13 +556,13 @@ module.exports = function (io)
                                      * Last move animation & equal turns logic at backend.
                                      * 
                                      * To check that make_diceroll event has occured.
-                                     * To check time expire or not.
+                                     * To check time expire.
                                      **/
                                     // if(d.name == 'make_diceroll') {
 
                                     // }
 
-                                    io.to(d.room).emit(d.name, d.data);
+                                   // io.to(d.room).emit(d.name, d.data);
                                 } else if (d.type == 'room_excluding_me')
                                 {
                                     console.log("room_excluding_me", d.data);
