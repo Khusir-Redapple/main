@@ -777,7 +777,7 @@ module.exports = {
             console.log("checkwinnerOfTournament >>>", tableD.win_amount, timeInsecond);
             if (timeInsecond >= config.gameTime * 60)
             {
-                console.log('PLAYER POSITION', playerPosition);
+                console.log('PLAYER POSITION >>>>', playerPosition);
                 if(playerPosition == 0) {
                     winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
                 } else {
