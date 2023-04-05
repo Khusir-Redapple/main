@@ -562,7 +562,7 @@ module.exports = function (io)
 
                                     // }
 
-                                   // io.to(d.room).emit(d.name, d.data);
+                                    io.to(d.room).emit(d.name, d.data);
                                 } else if (d.type == 'room_excluding_me')
                                 {
                                     console.log("room_excluding_me", d.data);
