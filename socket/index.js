@@ -574,6 +574,7 @@ module.exports = function (io)
                                             //processEvents(data);
                                             io.to(d.room).emit(d.name, d.data);
                                         } else if(d.name == 'end_game') {
+                                            console.log('Enter in GAME END');
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
