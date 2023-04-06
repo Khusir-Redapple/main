@@ -563,17 +563,11 @@ module.exports = function (io)
                                      **/
                                     let gameTime = await checkGameExpireTime(d.room);
 
-                                    //isTimeExpired : flag,
-                                    //time : config.gameTime * 60 - timeInsecond,
-
                                     if(gameTime.isTimeExpired) {
                                         if(d.name == 'make_diceroll') {
-                                            //io.to(d.room).emit(d.name, d.data);
                                             let data = await _TableInstance.checkwinnerOfTournament(d.room);
-                                            console.log('END GAME', data);
                                             processEvents(data);                                            
                                         } else if(d.name == 'end_game') {
-                                            console.log('Enter in GAME END');
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
