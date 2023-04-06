@@ -570,6 +570,7 @@ module.exports = function (io)
                                         if(d.name == 'make_diceroll') {
                                             //io.to(d.room).emit(d.name, d.data);
                                             let data = await _TableInstance.checkwinnerOfTournament(d.room);
+                                            console.log('END GAME', data);
                                             processEvents(data);
                                         }
                                     } else {
