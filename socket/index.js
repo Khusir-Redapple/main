@@ -332,18 +332,21 @@ module.exports = function (io)
                         {
                             clearInterval(this);
                         }
-                        const winnerData = await _TableInstance.checkwinnerOfTournament(start.room, start.possition);
-                        console.log("Below Winner Data -after timer--", winnerData)
-                        if (winnerData.name && winnerData.name == 'end_game')
-                        {
-                            let resObj = {events: []};
-                            resObj.events.push(winnerData);
-                            processEvents(resObj);
+                        // const winnerData = await _TableInstance.checkwinnerOfTournament(start.room);
+                        // console.log("Below Winner Data -after timer--", winnerData)
+                        // if (winnerData.name && winnerData.name == 'end_game')
+                        // {
+                        //     let resObj = {events: []};
+                        //     resObj.events.push(winnerData);
+                        //     processEvents(resObj);
 
-                        } else if (winnerData.time)
-                        {
-                            io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: winnerData});
-                        }
+                        // } else if (winnerData.time)
+                        // {
+                        //     io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: winnerData});
+                        // }
+                        let gameTime = await checkGameExpireTime(start.room);
+                        console.log("Below Winner Data -after timer--", gameTime);
+                        io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time}});
                     }, 1000);        
                 }
                 else
@@ -558,11 +561,20 @@ module.exports = function (io)
                                      * To check that make_diceroll event has occured.
                                      * To check time expire.
                                      **/
-                                    // if(d.name == 'make_diceroll') {
+                                    let gameTime = await checkGameExpireTime(d.data.table.room);
 
-                                    // }
+                                    //isTimeExpired : flag,
+                                    //time : config.gameTime * 60 - timeInsecond,
 
-                                    io.to(d.room).emit(d.name, d.data);
+                                    if(gameTime.isTimeExpired) {
+                                        if(d.name == 'make_diceroll') {
+                                            //io.to(d.room).emit(d.name, d.data);
+                                            let data = await _TableInstance.checkwinnerOfTournament(d.data.table.room);
+                                            processEvents(data);
+                                        }
+                                    } else {
+                                        io.to(d.room).emit(d.name, d.data);
+                                    }                                 
                                 } else if (d.type == 'room_excluding_me')
                                 {
                                     console.log("room_excluding_me", d.data);
@@ -588,6 +600,39 @@ module.exports = function (io)
                 }
             }
         }
+
+        /**
+         * The function used to check the gameTime expired or not.
+         * @param {room} number means room id
+         * 
+         * @returns boolean  
+         */
+        async function checkGameExpireTime(room) {
+            try {
+                let tableD = await Table.findOne({
+                    room: room,
+                });                
+                let gameStartTime = tableD.game_started_at;
+                // To convert New Date() getTime to Second.
+                let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
+
+                let flag;
+                if (timeInsecond >= config.gameTime * 60) { 
+                    flag =  true;
+                } else {
+                    flag =  false;
+                }
+                if (timeInsecond < 0) timeInsecond = 0;
+                return {
+                    isTimeExpired : flag,
+                    time : config.gameTime * 60 - timeInsecond,
+                }
+
+            } catch(Execption) {
+
+            }
+        }
+
         /**
          * The function used to delete object.
          * @param {object} object 

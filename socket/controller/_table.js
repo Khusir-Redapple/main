@@ -361,9 +361,9 @@ module.exports = {
                         },
                     };
                     resObj.events.push(event);
-                    const winnerData = await this.checkwinnerOfTournament(params.room, nextPos);
-                    console.log("Below Winner Data --1--", winnerData)
-                    if (winnerData) resObj.events.push(winnerData);
+                    // const winnerData = await this.checkwinnerOfTournament(params.room);
+                    // console.log("Below Winner Data --1--", winnerData)
+                    // if (winnerData) resObj.events.push(winnerData);
 
                 } else
                 {
@@ -620,10 +620,10 @@ module.exports = {
                         {
                             moveBonusCheck = true;
                         }
-                        console.log("Above Winner Data ----")
-                        const winnerData = await this.checkwinnerOfTournament(params.room, myPos);
-                        console.log("Below Winner Data ----", winnerData)
-                        if (winnerData) resObj.events.push(winnerData);
+                        // console.log("Above Winner Data ----")
+                        // const winnerData = await this.checkwinnerOfTournament(params.room);
+                        // console.log("Below Winner Data ----", winnerData)
+                        // if (winnerData) resObj.events.push(winnerData);
                     } catch (error)
                     {
                         console.lof("CATCH ERROR _ ", error)
@@ -764,18 +764,18 @@ module.exports = {
             // console.log('ERROR', err);
         }
     },
-    checkwinnerOfTournament: async function (room, playerPosition)
+    checkwinnerOfTournament: async function (room)
     {
         let tableD = await Table.findOne({
             room: room,
         });
         if (tableD)
         {
-            const gameStartTime = tableD.game_started_at;
-            let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
-            var winnerInfo;
-            if (timeInsecond >= config.gameTime * 60)
-            {
+            //const gameStartTime = tableD.game_started_at;
+            //let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
+            //var winnerInfo;
+            //if (timeInsecond >= config.gameTime * 60)
+            //{
                 // if(playerPosition == 0) {
                 //     winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
                 // } else {
@@ -794,9 +794,10 @@ module.exports = {
                 //     );
                 //     console.log(':: GAME END TIME UPDATED TO 10 SEC :: ');
                 // }
-                winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
-            }
+                //winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
+            //}
             // console.log("Final winner Info >>",winnerInfo) 
+            winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
             if (winnerInfo)
             {
                 for (let j = 0; j < winnerInfo.length; j++)
@@ -845,8 +846,8 @@ module.exports = {
                 }
                 return event;
             }
-            if (timeInsecond < 0) timeInsecond = 0;
-            return ({time: config.gameTime * 60 - timeInsecond});
+            // if (timeInsecond < 0) timeInsecond = 0;
+            // return ({time: config.gameTime * 60 - timeInsecond});
             // resObj.events.push(event);      
         }
         return undefined;
