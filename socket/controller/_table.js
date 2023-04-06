@@ -1894,7 +1894,7 @@ module.exports = {
         }
         console.log("getEndGameData >", reqData);
         // After gameEnd records to be deleted from DB.
-        await Table.deleteOne({room: data.room});
+        //await Table.deleteOne({room: data.room});
         return reqData;
     },
 };
