@@ -345,7 +345,7 @@ module.exports = function (io)
                         //     io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: winnerData});
                         // }
                         let gameTime = await checkGameExpireTime(start.room);
-                        console.log("Below Winner Data -after timer--", gameTime);
+                        console.log("Below Winner Data -after timer--", start.room, gameTime);
                         io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time}});
                     }, 1000);        
                 }
