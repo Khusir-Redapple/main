@@ -572,6 +572,8 @@ module.exports = function (io)
                                             let data = await _TableInstance.checkwinnerOfTournament(d.room);
                                             console.log('END GAME', data);
                                             processEvents(data);
+                                        } else if(d.name == 'end_game') {
+                                            io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
                                         io.to(d.room).emit(d.name, d.data);
