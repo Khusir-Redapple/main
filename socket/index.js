@@ -629,7 +629,7 @@ module.exports = function (io)
                 }
 
             } catch(Execption) {
-                console.log('CATCH ERROR ::>>>');
+                console.log('CATCH ERROR ::>>>', Execption);
             }
         }
 
