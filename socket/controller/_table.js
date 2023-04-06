@@ -844,7 +844,10 @@ module.exports = {
                 {
                     return {callback: {status: 0, message: startGame.error}};
                 }
-                return event;
+                //return event;
+                let resObj = {};
+                resObj.events.push(event);
+                return resObj;
             }
             // if (timeInsecond < 0) timeInsecond = 0;
             // return ({time: config.gameTime * 60 - timeInsecond});
