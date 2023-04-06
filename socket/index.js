@@ -561,7 +561,7 @@ module.exports = function (io)
                                      * To check that make_diceroll event has occured.
                                      * To check time expire.
                                      **/
-                                    let gameTime = await checkGameExpireTime(d.data.table.room);
+                                    let gameTime = await checkGameExpireTime(d.room);
 
                                     //isTimeExpired : flag,
                                     //time : config.gameTime * 60 - timeInsecond,
@@ -569,7 +569,7 @@ module.exports = function (io)
                                     if(gameTime.isTimeExpired) {
                                         if(d.name == 'make_diceroll') {
                                             //io.to(d.room).emit(d.name, d.data);
-                                            let data = await _TableInstance.checkwinnerOfTournament(d.data.table.room);
+                                            let data = await _TableInstance.checkwinnerOfTournament(d.room);
                                             processEvents(data);
                                         }
                                     } else {
