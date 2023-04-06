@@ -845,7 +845,9 @@ module.exports = {
                     return {callback: {status: 0, message: startGame.error}};
                 }
                 //return event;
-                let resObj = {};
+                let resObj = {
+                    events : []
+                };
                 resObj.events.push(event);
                 return resObj;
             }
