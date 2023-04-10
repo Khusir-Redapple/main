@@ -9,6 +9,8 @@ const requestTemplate = require('../api/service/request-template');
 const config          = require('../config');
 const ObjectId        = require('mongoose').Types.ObjectId;
 const logDNA          = require('../api/service/logDNA');
+
+const sqsService      = require('../api/operations/sqs_fifo_services');
 module.exports = function (io)
 {
     
@@ -42,6 +44,21 @@ module.exports = function (io)
         logDNA.log('DEVICE :: connected', logData);
         // reset the socket connection for all listeners
         socket.removeAllListeners();
+
+        // sqs testing
+        socket.on('sqs', async () => {
+            let sendData = await sqsService.sqsSendMessage();
+            console.log(sendData);
+            let res = await sqsService.sqsReceiveMessage();
+            console.log(res);
+            if(res!= 'EmptyQueue' && typeof(res.Messages) == 'object') {
+                res.Messages.map((data) => {
+                    console.log(data.Body)
+                });
+            } else {
+                console.log('Queue is empty.');
+            }
+        })
 
         /**
          * ping event used for pinging up the connection.

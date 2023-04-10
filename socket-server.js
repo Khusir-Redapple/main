@@ -41,7 +41,7 @@ app.use('/hello', function (req, res)
 });
 // Creating server
 const server = http.createServer(app);
-const socket = require('socket.io')(server);
+const socket = require('socket.io')(server, {perMessageDeflate: false});
 
 /**
  *	Server bootup section
