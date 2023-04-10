@@ -12,7 +12,7 @@ class QueueServices
      * Send message to sqs service
      * @param {params} params contains user data like token.
      */
-    async sqsSendMessage(params)
+    async SendMessage(params)
     {
 
         // Setup the sendMessage parameter object
@@ -46,7 +46,7 @@ class QueueServices
         });
     }
 
-    async sqsReceiveMessage()
+    async ReceiveMessage()
     {
         // Setup the receiveMessage parameters
         const params = {

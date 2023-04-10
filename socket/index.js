@@ -47,9 +47,9 @@ module.exports = function (io)
 
         // sqs testing
         socket.on('sqs', async () => {
-            let sendData = await sqsService.sqsSendMessage();
+            let sendData = await sqsService.SendMessage();
             console.log(sendData);
-            let res = await sqsService.sqsReceiveMessage();
+            let res = await sqsService.ReceiveMessage();
             console.log(res);
             if(res!= 'EmptyQueue' && typeof(res.Messages) == 'object') {
                 res.Messages.map((data) => {
