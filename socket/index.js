@@ -640,10 +640,16 @@ module.exports = function (io)
                 } else {
                     flag =  false;
                 }
-                if (timeInsecond < 0) timeInsecond = 0;
+                let timer = 0;
+                if (timeInsecond < 0) {
+                    timeInsecond = timer;
+                } else {
+                    timer = config.gameTime * 60 - timeInsecond;
+                }
+
                 return {
                     isTimeExpired : flag,
-                    time : config.gameTime * 60 - timeInsecond,
+                    time : timer,
                 }
 
             } catch(Execption) {
