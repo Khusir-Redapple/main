@@ -58,8 +58,14 @@ module.exports = function (io)
             } else {
                 console.log('Queue is empty.');
             }
-        })
+        });
 
+        /**
+         * This event get room details
+         * @param {object} contains room id.
+         * 
+         * @return array of object. 
+         */
         socket.on('fetchGameData', async function(params, callback) {
             let response = await _TableInstance.getDataByRoom(params.room);
             return callback(response);
@@ -640,13 +646,12 @@ module.exports = function (io)
                 } else {
                     flag =  false;
                 }
-                let timer = 0;
-                if (timeInsecond < 0) {
-                    timeInsecond = timer;
-                } else {
-                    timer = config.gameTime * 60 - timeInsecond;
-                }
+                if (timeInsecond < 0) timeInsecond = 0;
 
+                let timer = config.gameTime * 60 - timeInsecond;
+                if(timer < 0){
+                    timer = 0
+                }
                 return {
                     isTimeExpired : flag,
                     time : timer,
