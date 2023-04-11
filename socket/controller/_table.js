@@ -1514,7 +1514,7 @@ module.exports = {
             // tableD.game_started_at = new Date(dt).getTime();
             // tableD.turn_start_at = new Date(dt).getTime();
 
-            dt.setSeconds(dt.getSeconds() + 10);
+            dt.setSeconds(dt.getSeconds() + 1);
             tableD.game_started_at = new Date(dt).getTime();
             tableD.turn_start_at = new Date(dt).getTime();
 
