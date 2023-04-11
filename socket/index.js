@@ -60,8 +60,8 @@ module.exports = function (io)
             }
         })
 
-        socket.on('fetchGameData', async function(room, callback) {
-            let response = await _TableInstance.getDataByRoom(room);
+        socket.on('fetchGameData', async function(params, callback) {
+            let response = await _TableInstance.getDataByRoom(params.room);
             return callback(response);
         });
 
