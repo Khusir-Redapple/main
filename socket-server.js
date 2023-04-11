@@ -10,7 +10,6 @@ let   cron          = require('node-cron');
 const { v4: uuidv4} = require('uuid');
 let   logDNA        = {};
 let   schedulers    = {};
-const redis         = require('redis');
 // Generate custom token 
 morgan.token('host', function (req) {
     return req.hostname;
