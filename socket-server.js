@@ -10,6 +10,7 @@ let   cron          = require('node-cron');
 const { v4: uuidv4} = require('uuid');
 let   logDNA        = {};
 let   schedulers    = {};
+const redis         = require('redis');
 // Generate custom token 
 morgan.token('host', function (req) {
     return req.hostname;
@@ -113,6 +114,20 @@ try
                                 {
                                     if (err) throw err;
                                     logger.info('Socket Server listening at PORT:' + config.port);
+
+                                    // make a connection to the instance of redis
+                                    // const client = redis.createClient({
+                                    //       url:  'redis://stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com:6379',
+                                    //     }
+                                    // );
+                                    // client.connect();                                    
+                                    // client.on("error", (error) => {
+                                    //     console.log('ERR=>>>>', error);
+                                    // });
+                                    // client.on("ready", function() { 
+                                    //     console.log("Connected to Redis server successfully");  
+                                    // });
+
                                     // For corn job. 
                                     let task = cron.schedule('*/1 * * * *', () => {
                                         // console.log('Corn job running at every minutes');

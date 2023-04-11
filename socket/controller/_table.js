@@ -1902,4 +1902,7 @@ module.exports = {
         //await Table.deleteOne({room: data.room});
         return reqData;
     },
+    getDataByRoom : async function (room) {
+        return _tab.getDataByRoom(room);
+    }
 };

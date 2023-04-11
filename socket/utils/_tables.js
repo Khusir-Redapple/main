@@ -1691,6 +1691,43 @@ class _Tables
         this.gamePlayData[gamePlayDataIndex].data.checkpoint = checkPointActivated ? true : false;
         return checkPointActivated;
     }
+    getDataByRoom(room) {
+        for (var i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room === room)
+            {
+                var dt = new Date();
+                dt.setSeconds(dt.getSeconds() + 4);
+                for (let pl = 0; pl < this.tables[i].users.length; pl++)
+                {
+                    if (this.tables[i].users[pl].is_active)
+                    {
+                        this.tables[i].current_turn = pl;
+                        this.tables[i].current_turn_type = 'roll';
+                        this.tables[i].turn_start_at = new Date(dt).getTime(); 
+                        this.tables[i].game_started_at = new Date(dt).getTime();
+                        let DICE_ROLLED = this.rollDice(room, this.tables[i].users[pl].id);
+                        this.tables[i].users[pl].turn = 1;
+
+                        if (this.tables[i].users[pl].dices_rolled.length == 0)
+                            this.tables[i].users[pl].dices_rolled.push(DICE_ROLLED);
+                        var resObj = {
+                            status: 1,
+                            message: 'Done',
+                            room: this.tables[i].room,
+                            table: this.tables[i],
+                            dice: DICE_ROLLED,
+                            turn_start_at: config.turnTimer,
+                            possition: pl,
+                            default_diceroll_timer: config.turnTimer
+                        };
+                        return resObj;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
 
 module.exports = {

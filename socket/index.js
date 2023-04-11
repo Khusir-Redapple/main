@@ -47,8 +47,8 @@ module.exports = function (io)
 
         // sqs testing
         socket.on('sqs', async () => {
-            let sendData = await sqsService.SendMessage();
-            console.log(sendData);
+            // let sendData = await sqsService.SendMessage();
+            // console.log(sendData);
             let res = await sqsService.ReceiveMessage();
             console.log(res);
             if(res!= 'EmptyQueue' && typeof(res.Messages) == 'object') {
@@ -59,6 +59,11 @@ module.exports = function (io)
                 console.log('Queue is empty.');
             }
         })
+
+        socket.on('fetchGameData', async function(room, callback) {
+            let response = await _TableInstance.getDataByRoom(room);
+            return callback(response);
+        });
 
         /**
          * ping event used for pinging up the connection.
@@ -305,8 +310,6 @@ module.exports = function (io)
 
                 if (start)
                 {
-                    console.log("Start 1- ", start.table.users);
-
                     let reqData = await _TableInstance.getGameUsersData(start);
                     let startGame = await requestTemplate.post(`startgame`, reqData)
 
