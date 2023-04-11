@@ -1692,7 +1692,6 @@ class _Tables
         return checkPointActivated;
     }
     getDataByRoom(room) {
-        console.log('FROM end method===>>', room);
         for (var i = 0; i < this.tables.length; i++)
         {
             if (this.tables[i].room === room)
