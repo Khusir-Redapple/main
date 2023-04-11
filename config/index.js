@@ -17,12 +17,12 @@ class config
         this.diceGenerateRange = 18; // No. of dice value generate at the time of game start for each player
         this.safeZone = [1, 14, 27, 40, 22, 35, 9, 48]; // Pawn safe Zone.
         this.starPosition = [21]; // Pawn start position.
-        this.gameTime = 2; // Game EndTime is 10 minutes.
+        this.gameTime = 10; // Game EndTime is 10 minutes.
         this.turnTimer = 10; // Dice roll time 10 sec.
         this.countDownTime = 30; // previously it was 10 sec.
         this.pawnMoveTimer = 0.08; // Pawn move timer.
         this.noOfPlayersInTournament = [2, 3, 4]; //Game start if number of player matches in array value.
-        this.socketUserExpireTime = 180; // in seconds format 20 minutes equal to 1200 sec
+        this.socketUserExpireTime = 1200; // in seconds format 20 minutes equal to 1200 sec
     }
 }
 // Export the function to entire project.
