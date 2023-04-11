@@ -60,9 +60,9 @@ module.exports = function (io)
             }
         })
 
-        socket.on('fetchGameData', async function(params, callback) {
-            let response = await _TableInstance.getDataByRoom(params.room);
-            return callback(response);
+        socket.on('fetchGameData', function(params, callback) {
+            let response = _TableInstance.getDataByRoom(params.room);
+            return callback(...response);
         });
 
         /**
