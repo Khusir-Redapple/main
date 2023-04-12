@@ -544,7 +544,7 @@ module.exports = function (io)
                             level: 'debugg',
                             meta: d
                         };
-                        logDNA.log(`Event ${d.name} fired`, logData);
+                        d.name ? logDNA.log(`Event ${d.name} fired`, logData) : '';
                         deleteObjectProperty(logData);
                         setTimeout(
                             async function ()

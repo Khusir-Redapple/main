@@ -30,6 +30,7 @@ class MessageOperations
             sqsAwsInstance.sendMessage(params, function (error, data)
             {
                 if (error) {
+                    console.log(error); process.exit();
                     reject(error);
                 } else {
                     resolve(data);

@@ -20,7 +20,6 @@ class MessageController
                 // MessageGroupId: id,
                 // MessageDeduplicationId: id,
             };
-            console.log("sendMessage data:: >", params);
             // JSON to object convert
             let parseData = JSON.parse(params.MessageBody);
             // db search for lobbyId
@@ -31,7 +30,6 @@ class MessageController
             parseData.lobbyId = userData.lobbyId;
             // To build final object
             let finalParams = {MessageBody: JSON.stringify(parseData)};
-            console.log("after adding lobbyId sendMessage data:: >", finalParams)
             let result = await sqsSendMessage(finalParams);
             // for SQS Success
             let logData = {
@@ -45,12 +43,10 @@ class MessageController
         {
             // for SQS Success
             let logData = {
-                level: 'debugg',
+                level: 'error',
                 meta: error
             };
             logDNA.log('SQS sendMessage ERROR', logData);
-
-            console.log("SQS sendMessage ERROR :: ", error)
             return false;
         }
     }
