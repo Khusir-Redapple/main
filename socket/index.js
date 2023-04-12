@@ -473,7 +473,7 @@ module.exports = function (io)
                 } else
                 {
                     var currTime = parseInt(new Date().getTime());
-                    if (currTime - checkTabel.start_at > (config.turnTimer) * 1000)
+                    if (currTime - checkTabel.start_at > (config.turnTimer + 3) * 1000)
                     {
                         console.log("IN timeOut ------------", new Date())
                         var id_of_current_turn = await _TableInstance.getMyIdByPossition(
