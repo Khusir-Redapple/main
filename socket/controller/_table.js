@@ -771,32 +771,6 @@ module.exports = {
         });
         if (tableD)
         {
-            //const gameStartTime = tableD.game_started_at;
-            //let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
-            //var winnerInfo;
-            //if (timeInsecond >= config.gameTime * 60)
-            //{
-                // if(playerPosition == 0) {
-                //     winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
-                // } else {
-                //     let currentDate = new Date();
-                //     currentDate.setSeconds(currentDate.getSeconds() + 10);
-
-                //     await Table.findOneAndUpdate(
-                //         {
-                //             room: room,
-                //         },
-                //         {
-                //             $set: {
-                //                 game_started_at: new Date(currentDate).getTime()
-                //             }
-                //         }
-                //     );
-                //     console.log(':: GAME END TIME UPDATED TO 10 SEC :: ');
-                // }
-                //winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
-            //}
-            // console.log("Final winner Info >>",winnerInfo) 
             winnerInfo = _tab.EndOfTournament(tableD.room, tableD.win_amount);
             if (winnerInfo)
             {
@@ -836,10 +810,8 @@ module.exports = {
                         game_data: winnerInfo,
                     },
                 };
-                console.log("event >4>>>", event)
                 let reqData = await this.getEndGameData(event.data, tableD.room_fee);
-                console.log("reqData >>>>", reqData)
-                let startGame = await requestTemplate.post(`endgame`, reqData)
+                let startGame = await requestTemplate.post(`endgame`, reqData);
                 if (!startGame.isSuccess)
                 {
                     return {callback: {status: 0, message: startGame.error}};
@@ -855,7 +827,6 @@ module.exports = {
             // return ({time: config.gameTime * 60 - timeInsecond});
             // resObj.events.push(event);      
         }
-        return undefined;
     },
     // Quit Game / Leave Table
     leaveTable: async function (params, id, socket)

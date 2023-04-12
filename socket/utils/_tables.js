@@ -76,7 +76,6 @@ class _Tables
                 };
             }
             this.tables.push(table_i);
-            // console.log('New table generated', JSON.stringify(table_i));
             resolve(table_i.room);
         });
     }
