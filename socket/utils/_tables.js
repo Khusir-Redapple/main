@@ -1510,12 +1510,12 @@ class _Tables
             prev.push(curr);
             return prev;
         }, []);
-
+        // To update player life.
         let gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
-        console.log("this.gamePlayData[gamePlayDataIndex].data.life_lost0 >", this.gamePlayData[gamePlayDataIndex].data.life_lost, this.gamePlayData[gamePlayDataIndex].data.lives_left)
-        this.gamePlayData[gamePlayDataIndex].data.life_lost += 1
-        this.gamePlayData[gamePlayDataIndex].data.lives_left -= 1
-        console.log("this.gamePlayData[gamePlayDataIndex].data.life_lost1 >", this.gamePlayData[gamePlayDataIndex].data.life_lost, this.gamePlayData[gamePlayDataIndex].data.lives_left)
+        //console.log("this.gamePlayData[gamePlayDataIndex].data.life_lost0 >", this.gamePlayData[gamePlayDataIndex].data.life_lost, this.gamePlayData[gamePlayDataIndex].data.lives_left)
+        this.gamePlayData[gamePlayDataIndex].data.life_lost += 1;
+        this.gamePlayData[gamePlayDataIndex].data.lives_left -= 1;
+        //console.log("this.gamePlayData[gamePlayDataIndex].data.life_lost1 >", this.gamePlayData[gamePlayDataIndex].data.life_lost, this.gamePlayData[gamePlayDataIndex].data.lives_left)
 
     }
 

@@ -473,7 +473,7 @@ module.exports = function (io)
                 } else
                 {
                     var currTime = parseInt(new Date().getTime());
-                    if (currTime - checkTabel.start_at > (config.turnTimer + 1) * 1000)
+                    if (currTime - checkTabel.start_at > (config.turnTimer) * 1000)
                     {
                         console.log("IN timeOut ------------", new Date())
                         var id_of_current_turn = await _TableInstance.getMyIdByPossition(
@@ -658,7 +658,8 @@ module.exports = function (io)
                 }
 
             } catch(Execption) {
-                console.log('CATCH ERROR ::>>>', Execption);
+                // To log error
+                logDNA.log('checkGameExpireTime', {level: 'error',meta: Execption});
             }
         }
 
