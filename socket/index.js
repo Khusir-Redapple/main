@@ -10,7 +10,6 @@ const config          = require('../config');
 const ObjectId        = require('mongoose').Types.ObjectId;
 const logDNA          = require('../api/service/logDNA');
 
-const sqsService      = require('../api/operations/sqs_fifo_services');
 module.exports = function (io)
 {
     
@@ -36,6 +35,7 @@ module.exports = function (io)
      */
     io.on('connection', function (socket)
     {
+        const sqsService      = require('../api/operations/sqs_fifo_services');
         // for logDNA 
         let logData = {
             level: 'debugg',
@@ -44,21 +44,6 @@ module.exports = function (io)
         logDNA.log('DEVICE :: connected', logData);
         // reset the socket connection for all listeners
         socket.removeAllListeners();
-
-        // sqs testing
-        socket.on('sqs', async () => {
-            // let sendData = await sqsService.SendMessage();
-            // console.log(sendData);
-            let res = await sqsService.ReceiveMessage();
-            console.log(res);
-            if(res!= 'EmptyQueue' && typeof(res.Messages) == 'object') {
-                res.Messages.map((data) => {
-                    console.log(data.Body)
-                });
-            } else {
-                console.log('Queue is empty.');
-            }
-        });
 
         /**
          * This event get room details
@@ -453,6 +438,23 @@ module.exports = function (io)
             logDNA.log('DEVICE :: Disconnected', logData);
             // var myId = Socketz.getId(socket.id);
             Socketz.userGone(socket.id);
+        });
+
+        socket.on('sendToQueue', async (data, callback) =>
+        {
+            if (!data || !data.token)
+            {
+                return callback({
+                    status: 0,
+                    message: localization.missingTokenError,
+                });
+            } else {
+                await sqsService.SendMessage(socket, io, data.token);
+                return callback({
+                    status: 1,
+                    message: 'success',
+                });
+            } 
         });
 
         async function startTournament(start, socket)

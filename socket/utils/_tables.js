@@ -1639,7 +1639,7 @@ class _Tables
        },[])
        // To delete object from Table array
        indexs.map(function(index) {
-            this.tables.splice(index, 1);
+            //this.tables.splice(index, 1);
        });
     }
 

@@ -104,7 +104,7 @@ try
                         mongoose.set('useCreateIndex', true);
                         mongoose.connect(
                             `${dbConnectionUrl}`,
-                            {useNewUrlParser: true},
+                            {useNewUrlParser: true, useFindAndModify: false},
                             d =>
                             {
                                 if (d) return logger.info(`ERROR CONNECTING TO DB ${dbConnectionUrl}`, d, dbConnectionUrl);

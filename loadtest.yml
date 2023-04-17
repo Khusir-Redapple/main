@@ -1,11 +1,11 @@
-# To use load testing => npm install artillery artillery-engine-socketio-v3
-# TO execute => npx artillery run loadtest.yml
+# To install npm for load testing => npm install artillery artillery-engine-socketio-v3
+# To execute the test => npx artillery run loadtest.yml
 
 config:
   target: "http://127.0.0.1:3000/"
   phases:
     - duration: 1
-      arrivalRate: 4
+      arrivalRate: 10
   engines:
    socketio-v2: {}
 # To load dynamic payload
@@ -23,7 +23,7 @@ scenarios:
       - think: 1
       # basic emit
       - emit:
-          channel: "joinTournament"
+          channel: "sendToQueue"
           data:
             token: "{{tokens}}" 
       # do nothing for 30 seconds then disconnect
