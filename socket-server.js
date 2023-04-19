@@ -117,7 +117,7 @@ try
                                         
                                         // make a connection to the instance of redis
                                         //const redis = await new RedisIo('redis://stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com:6379');                                                                                                                    
-                                        const redis = await new RedisIo('localhost:6379');
+                                        const redis = await new RedisIo(' redis-cli -h stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com -p 6379');
                                         
                                         // let redisOptions = {};
                                         // redisOptions.scaleReads = 'master'
