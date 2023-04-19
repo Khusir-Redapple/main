@@ -116,15 +116,15 @@ try
                                     logger.info('Socket Server listening at PORT:' + config.port);       
                                         
                                         // make a connection to the instance of redis
-                                        // const redis = await new RedisIo('redis://stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com:6379');                                                                                                                    
-                                        // const redis = await new RedisIo();                                     
-                                        // redis.connect();                                  
-                                        // redis.on("error", (error) => {
-                                        //     console.log(error);
-                                        // });
-                                        // redis.on("ready", function() { 
-                                        //     console.log("Connected to Redis server successfully");  
-                                        // });                          
+                                        //const redis = await new RedisIo('redis://stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com:6379');                                                                                                                    
+                                        const redis = await new RedisIo();                                     
+                                        redis.connect();                                  
+                                        redis.on("error", (error) => {
+                                            console.log(error);
+                                        });
+                                        redis.on("ready", function() { 
+                                            console.log("Connected to Redis server successfully");  
+                                        });                          
                                         // For corn job. 
                                         let task = cron.schedule('*/1 * * * *', () => {
                                         // console.log('Corn job running at every minutes');
