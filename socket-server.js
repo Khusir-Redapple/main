@@ -8,6 +8,7 @@ const morgan        = require('morgan');
 const logger        = require('./api/service/logger');
 let   cron          = require('node-cron');
 const { v4: uuidv4} = require('uuid');
+const RedisIo       = require("ioredis");
 let   logDNA        = {};
 let   schedulers    = {};
 // Generate custom token 
@@ -113,6 +114,17 @@ try
                                 {
                                     if (err) throw err;
                                     logger.info('Socket Server listening at PORT:' + config.port);       
+                                        
+                                        // make a connection to the instance of redis
+                                        // const redis = await new RedisIo('redis://stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com:6379');                                                                                                                    
+                                        const redis = await new RedisIo();                                     
+                                        redis.connect();                                  
+                                        redis.on("error", (error) => {
+                                            console.log(error);
+                                        });
+                                        redis.on("ready", function() { 
+                                            console.log("Connected to Redis server successfully");  
+                                        });                          
                                         // For corn job. 
                                         let task = cron.schedule('*/1 * * * *', () => {
                                         // console.log('Corn job running at every minutes');

@@ -56,6 +56,10 @@ var TableModel = new Schema({
             default: false
         }
     }],
+    lobbyId : {
+        type: String,
+        default: false
+    }
 });
 
 module.exports = mongoose.model('Table', TableModel);

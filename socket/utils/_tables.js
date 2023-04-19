@@ -36,6 +36,7 @@ class _Tables
                 no_of_players: table.no_of_players,
                 validity : timeLib.calculateExpTime(config.socketUserExpireTime),
                 users: [],
+                lobbyId: table.lobbyId
 
             };
             let colour = [0, 1, 2, 3];
@@ -119,6 +120,23 @@ class _Tables
             return accumulator;
         }, []);
         if (count < noPlayers) return {room: room, timerStart: 60};
+
+        return false;
+    }    
+
+    checkTournamentTableV2(lobbyId) {
+        // new modification equivalent to above code.
+        let count, noPlayers, room = 0;
+        this.tables.reduce(function (accumulator, currentValue) {
+            if (currentValue.lobbyId == lobbyId) {
+                noPlayers = currentValue.no_of_players;
+                count = currentValue.users.filter(users => users.is_active === true).length;
+                room = currentValue.room;
+            }
+            accumulator.push(currentValue);
+            return accumulator;
+        }, []);
+        if (count < noPlayers) return { room: room, timerStart: 60 };
 
         return false;
     }

@@ -127,6 +127,7 @@ module.exports.SendMessage = (socket, io, params) =>
             async function processEvents(rez)
             {
                 if (_.isArray(rez.events))
+                    console.log('Process Events ::: ', JSON.stringify(rez.events));
                 {
                     if (rez.events.length > 0)
                     {

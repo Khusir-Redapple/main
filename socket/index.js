@@ -9,7 +9,6 @@ const requestTemplate = require('../api/service/request-template');
 const config          = require('../config');
 const ObjectId        = require('mongoose').Types.ObjectId;
 const logDNA          = require('../api/service/logDNA');
-
 module.exports = function (io)
 {
     
@@ -210,6 +209,11 @@ module.exports = function (io)
                     message: verifyUser.error || localization.apiError,
                 });
             }
+            // To implement logic.
+            // 1. create room 
+            // 2. ttl for the room
+            // 3. incr for the room
+            // 4. if incr <= verifyUser.participants then join player else create new room
             let params = verifyUser.data;
             params.room_fee = verifyUser.amount.toString();
             params.no_of_players = verifyUser.participants.toString();
@@ -217,7 +221,7 @@ module.exports = function (io)
             console.log("payout -- ", payout);
             params.winningAmount = payout.payoutConfig;
             params.totalWinning = payout.totalWinning;
-            
+            params.lobbyId=verifyUser.lobbyId;
             logData = {
                 level: 'debugg',
                 meta: payout
@@ -285,7 +289,8 @@ module.exports = function (io)
                     message: 'Something went wrong! ',
                 });
             }
-            var rez = await _TableInstance.joinTournament(params, myId, socket);
+            //var rez = await _TableInstance.joinTournament(params, myId, socket);
+            var rez = await _TableInstance.joinTournamentV2(params, myId, us);
             callback(rez.callback);
             if (rez.callback.status == 1)
             {

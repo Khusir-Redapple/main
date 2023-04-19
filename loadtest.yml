@@ -23,7 +23,7 @@ scenarios:
       - think: 1
       # basic emit
       - emit:
-          channel: "sendToQueue"
+          channel: "joinTournament"
           data:
             token: "{{tokens}}" 
       # do nothing for 30 seconds then disconnect

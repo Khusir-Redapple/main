@@ -8,7 +8,8 @@ let ObjectId        = require('mongoose').Types.ObjectId;
 const requestTemplate = require('../../api/service/request-template');
 const {_Tables}     = require('../utils/_tables');
 const _tab          = new _Tables();
-
+const Redis         = require("ioredis")
+const redis         = new Redis()
 module.exports = {
     //Roll dice for tournament
     tournamntDiceRolled: async function (socket, params, id)
@@ -1727,6 +1728,38 @@ module.exports = {
                 };
             }
             room_code = await _tab.createTableforTourney(tableX);
+            try{
+            await redis.set(room_code, 0 , 'EX', 300);
+            } catch(e) {
+                console.log(e);
+            }
+            // create a room with TTL
+            // let roomData = {
+            //     room: tableX.room,
+            //     no_of_players: tableX.no_of_players,
+            //     room_fee: tableX.room_fee,
+            //     win_amount: tableX.win_amount,
+            //     totalWinning: tableX.totalWinning,
+            //     created_at: tableX.created_at,                
+            // }
+            // // logic gose here
+            // let expireTime = 300; // 5 minutes
+            // let count = await redis.incr(roomData);
+            // let ttl;           
+            // if(count == 1){
+            //     await redis.expire(roomData,expireTime);
+            //     ttl = expireTime;
+            // } else {
+            //     ttl = await redis.ttl(roomData);
+            // }
+            
+            // if(count <= noOfPlayer){
+            //     //
+            // }else{
+            //    // 
+            // }
+
+
             if (!room_code)
             {
                 return {
@@ -1757,6 +1790,15 @@ module.exports = {
 
         //Tabel Found
         //var us = await User.findById(myId);
+        //await redis.set(room_code,'EX', 300);
+        try {
+        let valueOfRoom = await redis.incr(room_code);
+        if(valueOfRoom > params.no_of_players) {
+            return joinTournament(params, myId);
+        }
+        } catch(e) {
+            console.log(e);
+        }
         let optional = 0;
         isAnyTableEmptyForTourament = isAnyTableEmpty ? isAnyTableEmpty : room_code ? room_code : '';
         var seatOnTable = await _tab.seatOnTableforTourney(isAnyTableEmptyForTourament, us, optional);
@@ -1819,6 +1861,189 @@ module.exports = {
                     message: 'Error joining game, please try again',
                 },
             };
+        }
+    },
+    joinTournamentV2: async function (params, myId, user, isRetry = false) {
+        params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId']);
+        if (!params || !Service.validateObjectId(myId) || _.isEmpty(params.no_of_players) || _.isEmpty(params.room_fee)) {
+            return {
+                callback: {
+                    status: 0,
+                    message: localization.invalidRequestParams,
+                },
+            };
+        }
+
+        //check valid user and valid no of user
+        if (!user || !config.noOfPlayersInTournament.includes(parseInt(params.no_of_players))) {
+            return {
+                callback: {
+                    status: 0,
+                    message: localization.ServerError,
+                },
+            };
+        }
+
+        // var tableD = await Table.findOne({
+        //     'room_fee': params.room_fee,
+        //     'players.id': ObjectId(myId),
+        //     "game_completed_at": "-1"
+        // });
+
+
+        let tableD = await Table.findOne({
+            'lobbyId': params.lobbyId
+        });
+
+        if (tableD) {
+            let players = tableD.players;
+            for (let i = 0; i < players.length; i++) {
+                if (players[i].id == myId && players[i].is_active == true) {
+                    return {
+                        callback: {
+                            status: 0,
+                            message: localization.invalidRequestParams,
+                        },
+                    };
+                }
+            }
+        }
+
+        // let checkTourneyRes = await _tab.checkTournamentTable(params.room_fee, params.no_of_players);
+        let checkTourneyRes = await _tab.checkTournamentTableV2(params.lobbyId);
+        let isAnyTableEmpty = checkTourneyRes ? checkTourneyRes.room : false;
+
+        let secTime = config.countDownTime;
+        if (params.startTime) secTime = Math.round(params.startTime / 1000) - Math.round(new Date().getTime() / 1000) + 5;
+        let timerStart = secTime;
+        let tableX;
+        let room_code;
+        if (!isAnyTableEmpty) {
+            let room = await Service.randomNumber(6);
+            let data;
+            while (true) {
+                data = await Table.find({
+                    room: room,
+                });
+
+                if (data.length > 0) {
+                    room = await Service.randomNumber(6);
+                }
+                else {
+                    break;
+                }
+            }
+
+            if (params) {
+                params.win_amount = params.winningAmount;
+                params.totalWinning = params.totalWinning;
+            }
+            params.room = room;
+            params.created_at = new Date().getTime();
+            let table = new Table(params);
+            tableX = await table.save();
+            if (!tableX) {
+                return {
+                    callback: {
+                        status: 0,
+                        message: localization.ServerError,
+                    },
+                };
+            }
+            room_code = await _tab.createTableforTourney(tableX);
+            await redis.set(room_code, 0, 'EX', 300);
+
+            if (!room_code) {
+                return {
+                    callback: {
+                        status: 0,
+                        message: localization.ServerError,
+                    },
+                };
+            }
+
+        } else {
+            room_code=isAnyTableEmpty;
+            tableX = await Table.findOne({
+                room: room_code,
+            });
+
+            if (!tableX) {
+                return {
+                    callback: {
+                        status: 0,
+                        message: localization.ServerError,
+                    },
+                };
+            }
+        }
+
+        let valueOfRoom = await redis.incr(room_code);
+        if (valueOfRoom > parseInt(params.no_of_players)) {
+            return joinTournament(params, myId, user);
+        }
+
+        let optional = 0;
+         var seatOnTable = await _tab.seatOnTableforTourney(room_code, user, optional);
+
+        if (seatOnTable) {
+            var callbackRes = {
+                status: 1,
+                message: 'Done',
+                table: seatOnTable.table,
+                position: seatOnTable.pos,
+                timerStart: timerStart,
+                default_diceroll_timer: config.turnTimer // bugg_no_65
+            };
+
+            var player = {
+                id: user.id,
+                fees: params.room_fee,
+                is_active: true
+            };
+
+            let flag = false;
+
+            for (let i = 0; i < tableX.players.length; i++) {
+                if (tableX.players[i].id.toString() == player.id.toString()) {
+                    console.log("i ->", i, tableX.players[i])
+                    tableX.players[i] = player;
+                    flag = true;
+                    break;
+                }
+            }
+
+            //Save Player to DB
+            if (!flag) tableX.players.push(player);
+            tableX.created_at = new Date().getTime();
+            await tableX.save();
+            return {
+                callback: callbackRes,
+                events: [
+                    {
+                        type: 'room_excluding_me',
+                        room: room_code,
+                        name: 'playerJoin',
+                        data: {
+                            room: room_code,
+                            name: user.name,
+                            profile: user.profilepic,
+                            position: seatOnTable.pos,
+                        },
+                    },
+                ],
+            };
+
+        } else {
+            if (!isRetry)
+                return joinTournament(params, myId, user, true);
+            else
+                return {
+                    callback: {
+                        status: 0,
+                        message: 'Error joining game, please try again',
+                    },
+                };
         }
     },
     getGameUsersData: async function (data)
