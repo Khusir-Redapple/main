@@ -117,14 +117,19 @@ try
                                         
                                         // make a connection to the instance of redis
                                         //const redis = await new RedisIo('redis://stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com:6379');                                                                                                                    
-                                        const redis = await new RedisIo();                                     
+                                        const redis = await new RedisIo('172.0.0.1:6379');
+                                        
+                                        // let redisOptions = {};
+                                        // redisOptions.scaleReads = 'master'
+                                        // const redis = new RedisIo.Cluster(['redis://stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com:6379'], redisOptions)
+
                                         redis.connect();                                  
                                         redis.on("error", (error) => {
                                             console.log(error);
                                         });
                                         redis.on("ready", function() { 
                                             console.log("Connected to Redis server successfully");  
-                                        });                          
+                                        });                         
                                         // For corn job. 
                                         let task = cron.schedule('*/1 * * * *', () => {
                                         // console.log('Corn job running at every minutes');
