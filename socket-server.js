@@ -118,14 +118,8 @@ try
                                         // make a connection to the instance of redis
                                         //const redis = await new RedisIo('redis://stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com:6379');                                                                                                                    
                                         //const redis = await new RedisIo('stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com:6379');
-                                        const redis = new RedisIo(
-                                            6379,
-                                            "stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com"
-                                        );
-                                        // let redisOptions = {};
-                                        // redisOptions.scaleReads = 'master'
-                                        // const redis = new RedisIo.Cluster(['redis://stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com:6379'], redisOptions)
-
+                                        //stage-ludo-redis-cache.qxdlkm.clustercfg.aps2.cache.amazonaws.com:6379           
+                                        const redis   = new RedisIo('18.61.12.70:6379');
                                         redis.connect();                                  
                                         redis.on("error", (error) => {
                                             console.log(error);
