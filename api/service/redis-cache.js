@@ -1,18 +1,11 @@
 const config  = require('../../config');
-const timeLib = require('./timeLib');
-const Redis   = require("ioredis");
-const redis   = new Redis();
-class Sockets
+const timeLib = require('../../socket/helper/timeLib');
+const redis   = require('../../socket-server').redis;
+class RedisCache
 {
-    constructor()
-    {
-        //Create Map instance
-        this.currentUsers = new Map();
-    }
-
-    async updateSocket(id, socket)
+    async addToRedis(id, socket)
     {   
-        // New dictionary
+        // Object of user socketData
         let userDataSet = {
             data_id: id,
             socket: socket.id,
@@ -21,16 +14,6 @@ class Sockets
             last_seen: 0,
             validity : timeLib.calculateExpTime(config.socketUserExpireTime),
         }
-        // // add and update based on condition.
-        // if(this.currentUsers.has(id.toString())) {
-        //     this.currentUsers.set(id.toString(),userDataSet);            
-        // } else {
-        //     this.currentUsers.set(id.toString(),userDataSet);
-        // }
-        // // return after add or updated.
-        // return true;
-
-
         // New implementation using redis cache
         try {
             let objToStr = JSON.stringify(userDataSet);
@@ -47,6 +30,9 @@ class Sockets
 
     }
 
+    async getFromRedis() {
+
+    }
     getSocket(id)
     {
         // for (let i = 0; i < this.currentUsers.length; i++)
@@ -229,4 +215,4 @@ class Sockets
     }
 }
 
-module.exports = {Sockets};
+module.exports = new RedisCache();
