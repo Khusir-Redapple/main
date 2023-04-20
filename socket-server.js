@@ -8,7 +8,7 @@ const morgan        = require('morgan');
 const logger        = require('./api/service/logger');
 let   cron          = require('node-cron');
 const { v4: uuidv4} = require('uuid');
-const RedisIo       = require("redis");
+const RedisIo       = require('ioredis');
 let   logDNA        = {};
 let   schedulers    = {};
 // Generate custom token 
