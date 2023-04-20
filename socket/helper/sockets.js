@@ -1,35 +1,40 @@
-const config  = require('../../config');
-const timeLib = require('./timeLib');
+const redisCache = require('../../api/service/redis-cache');
+const config     = require('../../config');
+const timeLib    = require('./timeLib');
+
 class Sockets
 {
     constructor()
     {
         //Create Map instance
-        this.currentUsers = new Map();
+        //this.currentUsers = new Map();
     }
 
-    updateSocket(id, socket)
+    async updateSocket(id, socket)
     {   
         // New dictionary using MAP
+        const userId = id.toString();
         let userDataSet = {
-            data_id: id,
+            data_id: userId,
             socket: socket.id,
-            socketIS: socket,
+            // socketIS: socket,
             status: 'online',
             last_seen: 0,
             validity : timeLib.calculateExpTime(config.socketUserExpireTime),
         }
-        // add and update based on condition.
-        if(this.currentUsers.has(id.toString())) {
-            this.currentUsers.set(id.toString(),userDataSet);            
-        } else {
-            this.currentUsers.set(id.toString(),userDataSet);
-        }
-        // return after add or updated.
-        return true;
+        // // add and update based on condition.
+        // if(this.currentUsers.has(id.toString())) {
+        //     this.currentUsers.set(id.toString(),userDataSet);            
+        // } else {
+        //     this.currentUsers.set(id.toString(),userDataSet);
+        // }
+        // // return after add or updated.
+        // return true;
+        
+        return await redisCache.addToRedis(userId, JSON.stringify(userDataSet));
     }
 
-    getSocket(id)
+    async getSocket(id)
     {
         // for (let i = 0; i < this.currentUsers.length; i++)
         // {
@@ -41,14 +46,20 @@ class Sockets
         // }
         // return false;
 
-        if(this.currentUsers.has(id.toString())) {
-            return this.currentUsers.get(id.toString()).socket;            
-        } else {
-            return false;
+        // if(this.currentUsers.has(id.toString())) {
+        //     return this.currentUsers.get(id.toString()).socket;            
+        // } else {
+        //     return false;
+        // }
+        let  value = await redisCache.getRecordsByKeyRedis(id.toString());
+        if(value) {
+            value = JSON.parse(value);
+            return value.socket;
         }
+        return false;
     }
 
-    getSocketIS(id)
+    async getSocketIS(id)
     {
         // for (let i = 0; i < this.currentUsers.length; i++)
         // {
@@ -60,14 +71,15 @@ class Sockets
         // }
         // return false;
 
-        if(this.currentUsers.has(id.toString())) {
-            return this.currentUsers.get(id.toString()).socketIS;            
-        } else {
-            return false;
+        let value = await redisCache.getRecordsByKeyRedis(id.toString());
+        if(value) {
+            value = JSON.parse(value);
+            return value.socketIS;
         }
+        return false;
     }
 
-    getStatus(id)
+    async getStatus(id)
     {
         // for (let i = 0; i < this.currentUsers.length; i++)
         // {
@@ -78,17 +90,27 @@ class Sockets
         // }
         // return false;
 
-        if(this.currentUsers.has(id.toString())) {
+        // if(this.currentUsers.has(id.toString())) {
+        //     return {
+        //         status: this.currentUsers.get(id.toString()).status, 
+        //         last_seen: this.currentUsers.get(id.toString()).last_seen
+        //     };            
+        // } else {
+        //     return false;
+        // }
+
+        let value = await redisCache.getRecordsByKeyRedis(id.toString());
+        if(value) {
+            value = JSON.parse(value);
             return {
-                status: this.currentUsers.get(id.toString()).status, 
-                last_seen: this.currentUsers.get(id.toString()).last_seen
-            };            
-        } else {
-            return false;
+                'status' : value.status,
+                'last_seen' : value.last_seen
+            };
         }
+        return false;
     }
 
-    userGone(socket)
+    async userGone(socket,token)
     {
         // for (let i = 0; i < this.currentUsers.length; i++)
         // {
@@ -99,15 +121,20 @@ class Sockets
         //     }
         // }
        
-        for (const [key, value] of this.currentUsers.entries()) {
-            if(value.socket == socket.toString()) {
-                this.currentUsers.delete(key);
-                break;
-            }
+        // for (const [key, value] of this.currentUsers.entries()) {
+        //     if(value.socket == socket.toString()) {
+        //         this.currentUsers.delete(key);
+        //         break;
+        //     }
+        // }
+        const user_id = await redisCache.getRecordsByKeyRedis(token);
+        if(user_id) {
+            redisCache.removeDataFromRedis(user_id);
         }
+        
     }
 
-    getId(socket)
+   async getId(socket,token)
     {
         // for (let i = 0; i < this.currentUsers.length; i++)
         // {
@@ -119,14 +146,20 @@ class Sockets
         // return false;
 
         // Best for accessing both keys and their values
-        let flag = false;
-        for (const [key, value] of this.currentUsers.entries()) {
-            if(value.socket == socket.toString()) {
-                flag =  key.toString();
-                break;
-            }
+        // let flag = false;
+        // for (const [key, value] of this.currentUsers.entries()) {
+        //     if(value.socket == socket.toString()) {
+        //         flag =  key.toString();
+        //         break;
+        //     }
+        // }
+        // return flag;
+
+        let user_id = await redisCache.getRecordsByKeyRedis(token);
+        if(user_id) {
+            return user_id.toString();
         }
-        return flag;
+        return false;
 
     }
 

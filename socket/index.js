@@ -9,6 +9,7 @@ const requestTemplate = require('../api/service/request-template');
 const config          = require('../config');
 const ObjectId        = require('mongoose').Types.ObjectId;
 const logDNA          = require('../api/service/logDNA');
+const redisCache      = require('../api/service/redis-cache');
 module.exports = function (io)
 {
     
@@ -153,7 +154,7 @@ module.exports = function (io)
         socket.on('join_previous', async (params, callback) =>
         {
             console.log('TS1 ::', 'join_previous', socket.id, JSON.stringify(params));
-            var myId = Socketz.getId(socket.id);
+            var myId = Socketz.getId(socket.id, params.token);
             try
             {
                 if (!myId)
@@ -209,11 +210,6 @@ module.exports = function (io)
                     message: verifyUser.error || localization.apiError,
                 });
             }
-            // To implement logic.
-            // 1. create room 
-            // 2. ttl for the room
-            // 3. incr for the room
-            // 4. if incr <= verifyUser.participants then join player else create new room
             let params = verifyUser.data;
             params.room_fee = verifyUser.amount.toString();
             params.no_of_players = verifyUser.participants.toString();
@@ -237,6 +233,7 @@ module.exports = function (io)
                     message: localization.missingParamError,
                 });
             }
+            
             let us = await User.findOne({
                 'numeric_id': params.user_id,
             });
@@ -280,7 +277,8 @@ module.exports = function (io)
                 // To delete object
                 // deleteObjectProperty(newUser);
             }
-            var myId = Socketz.getId(socket.id);
+            await redisCache.addToRedis(data.token, us._id.toString());
+            var myId = Socketz.getId(socket.id, data.token);
             if (!myId)
             {
                 console.log('Socket disconnected');
@@ -289,6 +287,7 @@ module.exports = function (io)
                     message: 'Something went wrong! ',
                 });
             }
+           
             //var rez = await _TableInstance.joinTournament(params, myId, socket);
             var rez = await _TableInstance.joinTournamentV2(params, myId, us);
             callback(rez.callback);
@@ -396,8 +395,8 @@ module.exports = function (io)
         socket.on('leaveTable', async (params, callback) =>
         {
             console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
-            let myId = Socketz.getId(socket.id);
-            Socketz.userGone(socket.id);
+            let myId = Socketz.getId(socket.id, params.token);
+            Socketz.userGone(socket.id, params.token);
             params.isRefund = false;
             let response = await _TableInstance.leaveTable(params, myId, socket);
             callback(response.callback);
@@ -409,7 +408,7 @@ module.exports = function (io)
         {
             console.log("TS1 ::", 'tournamnt_dice_rolled', socket.id, JSON.stringify(params), new Date());
             console.log(socket.data_name, " Rolled ", params.dice_value);
-            let myId = Socketz.getId(socket.id);
+            let myId = Socketz.getId(socket.id, params.token);
             let response = await _TableInstance.tournamntDiceRolled(socket, params, myId);
             console.log('tournamnt_dice_rolled callback', response.callback);
             callback(response.callback);
@@ -421,7 +420,7 @@ module.exports = function (io)
             console.log("Tournament_move_made ::", JSON.stringify(params));
             console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
 
-            let myId = Socketz.getId(socket.id);
+            let myId = Socketz.getId(socket.id, params.token);
             let response = await _TableInstance.moveTourney(params, myId);
             console.log('Tournament_move_made callback', response.callback);
             callback(response.callback);
@@ -431,7 +430,7 @@ module.exports = function (io)
         socket.on('skip_turn', async (params, callback) =>
         {
             console.log('TS1 ::', 'skip_turn', socket.id, JSON.stringify(params));
-            let myId = Socketz.getId(socket.id);
+            let myId = Socketz.getId(socket.id, params.token);
             let response = await _TableInstance.skipTurn(params, myId);
             console.log("SKIP TURN RES", response);
             callback(response.callback);
@@ -442,7 +441,7 @@ module.exports = function (io)
         {
             logDNA.log('DEVICE :: Disconnected', logData);
             // var myId = Socketz.getId(socket.id);
-            Socketz.userGone(socket.id);
+            //Socketz.userGone(socket.id);
         });
 
         socket.on('sendToQueue', async (data, callback) =>

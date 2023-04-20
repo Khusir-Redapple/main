@@ -129,11 +129,11 @@ try
                                         let task = cron.schedule('*/1 * * * *', () => {
                                         // console.log('Corn job running at every minutes');
                                         // To remove from Socket Object.
-                                        let sckt = require('./socket/helper/sockets');
-                                        new sckt.Sockets().removeSocketUserData();
+                                        //let sckt = require('./socket/helper/sockets');
+                                        //new sckt.Sockets().removeSocketUserData();
                                         // To remove room details from Global Object.
-                                        let roomObj = require('./socket/utils/_tables');
-                                        new roomObj._Tables().removeRoomDetailsFromTableObject();
+                                        //let roomObj = require('./socket/utils/_tables');
+                                        //new roomObj._Tables().removeRoomDetailsFromTableObject();
                                     },                                    
                                     {
                                         scheduled: true,
