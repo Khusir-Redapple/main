@@ -116,8 +116,8 @@ try
                                     logger.info('Socket Server listening at PORT:' + config.port);       
                                         
                                         // make a connection to the instance of redis           
-                                        // const redis   = new RedisIo('18.61.12.70:6379');
-                                        const redis   = new RedisIo('localhost:4000');
+                                        const redis   = new RedisIo('18.61.12.70:6379');
+                                        //const redis   = new RedisIo('localhost:4000');
                                         redis.connect();                                  
                                         redis.on("error", (error) => {
                                             console.log(error);
