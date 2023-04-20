@@ -8,7 +8,7 @@ const morgan        = require('morgan');
 const logger        = require('./api/service/logger');
 let   cron          = require('node-cron');
 const { v4: uuidv4} = require('uuid');
-const RedisIo       = require("ioredis");
+const RedisIo       = require("redis");
 let   logDNA        = {};
 let   schedulers    = {};
 // Generate custom token 
@@ -116,8 +116,9 @@ try
                                     logger.info('Socket Server listening at PORT:' + config.port);       
                                         
                                         // make a connection to the instance of redis           
-                                        const redis   = new RedisIo('18.61.12.70:6379');
+                                        //const redis   = new RedisIo('18.61.12.70:6379');
                                         //const redis   = new RedisIo('localhost:4000');
+                                        const redis = RedisIo.createClient(6379, '18.61.12.70');
                                         redis.connect();                                  
                                         redis.on("error", (error) => {
                                             console.log(error);

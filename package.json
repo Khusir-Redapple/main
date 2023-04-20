@@ -43,6 +43,7 @@
     "onesignal-node": "^2.0.1",
     "query-string": "^7.1.1",
     "random-string": "^0.2.0",
+    "redis": "^4.6.5",
     "request": "2.88.0",
     "socket.io": "2.2.0",
     "timeago.js": "3.0.2",
