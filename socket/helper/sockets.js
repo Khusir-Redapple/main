@@ -110,7 +110,7 @@ class Sockets
         return false;
     }
 
-    async userGone(socket,token)
+    async userGone(socket)
     {
         // for (let i = 0; i < this.currentUsers.length; i++)
         // {
@@ -127,14 +127,17 @@ class Sockets
         //         break;
         //     }
         // }
-        const user_id = await redisCache.getRecordsByKeyRedis(token);
-        if(user_id) {
-            redisCache.removeDataFromRedis(user_id);
-        }
+        const token = await redisCache.getRecordsByKeyRedis(socket.id);
+        if(token) {
+            const user_id = await redisCache.getRecordsByKeyRedis(token);
+            if(user_id) {
+                redisCache.removeDataFromRedis(user_id);
+            }
+        } 
         
     }
 
-   async getId(socket,token)
+   async getId(socket)
     {
         // for (let i = 0; i < this.currentUsers.length; i++)
         // {
@@ -155,9 +158,18 @@ class Sockets
         // }
         // return flag;
 
-        let user_id = await redisCache.getRecordsByKeyRedis(token);
-        if(user_id) {
-            return user_id.toString();
+        // let user_id = await redisCache.getRecordsByKeyRedis(token);
+        // if(user_id) {
+        //     return user_id.toString();
+        // }
+        // return false;
+
+        const token = await redisCache.getRecordsByKeyRedis(socket.id);
+        if(token) {
+            const user_id = await redisCache.getRecordsByKeyRedis(token);
+            if(user_id) {
+                return user_id.toString();
+            }
         }
         return false;
 

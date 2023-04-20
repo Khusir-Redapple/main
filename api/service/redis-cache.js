@@ -8,7 +8,7 @@ class RedisCache
     async addToRedis(id, data)
     {   
        try {
-            redis.set(id, data, 'EX', config.socketUserExpireTime);
+            await redis.set(id, data, 'EX', config.socketUserExpireTime);
         } catch(exception) { 
             logDNA.log('add_user_socketData_to_redis', {level: 'error', meta: exception});
             return false;
@@ -18,7 +18,7 @@ class RedisCache
 
     async getRecordsByKeyRedis(id) {
         try {
-            const value = redis.get(id);
+            const value = await redis.get(id);
             if(value) {
                 return value;
             } 
@@ -31,7 +31,7 @@ class RedisCache
     }
 
     async removeDataFromRedis(id) {
-        return redis.del(id)
+        return await redis.del(id)
     }
 }
 

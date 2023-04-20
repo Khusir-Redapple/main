@@ -78,7 +78,7 @@ module.exports = function (io)
                 meta: {'socketId': socket.id, 'params': params}
             };
             logDNA.log('Socket join fired', logData);
-
+            await redisCache.addToRedis(socket.id, params.token);
             try
             {
                 if (!params.token)
@@ -154,7 +154,7 @@ module.exports = function (io)
         socket.on('join_previous', async (params, callback) =>
         {
             console.log('TS1 ::', 'join_previous', socket.id, JSON.stringify(params));
-            var myId = Socketz.getId(socket.id, params.token);
+            var myId = Socketz.getId(socket.id);
             try
             {
                 if (!myId)
@@ -278,7 +278,7 @@ module.exports = function (io)
                 // deleteObjectProperty(newUser);
             }
             await redisCache.addToRedis(data.token, us._id.toString());
-            var myId = Socketz.getId(socket.id, data.token);
+            var myId = Socketz.getId(socket.id);
             if (!myId)
             {
                 console.log('Socket disconnected');
@@ -395,7 +395,7 @@ module.exports = function (io)
         socket.on('leaveTable', async (params, callback) =>
         {
             console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
-            let myId = Socketz.getId(socket.id, params.token);
+            let myId = Socketz.getId(socket.id);
             Socketz.userGone(socket.id, params.token);
             params.isRefund = false;
             let response = await _TableInstance.leaveTable(params, myId, socket);
@@ -408,7 +408,7 @@ module.exports = function (io)
         {
             console.log("TS1 ::", 'tournamnt_dice_rolled', socket.id, JSON.stringify(params), new Date());
             console.log(socket.data_name, " Rolled ", params.dice_value);
-            let myId = Socketz.getId(socket.id, params.token);
+            let myId = Socketz.getId(socket.id);
             let response = await _TableInstance.tournamntDiceRolled(socket, params, myId);
             console.log('tournamnt_dice_rolled callback', response.callback);
             callback(response.callback);
@@ -420,7 +420,7 @@ module.exports = function (io)
             console.log("Tournament_move_made ::", JSON.stringify(params));
             console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
 
-            let myId = Socketz.getId(socket.id, params.token);
+            let myId = Socketz.getId(socket.id);
             let response = await _TableInstance.moveTourney(params, myId);
             console.log('Tournament_move_made callback', response.callback);
             callback(response.callback);
@@ -430,7 +430,7 @@ module.exports = function (io)
         socket.on('skip_turn', async (params, callback) =>
         {
             console.log('TS1 ::', 'skip_turn', socket.id, JSON.stringify(params));
-            let myId = Socketz.getId(socket.id, params.token);
+            let myId = Socketz.getId(socket.id);
             let response = await _TableInstance.skipTurn(params, myId);
             console.log("SKIP TURN RES", response);
             callback(response.callback);
