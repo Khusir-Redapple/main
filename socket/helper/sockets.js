@@ -164,7 +164,7 @@ class Sockets
         // }
         // return false;
 
-        const token = await redisCache.getRecordsByKeyRedis(socket.id);
+        const token = await redisCache.getRecordsByKeyRedis(socket);
         if(token) {
             const user_id = await redisCache.getRecordsByKeyRedis(token);
             if(user_id) {
