@@ -6,8 +6,8 @@ const http          = require('http');
 const mongoose      = require('mongoose');
 const morgan        = require('morgan');
 const logger        = require('./api/service/logger');
-let   cron          = require('node-cron');
-const { v4: uuidv4} = require('uuid');
+// let   cron          = require('node-cron');
+// const { v4: uuidv4} = require('uuid');
 const RedisIo       = require('ioredis');
 let   logDNA        = {};
 let   schedulers    = {};
@@ -126,7 +126,7 @@ try
                                         });
                                         module.exports.redis = redis;                      
                                         // For corn job. 
-                                        let task = cron.schedule('*/1 * * * *', () => {
+                                        //let task = cron.schedule('*/1 * * * *', () => {
                                         // console.log('Corn job running at every minutes');
                                         // To remove from Socket Object.
                                         //let sckt = require('./socket/helper/sockets');
@@ -134,14 +134,14 @@ try
                                         // To remove room details from Global Object.
                                         //let roomObj = require('./socket/utils/_tables');
                                         //new roomObj._Tables().removeRoomDetailsFromTableObject();
-                                    },                                    
-                                    {
-                                        scheduled: true,
-                                        timezone: 'Asia/Kolkata',
-                                    }); 
-                                    schedulers[`${uuidv4()}`] = task;                                  
-                                    cron.getTasks();
-                                    task.start();
+                                    // },                                    
+                                    // {
+                                    //     scheduled: true,
+                                    //     timezone: 'Asia/Kolkata',
+                                    // }); 
+                                    //schedulers[`${uuidv4()}`] = task;                                  
+                                    //cron.getTasks();
+                                    //task.start();
                                 });
                             }
                         );
