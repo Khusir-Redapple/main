@@ -599,6 +599,7 @@ class _Tables
                         myRoom.turn_start_at = new Date(dt).getTime(); //new Date().getTime();
                         myRoom.game_started_at = new Date(dt).getTime();//new Date().getTime();
                         let DICE_ROLLED_RES = this.rollDice(room, myRoom.users[pl].id, myRoom);
+                        console.log('DICE_ROLLED_RES >>', JSON.stringify(DICE_ROLLED_RES));
                         let DICE_ROLLED;
                         if(DICE_ROLLED_RES) {
                             myRoom = DICE_ROLLED_RES.table;
