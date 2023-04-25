@@ -413,7 +413,7 @@ module.exports = function (io)
             let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
             let response = await _TableInstance.leaveTable(params, myId, socket, myRoom);
             await redisCache.addToRedis(myRoom.room,myRoom);
-            await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
+            //await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             callback(response.callback);
             if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
 
