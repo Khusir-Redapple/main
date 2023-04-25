@@ -1723,7 +1723,7 @@ class _Tables
             let table = myRoom;
             let idx = table.users.findIndex(element => element.id == user_id);
             // pop from top of array and update the property value.
-            returnDiceValue = table[idx].diceValue.shift();
+            returnDiceValue = table.users[idx].diceValue.shift();
             if(table.users[idx].diceValue.length == 0) {
                 randomNumber = this.randomNumberGenerator(config.diceGenerateRange);
                 table.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
