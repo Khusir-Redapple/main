@@ -351,7 +351,7 @@ module.exports = function (io)
                         let data = {
                             room: start.room
                         }
-                        checkTabel = await _TableInstance.istableExists(data);
+                        checkTabel = await _TableInstance.istableExists(data,myRoom);
                         if (!checkTabel.status)
                         {
                             clearInterval(this);
@@ -504,7 +504,7 @@ module.exports = function (io)
 
             setInterval(async function ()
             {
-                let checkTabel = await _TableInstance.istableExists(params_data);
+                let checkTabel = await _TableInstance.istableExists(params_data,myRoom);
                 if (!checkTabel.status)
                 {
                     clearInterval(this);

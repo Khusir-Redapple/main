@@ -116,7 +116,7 @@ module.exports = {
                     skip_dice: true
                 },
             };
-            myRoom = await _tab.clearDices(params.room, myPos, myRoom);
+            let myRoom = await _tab.clearDices(params.room, myPos, myRoom);
             resObj.events.push(event);
         }
         if (movePossible)
@@ -315,7 +315,7 @@ module.exports = {
             let params_data = {
                 room: params.room,
             };
-            var checkTabel = await this.istableExists(params_data); // added to solve backword token movement 
+            var checkTabel = await this.istableExists(params_data,myRoom); // added to solve backword token movement 
             if (checkTabel.current_turn != myPos)
             {
                 console.log("IN moveTourney IF - ", checkTabel, myPos); //to handle token revert issue - NO1-I44
