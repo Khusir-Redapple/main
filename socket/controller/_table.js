@@ -116,7 +116,7 @@ module.exports = {
                     skip_dice: true
                 },
             };
-            let myRoom = await _tab.clearDices(params.room, myPos, myRoom);
+            myRoom = await _tab.clearDices(params.room, myPos, myRoom);
             resObj.events.push(event);
         }
         if (movePossible)
