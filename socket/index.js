@@ -301,6 +301,8 @@ module.exports = function (io)
             {  
                 let myRoom=rez.myRoom;
                 let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+myRoom.room);
+                await redisCache.addToRedis(myRoom.room,myRoom);
+                await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
                 socket.join(rez.callback.table.room);
                 processEvents(rez,myRoom);
                 var params_data = {
@@ -310,7 +312,6 @@ module.exports = function (io)
                 var start = await _TableInstance.startIfPossibleTournament(params_data, myRoom, gamePlayData);
 
                 console.log("Start", start);
-
                 if (start)
                 {
                     let reqData = await _TableInstance.getGameUsersData(start);
@@ -376,7 +377,8 @@ module.exports = function (io)
                 }
                 else
                 {
-                    await Socketz.sleep(16000);
+                    await Socketz.sleep(250000);
+                    myRoom = redisCache.getRecordsByKeyRedis(myRoom.room);
                     let tableD = await Table.findOne({
                         room: params_data.room
                     });

@@ -210,7 +210,7 @@ class _Tables
             if (count >= noPlayers) return false;
 
             let pos = -1;
-            if (!filteredTable.users.is_active)
+            if (!filteredTable.users[0].is_active)
             {
                 pos = 0;
             } else if (!filteredTable.users[2].is_active)

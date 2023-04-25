@@ -1,8 +1,9 @@
 const config  = require('../../config');
 const timeLib = require('../../socket/helper/timeLib');
 const logDNA  = require('./logDNA');
-const Redis   = require("ioredis");
-const redis   = new Redis();
+const RedisIo   = require("ioredis");
+// const redis   = new Redis();
+const redis = RedisIo.createClient(6379, '18.61.12.70');
 class RedisCache
 {
     async addToRedis(id, data)
@@ -39,6 +40,12 @@ class RedisCache
     async removeDataFromRedis(id) {
         return await redis.del(id)
     }
+
+    async incrFromRedis(id) {
+        return await redis.incr(id)
+    }
+
+    
 }
 
 module.exports = new RedisCache();

@@ -9,9 +9,8 @@ const requestTemplate = require('../../api/service/request-template');
 const {_Tables}     = require('../utils/_tables');
 const _tab          = new _Tables();
 const Redis         = require("ioredis");
-const redisCache = require('../../api/service/redis-cache');
-const table = require('./../../api/models/table');
-const redis         = new Redis();
+const redisCache    = require('../../api/service/redis-cache');
+const table         = require('./../../api/models/table');
 module.exports = {
     //Roll dice for tournament
     tournamntDiceRolled: async function (socket, params, id, myRoom, gamePlayData)
@@ -1689,7 +1688,7 @@ module.exports = {
         //if (!Service.validateObjectId(id)) false;
         let us = await User.findById(id);
         console.log('USERS DETAILS BY ID', us);
-        let roomId = await redisCache.getRecordsByKeyRedis('user_id'+id);
+        let roomId = await redisCache.getRecordsByKeyRedis('user_id'+id.toString());
         let myRoom;
         if(roomId) {
             myRoom = await redisCache.getRecordsByKeyRedis(roomId);
@@ -2090,8 +2089,9 @@ module.exports = {
                 };
             }
             room_code = await _tab.createTableforTourney(tableX);
-            await redis.set('room_'+room_code, 0);
-            await redis.set('lobbyId_'+params.lobbyId, room_code);
+            await redisCache.addToRedis('room_'+room_code, 0);            
+            console.log('room_'+room_code+' 0');           
+            await redisCache.addToRedis('lobbyId_'+params.lobbyId, room_code);
 
             if (!room_code) {
                 return {
@@ -2117,7 +2117,8 @@ module.exports = {
             }
         }
 
-        let valueOfRoom = await redis.incr('room_'+room_code);
+        let valueOfRoom = await redisCache.incrFromRedis('room_'+room_code);
+        console.log('room_'+room_code+' '+valueOfRoom);
         if (valueOfRoom > parseInt(params.no_of_players)) {
             // redisCache.getRecordsByKeyRedis(room_code);
             joinTournamentV2(params, myId, user,false);
