@@ -815,14 +815,22 @@ class _Tables
     }
 
     getMyDice(room, id, myRoom, gamePlayData)
-    {
+    {   
+        console.log('gamePlayData -1 ', JSON.stringify(gamePlayData));
+        console.log('myRoom -1 ', JSON.stringify(myRoom));
         //const table = this.tables.find((elem) => elem.room == room);
         if (!myRoom) return -1;
         const me = myRoom.users.find((elem) => elem.id == id);
+       
         // let i = this.gamePlayData.findIndex((x) => x.room == room);
         gamePlayData.data.roll.push(me ? me.dices_rolled[me.dices_rolled.length - 1] : -1);
-
-        return me ? me.dices_rolled[me.dices_rolled.length - 1] : -1;
+        console.log('gamePlayData -2 ', JSON.stringify(gamePlayData));
+        console.log('myRoom -2 ', JSON.stringify(myRoom));
+        console.log('me -1 ', JSON.stringify(me));
+        let a = me ? me.dices_rolled[me.dices_rolled.length - 1] : -1;
+        console.log('a ', JSON.stringify(a));
+        return a;
+        //return me ? me.dices_rolled[me.dices_rolled.length - 1] : -1;
     }
 
     jackPot(room, id, myRoom)
