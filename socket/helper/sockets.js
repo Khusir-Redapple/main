@@ -20,7 +20,7 @@ class Sockets
             status: 'online',
             last_seen: 0
         }        
-        return await redisCache.addToRedis(userId, JSON.stringify(userDataSet));
+        return await redisCache.addToRedis(userId, userDataSet);
     }
 
     /**
@@ -32,7 +32,7 @@ class Sockets
     {
         let  value = await redisCache.getRecordsByKeyRedis(id.toString());
         if(value) {
-            value = JSON.parse(value);
+           // value = JSON.parse(value);
             return value.socket;
         }
         return false;
@@ -47,7 +47,7 @@ class Sockets
     {
         let value = await redisCache.getRecordsByKeyRedis(id.toString());
         if(value) {
-            value = JSON.parse(value);
+            //value = JSON.parse(value);
             return value.socketIS;
         }
         return false;
@@ -62,7 +62,7 @@ class Sockets
     {
         let value = await redisCache.getRecordsByKeyRedis(id.toString());
         if(value) {
-            value = JSON.parse(value);
+            //value = JSON.parse(value);
             return {
                 'status' : value.status,
                 'last_seen' : value.last_seen

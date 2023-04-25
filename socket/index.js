@@ -35,7 +35,7 @@ module.exports = function (io)
      */
     io.on('connection', function (socket)
     {
-        const sqsService      = require('../api/operations/sqs_fifo_services');
+        // const sqsService      = require('../api/operations/sqs_fifo_services');
         // for logDNA 
         let logData = {
             level: 'debugg',
@@ -52,7 +52,11 @@ module.exports = function (io)
          * @return array of object. 
          */
         socket.on('fetchGameData', async function(params, callback) {
-            let response = await _TableInstance.getDataByRoom(params.room);
+            let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+            let response = await _TableInstance.getDataByRoom(params.room, myRoom);
+            if(response) {
+                myRoom = response.table;
+            }
             return callback(response);
         });
 
@@ -289,17 +293,21 @@ module.exports = function (io)
             }
            
             //var rez = await _TableInstance.joinTournament(params, myId, socket);
+            //let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+            //let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
             var rez = await _TableInstance.joinTournamentV2(params, myId, us);
             callback(rez.callback);
             if (rez.callback.status == 1)
-            {
+            {  
+                let myRoom=rez.myRoom;
+                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+myRoom.room);
                 socket.join(rez.callback.table.room);
-                processEvents(rez);
+                processEvents(rez,myRoom);
                 var params_data = {
                     room: rez.callback.table.room,
                 };
 
-                var start = await _TableInstance.startIfPossibleTournament(params_data);
+                var start = await _TableInstance.startIfPossibleTournament(params_data, myRoom, gamePlayData);
 
                 console.log("Start", start);
 
@@ -324,7 +332,7 @@ module.exports = function (io)
                                         isRefund: true
                                     }
                                     var resp = await _TableInstance.leaveTable(data, start.table.users[i].id);
-                                    processEvents(resp);
+                                    processEvents(resp, myRoom);
                                     i++;
                                     leaveUser(i, start);
                                 }
@@ -336,7 +344,7 @@ module.exports = function (io)
                         });
                     }
                     // if tournament possible
-                    await startTournament(start, socket);
+                    await startTournament(start, socket, myRoom, gamePlayData);
                     setInterval(async function ()
                     {
                         let data = {
@@ -362,7 +370,9 @@ module.exports = function (io)
                         let gameTime = await checkGameExpireTime(start.room);
                         console.log("Below Winner Data -after timer--", start.room, gameTime);
                         io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time}});
-                    }, 1000);        
+                    }, 1000);     
+                    await redisCache.addToRedis(myRoom.room,myRoom);
+                    await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
                 }
                 else
                 {
@@ -383,7 +393,7 @@ module.exports = function (io)
                                 }
                                 let rez = await _TableInstance.leaveTable(data, tableD.players[i].id);
                                 console.log("rez--", rez);
-                                processEvents(rez);
+                                processEvents(rez, myRoom);
                             }
                         }
                     }
@@ -398,9 +408,12 @@ module.exports = function (io)
             let myId = await Socketz.getId(socket.id);
             await Socketz.userGone(socket.id, params.token);
             params.isRefund = false;
-            let response = await _TableInstance.leaveTable(params, myId, socket);
+            let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+            let response = await _TableInstance.leaveTable(params, myId, socket, myRoom);
+            await redisCache.addToRedis(myRoom.room,myRoom);
+            await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             callback(response.callback);
-            if (response.callback && response.callback.status == 1) processEvents(response);
+            if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
 
         });
 
@@ -409,10 +422,15 @@ module.exports = function (io)
             console.log("TS1 ::", 'tournamnt_dice_rolled', socket.id, JSON.stringify(params), new Date());
             console.log(socket.data_name, " Rolled ", params.dice_value);
             let myId = await Socketz.getId(socket.id);
-            let response = await _TableInstance.tournamntDiceRolled(socket, params, myId);
+             // redis call by room.
+            let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+            let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
+            let response = await _TableInstance.tournamntDiceRolled(socket, params, myId, myRoom,gamePlayData);
             console.log('tournamnt_dice_rolled callback', response.callback);
+            await redisCache.addToRedis(myRoom.room,myRoom);
+            await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             callback(response.callback);
-            if (response.callback.status == 1) processEvents(response);
+            if (response.callback.status == 1) processEvents(response, myRoom);
         });
 
         socket.on('tournament_move_made', async (params, callback) =>
@@ -421,20 +439,30 @@ module.exports = function (io)
             console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
 
             let myId = await Socketz.getId(socket.id);
-            let response = await _TableInstance.moveTourney(params, myId);
+            let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+            let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
+            let response = await _TableInstance.moveTourney(params, myId, gamePlayData, myRoom);
             console.log('Tournament_move_made callback', response.callback);
+            await redisCache.addToRedis(myRoom.room,myRoom);
+            await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             callback(response.callback);
-            if (response.callback.status == 1) processEvents(response);
+            if (response.callback.status == 1) processEvents(response, myRoom);
         });
         //Skip Turn
         socket.on('skip_turn', async (params, callback) =>
         {
             console.log('TS1 ::', 'skip_turn', socket.id, JSON.stringify(params));
             let myId = await Socketz.getId(socket.id);
-            let response = await _TableInstance.skipTurn(params, myId);
+            let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+            let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
+            let response = await _TableInstance.skipTurn(params, myId, myRoom, gamePlayData);
             console.log("SKIP TURN RES", response);
+            myRoom = response.table;
+            gamePlayData = response.gameData;
+            await redisCache.addToRedis(myRoom.room,myRoom);
+            await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             callback(response.callback);
-            processEvents(response);
+            processEvents(response, myRoom);
         });
         // This event for Socket Disconnect.
         socket.on('disconnect', async () =>
@@ -444,24 +472,24 @@ module.exports = function (io)
             //Socketz.userGone(socket.id);
         });
 
-        socket.on('sendToQueue', async (data, callback) =>
-        {
-            if (!data || !data.token)
-            {
-                return callback({
-                    status: 0,
-                    message: localization.missingTokenError,
-                });
-            } else {
-                await sqsService.SendMessage(socket, io, data.token);
-                return callback({
-                    status: 1,
-                    message: 'success',
-                });
-            } 
-        });
+        // socket.on('sendToQueue', async (data, callback) =>
+        // {
+        //     if (!data || !data.token)
+        //     {
+        //         return callback({
+        //             status: 0,
+        //             message: localization.missingTokenError,
+        //         });
+        //     } else {
+        //         await sqsService.SendMessage(socket, io, data.token);
+        //         return callback({
+        //             status: 1,
+        //             message: 'success',
+        //         });
+        //     } 
+        // });
 
-        async function startTournament(start, socket)
+        async function startTournament(start, socket, myRoom, gamePlayData)
         {
             var params_data = {
                 room: start.room,
@@ -484,12 +512,15 @@ module.exports = function (io)
                         console.log("IN timeOut ------------", new Date())
                         var id_of_current_turn = await _TableInstance.getMyIdByPossition(
                             params_data,
-                            checkTabel.current_turn
+                            checkTabel.current_turn,
+                            myRoom
                         );
                         if (id_of_current_turn != -1)
                         {
-                            let response = await _TableInstance.skipTurn(params_data, id_of_current_turn);
-                            processEvents(response);
+                            let response = await _TableInstance.skipTurn(params_data, id_of_current_turn, myRoom, gamePlayData);
+                            myRoom = response.table;
+                            gamePlayData = response.gameData;
+                            processEvents(response, myRoom);
                         }
                     }
                 }
@@ -537,7 +568,7 @@ module.exports = function (io)
                 return users;
             }
         }
-        async function processEvents(rez)
+        async function processEvents(rez,myRoom)
         {
             if (_.isArray(rez.events))
             {
@@ -560,7 +591,7 @@ module.exports = function (io)
                                     let params_data = {
                                         room: d.room,
                                     };
-                                    var checkTabel = await _TableInstance.istableExists(params_data);
+                                    var checkTabel = await _TableInstance.istableExists(params_data, myRoom);
                                     if (checkTabel.current_turn != d.data.position)
                                     {
                                         return;
@@ -597,8 +628,9 @@ module.exports = function (io)
 
                                     if(gameTime.isTimeExpired) {
                                         if(d.name == 'make_diceroll') {
-                                            let data = await _TableInstance.checkwinnerOfTournament(d.room);
-                                            processEvents(data);                                            
+                                            let data = await _TableInstance.checkwinnerOfTournament(d.room, myRoom);
+                                            myRoom = data.table;
+                                            processEvents(data,myRoom);                                            
                                         } else if(d.name == 'end_game') {
                                             io.to(d.room).emit(d.name, d.data);
                                         }
