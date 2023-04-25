@@ -1730,6 +1730,7 @@ class _Tables
                 table.users[2].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
                 table.users[3].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
             }
+            console.log('returnDiceValue >>>',returnDiceValue);
             return {
                 'returnDiceValue' : returnDiceValue,
                 'table' : table,
