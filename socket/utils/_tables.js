@@ -1399,7 +1399,7 @@ class _Tables
         // }
         return false;
     }
-    calculateUserRank(i, userData, myRoom)
+    calculateUserRank(userData, myRoom)
     {
         let table = myRoom;
         let pointArray = []
@@ -1440,7 +1440,7 @@ class _Tables
                 {
                     let amount = 0;
                     if (table.users[j].rank == 0 && table.users[j].numeric_id != '');
-                    myRoom = this.calculateUserRank(i, table.users[j], myRoom);
+                    myRoom = this.calculateUserRank(table.users[j], myRoom);
 
                     if (typeof win_amount != 'undefined' && table.users[j].rank == 1 && win_amount[1])
                     {
