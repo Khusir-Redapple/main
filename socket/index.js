@@ -432,6 +432,7 @@ module.exports = function (io)
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             callback(response.callback);
+            console.log('myRoom ', JSON.stringify(myRoom));
             if (response.callback.status == 1) processEvents(response, myRoom);
         });
 
