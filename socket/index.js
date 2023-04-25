@@ -331,7 +331,7 @@ module.exports = function (io)
                                         room: params_data.room,
                                         isRefund: true
                                     }
-                                    var resp = await _TableInstance.leaveTable(data, start.table.users[i].id, myRoom);
+                                    var resp = await _TableInstance.leaveTable(data, start.table.users[i].id, socket, myRoom);
                                     processEvents(resp, myRoom);
                                     i++;
                                     leaveUser(i, start);
@@ -391,7 +391,7 @@ module.exports = function (io)
                                     gameNotStarted: 'true',
                                     isRefund: true
                                 }
-                                let rez = await _TableInstance.leaveTable(data, tableD.players[i].id, myRoom);
+                                let rez = await _TableInstance.leaveTable(data, tableD.players[i].id, socket, myRoom);
                                 console.log("rez--", rez);
                                 processEvents(rez, myRoom);
                             }
