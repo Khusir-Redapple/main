@@ -1721,7 +1721,7 @@ class _Tables
             // }, []);
             // return returnDiceValue;
             let table = myRoom;
-            let idx = table.findIndex(element => element.id == user_id);
+            let idx = table.users.findIndex(element => element.id == user_id);
             // pop from top of array and update the property value.
             returnDiceValue = table[idx].diceValue.shift();
             if(table.users[idx].diceValue.length == 0) {
