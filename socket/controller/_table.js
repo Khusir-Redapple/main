@@ -1694,7 +1694,7 @@ module.exports = {
             myRoom = await redisCache.getRecordsByKeyRedis(roomId);
         }
         if(myRoom) {
-            let alreadyPlaying = _tab.alreadyPlayingTable(us._id);
+            let alreadyPlaying = _tab.alreadyPlayingTable(us._id,myRoom);
             if (alreadyPlaying.status == 1)
             {
                 var tab = await Table.findOne({room: alreadyPlaying.table.room, 'players.id': id});
