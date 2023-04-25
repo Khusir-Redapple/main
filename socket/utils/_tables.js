@@ -586,7 +586,7 @@ class _Tables
         // {
         //     if (this.tables[i].room === room)
         //     {
-                var canStart = await this.canStartGame(i, myRoom);
+                var canStart = await this.canStartGame(myRoom);
                 if (!canStart) return false;
                 var dt = new Date();
                 dt.setSeconds(dt.getSeconds() + 4);
@@ -646,7 +646,7 @@ class _Tables
     }
 
     //Can Start Game?
-    async canStartGame(i, myRoom)
+    async canStartGame(myRoom)
     {
         var players = 0;
         for (let pl = 0; pl < myRoom.users.length; pl++)
