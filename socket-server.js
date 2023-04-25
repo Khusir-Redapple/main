@@ -124,6 +124,13 @@ try
                                         redis.on("ready", function() { 
                                             console.log("Connected to Redis server successfully");  
                                         });
+                                        //To delete all records from redisDB
+                                        redis.flushall((err, success) => {
+                                            if (err) {
+                                              throw new Error(err);
+                                            }
+                                            console.log(success);
+                                          });
                                         module.exports.redis = redis;                      
                                         // For corn job. 
                                         //let task = cron.schedule('*/1 * * * *', () => {
