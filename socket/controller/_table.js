@@ -15,6 +15,8 @@ module.exports = {
     //Roll dice for tournament
     tournamntDiceRolled: async function (socket, params, id, myRoom, gamePlayData)
     {
+        console.log('tournamntDiceRolled - myRoom ', myRoom);
+        console.log('tournamntDiceRolled - gamePlayData ', gamePlayData);
         let isJackpot = false;
         let resObj = {callback: {status: 1, message: localization.success}, events: []};
 
