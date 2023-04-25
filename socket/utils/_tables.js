@@ -440,7 +440,7 @@ class _Tables
             // console.log('TABLE FOUND - ',this.tables,id);
             // if (this.tables[i].room == room)
             // {
-                //console.log('TABLE FOUND - ', this.tables[i], id);
+                console.log('myRoom - ', myRoom);
                 for (var pl = 0; pl < myRoom.users.length; pl++)
                 {
                     if (myRoom.users[pl].id.toString() == id.toString())
