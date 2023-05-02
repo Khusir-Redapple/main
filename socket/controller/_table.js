@@ -2075,7 +2075,7 @@ module.exports = {
     //         };
     //     }
     // },
-     joinTournamentV2: async function (params, myId, user, isRetry = false) {
+     joinTournamentV2: async function (params, myId, user, retryCount = 0) {
         params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId']);
         if (!params || !Service.validateObjectId(myId) || _.isEmpty(params.no_of_players) || _.isEmpty(params.room_fee)) {
             return {
@@ -2215,7 +2215,8 @@ module.exports = {
         console.log('room_'+room_code+' '+valueOfRoom);
         if (valueOfRoom > parseInt(params.no_of_players)) {
             // redisCache.getRecordsByKeyRedis(room_code);
-            joinTournamentV2(params, myId, user,false);
+            retryCount++;
+            joinTournamentV2(params, myId, user,retryCount);
         }
 
         myRoom = await redisCache.getRecordsByKeyRedis(room_code);
@@ -2274,8 +2275,11 @@ module.exports = {
             };
 
         } else {
-            if (!isRetry)
-                return joinTournamentV2(params, myId, user, true);
+            if (retryCount<3)
+            {
+                retryCount++;
+                return joinTournamentV2(params, myId, user, retryCount);
+            }
             else
                 return {
                     callback: {

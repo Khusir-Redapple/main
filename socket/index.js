@@ -308,7 +308,7 @@ module.exports = function (io)
             //var rez = await _TableInstance.joinTournament(params, myId, socket);
             //let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
             //let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
-            var rez = await _TableInstance.joinTournamentV2(params, myId, us);
+            var rez = await _TableInstance.joinTournamentV2(params, myId, us,0);
             callback(rez.callback);
             if (rez.callback.status == 1)
             {  
@@ -395,8 +395,8 @@ module.exports = function (io)
                 else
                 {
                     await Socketz.sleep(16000);
-                    myRoom = redisCache.getRecordsByKeyRedis(myRoom.room);
-                    gamePlayData=redisCache.getRecordsByKeyRedis('gamePlay_'+ myRoom.room);
+                    myRoom = await redisCache.getRecordsByKeyRedis(myRoom.room);
+                    gamePlayData=await redisCache.getRecordsByKeyRedis('gamePlay_'+ myRoom.room);
                     let tableD = await Table.findOne({
                         room: params_data.room
                     });
@@ -563,7 +563,6 @@ module.exports = function (io)
                 let myRoom = await redisCache.getRecordsByKeyRedis(params_data.room);
                 let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params_data.room);
                 let checkTabel = await _TableInstance.istableExists(params_data,myRoom);
-                console.log('PARAMS DATA >>', JSON.stringify(params_data));
                 var tableD = await Table.findOne({
                     room: params_data.room
                 });
