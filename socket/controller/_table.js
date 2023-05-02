@@ -2343,5 +2343,20 @@ module.exports = {
     },
     getDataByRoom : async function (room, myRoom) {
         return _tab.getDataByRoom(room, myRoom);
+    },
+    // This function used to check equal turn for player.
+    checkPlayerEqualTurn : async function(myRoom) {
+        let playerTurn = [];
+        // create a numeric array for dice roll count
+        for (var i = 0; i < myRoom.users.length; i++) {
+            if(myRoom.users[i].is_active == true){
+                playerTurn.push(myRoom.users[i].turn);
+            }
+        }
+        // sort the array descending order.
+        playerTurn = playerTurn.sort((a,b) => b-a);
+        console.log({playerTurn});
+        // return the result
+        return new Set(playerTurn).size == 1;
     }
 };

@@ -722,11 +722,17 @@ module.exports = function (io)
                                     let gameTime = await checkGameExpireTime(d.room);
 
                                     if(gameTime.isTimeExpired) {
-                                        if(d.name == 'make_diceroll') {
-                                            let data = await _TableInstance.checkwinnerOfTournament(d.room, myRoom);
-                                            myRoom = data.table;
-                                            processEvents(data,myRoom);                                            
-                                        } else if(d.name == 'end_game') {
+                                        //To check player has equal turn or not.
+                                        let equalTurn = await _TableInstance.checkPlayerEqualTurn(myRoom);
+                                        if(equalTurn){
+                                            if(d.name == 'make_diceroll') {
+                                                let data = await _TableInstance.checkwinnerOfTournament(d.room, myRoom);
+                                                myRoom = data.table;
+                                                processEvents(data,myRoom);                                            
+                                            } else if(d.name == 'end_game') {
+                                                io.to(d.room).emit(d.name, d.data);
+                                            }
+                                        } else {
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
