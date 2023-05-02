@@ -52,12 +52,16 @@ try
     const AWS = require('aws-sdk');
     (async () =>
     {
-        AWS.config = new AWS.Config();
+
+         AWS.config = new AWS.Config();
+        // process.env.ACCESS_KEY_ID='AKIAXHARTGKVFSZSVHV2'
+        // process.env.SECRET_ACCESS_KEY='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'
+        // process.env.AWS_REGION='ap-southeast-1'
         let AWS_REGION = process.env.AWS_REGION || 'ap-south-2';
         console.log("IAWS_REGION-", AWS_REGION)
         let ssm = new AWS.SSM({region: AWS_REGION});
         console.log('SSM===>', ssm.config);
-        let Names = process.env.NODE_ENV != 'production' ? ["/staging/ludo/docdb/host", "/staging/ludo/docdb/password", "/staging/ludo/docdb/port", "/staging/ludo/docdb/username", "/staging/ludo/logDNA", "/staging/ludo/queueurl", "/staging/ludo/ludoapiurl", "/staging/ludo/ludoapiSecretkey"] : ["/prod/ludo/docdb/host", "/prod/ludo/docdb/password", "/prod/ludo/docdb/port", "/prod/ludo/docdb/username", "/prod/ludo/logDNA", "/prod/ludo/queueurl", "/prod/ludo/ludoapiurl", "/prod/ludo/ludoapiSecretkey"];
+        let Names = process.env.NODE_ENV != 'production' ? ["/staging/ludo/docdb/host", "/staging/ludo/docdb/password", "/staging/ludo/docdb/port", "/staging/ludo/docdb/username", "/staging/ludo/logDNA", "/staging/ludo/queueurl", "/staging/ludo/ludoapiurl", "/staging/ludo/ludoapiSecretkey","/staging/ludo/redis"] : ["/prod/ludo/docdb/host", "/prod/ludo/docdb/password", "/prod/ludo/docdb/port", "/prod/ludo/docdb/username", "/prod/ludo/logDNA", "/prod/ludo/queueurl", "/prod/ludo/ludoapiurl", "/prod/ludo/ludoapiSecretkey","/prod/ludo/redis"];
         let keys = [];
         const getParams = async (Names, i) =>
         {
@@ -81,6 +85,7 @@ try
                 {
                     // Read the value from SSM in AWS
                     process.env.DB_HOST = keys[0] ? keys[0] : process.env.DB_HOST;
+                    //process.env.DB_HOST='localhost';
                     process.env.DB_PASS = keys[1] ? keys[1] : process.env.DB_PASS;
                     process.env.DB_PORT = keys[2] ? keys[2] : process.env.DB_PORT;
                     process.env.DB_USER = keys[3] ? keys[3] : process.env.DB_USER;
@@ -94,6 +99,7 @@ try
                     // API_SECRET_KEY for https://ludoapi.nostragamus.in/ludo/v1/ endpoints
                     process.env.API_SECRET_KEY = keys[7] ? keys[7] : process.env.API_SECRET_KEY;
                     // Moved here from top of file for availble logDNA apiKey. 
+                    process.env.Redis_Url = keys[8] ? keys[8] : process.env.Redis_Url;
                     require('./socket')(socket);
                     let config = require('./config');
                     logDNA = require('./api/service/logDNA');
@@ -116,7 +122,11 @@ try
                                     logger.info('Socket Server listening at PORT:' + config.port);       
                                         
                                         // make a connection to the instance of redis
-                                        const redis = RedisIo.createClient(6379, '18.61.12.70');
+                                        //  const redis = RedisIo.createClient(6379, 'staging-setup.avv3xf.0001.apse1.cache.amazonaws.com');
+                                        // const redis = RedisIo.createClient('localhost:6379');  
+                                        const redis = RedisIo.createClient(process.env.Redis_Url+':6379')
+                                                     
+                                        //const redis = await new RedisIo('localhost:6379');               
                                         redis.connect();                                  
                                         redis.on("error", (error) => {
                                             console.log(error);
@@ -125,12 +135,12 @@ try
                                             console.log("Connected to Redis server successfully");  
                                         });
                                         //To delete all records from redisDB
-                                        redis.flushall((err, success) => {
-                                            if (err) {
-                                              throw new Error(err);
-                                            }
-                                            console.log(success);
-                                          });
+                                        // redis.flushall((err, success) => {
+                                        //     if (err) {
+                                        //       throw new Error(err);
+                                        //     }
+                                        //     console.log(success);
+                                        //   });
                                         module.exports.redis_Io = redis;                 
                                         // For corn job. 
                                         //let task = cron.schedule('*/1 * * * *', () => {

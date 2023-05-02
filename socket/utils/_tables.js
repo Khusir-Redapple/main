@@ -502,7 +502,14 @@ class _Tables
 
                             myRoom.users[pl].rank = rank;
 
-                            myRoom.players_done += 1;
+                            if(myRoom.players_done)
+                            {
+                                myRoom.players_done += 1;
+                            }
+                            else
+                             myRoom.players_done=1;
+
+                            console.log('Players done: '+ myRoom.players_done);
                             return {
                                 res: true,
                                 position: pl,
@@ -664,9 +671,14 @@ class _Tables
         //var index = this.tables.findIndex((x) => x.room == room);
         // if (index >= 0)
         // {
+        if(pos > -1)
+        {
             if (myRoom.users[pos].dices_rolled.length > 0)
-            myRoom.users[pos].dices_rolled = [];
+                myRoom.users[pos].dices_rolled = [];
+
             myRoom.users[pos].dices_rolled.push(DICE_ROLLED);
+    }
+
         // }
     }
 
@@ -850,12 +862,15 @@ class _Tables
 
     updateCurrentTurn(room, pos, type, prev, move, myRoom)
     {
+      console.log('updateCurrentTurn input ' + room + "_"+ pos+ "_"+ type+ "_"+prev+ "_"+move+ "_"+JSON.stringify(myRoom))
         // for (let i = 0; i < this.tables.length; i++)
         // {
         //     if (this.tables[i].room == room)
         //     {
                 //for debugging.....
                 console.log('updateCurrentTurn >>>:: ', myRoom.users[pos]);
+               if(pos<0)
+                  return;
                 if (prev != -1)
                 {
                     myRoom.users[prev].dices_rolled = [];
@@ -873,6 +888,7 @@ class _Tables
                     console.log("Line 701 turn set : ", new Date().getTime(), new Date());
                     myRoom.current_turn_type = type;
                 }
+                console.log('updateCurrentTurn res ' + JSON.stringify(myRoom))
             // }
         // }
 
@@ -887,7 +903,7 @@ class _Tables
     gePlayerDices(room, pos, myRoom, gamePlayData)
     {
         // var index = this.tables.findIndex((x) => x.room == room);
-         if (myRoom)
+         if (myRoom && pos>-1)
         {
             // let i = this.gamePlayData.findIndex((x) => x.room == room);
             gamePlayData.data.User = myRoom.users[pos].numeric_id;
@@ -963,6 +979,8 @@ class _Tables
     {
         // New modification
         let table = myRoom;
+        console.log("getNextPosition Room : " + JSON.stringify(myRoom));
+        console.log("getNextPosition pos: " + pos);
         // let i = this.tables.findIndex(element => element.room == room);
         // if (i == -1)
         // {
@@ -972,6 +990,7 @@ class _Tables
         {
             if (table.users[j].is_active && !table.users[j].is_done)
             {
+                console.log("getNextPosition j: " + j);
                 return j;
             }
         }
@@ -979,10 +998,11 @@ class _Tables
         {
             if (table.users[j].is_active && !table.users[j].is_done)
             {
+                console.log("getNextPosition j1: " + j);
                 return j;
             }
         }
-
+        return -1;
     }
 
     CanIKill(room, id, token_index, myPos, myRoom, gamePlayData)
@@ -1006,8 +1026,24 @@ class _Tables
             'POSITION',
             table.users[myPos].tokens[token_index] // acual index
         );
-        if (actual_token_position == -1) return false;
-        if (config.safeZone.includes(actual_token_position)) return false; //MAIN USER 2 TOKEN 38 POSITION 11
+        if (actual_token_position == -1) 
+        {
+        let responseObj = {
+            'dead_possible' :  false,
+            'myRoom'    : table,
+            'gameData'  : gamePlayData
+        }
+        return responseObj;
+    }
+        if (config.safeZone.includes(actual_token_position)) 
+        {
+            let responseObj = {
+                'dead_possible' :  false,
+                'myRoom'    : table,
+                'gameData'  : gamePlayData
+            }
+            return responseObj;
+        } //MAIN USER 2 TOKEN 38 POSITION 11
 
         var dead_possible = [];
         var i = tab_pos;
@@ -1436,11 +1472,14 @@ class _Tables
         }
         return table;
     }
+
+    //TODO: Revamp winnings logic
     isThisTheEnd(room, win_amount, myRoom)
     {
-        // console.log("isThisTheEnd>> ", room, win_amount)
-        const table = myRoom;
-        const rank = [];
+        console.log("isThisTheEnd>> ", room, win_amount,myRoom)
+        let table = myRoom;
+
+        let rank = [];
         // for (let i = 0; i < this.tables.length; i++)
         // {
         //     if (this.tables[i].room == room)
@@ -1448,8 +1487,18 @@ class _Tables
                 for (let j = 0; j < table.users.length; j++)
                 {
                     let amount = 0;
-                    if (table.users[j].rank == 0 && table.users[j].numeric_id != '');
-                    myRoom = this.calculateUserRank(table.users[j], myRoom);
+                    console.log("isThisTheEnd>>  table",table);
+                    console.log("isThisTheEnd>>  1 cond",table.users[j].rank == 0);
+                    console.log("isThisTheEnd>>  2nd cond",table.users[j].rank === 0);
+                    console.log("isThisTheEnd>>  3rd cond",table.users[j].numeric_id != '');
+                    if (table.users[j].rank === 0 && table.users[j].numeric_id != '')
+                    {
+                        console.log("isThisTheEnd>> j value ",j  );
+                        console.log("isThisTheEnd>> j rank ",table.users[j].rank  );
+                        console.log("isThisTheEnd>> j numeric_id ",table.users[j].numeric_id);
+                        table = this.calculateUserRank(table.users[j], table);
+                        console.log("isThisTheEnd>> My room", table)
+                    }
 
                     if (typeof win_amount != 'undefined' && table.users[j].rank == 1 && win_amount[1])
                     {
@@ -1472,10 +1521,10 @@ class _Tables
                         score: table.users[j].points + table.users[j].bonusPoints
                     });
                 }
-
+                console.log("isThisTheEnd>> rank", room, JSON.stringify(rank));
                 if (table.no_of_players == 2 || table.no_of_players == 3)
                 {
-                    if (table.players_won == 1)
+                    if (table.players_won == 1 || table.players_done>=1)
                     {
                         //this.tables = this.tables.filter((t) => t.room != room);
                         //console.log('After Splice::', room);
@@ -1497,8 +1546,13 @@ class _Tables
                             'rank' : rank,
                             'table' : table
                         };
-                    } else if (table.players_done >= 3 && table.players_won == 1)
+                    } 
+                    //else if (table.players_done >= 3 && table.players_won == 1)
+                    else if (table.players_done >= 3)
                     {
+                        if(!table.players_won)
+                            table.players_won=0;
+
                         for (let j = 0; j < table.users.length; j++)
                         {
                             if (table.users[j].is_active && !table.users[j].is_done)
@@ -1506,12 +1560,22 @@ class _Tables
                                 table.players_won += 1;
                                 table.players_done += 1;
                                 table.users[j].is_done = true;
-                                table.users[j].rank = table.players_won;
+                               // table.users[j].rank = table.players_won;
+                                if(!table.users[j].rank)
+                                {
+                                    let user_rank = myRoom.no_of_players;
 
+                                    while (this.isRankOccupied(room, user_rank, myRoom))
+                                    {
+                                        user_rank--;
+                                        if (user_rank == 1) break;
+                                    }
+                                    table.users[j].rank = user_rank;
+                                }
                             }
                         }
 
-                        //rank = [];
+                        rank = [];
                         for (let j = 0; j < table.users.length; j++)
                         {
                             // let amount = 0 ;
@@ -1575,7 +1639,26 @@ class _Tables
                             table.players_won += 1;
                             table.players_done += 1;
                             table.users[j].is_done = true;
-                            table.users[j].rank = table.players_won;
+                            //TO DO: 
+                            
+                            let rank = table.users[j].rank;
+                            console.log('Rank received: ', rank);
+                            if(!rank || rank<1)
+                            {
+                                rank=table.no_of_players;
+                                console.log('Inside rank calc');
+                                
+                                while (this.isRankOccupied(room, rank, myRoom))
+                                {
+                                    
+                                    console.log('Inside rank deduc');
+                                    rank--;
+                                    if (rank == 1) break;
+                                }
+                            }
+                            table.users[j].rank=rank;
+                            console.log('Rank alotted: ' +rank+  JSON.stringify(table.users[j]));
+                            //table.users[j].rank = table.players_won;
                             return {
                                 'response': true,
                                 'table' : table,

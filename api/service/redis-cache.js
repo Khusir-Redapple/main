@@ -2,8 +2,9 @@ const config  = require('../../config');
 const timeLib = require('../../socket/helper/timeLib');
 const logDNA  = require('./logDNA');
 const RedisIo   = require("ioredis");
-// const redis   = new Redis();
-const redis = RedisIo.createClient(6379, '18.61.12.70');
+// const redis =RedisIo.createClient('localhost:6379');      
+// const redis = RedisIo.createClient(6379, 'staging-setup.avv3xf.0001.apse1.cache.amazonaws.com');
+const redis = RedisIo.createClient(process.env.Redis_Url+':6379');
 class RedisCache
 {
     async addToRedis(id, data)

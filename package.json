@@ -4,7 +4,8 @@
   "description": "Game",
   "main": "server.js",
   "scripts": {
-    "start": "node socket-server.js"
+    "start": "node socket-server.js",
+    "start:stage": "NODE_ENV=stage npm start"
   },
   "engines": {
     "node": "8.10.0"
