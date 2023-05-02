@@ -563,6 +563,7 @@ module.exports = function (io)
                 let myRoom = await redisCache.getRecordsByKeyRedis(params_data.room);
                 let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params_data.room);
                 let checkTabel = await _TableInstance.istableExists(params_data,myRoom);
+                console.log('PARAMS DATA >>', JSON.stringify(params_data));
                 var tableD = await Table.findOne({
                     room: params_data.room
                 });
