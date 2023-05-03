@@ -2385,7 +2385,7 @@ module.exports = {
             }
         }
 
-        console.log('playerTurn[0]', playerTurn[0]);
+        console.log('playerTurn[0]..........', playerTurn[0]);
         // if(myRoom.users[0].turn != playerTurn[0] && myRoom.users[0].is_active == true) {
         //     playersFinalTurn.push(0);
         // } else if(myRoom.users[1].turn != playerTurn[0] && myRoom.users[1].is_active == true) {
