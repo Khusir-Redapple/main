@@ -566,9 +566,7 @@ module.exports = function (io)
                 var tableD = await Table.findOne({
                     room: params_data.room
                 });
-                console.log('Before SKIPPED ', JSON.stringify(tableD));
-
-                
+                //console.log('Before SKIPPED ', JSON.stringify(tableD));                
                 if (tableD.isGameCompleted)
                 {
                     clearInterval(this);
