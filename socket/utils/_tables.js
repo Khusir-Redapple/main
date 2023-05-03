@@ -1353,31 +1353,15 @@ class _Tables
                     let winAmount = 0;
                     if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
                     {
-                       if(count > 1) {
-                            let amount_1 = amount[1] / count;
-                            winAmount = otherRank == 1 ? amount_1 : 0;  
-                       } else {
-                           // only this line previous written
-                            winAmount = otherRank == 1 ? amount[1] : 0;
-                       }
-                        
+                        winAmount = otherRank == 1 ? amount[1] : 0;
+                                               
                     } else if (typeof amount != 'undefined' && otherRank == 2 && amount[2])
                     {
-                        if(count > 1) {
-                            let amount_2 = amount[2] / count;
-                            winAmount = otherRank == 1 ? amount_2 : 0;
-                        } else {
-                            winAmount = otherRank == 2 ? amount[2] : 0;
-                        }
+                        winAmount = otherRank == 2 ? amount[2] : 0;              
                         
                     } else if (typeof amount != 'undefined' && otherRank == 3 && amount[3])
                     {
-                        if(count > 1) {
-                            let amount_3 = amount[3] / count;
-                            winAmount = otherRank == 1 ? amount_3 : 0;
-                        } else {
-                            winAmount = otherRank == 3 ? amount[3] : 0;
-                        }
+                        winAmount = otherRank == 3 ? amount[3] : 0;
                     }
                     //console.log("User's final rank ::::", otherRank)
                     if (table.users[k].points + table.users[k].bonusPoints == maxPoints)
