@@ -1307,14 +1307,11 @@ class _Tables
     }
     EndOfTournament(room, amount, myRoom)
     {
-        // console.log("room,amount >>", room, amount[1])
-        // for (let i = 0; i < this.tables.length; i++)
-        // {
+        
             const table = myRoom;
             const pointArray = [];
             const winner = []
-            // if (this.tables[i].room == room)
-            // {
+            
                 for (let j = 0; j < table.users.length; j++)
                 {
                     pointArray.push(table.users[j].points + table.users[j].bonusPoints);
@@ -1340,13 +1337,13 @@ class _Tables
                     //     }
                     // }                     
                 });
-                if(count > 1) amount = amount/count; //tie case
+                // if(count > 1) amount = amount/count; //tie case
                 //console.log('amount', amount);
                 for (let k = 0; k < table.users.length; k++)
                 {
                     for (let j = 0; j < point.length; j++)
                     {
-                        console.log("HERE - ", point[j], table.users[k].points + table.users[k].bonusPoints)
+                        //console.log("HERE - ", point[j], table.users[k].points + table.users[k].bonusPoints)
                         if (point[j] == table.users[k].points + table.users[k].bonusPoints) 
                         {
                             otherRank = j + 1;
@@ -1364,7 +1361,7 @@ class _Tables
                     {
                         winAmount = otherRank == 3 ? amount[3] : 0;
                     }
-                    console.log("User's final rank ::::", otherRank)
+                    //console.log("User's final rank ::::", otherRank)
                     if (table.users[k].points + table.users[k].bonusPoints == maxPoints)
                     {
                         table.players_won += 1;
@@ -1397,15 +1394,11 @@ class _Tables
                         });
                     }
                 }
-                // this.tables = this.tables.filter((t) => t.room != room);
-                // console.log("winner >>>", winner, this.tables)
+                
                 return {
                     'winner': winner,
                     'table' : table
                 };
-            // }
-        // }
-       // return false;
     }
     allHome(room, id, myRoom)
     {

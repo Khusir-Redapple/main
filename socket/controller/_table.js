@@ -2363,5 +2363,28 @@ module.exports = {
 
         // if player_index == 0 logic
         return playerPosition == 0 ? true : false;
+    },
+    determineTotalTurn : async function(myRoom) {
+        let playerTurn       = [];
+        let playersFinalTurn = [];
+        // create a numeric array for dice roll count
+        for (var i = 0; i < myRoom.users.length; i++) {
+            if(myRoom.users[i].is_active == true){
+                playerTurn.push(myRoom.users[i].turn);
+            }
+        }
+        // sort the array at descending order.
+        playerTurn = playerTurn.sort((a,b) => b-a);
+
+        if(myRoom.users[0].turn != playerTurn[0] && myRoom.users[0].is_active == true) {
+            playersFinalTurn.push(0);
+        } else if(myRoom.users[1].turn != playerTurn[0] && myRoom.users[1].is_active == true) {
+            playersFinalTurn.push(1);
+        } else if(myRoom.users[2].turn != playerTurn[0] && myRoom.users[2].is_active == true) {
+            playersFinalTurn.push(2);
+        } else if(myRoom.users[3].turn != playerTurn[0] && myRoom.users[3].is_active == true) {
+            playersFinalTurn.push(3);
+        }
+        return {'totalTurn':playerTurn[0],finalTurn:playersFinalTurn}       
     }
 };

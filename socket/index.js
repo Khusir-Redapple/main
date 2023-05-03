@@ -732,7 +732,9 @@ module.exports = function (io)
                                                 io.to(d.room).emit(d.name, d.data);
                                             }
                                         } else {
-                                            // sent event to socket Client for equal ture.
+                                            // sent event to socket Client for equal ture.                                            
+                                            let equalTurnPlayerData = await _TableInstance.determineTotalTurn(myRoom);
+                                            io.to(d.room).emit('final_turn_initiated', equalTurnPlayerData);
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
