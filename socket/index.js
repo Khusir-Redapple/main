@@ -720,6 +720,10 @@ module.exports = function (io)
                                     let gameTime = await checkGameExpireTime(d.room);
 
                                     if(gameTime.isTimeExpired) {
+                                        // sent event to socket Client for equal ture.                                            
+                                        let equalTurnPlayerData = await _TableInstance.determineTotalTurn(myRoom);
+                                        io.to(d.room).emit('final_turn_initiated', equalTurnPlayerData);
+                                        
                                         //To check player has equal turn or not.
                                         let equalTurn = await _TableInstance.checkPlayerEqualTurn(myRoom, d.data.position);
                                         console.log('Player position', d.data.position);
@@ -732,9 +736,6 @@ module.exports = function (io)
                                                 io.to(d.room).emit(d.name, d.data);
                                             }
                                         } else {
-                                            // sent event to socket Client for equal ture.                                            
-                                            let equalTurnPlayerData = await _TableInstance.determineTotalTurn(myRoom);
-                                            io.to(d.room).emit('final_turn_initiated', equalTurnPlayerData);
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
