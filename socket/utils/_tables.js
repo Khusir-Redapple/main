@@ -1353,7 +1353,14 @@ class _Tables
                     let winAmount = 0;
                     if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
                     {
-                        winAmount = otherRank == 1 ? amount[1] : 0;
+                       if(count > 1) {
+                            let amount = amount[1] / count;
+                            winAmount = otherRank == 1 ? amount : 0;  
+                       } else {
+                           // only this line previous written
+                            winAmount = otherRank == 1 ? amount[1] : 0;
+                       }
+                        
                     } else if (typeof amount != 'undefined' && otherRank == 2 && amount[2])
                     {
                         winAmount = otherRank == 2 ? amount[2] : 0;
