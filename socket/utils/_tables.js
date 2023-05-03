@@ -1341,7 +1341,7 @@ class _Tables
                     // }                     
                 });
                 // if(count > 1) amount = amount/count; //tie case
-                console.log({amount});
+                console.log('amount', amount);
                 for (let k = 0; k < table.users.length; k++)
                 {
                     for (let j = 0; j < point.length; j++)
