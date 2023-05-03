@@ -2367,8 +2367,8 @@ module.exports = {
     determineTotalTurn : async function(room) {
         let myRoom = await redisCache.getRecordsByKeyRedis(room);
         console.log("Room data :::: " + JSON.stringify(myRoom));
-        let playerTurn       = [];
-        let playersFinalTurn = [];
+        let playerTurn         = [];
+        const playersFinalTurn = [];
         // create a numeric array for dice roll count
         for (var i = 0; i < myRoom.users.length; i++) {
             if(myRoom.users[i].is_active == true){
