@@ -2380,7 +2380,12 @@ module.exports = {
 
 
         for (var i = 0; i < myRoom.users.length; i++) {
-            if(myRoom.users[i].turn < playerTurn[0] && myRoom.users[i].is_active == true){
+            if(myRoom.users[i].turn < playerTurn[0] 
+                && myRoom.users[i].is_active == true){
+                playersFinalTurn.push(i);
+            } else if(myRoom.users[i].turn == playerTurn[0] 
+                && myRoom.users[i].is_active == true 
+                && i == myRoom.current_turn) {
                 playersFinalTurn.push(i);
             }
         }
