@@ -389,7 +389,7 @@ module.exports = function (io)
                         if(gameTime.time == 0){
                             // sent event to socket Client for equal ture.                                            
                             let equalTurnPlayerData = await _TableInstance.determineTotalTurn(myRoom);
-                            io.to(d.room).emit('final_turn_initiated', equalTurnPlayerData);
+                            io.to(start.room).emit('final_turn_initiated', equalTurnPlayerData);
                         }
                         console.log("Below Winner Data -after timer--", start.room, gameTime);
                         io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time}});
