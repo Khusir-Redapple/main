@@ -873,6 +873,7 @@ module.exports = {
         });
         if (tableD)
         {
+            console.log('AMount>>>', tableD.win_amount);
             winnerRes = await _tab.EndOfTournament(tableD.room, tableD.win_amount,myRoom);
             myRoom = winnerRes.table;
             let winnerInfo = winnerRes.winner;
