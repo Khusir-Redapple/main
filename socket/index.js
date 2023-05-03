@@ -732,6 +732,7 @@ module.exports = function (io)
                                                 io.to(d.room).emit(d.name, d.data);
                                             }
                                         } else {
+                                            // sent event to socket Client for equal ture.
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
