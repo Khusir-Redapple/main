@@ -390,7 +390,7 @@ module.exports = function (io)
                         io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time}});
                         if(gameTime.time == 0){
                             // sent event to socket Client for equal ture.                                            
-                            let equalTurnPlayerData = await _TableInstance.determineTotalTurn(myRoom);
+                            let equalTurnPlayerData = await _TableInstance.determineTotalTurn(start.room);
                             io.to(start.room).emit('final_turn_initiated', equalTurnPlayerData);
                             clearInterval(this);
                         }

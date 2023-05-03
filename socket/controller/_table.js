@@ -2364,7 +2364,8 @@ module.exports = {
         // if player_index == 0 logic
         return playerPosition == 0 ? true : false;
     },
-    determineTotalTurn : async function(myRoom) {
+    determineTotalTurn : async function(room) {
+        let myRoom = await redisCache.getRecordsByKeyRedis(room);
         let playerTurn       = [];
         let playersFinalTurn = [];
         // create a numeric array for dice roll count
