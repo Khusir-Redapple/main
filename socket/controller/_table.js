@@ -2385,6 +2385,6 @@ module.exports = {
         } else if(myRoom.users[3].turn != playerTurn[0] && myRoom.users[3].is_active == true) {
             playersFinalTurn.push(3);
         }
-        return {'totalTurn':playerTurn[0],finalTurn:playersFinalTurn}       
+        return {'totalTurn':playerTurn[0],'finalTurn':playersFinalTurn}       
     }
 };
