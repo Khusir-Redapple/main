@@ -723,7 +723,8 @@ module.exports = function (io)
 
                                     if(gameTime.isTimeExpired) {
                                         //To check player has equal turn or not.
-                                        let equalTurn = await _TableInstance.checkPlayerEqualTurn(myRoom);
+                                        let equalTurn = await _TableInstance.checkPlayerEqualTurn(myRoom, d.data.position);
+                                        console.log('Player position', d.data.position);
                                         if(equalTurn){
                                             if(d.name == 'make_diceroll') {
                                                 let data = await _TableInstance.checkwinnerOfTournament(d.room, myRoom);

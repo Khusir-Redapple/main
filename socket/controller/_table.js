@@ -2345,18 +2345,22 @@ module.exports = {
         return _tab.getDataByRoom(room, myRoom);
     },
     // This function used to check equal turn for player.
-    checkPlayerEqualTurn : async function(myRoom) {
-        let playerTurn = [];
-        // create a numeric array for dice roll count
-        for (var i = 0; i < myRoom.users.length; i++) {
-            if(myRoom.users[i].is_active == true){
-                playerTurn.push(myRoom.users[i].turn);
-            }
-        }
-        // sort the array descending order.
-        playerTurn = playerTurn.sort((a,b) => b-a);
-        console.log({playerTurn});
-        // return the result
-        return new Set(playerTurn).size == 1;
+    checkPlayerEqualTurn : async function(myRoom, playerPosition) {
+        // let playerTurn = [];
+        // // create a numeric array for dice roll count
+        // for (var i = 0; i < myRoom.users.length; i++) {
+        //     if(myRoom.users[i].is_active == true){
+        //         playerTurn.push(myRoom.users[i].turn);
+        //     }
+        // }
+        // // sort the array descending order.
+        // playerTurn = playerTurn.sort((a,b) => b-a);
+        // console.log({playerTurn});
+        // // return the result
+        // return new Set(playerTurn).size == 1;
+
+
+        // if player_index == 0 logic
+        return playerPosition == 0 ? true : false;
     }
 };
