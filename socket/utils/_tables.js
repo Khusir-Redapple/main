@@ -1363,10 +1363,21 @@ class _Tables
                         
                     } else if (typeof amount != 'undefined' && otherRank == 2 && amount[2])
                     {
-                        winAmount = otherRank == 2 ? amount[2] : 0;
+                        if(count > 1) {
+                            let amount = amount[2] / count;
+                            winAmount = otherRank == 1 ? amount : 0;
+                        } else {
+                            winAmount = otherRank == 2 ? amount[2] : 0;
+                        }
+                        
                     } else if (typeof amount != 'undefined' && otherRank == 3 && amount[3])
                     {
-                        winAmount = otherRank == 3 ? amount[3] : 0;
+                        if(count > 1) {
+                            let amount = amount[3] / count;
+                            winAmount = otherRank == 1 ? amount : 0;
+                        } else {
+                            winAmount = otherRank == 3 ? amount[3] : 0;
+                        }
                     }
                     //console.log("User's final rank ::::", otherRank)
                     if (table.users[k].points + table.users[k].bonusPoints == maxPoints)
