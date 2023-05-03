@@ -1354,8 +1354,8 @@ class _Tables
                     if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
                     {
                        if(count > 1) {
-                            let amount = amount[1] / count;
-                            winAmount = otherRank == 1 ? amount : 0;  
+                            let amount_1 = amount[1] / count;
+                            winAmount = otherRank == 1 ? amount_1 : 0;  
                        } else {
                            // only this line previous written
                             winAmount = otherRank == 1 ? amount[1] : 0;
@@ -1364,8 +1364,8 @@ class _Tables
                     } else if (typeof amount != 'undefined' && otherRank == 2 && amount[2])
                     {
                         if(count > 1) {
-                            let amount = amount[2] / count;
-                            winAmount = otherRank == 1 ? amount : 0;
+                            let amount_2 = amount[2] / count;
+                            winAmount = otherRank == 1 ? amount_2 : 0;
                         } else {
                             winAmount = otherRank == 2 ? amount[2] : 0;
                         }
@@ -1373,8 +1373,8 @@ class _Tables
                     } else if (typeof amount != 'undefined' && otherRank == 3 && amount[3])
                     {
                         if(count > 1) {
-                            let amount = amount[3] / count;
-                            winAmount = otherRank == 1 ? amount : 0;
+                            let amount_3 = amount[3] / count;
+                            winAmount = otherRank == 1 ? amount_3 : 0;
                         } else {
                             winAmount = otherRank == 3 ? amount[3] : 0;
                         }
