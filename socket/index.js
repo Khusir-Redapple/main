@@ -739,6 +739,8 @@ module.exports = function (io)
                                              
                                                 io.to(d.room).emit(d.name, d.data);
                                                 await redisCache.removeDataFromRedis(d.room);
+                                                await redisCache.removeDataFromRedis('room_'+d.room);
+                                                await redisCache.removeDataFromRedis('gamePlay_'+d.room);
                                             } else if(d.name == 'make_move') {
                                                 io.to(d.room).emit(d.name, d.data);
                                             }
@@ -754,6 +756,8 @@ module.exports = function (io)
                                     socket.to(d.room).emit(d.name, d.data);
                                     if(d.name == 'end_game') {
                                         await redisCache.removeDataFromRedis(d.room);
+                                        await redisCache.removeDataFromRedis('room_'+d.room);
+                                        await redisCache.removeDataFromRedis('gamePlay_'+d.room);
                                     }                                    
                                 }
 
