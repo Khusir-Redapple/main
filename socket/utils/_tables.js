@@ -1347,7 +1347,11 @@ class _Tables
                         if (point[j] == table.users[k].points + table.users[k].bonusPoints) 
                         {
                             otherRank = j + 1;
-                            break;
+                            while (this.isRankOccupied(room, otherRank, myRoom))
+                            {
+                                rank--;
+                                if (rank == 1) break;
+                            }
                         };
                     }
                     let winAmount = 0;
@@ -1369,12 +1373,14 @@ class _Tables
                         table.players_won += 1;
                         table.players_done += 1;
                         table.users[k].is_done = true;
-                        table.users[k].rank = 1;
+                        if(!table.users[k].rank || table.users[k].rank == 0) {
+                            table.users[k].rank = 1;
+                        }                        
                         winner.push({
                             player_index: table.users[k].position,
                             name: table.users[k].name,
                             numeric_id: table.users[k].numeric_id,
-                            rank: 1,
+                            rank: table.users[k].rank,
                             id: table.users[k].id,
                             amount: winAmount,
                             score: table.users[k].points + table.users[k].bonusPoints
@@ -1395,6 +1401,142 @@ class _Tables
                             score: table.users[k].points + table.users[k].bonusPoints
                         });
                     }
+                }
+                
+                return {
+                    'winner': winner,
+                    'table' : table
+                };
+    }
+    EndOfTournamentV2(room, amount, myRoom)
+    {
+            const table = myRoom;
+            const pointArray = [];
+            const winner = [];
+            let UserRankMap = new Map();
+            let UserRankArray = [];
+            
+                for (let j = 0; j < table.users.length; j++)
+                {
+                    if(!table.users[j].rank || table.users[j].rank == 0) {
+                        pointArray.push(table.users[j].points + table.users[j].bonusPoints);
+                    } else {
+                        UserRankMap[table.users[j].id] = table.users[j].rank;
+                        UserRankArray.push(table.users[j].rank);
+                    }
+                }
+                
+                var maxPoints = (Math.max(...pointArray));
+                let point = pointArray;
+                point.sort((a, b) => b - a);
+                let otherRank;
+                table.users.forEach(function (user)
+                {
+                    console.log("Points ....", user.points, user.bonusPoints, maxPoints, point)
+                    
+                    if(!user.rank || user.rank == 0) {
+                        let userPoints = user.points + user.bonusPoints;
+                        let playerIndex = point.indexOf(userPoints);
+                        let userRank = playerIndex +1;
+                        UserRankMap[user.id] = userRank;
+                        UserRankArray.push(userRank);
+                    }
+                                                      
+                });
+                // if(count > 1) amount = amount/count; //tie case
+                //console.log('amount', amount);
+                for (let k = 0; k < table.users.length; k++)
+                {
+                    // for (let j = 0; j < point.length; j++)
+                    // {
+                    //     //console.log("HERE - ", point[j], table.users[k].points + table.users[k].bonusPoints)
+                    //     if (point[j] == table.users[k].points + table.users[k].bonusPoints) 
+                    //     {
+                    //         otherRank = j + 1;
+                    //         while (this.isRankOccupied(room, otherRank, myRoom))
+                    //         {
+                    //             rank--;
+                    //             if (rank == 1) break;
+                    //         }
+                    //     };
+                    // }
+
+                    // let UserRankMap = new Map();
+                    // let UserRankArray = [];
+                    if(table.users[k].rank || table.users[k].rank == 0) {
+                        table.users[k].rank = UserRankMap[table.users[k].id];
+                    }
+                    let rankCount = 0;
+                    UserRankArray.map((ele,index) => {
+                        if(ele == table.users[k].rank){
+                            rankCount = rankCount +1;
+                        }
+                    })
+
+                    let winAmount = 0;
+                    if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
+                    {
+                        winAmount = otherRank == 1 ? Math.floor(amount[1]/rankCount) : 0;
+                                               
+                    } else if (typeof amount != 'undefined' && otherRank == 2 && amount[2])
+                    {
+                        winAmount = otherRank == 2 ? Math.floor(amount[2]/rankCount) : 0;              
+                        
+                    } else if (typeof amount != 'undefined' && otherRank == 3 && amount[3])
+                    {
+                        winAmount = otherRank == 3 ? Math.floor(amount[3]/rankCount) : 0;
+                    }
+
+                    table.players_won += 1;
+                    table.players_done += 1;
+                    table.users[k].is_done = true;
+                    winner.push({
+                            player_index: table.users[k].position,
+                            name: table.users[k].name,
+                            numeric_id: table.users[k].numeric_id,
+                            rank: table.users[k].rank,
+                            id: table.users[k].id,
+                            amount: winAmount,
+                            score: table.users[k].points + table.users[k].bonusPoints
+                        });
+
+
+
+
+                    //console.log("User's final rank ::::", otherRank)
+                    // if (table.users[k].points + table.users[k].bonusPoints == maxPoints)
+                    // {
+                    //     table.players_won += 1;
+                    //     table.players_done += 1;
+                    //     table.users[k].is_done = true;
+                    //     if(!table.users[k].rank || table.users[k].rank == 0) {
+                    //         table.users[k].rank = 1;
+                    //     }                        
+                    //     winner.push({
+                    //         player_index: table.users[k].position,
+                    //         name: table.users[k].name,
+                    //         numeric_id: table.users[k].numeric_id,
+                    //         rank: table.users[k].rank,
+                    //         id: table.users[k].id,
+                    //         amount: winAmount,
+                    //         score: table.users[k].points + table.users[k].bonusPoints
+                    //     });
+                    // } else
+                    // {
+
+                    //     table.players_done += 1;
+                    //     table.users[k].is_done = true;
+                    //     table.users[k].rank = otherRank;
+                    //     winner.push({
+                    //         player_index: table.users[k].position,
+                    //         name: table.users[k].name,
+                    //         numeric_id: table.users[k].numeric_id,
+                    //         rank: otherRank,
+                    //         id: table.users[k].id,
+                    //         amount: winAmount,
+                    //         score: table.users[k].points + table.users[k].bonusPoints
+                    //     });
+                    // }
                 }
                 
                 return {
