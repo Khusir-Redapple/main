@@ -517,6 +517,13 @@ module.exports = function (io)
         //Skip Turn
         socket.on('skip_turn', async (params, callback) =>
         {
+            let tableD = await Table.findOne({
+                room: params.room
+            });
+            if(tableD.isGameCompleted) {
+                return callback({'isGameCompleted': true, 'room': params.room});
+            }
+
             try{
             console.log('TS1 ::', 'skip_turn', socket.id, JSON.stringify(params));
             let myId = await Socketz.getId(socket.id);
@@ -743,10 +750,11 @@ module.exports = function (io)
                                                 let data = await _TableInstance.checkwinnerOfTournament(d.room, myRoom);
                                                 myRoom = data.table;
                                                 processEvents(data,myRoom);                                            
-                                            } else if(d.name == 'end_game') {
-                                             
+                                            } else if(d.name == 'end_game') {                                             
                                                 io.to(d.room).emit(d.name, d.data);
                                             } else if(d.name == 'make_move') {
+                                                io.to(d.room).emit(d.name, d.data);
+                                            } else if(d.name == 'life_deduct') {
                                                 io.to(d.room).emit(d.name, d.data);
                                             }
                                         } else {
