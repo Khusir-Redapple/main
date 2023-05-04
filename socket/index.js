@@ -442,7 +442,7 @@ module.exports = function (io)
             });
 
             if(tableD.isGameCompleted) {
-                break;
+                return;
             }
 
             try{
