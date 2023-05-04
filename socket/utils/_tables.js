@@ -1423,12 +1423,6 @@ class _Tables
                     } else {
                         pointArray.push(0);
                     }
-                    // if(!table.users[j].rank || table.users[j].rank == 0) {
-                    //     pointArray.push(table.users[j].points + table.users[j].bonusPoints);
-                    // } else {
-                    //     UserRankMap[table.users[j].id] = table.users[j].rank;
-                    //     UserRankArray.push(table.users[j].rank);
-                    // }
                 }
                 console.log({pointArray}, {UserRankArray}, {UserRankMap});
                 //var maxPoints = (Math.max(...pointArray));
@@ -1463,38 +1457,13 @@ class _Tables
                         threeRankCounter++;
                     } 
                 }
-
-
-                // table.users.forEach(function (user)
-                // {
-                //     //console.log("Points ....", user.points, user.bonusPoints, maxPoints, point)
-                    
-                //     if(!user.rank || user.rank == 0) {
-                //         let userPoints = user.points + user.bonusPoints;
-                //         let playerIndex = point.indexOf(userPoints);
-                //         let userRank = playerIndex +1;
-                //         // UserRankMap[user.id] = userRank;
-                //         UserRankArray.push(userRank);
-                //     }
-                                                      
-                // });
-
-                
                 for (let k = 0; k < table.users.length; k++)
                 {   
                     if(table.users[k].rank || table.users[k].rank == 0) {
                         table.users[k].rank = UserRankArray[k];
                     }
                     otherRank = table.users[k].rank;
-
-
-                    // let rankCount = 0;
-                    // UserRankArray.map((ele) => {
-                    //     if(ele == table.users[k].rank && table.users[k].is_active){
-                    //         rankCount = rankCount+1;
-                    //     }
-                    // })
-                    console.log('rankCOunt------------------->', UserRankArray);
+                    //console.log('rankCOunt------------------->', UserRankArray);
                     let winAmount = 0;
                     if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
                     {
@@ -1522,7 +1491,6 @@ class _Tables
                             score: table.users[k].points + table.users[k].bonusPoints
                         });
                 }
-                console.log('FROM V2 log', JSON.stringify(winner));
                 return {
                     'winner': winner,
                     'table' : table
