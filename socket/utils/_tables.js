@@ -1425,7 +1425,7 @@ class _Tables
                         UserRankArray.push(table.users[j].rank);
                     }
                 }
-                
+                console.log({pointArray}, {UserRankArray}, {UserRankMap});
                 //var maxPoints = (Math.max(...pointArray));
                 let point = pointArray;
                 point.sort((a, b) => b - a);
@@ -1443,12 +1443,17 @@ class _Tables
                     }
                                                       
                 });
+
+                
                 for (let k = 0; k < table.users.length; k++)
-                {
+                {   
+
                     if(table.users[k].rank || table.users[k].rank == 0) {
                         table.users[k].rank = UserRankMap[table.users[k].id];
                     }
                     otherRank = table.users[k].rank;
+
+
                     let rankCount = 0;
                     UserRankArray.map((ele) => {
                         if(ele == table.users[k].rank && table.users[k].is_active){
