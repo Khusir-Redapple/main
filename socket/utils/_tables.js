@@ -1426,13 +1426,13 @@ class _Tables
                     }
                 }
                 
-                var maxPoints = (Math.max(...pointArray));
+                //var maxPoints = (Math.max(...pointArray));
                 let point = pointArray;
                 point.sort((a, b) => b - a);
                 let otherRank = 0;
                 table.users.forEach(function (user)
                 {
-                    console.log("Points ....", user.points, user.bonusPoints, maxPoints, point)
+                    //console.log("Points ....", user.points, user.bonusPoints, maxPoints, point)
                     
                     if(!user.rank || user.rank == 0) {
                         let userPoints = user.points + user.bonusPoints;
@@ -1455,7 +1455,6 @@ class _Tables
                             rankCount = rankCount+1;
                         }
                     })
-                    console.log('Rank count-------->', rankCount);
                     let winAmount = 0;
                     if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
                     {
