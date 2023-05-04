@@ -915,6 +915,7 @@ module.exports = {
                         game_data: winnerInfo,
                     },
                 };
+                console.log('BEfore cb end_game', JSON.stringify(winnerInfo));
                 let reqData = await this.getEndGameData(event.data, tableD.room_fee);
                 let startGame = await requestTemplate.post(`endgame`, reqData);
                 if (!startGame.isSuccess)

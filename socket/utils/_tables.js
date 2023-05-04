@@ -1538,7 +1538,7 @@ class _Tables
                     //     });
                     // }
                 }
-                
+                console.log('FROM V2 log', JSON.stringify(winner));
                 return {
                     'winner': winner,
                     'table' : table
