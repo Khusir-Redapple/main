@@ -1429,7 +1429,7 @@ class _Tables
                 var maxPoints = (Math.max(...pointArray));
                 let point = pointArray;
                 point.sort((a, b) => b - a);
-                let otherRank;
+                let otherRank = 1;
                 table.users.forEach(function (user)
                 {
                     console.log("Points ....", user.points, user.bonusPoints, maxPoints, point)
@@ -1443,26 +1443,8 @@ class _Tables
                     }
                                                       
                 });
-                // if(count > 1) amount = amount/count; //tie case
-                //console.log('amount', amount);
                 for (let k = 0; k < table.users.length; k++)
                 {
-                    // for (let j = 0; j < point.length; j++)
-                    // {
-                    //     //console.log("HERE - ", point[j], table.users[k].points + table.users[k].bonusPoints)
-                    //     if (point[j] == table.users[k].points + table.users[k].bonusPoints) 
-                    //     {
-                    //         otherRank = j + 1;
-                    //         while (this.isRankOccupied(room, otherRank, myRoom))
-                    //         {
-                    //             rank--;
-                    //             if (rank == 1) break;
-                    //         }
-                    //     };
-                    // }
-
-                    // let UserRankMap = new Map();
-                    // let UserRankArray = [];
                     if(table.users[k].rank || table.users[k].rank == 0) {
                         table.users[k].rank = UserRankMap[table.users[k].id];
                     }
@@ -1499,44 +1481,6 @@ class _Tables
                             amount: winAmount,
                             score: table.users[k].points + table.users[k].bonusPoints
                         });
-
-
-
-
-                    //console.log("User's final rank ::::", otherRank)
-                    // if (table.users[k].points + table.users[k].bonusPoints == maxPoints)
-                    // {
-                    //     table.players_won += 1;
-                    //     table.players_done += 1;
-                    //     table.users[k].is_done = true;
-                    //     if(!table.users[k].rank || table.users[k].rank == 0) {
-                    //         table.users[k].rank = 1;
-                    //     }                        
-                    //     winner.push({
-                    //         player_index: table.users[k].position,
-                    //         name: table.users[k].name,
-                    //         numeric_id: table.users[k].numeric_id,
-                    //         rank: table.users[k].rank,
-                    //         id: table.users[k].id,
-                    //         amount: winAmount,
-                    //         score: table.users[k].points + table.users[k].bonusPoints
-                    //     });
-                    // } else
-                    // {
-
-                    //     table.players_done += 1;
-                    //     table.users[k].is_done = true;
-                    //     table.users[k].rank = otherRank;
-                    //     winner.push({
-                    //         player_index: table.users[k].position,
-                    //         name: table.users[k].name,
-                    //         numeric_id: table.users[k].numeric_id,
-                    //         rank: otherRank,
-                    //         id: table.users[k].id,
-                    //         amount: winAmount,
-                    //         score: table.users[k].points + table.users[k].bonusPoints
-                    //     });
-                    // }
                 }
                 console.log('FROM V2 log', JSON.stringify(winner));
                 return {
