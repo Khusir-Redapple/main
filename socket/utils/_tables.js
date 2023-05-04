@@ -1451,7 +1451,7 @@ class _Tables
                     otherRank = table.users[k].rank;
                     let rankCount = 0;
                     UserRankArray.map((ele) => {
-                        if(ele == table.users[k].rank && table.users[k].rank.is_active == true){
+                        if(ele == table.users[k].rank && table.users[k].is_active == true){
                             rankCount = rankCount+1;
                         }
                     })
