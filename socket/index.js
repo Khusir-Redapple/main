@@ -437,6 +437,14 @@ module.exports = function (io)
         // Leave Table / Quit Game
         socket.on('leaveTable', async (params, callback) =>
         {
+            let tableD = await Table.findOne({
+                room: params.room
+            });
+
+            if(tableD.isGameCompleted) {
+                break;
+            }
+
             try{
                 console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
                 let myId = await Socketz.getId(socket.id);
@@ -738,10 +746,6 @@ module.exports = function (io)
                                             } else if(d.name == 'end_game') {
                                              
                                                 io.to(d.room).emit(d.name, d.data);
-                                                socket.leave(d.room);
-                                                await redisCache.removeDataFromRedis(d.room);
-                                                await redisCache.removeDataFromRedis('room_'+d.room);
-                                                await redisCache.removeDataFromRedis('gamePlay_'+d.room);
                                             } else if(d.name == 'make_move') {
                                                 io.to(d.room).emit(d.name, d.data);
                                             }
@@ -754,13 +758,7 @@ module.exports = function (io)
                                 } else if (d.type == 'room_excluding_me')
                                 {
                                     console.log("room_excluding_me", d.data);
-                                    socket.to(d.room).emit(d.name, d.data);
-                                    if(d.name == 'end_game') {
-                                        socket.leave(d.room);
-                                        await redisCache.removeDataFromRedis(d.room);
-                                        await redisCache.removeDataFromRedis('room_'+d.room);
-                                        await redisCache.removeDataFromRedis('gamePlay_'+d.room);
-                                    }                                    
+                                    socket.to(d.room).emit(d.name, d.data);                                   
                                 }
 
                                 if (d.name == 'newTableCreated')
