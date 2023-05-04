@@ -738,7 +738,7 @@ module.exports = function (io)
                                             } else if(d.name == 'end_game') {
                                              
                                                 io.to(d.room).emit(d.name, d.data);
-                                                io.leave(d.room);
+                                                socket.leave(d.room);
                                                 await redisCache.removeDataFromRedis(d.room);
                                                 await redisCache.removeDataFromRedis('room_'+d.room);
                                                 await redisCache.removeDataFromRedis('gamePlay_'+d.room);
@@ -756,7 +756,7 @@ module.exports = function (io)
                                     console.log("room_excluding_me", d.data);
                                     socket.to(d.room).emit(d.name, d.data);
                                     if(d.name == 'end_game') {
-                                        io.leave(d.room);
+                                        socket.leave(d.room);
                                         await redisCache.removeDataFromRedis(d.room);
                                         await redisCache.removeDataFromRedis('room_'+d.room);
                                         await redisCache.removeDataFromRedis('gamePlay_'+d.room);
