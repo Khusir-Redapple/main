@@ -736,8 +736,9 @@ module.exports = function (io)
                                                 myRoom = data.table;
                                                 processEvents(data,myRoom);                                            
                                             } else if(d.name == 'end_game') {
-                                               // console.log('GAmeEnd---------->', JSON.stringify(d.data.game_data));
+                                             
                                                 io.to(d.room).emit(d.name, d.data);
+                                                await redisCache.removeDataFromRedis(d.room);
                                             } else if(d.name == 'make_move') {
                                                 io.to(d.room).emit(d.name, d.data);
                                             }
@@ -751,6 +752,9 @@ module.exports = function (io)
                                 {
                                     console.log("room_excluding_me", d.data);
                                     socket.to(d.room).emit(d.name, d.data);
+                                    if(d.name == 'end_game') {
+                                        await redisCache.removeDataFromRedis(d.room);
+                                    }                                    
                                 }
 
                                 if (d.name == 'newTableCreated')

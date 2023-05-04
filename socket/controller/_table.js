@@ -2348,22 +2348,19 @@ module.exports = {
     },
     // This function used to check equal turn for player.
     checkPlayerEqualTurn : async function(myRoom, playerPosition) {
-        // let playerTurn = [];
-        // // create a numeric array for dice roll count
-        // for (var i = 0; i < myRoom.users.length; i++) {
-        //     if(myRoom.users[i].is_active == true){
-        //         playerTurn.push(myRoom.users[i].turn);
-        //     }
-        // }
-        // // sort the array descending order.
-        // playerTurn = playerTurn.sort((a,b) => b-a);
-        // console.log({playerTurn});
-        // // return the result
-        // return new Set(playerTurn).size == 1;
 
-
+        let foundFirstActiveUser = false;
+        let firstActiveUserIndex = 0;
+        for (var i = 0; i < myRoom.users.length; i++) {
+            if(myRoom.users[i].is_active == true && foundFirstActiveUser){
+               // playerTurn.push(myRoom.users[i].turn);
+               foundFirstActiveUser = true;
+               firstActiveUserIndex = i;
+            }
+        }
+       
         // if player_index == 0 logic
-        return playerPosition == 0 ? true : false;
+        return playerPosition == firstActiveUserIndex ? true : false;
     },
     determineTotalTurn : async function(room) {
         let myRoom = await redisCache.getRecordsByKeyRedis(room);
