@@ -442,7 +442,7 @@ module.exports = function (io)
             });
 
             if(tableD.isGameCompleted) {
-                return;
+                return {'isGameCompleted': true, 'room': params.room};
             }
 
             try{
