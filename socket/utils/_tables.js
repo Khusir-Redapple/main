@@ -1418,61 +1418,94 @@ class _Tables
             
                 for (let j = 0; j < table.users.length; j++)
                 {
-                    if(!table.users[j].rank || table.users[j].rank == 0) {
+                    if (table.users[j].is_active) {
                         pointArray.push(table.users[j].points + table.users[j].bonusPoints);
                     } else {
-                        UserRankMap[table.users[j].id] = table.users[j].rank;
-                        UserRankArray.push(table.users[j].rank);
+                        pointArray.push(0);
                     }
+                    // if(!table.users[j].rank || table.users[j].rank == 0) {
+                    //     pointArray.push(table.users[j].points + table.users[j].bonusPoints);
+                    // } else {
+                    //     UserRankMap[table.users[j].id] = table.users[j].rank;
+                    //     UserRankArray.push(table.users[j].rank);
+                    // }
                 }
                 console.log({pointArray}, {UserRankArray}, {UserRankMap});
                 //var maxPoints = (Math.max(...pointArray));
                 let point = pointArray;
                 point.sort((a, b) => b - a);
                 let otherRank = 0;
-                table.users.forEach(function (user)
+
+                for (let j = 0; j < table.users.length; j++)
                 {
-                    //console.log("Points ....", user.points, user.bonusPoints, maxPoints, point)
-                    
-                    if(!user.rank || user.rank == 0) {
-                        let userPoints = user.points + user.bonusPoints;
+                    if(!table.users[j].rank || table.users[j].rank == 0 && table.users[j].is_active) {
+                        let userPoints = table.users[j].points + table.users[j].bonusPoints;
                         let playerIndex = point.indexOf(userPoints);
-                        let userRank = playerIndex +1;
-                        UserRankMap[user.id] = userRank;
+                        let userRank = playerIndex + 1;
+                        // UserRankMap[user.id] = userRank;
                         UserRankArray.push(userRank);
+                    } else if (!table.users[j].is_active) {
+                        UserRankArray.push(0);
                     }
+                }
+                let oneRankCounter = 0;
+                let twoRankCounter = 0;
+                let threeRankCounter = 0;
+
+                for (let j = 0; j < UserRankArray.length; j++)
+                {
+                    if (UserRankArray[j] == 1) {
+                        oneRankCounter++;
+                    } else if (UserRankArray[j] == 2) {
+                        twoRankCounter++;
+                    }  else if (UserRankArray[j] == 3) {
+                        threeRankCounter++;
+                    } 
+                }
+
+
+                // table.users.forEach(function (user)
+                // {
+                //     //console.log("Points ....", user.points, user.bonusPoints, maxPoints, point)
+                    
+                //     if(!user.rank || user.rank == 0) {
+                //         let userPoints = user.points + user.bonusPoints;
+                //         let playerIndex = point.indexOf(userPoints);
+                //         let userRank = playerIndex +1;
+                //         // UserRankMap[user.id] = userRank;
+                //         UserRankArray.push(userRank);
+                //     }
                                                       
-                });
+                // });
 
                 
                 for (let k = 0; k < table.users.length; k++)
                 {   
-
                     if(table.users[k].rank || table.users[k].rank == 0) {
-                        table.users[k].rank = UserRankMap[table.users[k].id];
+                        table.users[k].rank = UserRankArray[k];
                     }
                     otherRank = table.users[k].rank;
 
 
-                    let rankCount = 0;
-                    UserRankArray.map((ele) => {
-                        if(ele == table.users[k].rank && table.users[k].is_active){
-                            rankCount = rankCount+1;
-                        }
-                    })
+                    // let rankCount = 0;
+                    // UserRankArray.map((ele) => {
+                    //     if(ele == table.users[k].rank && table.users[k].is_active){
+                    //         rankCount = rankCount+1;
+                    //     }
+                    // })
                     console.log('rankCOunt------------------->', {rankCount}, UserRankArray);
                     let winAmount = 0;
                     if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
                     {
-                        winAmount = otherRank == 1 ? Math.floor(amount[1]/rankCount) : 0;
+                        winAmount = otherRank == 1 ? Math.floor(amount[1]/(oneRankCounter == 0 ? 1 : oneRankCounter)) : 0;
                                                
                     } else if (typeof amount != 'undefined' && otherRank == 2 && amount[2])
                     {
-                        winAmount = otherRank == 2 ? Math.floor(amount[2]/rankCount) : 0;              
+                        winAmount = otherRank == 2 ? Math.floor(amount[2]/(twoRankCounter == 0 ? 1 : twoRankCounter)) : 0;              
                         
                     } else if (typeof amount != 'undefined' && otherRank == 3 && amount[3])
                     {
-                        winAmount = otherRank == 3 ? Math.floor(amount[3]/rankCount) : 0;
+                        winAmount = otherRank == 3 ? Math.floor(amount[3]/(threeRankCounter == 0 ? 1 : threeRankCounter)) : 0;
                     }
 
                     table.players_won += 1;
