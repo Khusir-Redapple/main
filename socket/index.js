@@ -736,7 +736,7 @@ module.exports = function (io)
                                                 myRoom = data.table;
                                                 processEvents(data,myRoom);                                            
                                             } else if(d.name == 'end_game') {
-                                                console.log('GAmeEnd---------->', JSON.stringify(d.data.game_data));
+                                               // console.log('GAmeEnd---------->', JSON.stringify(d.data.game_data));
                                                 io.to(d.room).emit(d.name, d.data);
                                             } else if(d.name == 'make_move') {
                                                 io.to(d.room).emit(d.name, d.data);
