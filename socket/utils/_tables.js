@@ -1429,7 +1429,7 @@ class _Tables
                 var maxPoints = (Math.max(...pointArray));
                 let point = pointArray;
                 point.sort((a, b) => b - a);
-                let otherRank = 1;
+                let otherRank = 0;
                 table.users.forEach(function (user)
                 {
                     console.log("Points ....", user.points, user.bonusPoints, maxPoints, point)
@@ -1448,13 +1448,14 @@ class _Tables
                     if(table.users[k].rank || table.users[k].rank == 0) {
                         table.users[k].rank = UserRankMap[table.users[k].id];
                     }
+                    otherRank = table.users[k].rank;
                     let rankCount = 0;
                     UserRankArray.map((ele,index) => {
                         if(ele == table.users[k].rank){
-                            rankCount = rankCount +1;
+                            rankCount = rankCount+1;
                         }
                     })
-
+                    console.log('Rank count-------->', rankCount);
                     let winAmount = 0;
                     if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
                     {
