@@ -1451,10 +1451,11 @@ class _Tables
                     otherRank = table.users[k].rank;
                     let rankCount = 0;
                     UserRankArray.map((ele) => {
-                        if(ele == table.users[k].rank && table.users[k].is_active == true){
+                        if(ele == table.users[k].rank){
                             rankCount = rankCount+1;
                         }
                     })
+                    console.log('rankCOunt------------------->', {rankCount}, UserRankArray);
                     let winAmount = 0;
                     if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
                     {
