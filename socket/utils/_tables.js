@@ -1493,7 +1493,7 @@ class _Tables
                     //         rankCount = rankCount+1;
                     //     }
                     // })
-                    console.log('rankCOunt------------------->', {rankCount}, UserRankArray);
+                    console.log('rankCOunt------------------->', UserRankArray);
                     let winAmount = 0;
                     if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
                     {
