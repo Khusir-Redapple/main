@@ -1436,8 +1436,7 @@ class _Tables
                 for (let j = 0; j < table.users.length; j++)
                 {
                     console.log('USER----->',table.users[j])
-                    if((!table.users[j].rank || table.users[j].rank == 0) 
-                        && table.users[j].is_active) {
+                    if(table.users[j].is_active) {
                         let userPoints = table.users[j].points + table.users[j].bonusPoints;
                         let playerIndex = point.indexOf(userPoints);
                         let userRank = playerIndex + 1;
