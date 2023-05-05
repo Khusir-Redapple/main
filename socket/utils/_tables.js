@@ -1432,6 +1432,7 @@ class _Tables
                 let point = activeUserPointArray.concat(nonActiveUserPointArray);;
                 // point.sort((a, b) => b - a);
                 let otherRank = 0;
+                let lastRank = 0;
 
                 for (let j = 0; j < table.users.length; j++)
                 {
@@ -1440,8 +1441,9 @@ class _Tables
                         let userPoints = table.users[j].points + table.users[j].bonusPoints;
                         let playerIndex = point.indexOf(userPoints);
                         let userRank = playerIndex + 1;
-                        // UserRankMap[user.id] = userRank;
+                        if (userRank > lastRank + 1) userRank = lastRank + 1;
                         UserRankArray.push(userRank);
+                        lastRank = userRank;
                     } else {
                         UserRankArray.push(0);
                     }
