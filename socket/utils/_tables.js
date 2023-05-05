@@ -1425,7 +1425,7 @@ class _Tables
                         nonActiveUserPointArray.push(table.users[j].points + table.users[j].bonusPoints);
                     }
                 }
-                console.log({pointArray}, {UserRankArray}, {UserRankMap});
+                console.log({activeUserPointArray} , {nonActiveUserPointArray}, {UserRankArray}, {UserRankMap});
                 //var maxPoints = (Math.max(...pointArray));
                 activeUserPointArray.sort((a, b) => b - a);
                 nonActiveUserPointArray.sort((a, b) => b - a);
