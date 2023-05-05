@@ -1470,17 +1470,17 @@ class _Tables
                     //console.log('rankCOunt------------------->', UserRankArray);
                     let winAmount = 0;
                     if (typeof amount != 'undefined' && otherRank == 1 
-                        && amount[1] && !table.users[j].hasOwnProperty("is_left"))
+                        && amount[1] && !table.users[k].hasOwnProperty("is_left"))
                     {
                         winAmount = otherRank == 1 ? Math.floor(amount[1]/(oneRankCounter == 0 ? 1 : oneRankCounter)) : 0;
                                                
                     } else if (typeof amount != 'undefined' && otherRank == 2 
-                        && amount[2] && !table.users[j].hasOwnProperty("is_left"))
+                        && amount[2] && !table.users[k].hasOwnProperty("is_left"))
                     {
                         winAmount = otherRank == 2 ? Math.floor(amount[2]/(twoRankCounter == 0 ? 1 : twoRankCounter)) : 0;              
                         
                     } else if (typeof amount != 'undefined' && otherRank == 3 
-                        && amount[3] && !table.users[j].hasOwnProperty("is_left"))
+                        && amount[3] && !table.users[k].hasOwnProperty("is_left"))
                     {
                         winAmount = otherRank == 3 ? Math.floor(amount[3]/(threeRankCounter == 0 ? 1 : threeRankCounter)) : 0;
                     }
