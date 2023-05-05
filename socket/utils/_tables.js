@@ -1411,35 +1411,39 @@ class _Tables
     EndOfTournamentV2(room, amount, myRoom)
     {
             const table = myRoom;
-            const pointArray = [];
+            const activeUserPointArray = [];
+            const nonActiveUserPointArray = [];
             const winner = [];
             let UserRankMap = new Map();
             let UserRankArray = [];
             
                 for (let j = 0; j < table.users.length; j++)
                 {
-                    if (table.users[j].is_active) {
-                        pointArray.push(table.users[j].points + table.users[j].bonusPoints);
+                    if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
+                        activeUserPointArray.push(table.users[j].points + table.users[j].bonusPoints);
                     } else {
-                        pointArray.push(0);
+                        nonActiveUserPointArray.push(table.users[j].points + table.users[j].bonusPoints);
                     }
                 }
                 console.log({pointArray}, {UserRankArray}, {UserRankMap});
                 //var maxPoints = (Math.max(...pointArray));
-                let point = pointArray;
-                point.sort((a, b) => b - a);
+                activeUserPointArray.sort((a, b) => b - a);
+                nonActiveUserPointArray.sort((a, b) => b - a);
+                let point = activeUserPointArray.concat(nonActiveUserPointArray);;
+                // point.sort((a, b) => b - a);
                 let otherRank = 0;
 
                 for (let j = 0; j < table.users.length; j++)
                 {
                     console.log('USER----->',table.users[j])
-                    if((!table.users[j].rank || table.users[j].rank == 0) && table.users[j].is_active) {
+                    if((!table.users[j].rank || table.users[j].rank == 0) 
+                        && table.users[j].is_active) {
                         let userPoints = table.users[j].points + table.users[j].bonusPoints;
                         let playerIndex = point.indexOf(userPoints);
                         let userRank = playerIndex + 1;
                         // UserRankMap[user.id] = userRank;
                         UserRankArray.push(userRank);
-                    } else if (!table.users[j].is_active) {
+                    } else {
                         UserRankArray.push(0);
                     }
                 }
@@ -1465,15 +1469,18 @@ class _Tables
                     otherRank = table.users[k].rank;
                     //console.log('rankCOunt------------------->', UserRankArray);
                     let winAmount = 0;
-                    if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
+                    if (typeof amount != 'undefined' && otherRank == 1 
+                        && amount[1] && !table.users[j].hasOwnProperty("is_left"))
                     {
                         winAmount = otherRank == 1 ? Math.floor(amount[1]/(oneRankCounter == 0 ? 1 : oneRankCounter)) : 0;
                                                
-                    } else if (typeof amount != 'undefined' && otherRank == 2 && amount[2])
+                    } else if (typeof amount != 'undefined' && otherRank == 2 
+                        && amount[2] && !table.users[j].hasOwnProperty("is_left"))
                     {
                         winAmount = otherRank == 2 ? Math.floor(amount[2]/(twoRankCounter == 0 ? 1 : twoRankCounter)) : 0;              
                         
-                    } else if (typeof amount != 'undefined' && otherRank == 3 && amount[3])
+                    } else if (typeof amount != 'undefined' && otherRank == 3 
+                        && amount[3] && !table.users[j].hasOwnProperty("is_left"))
                     {
                         winAmount = otherRank == 3 ? Math.floor(amount[3]/(threeRankCounter == 0 ? 1 : threeRankCounter)) : 0;
                     }
