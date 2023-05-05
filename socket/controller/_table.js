@@ -2353,7 +2353,7 @@ module.exports = {
         let foundFirstActiveUser = false;
         let firstActiveUserIndex = 0;
         for (var i = 0; i < myRoom.users.length; i++) {
-            if(myRoom.users[i].is_active == true && foundFirstActiveUser){
+            if(myRoom.users[i].is_active == true && !foundFirstActiveUser){
                // playerTurn.push(myRoom.users[i].turn);
                foundFirstActiveUser = true;
                firstActiveUserIndex = i;
