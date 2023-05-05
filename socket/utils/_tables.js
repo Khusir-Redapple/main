@@ -1415,14 +1415,18 @@ class _Tables
             const activeUserPointArray = [];
             const nonActiveUserPointArray = [];
             const winner = [];
+            let activeUserMap = new Map();
+            let inactiveUserMap = new Map();
             let UserRankArray = new Map();
             
                 for (let j = 0; j < table.users.length; j++)
                 {
                     let totalScore = table.users[j].points + table.users[j].bonusPoints;
                     if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
+                        activeUserMap.set(j, totalScore);
                         activeUserPointArray.push(totalScore);
                     } else {
+                        inactiveUserMap.set(j, totalScore);
                         nonActiveUserPointArray.push(totalScore);
                     }
                 }
@@ -1430,22 +1434,23 @@ class _Tables
                 //var maxPoints = (Math.max(...pointArray));
                 activeUserPointArray.sort((a, b) => b - a);
                 nonActiveUserPointArray.sort((a, b) => b - a);
+
+                activeUserMap = new Map([...activeUserMap.entries()].sort((a, b) => b[1] - a[1]));
+                inactiveUserMap = new Map([...inactiveUserMap.entries()].sort((a, b) => b[1] - a[1]));
                 //let point = activeUserPointArray.concat(nonActiveUserPointArray);;
                 // point.sort((a, b) => b - a);
                 let otherRank = 0;
                 let lastRank = 0;
 
-                 // Check the ranks of active players 
-                for (let j = 0; j < table.users.length; j++)
-                {
-                    console.log('USER----->',table.users[j])
-                    if(table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
-                        let userPoints = table.users[j].points + table.users[j].bonusPoints;
-                        let playerIndex = activeUserPointArray.indexOf(userPoints);
-                        let userRank = playerIndex + 1;
-                        UserRankArray.set(j, userRank);
-                    }                
+                for (let [key, value] of activeUserMap) {
+                    //let userPoints = table.users[key].points + table.users[key].bonusPoints;
+                    let playerIndex = activeUserPointArray.indexOf(value);
+                    let userRank = playerIndex + 1;
+                    if (userRank > lastRank + 1) userRank--;
+                    UserRankArray.set(key, userRank);
+                    lastRank = userRank;
                 }
+
 
                 let maxRank = 0;
                 for (let [key, value] of UserRankArray) {
@@ -1454,16 +1459,44 @@ class _Tables
                     }
                 }
 
-                // check the ranks of in active / left players
-                for (let j = 0; j < table.users.length; j++)
-                {
-                    if(table.users[j].is_active && table.users[j].hasOwnProperty("is_left")) {
-                        let userPoints = table.users[j].points + table.users[j].bonusPoints;
-                        let playerIndex = nonActiveUserPointArray.indexOf(userPoints);
-                        let userRank = maxRank + playerIndex + 1;
-                        UserRankArray.set(j, userRank);
-                    }
+                for (let [key, value] of inactiveUserMap) {
+                    //let userPoints = table.users[key].points + table.users[key].bonusPoints;
+                    let playerIndex = nonActiveUserPointArray.indexOf(value);
+                    let userRank = maxRank + playerIndex + 1;
+                    if (userRank > lastRank + 1) userRank--;
+                    UserRankArray.set(key, userRank);
+                    lastRank = userRank;
                 }
+
+                 // Check the ranks of active players 
+                // for (let j = 0; j < table.users.length; j++)
+                // {
+                //     console.log('USER----->',table.users[j])
+                //     if(table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
+                //         let userPoints = table.users[j].points + table.users[j].bonusPoints;
+                //         let playerIndex = activeUserPointArray.indexOf(userPoints);
+                //         let userRank = playerIndex + 1;
+                //         UserRankArray.set(j, userRank);
+                //     }                
+                // }
+
+                // let maxRank = 0;
+                // for (let [key, value] of UserRankArray) {
+                //     if (value > maxRank ) {
+                //         maxRank = value;
+                //     }
+                // }
+
+                // // check the ranks of in active / left players
+                // for (let j = 0; j < table.users.length; j++)
+                // {
+                //     if(table.users[j].is_active && table.users[j].hasOwnProperty("is_left")) {
+                //         let userPoints = table.users[j].points + table.users[j].bonusPoints;
+                //         let playerIndex = nonActiveUserPointArray.indexOf(userPoints);
+                //         let userRank = maxRank + playerIndex + 1;
+                //         UserRankArray.set(j, userRank);
+                //     }
+                // }
 
 
                 // check the rank for inactive 2 players
