@@ -1430,7 +1430,7 @@ class _Tables
                         nonActiveUserPointArray.push(totalScore);
                     }
                 }
-                console.log({activeUserPointArray} , {nonActiveUserPointArray}, {UserRankArray});
+                console.log({activeUserPointArray} , {activeUserMap}, {inactiveUserMap});
                 //var maxPoints = (Math.max(...pointArray));
                 activeUserPointArray.sort((a, b) => b - a);
                 nonActiveUserPointArray.sort((a, b) => b - a);
@@ -1468,56 +1468,18 @@ class _Tables
                     lastRank = userRank;
                 }
 
-                 // Check the ranks of active players 
-                // for (let j = 0; j < table.users.length; j++)
-                // {
-                //     console.log('USER----->',table.users[j])
-                //     if(table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
-                //         let userPoints = table.users[j].points + table.users[j].bonusPoints;
-                //         let playerIndex = activeUserPointArray.indexOf(userPoints);
-                //         let userRank = playerIndex + 1;
-                //         UserRankArray.set(j, userRank);
-                //     }                
-                // }
-
-                // let maxRank = 0;
-                // for (let [key, value] of UserRankArray) {
-                //     if (value > maxRank ) {
-                //         maxRank = value;
-                //     }
-                // }
-
-                // // check the ranks of in active / left players
-                // for (let j = 0; j < table.users.length; j++)
-                // {
-                //     if(table.users[j].is_active && table.users[j].hasOwnProperty("is_left")) {
-                //         let userPoints = table.users[j].points + table.users[j].bonusPoints;
-                //         let playerIndex = nonActiveUserPointArray.indexOf(userPoints);
-                //         let userRank = maxRank + playerIndex + 1;
-                //         UserRankArray.set(j, userRank);
-                //     }
-                // }
-
-
-                // check the rank for inactive 2 players
-                for (let j = 0; j < table.users.length; j++)
-                {
-                    if(!table.users[j].is_active){
-                        UserRankArray.set(j, 0);
-                    }
-                }
 
                 let oneRankCounter = 0;
                 let twoRankCounter = 0;
                 let threeRankCounter = 0;
 
-                for (let j = 0; j < UserRankArray.length; j++)
+                for (let [key, value] of UserRankArray)
                 {
-                    if (UserRankArray.get(j) == 1) {
+                    if (value == 1) {
                         oneRankCounter++;
-                    } else if (UserRankArray.get(j) == 2) {
+                    } else if (value == 2) {
                         twoRankCounter++;
-                    }  else if (UserRankArray.get(j) == 3) {
+                    }  else if (value == 3) {
                         threeRankCounter++;
                     } 
                 }
