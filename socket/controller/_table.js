@@ -2383,25 +2383,19 @@ module.exports = {
 
         for (var i = 0; i < myRoom.users.length; i++) {
             if(myRoom.users[i].turn < playerTurn[0] 
-                && myRoom.users[i].is_active == true){
+                && myRoom.users[i].is_active == true
+                && !myRoom.users[i].hasOwnProperty("is_left")){
                 playersFinalTurn.push(i);
             } else if(myRoom.users[i].turn == playerTurn[0] 
                 && myRoom.users[i].is_active == true 
-                && i == myRoom.current_turn) {
+                && i == myRoom.current_turn
+                && !myRoom.users[i].hasOwnProperty("is_left")) {
                 playersFinalTurn.push(i);
             }
         }
 
         console.log('playerTurn[0]..........', playerTurn[0]);
-        // if(myRoom.users[0].turn != playerTurn[0] && myRoom.users[0].is_active == true) {
-        //     playersFinalTurn.push(0);
-        // } else if(myRoom.users[1].turn != playerTurn[0] && myRoom.users[1].is_active == true) {
-        //     playersFinalTurn.push(1);
-        // } else if(myRoom.users[2].turn != playerTurn[0] && myRoom.users[2].is_active == true) {
-        //     playersFinalTurn.push(2);
-        // } else if(myRoom.users[3].turn != playerTurn[0] && myRoom.users[3].is_active == true) {
-        //     playersFinalTurn.push(3);
-        // }
+        
         return {'totalTurn':playerTurn[0],'finalTurn':playersFinalTurn}       
     }
 };
