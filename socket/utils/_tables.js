@@ -1885,6 +1885,7 @@ class _Tables
                 score: user.points + user.bonusPoints,
                 points: user.points,
                 bonusPoints: user.bonusPoints,
+                life : user.life,
                 pawnScore : user.tokens
             };
         });
