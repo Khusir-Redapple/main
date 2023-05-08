@@ -1024,6 +1024,12 @@ module.exports = {
         {
             // this.refundMoney(tableD,id);
             refund = localization.insufficientPlayer;
+            // remove room from redis cache after player refunded & match unsucessfull.
+            await redisCache.removeDataFromRedis(params.room);
+            await redisCache.removeDataFromRedis('room_'+params.room);
+            await redisCache.removeDataFromRedis('gamePlay_'+params.room);
+            await redisCache.removeDataFromRedis('user_id'+id);
+            await redisCache.removeDataFromRedis(id);
         }
         let reqData = {
             room: params.room,
