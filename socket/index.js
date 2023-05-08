@@ -401,7 +401,7 @@ module.exports = function (io)
                 }
                 else
                 {
-                    await Socketz.sleep(16000);
+                    await Socketz.sleep(25000);
                     myRoom = await redisCache.getRecordsByKeyRedis(myRoom.room);
                     gamePlayData=await redisCache.getRecordsByKeyRedis('gamePlay_'+ myRoom.room);
                     let tableD = await Table.findOne({
@@ -619,7 +619,7 @@ module.exports = function (io)
                           
                             if(currentUser && currentUser.is_active && !tableD.isGameCompleted)
                             {
-                                console.log('SKIPPED ', JSON.stringify(tableD));
+                                console.log('SKIPPED for extra life deduct------->>', JSON.stringify(tableD));
                                 let response = await _TableInstance.skipTurn(params_data, id_of_current_turn, myRoom, gamePlayData);
                                 myRoom = response.table;
                                 gamePlayData = response.gamePlayData;
