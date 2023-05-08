@@ -2218,7 +2218,7 @@ module.exports = {
         if (valueOfRoom > parseInt(params.no_of_players)) {
             // redisCache.getRecordsByKeyRedis(room_code);
             retryCount++;
-            joinTournamentV2(params, myId, user,retryCount);
+            this.joinTournamentV2(params, myId, user,retryCount);
         }
 
         myRoom = await redisCache.getRecordsByKeyRedis(room_code);
@@ -2280,7 +2280,7 @@ module.exports = {
             if (retryCount<3)
             {
                 retryCount++;
-                return joinTournamentV2(params, myId, user, retryCount);
+                return this.joinTournamentV2(params, myId, user, retryCount);
             }
             else
                 return {
