@@ -1028,8 +1028,8 @@ module.exports = {
             await redisCache.removeDataFromRedis(params.room);
             await redisCache.removeDataFromRedis('room_'+params.room);
             await redisCache.removeDataFromRedis('gamePlay_'+params.room);
-            await redisCache.removeDataFromRedis('user_id'+id);
-            await redisCache.removeDataFromRedis(id);
+            //await redisCache.removeDataFromRedis('user_id'+id);
+           // await redisCache.removeDataFromRedis(id);
         }
         let reqData = {
             room: params.room,
