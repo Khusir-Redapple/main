@@ -699,11 +699,13 @@ module.exports = function (io)
                             meta: d
                         };
                         d.name ? logDNA.log(`Event ${d.name} fired`, logData) : '';
-                        
+
                         if(d.data.position) {
                             process.env.CURRENT_TURN_POSITION = d.data.position;
+                            console.log('POSITION=======>', d.data.position);
                         } else if(d.data.player_index) {
                             process.env.CURRENT_TURN_POSITION = d.data.player_index;
+                            console.log('POSITION=======>', d.data.player_index);
                         }
 
                         deleteObjectProperty(logData);
