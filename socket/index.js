@@ -690,6 +690,16 @@ module.exports = function (io)
             if (_.isArray(rez.events))
             {
                 console.log('Process Events ::: ', JSON.stringify(rez.events));
+
+                //rez.events[0].data.player_index
+                if(rez.events[0].data.position) {
+                    process.env.CURRENT_TURN_POSITION = rez.events[0].data.position;
+                    console.log('POSITION=======>', rez.events[0].data.position);
+                } else if(rez.events[0].data.player_index) {
+                    process.env.CURRENT_TURN_POSITION = rez.events[0].data.player_index;
+                    console.log('POSITION=======>', rez.events[0].data.player_index);
+                }
+
                 if (rez.events.length > 0)
                 {
                     for (const d of rez.events)
@@ -699,15 +709,6 @@ module.exports = function (io)
                             meta: d
                         };
                         d.name ? logDNA.log(`Event ${d.name} fired`, logData) : '';
-
-                        if(d.data[0].position) {
-                            process.env.CURRENT_TURN_POSITION = d.data[0].position;
-                            console.log('POSITION=======>', d.data[0].position);
-                        } else if(d.data[0].player_index) {
-                            process.env.CURRENT_TURN_POSITION = d.data[0].player_index;
-                            console.log('POSITION=======>', d.data[0].player_index);
-                        }
-
                         deleteObjectProperty(logData);
                         setTimeout(
                             async function ()
@@ -781,14 +782,7 @@ module.exports = function (io)
                                         io.to(d.room).emit(d.name, d.data);
                                     }                                 
                                 } else if (d.type == 'room_excluding_me')
-                                {
-                                    
-                                    // if(d.data.position) {
-                                    //     process.env.CURRENT_TURN_POSITION = d.data.position;
-                                    // } else if(d.data.player_index) {
-                                    //     process.env.CURRENT_TURN_POSITION = d.data.player_index;
-                                    // }
-                                   
+                                {                                  
                                     console.log("room_excluding_me", d.data);
                                     socket.to(d.room).emit(d.name, d.data);                                   
                                 }
