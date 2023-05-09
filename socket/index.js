@@ -700,12 +700,12 @@ module.exports = function (io)
                         };
                         d.name ? logDNA.log(`Event ${d.name} fired`, logData) : '';
 
-                        if(d.data.position) {
-                            process.env.CURRENT_TURN_POSITION = d.data.position;
-                            console.log('POSITION=======>', d.data.position);
-                        } else if(d.data.player_index) {
-                            process.env.CURRENT_TURN_POSITION = d.data.player_index;
-                            console.log('POSITION=======>', d.data.player_index);
+                        if(d[0].data.position) {
+                            process.env.CURRENT_TURN_POSITION = d[0].data.position;
+                            console.log('POSITION=======>', d[0].data.position);
+                        } else if(d[0].data.player_index) {
+                            process.env.CURRENT_TURN_POSITION = d[0].data.player_index;
+                            console.log('POSITION=======>', d[0].data.player_index);
                         }
 
                         deleteObjectProperty(logData);
