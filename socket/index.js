@@ -386,9 +386,9 @@ module.exports = function (io)
                         //     io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: winnerData});
                         // }
                         let gameTime = await checkGameExpireTime(start.room);
-                        console.log("Below Winner Data -after timer--", start.room, gameTime);
-                        let toGetPlayerTurn = await redisCache.getRecordsByKeyRedis(start.room);
-                        io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: toGetPlayerTurn.current_turn}});
+                        console.log("Below Winner Data -after timer--", start.room, gameTime, process.env.CURRENT_TURN_POSITION);
+                        //let toGetPlayerTurn = await redisCache.getRecordsByKeyRedis(start.room);
+                        io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: process.env.CURRENT_TURN_POSITION}});
                         // console.log('PlayerTurn----------->',JSON.stringify(toGetPlayerTurn)); 
                         if(gameTime.time == 0){
                             console.log('gameTimerEnd...........................');
@@ -735,6 +735,7 @@ module.exports = function (io)
                                     }
                                 } else if (d.type == 'room_including_me')
                                 {
+                                    process.env.CURRENT_TURN_POSITION = d.data.position;
                                     /**
                                      * Last move animation & equal turns logic at backend.
                                      * 
@@ -767,6 +768,7 @@ module.exports = function (io)
                                     }                                 
                                 } else if (d.type == 'room_excluding_me')
                                 {
+                                    process.env.CURRENT_TURN_POSITION = d.data.player_index;
                                     console.log("room_excluding_me", d.data);
                                     socket.to(d.room).emit(d.name, d.data);                                   
                                 }
