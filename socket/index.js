@@ -576,7 +576,7 @@ module.exports = function (io)
             var params_data = {
                 room: start.room,
             };
-        
+            process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
             //call api to deduct money 
             io.to(start.room).emit('startGame', start);
             console.log("AFter startGame fire - ", new Date());
@@ -692,12 +692,12 @@ module.exports = function (io)
                 console.log('Process Events ::: ', JSON.stringify(rez.events));
 
                 //rez.events[0].data.player_index
-                console.log('POSITION=======>', rez.events[0]);
+                ///console.log('POSITION=======>', rez.events[0]);
                 if(rez.events[0].data.position != null) {
-                    console.log('position=======>', rez.events[0].data.position);
+                    //console.log('position=======>', rez.events[0].data.position);
                     process.env.CURRENT_TURN_POSITION = rez.events[0].data.position;
                 } else if(rez.events[0].data.player_index != null) {
-                    console.log('player_index=======>', rez.events[0].data.player_index);
+                    //console.log('player_index=======>', rez.events[0].data.player_index);
                     process.env.CURRENT_TURN_POSITION = rez.events[0].data.player_index;
                 }
 
