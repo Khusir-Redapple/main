@@ -484,8 +484,13 @@ module.exports = function (io)
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             callback(response.callback);
-            console.log('tournamnt_dice_rolled ====>', response.callback);
-            console.log('myRoom ', JSON.stringify(myRoom));
+            
+            if(response.events[0].data.position != null) {
+                process.env.CURRENT_TURN_POSITION = response.events[0].data.position;
+            } else if(response.events[0].data.player_index != null) {
+                process.env.CURRENT_TURN_POSITION = response.events[0].data.player_index;
+            }
+
             if (response.callback.status == 1) processEvents(response, myRoom);
             }
             catch(ex)
@@ -510,6 +515,13 @@ module.exports = function (io)
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             callback(response.callback);
+            
+            if(response.events[0].data.position != null) {
+                process.env.CURRENT_TURN_POSITION = response.events[0].data.position;
+            } else if(response.events[0].data.player_index != null) {
+                process.env.CURRENT_TURN_POSITION = response.events[0].data.player_index;
+            }
+
             if (response.callback.status == 1) processEvents(response, myRoom);
             }
             catch(err)
