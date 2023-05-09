@@ -461,6 +461,14 @@ module.exports = function (io)
                 //await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
                 callback(response.callback);
                 if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
+                
+                // to update current turn for player if player miss the events.
+                if(response.events[1].data.position != null) {
+                    process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
+                } else if(response.events[1].data.player_index != null) {
+                    process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
+                }
+
             }
             catch(ex)
             {
@@ -492,7 +500,7 @@ module.exports = function (io)
             } else if(response.events[1].data.player_index != null) {
                 process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
             }
-            
+
             }
             catch(ex)
             {
@@ -555,6 +563,14 @@ module.exports = function (io)
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             callback(response.callback);
             processEvents(response, myRoom);
+
+            // to update current turn for player if player miss the events.
+            if(response.events[1].data.position != null) {
+                process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
+            } else if(response.events[1].data.player_index != null) {
+                process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
+            }
+
             }
             catch(ex)
             {
@@ -648,6 +664,13 @@ module.exports = function (io)
                                 console.log("gamePlayData cb: " + JSON.stringify(gamePlayData));
 
                                 processEvents(response, myRoom);
+
+                                // to update current turn for player if player miss the events.
+                                if(response.events[1].data.position != null) {
+                                    process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
+                                } else if(response.events[1].data.player_index != null) {
+                                    process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
+                                }
                             }
                         }
                     }
