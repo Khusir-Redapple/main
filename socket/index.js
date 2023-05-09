@@ -699,6 +699,13 @@ module.exports = function (io)
                             meta: d
                         };
                         d.name ? logDNA.log(`Event ${d.name} fired`, logData) : '';
+                        
+                        if(d.data.position) {
+                            process.env.CURRENT_TURN_POSITION = d.data.position;
+                        } else if(d.data.player_index) {
+                            process.env.CURRENT_TURN_POSITION = d.data.player_index;
+                        }
+
                         deleteObjectProperty(logData);
                         setTimeout(
                             async function ()
@@ -735,11 +742,11 @@ module.exports = function (io)
                                     }
                                 } else if (d.type == 'room_including_me')
                                 {
-                                    if(d.data.position) {
-                                        process.env.CURRENT_TURN_POSITION = d.data.position;
-                                    } else if(d.data.player_index) {
-                                        process.env.CURRENT_TURN_POSITION = d.data.player_index;
-                                    }
+                                    // if(d.data.position) {
+                                    //     process.env.CURRENT_TURN_POSITION = d.data.position;
+                                    // } else if(d.data.player_index) {
+                                    //     process.env.CURRENT_TURN_POSITION = d.data.player_index;
+                                    // }
 
                                     /**
                                      * Last move animation & equal turns logic at backend.
@@ -774,11 +781,11 @@ module.exports = function (io)
                                 } else if (d.type == 'room_excluding_me')
                                 {
                                     
-                                    if(d.data.position) {
-                                        process.env.CURRENT_TURN_POSITION = d.data.position;
-                                    } else if(d.data.player_index) {
-                                        process.env.CURRENT_TURN_POSITION = d.data.player_index;
-                                    }
+                                    // if(d.data.position) {
+                                    //     process.env.CURRENT_TURN_POSITION = d.data.position;
+                                    // } else if(d.data.player_index) {
+                                    //     process.env.CURRENT_TURN_POSITION = d.data.player_index;
+                                    // }
                                    
                                     console.log("room_excluding_me", d.data);
                                     socket.to(d.room).emit(d.name, d.data);                                   
