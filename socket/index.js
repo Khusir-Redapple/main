@@ -693,10 +693,10 @@ module.exports = function (io)
 
                 //rez.events[0].data.player_index
                 console.log('POSITION=======>', rez.events[0]);
-                if(rez.events[0].data.position) {
+                if(rez.events[0].data.position != null) {
                     console.log('position=======>', rez.events[0].data.position);
                     process.env.CURRENT_TURN_POSITION = rez.events[0].data.position;
-                } else if(rez.events[0].data.player_index) {
+                } else if(rez.events[0].data.player_index != null) {
                     console.log('player_index=======>', rez.events[0].data.player_index);
                     process.env.CURRENT_TURN_POSITION = rez.events[0].data.player_index;
                 }
