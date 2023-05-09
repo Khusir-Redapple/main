@@ -748,7 +748,11 @@ class _Tables
                         console.log('After Bonus Points updated- ', myRoom.users[j].bonusPoints);
                         // To update pawn kill count
                         if(type == 'cut_bonus'){
-                            myRoom.users[j].pawnKillCount = 12;
+                            if('pawnKillCount' in myRoom.users[j]){
+                                myRoom.users[j].pawnKillCount = +1;
+                            } else {
+                                myRoom.users[j].pawnKillCount = 1;
+                            }
                         }
                     }
                 }
