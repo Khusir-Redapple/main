@@ -686,6 +686,7 @@ module.exports = {
                                 killed = true;
                                 await _tab.addBonus(params.room, id, 0, "Kill", myRoom, gamePlayData);
                                 await _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus', myRoom, gamePlayData)
+                                console.log('after cut ------>', myRoom);
                             } else
                             {
                                 // Add Bonus as much as Killed Token Length
@@ -697,6 +698,7 @@ module.exports = {
                                 }
                                 // _tab.addBonus(params.room, id, canIKill.length, "Kill");                            
                                 await _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus',myRoom, gamePlayData)
+                                console.log('after cut ------>', myRoom);
                                 moveBonusCheck = true;
                                 killed = true;
                             }
