@@ -485,10 +485,10 @@ module.exports = function (io)
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             callback(response.callback);
             
-            if(response.events[0].data.position != null) {
-                process.env.CURRENT_TURN_POSITION = response.events[0].data.position;
-            } else if(response.events[0].data.player_index != null) {
-                process.env.CURRENT_TURN_POSITION = response.events[0].data.player_index;
+            if(response.events[1].data.position != null) {
+                process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
+            } else if(response.events[1].data.player_index != null) {
+                process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
             }
 
             if (response.callback.status == 1) processEvents(response, myRoom);
@@ -516,10 +516,10 @@ module.exports = function (io)
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             callback(response.callback);
             
-            if(response.events[0].data.position != null) {
-                process.env.CURRENT_TURN_POSITION = response.events[0].data.position;
-            } else if(response.events[0].data.player_index != null) {
-                process.env.CURRENT_TURN_POSITION = response.events[0].data.player_index;
+            if(response.events[1].data.position != null) {
+                process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
+            } else if(response.events[1].data.player_index != null) {
+                process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
             }
 
             if (response.callback.status == 1) processEvents(response, myRoom);
