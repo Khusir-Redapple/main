@@ -689,18 +689,7 @@ module.exports = function (io)
         {
             if (_.isArray(rez.events))
             {
-                console.log('Process Events ::: ', JSON.stringify(rez.events));
-
-                //rez.events[0].data.player_index
-                ///console.log('POSITION=======>', rez.events[0]);
-                if(rez.events[0].data.position != null) {
-                    //console.log('position=======>', rez.events[0].data.position);
-                    process.env.CURRENT_TURN_POSITION = rez.events[0].data.position;
-                } else if(rez.events[0].data.player_index != null) {
-                    //console.log('player_index=======>', rez.events[0].data.player_index);
-                    process.env.CURRENT_TURN_POSITION = rez.events[0].data.player_index;
-                }
-
+                console.log('Process Events ::: ', JSON.stringify(rez.events));               
                 if (rez.events.length > 0)
                 {
                     for (const d of rez.events)
@@ -803,6 +792,13 @@ module.exports = function (io)
                             },
                             d.delay ? d.delay : 0
                         );
+                    }
+                    if(rez.events[0].data.position != null) {
+                        //console.log('position=======>', rez.events[0].data.position);
+                        process.env.CURRENT_TURN_POSITION = rez.events[0].data.position;
+                    } else if(rez.events[0].data.player_index != null) {
+                        //console.log('player_index=======>', rez.events[0].data.player_index);
+                        process.env.CURRENT_TURN_POSITION = rez.events[0].data.player_index;
                     }
                 }
             }
