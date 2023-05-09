@@ -694,11 +694,11 @@ module.exports = function (io)
                 //rez.events[0].data.player_index
                 console.log('POSITION=======>', rez.events[0]);
                 if(rez.events[0].data.position) {
+                    console.log('position=======>', rez.events[0].data.position);
                     process.env.CURRENT_TURN_POSITION = rez.events[0].data.position;
-                   // console.log('POSITION=======>', rez.events[0].data.position);
                 } else if(rez.events[0].data.player_index) {
+                    console.log('player_index=======>', rez.events[0].data.player_index);
                     process.env.CURRENT_TURN_POSITION = rez.events[0].data.player_index;
-                    //console.log('POSITION=======>', rez.events[0].data.player_index);
                 }
 
                 if (rez.events.length > 0)
