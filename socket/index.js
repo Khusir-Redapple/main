@@ -768,7 +768,10 @@ module.exports = function (io)
                                     }                                 
                                 } else if (d.type == 'room_excluding_me')
                                 {
-                                    process.env.CURRENT_TURN_POSITION = d.data.position ? d.data.position : d.data.player_index;
+                                    if(d.name != 'score_updated') {
+                                        process.env.CURRENT_TURN_POSITION = d.data.position ? d.data.position : d.data.player_index;
+                                    }
+                                    
                                     console.log("room_excluding_me", d.data);
                                     socket.to(d.room).emit(d.name, d.data);                                   
                                 }
