@@ -692,12 +692,13 @@ module.exports = function (io)
                 console.log('Process Events ::: ', JSON.stringify(rez.events));
 
                 //rez.events[0].data.player_index
+                console.log('POSITION=======>', rez.events[0]);
                 if(rez.events[0].data.position) {
                     process.env.CURRENT_TURN_POSITION = rez.events[0].data.position;
-                    console.log('POSITION=======>', rez.events[0].data.position);
+                   // console.log('POSITION=======>', rez.events[0].data.position);
                 } else if(rez.events[0].data.player_index) {
                     process.env.CURRENT_TURN_POSITION = rez.events[0].data.player_index;
-                    console.log('POSITION=======>', rez.events[0].data.player_index);
+                    //console.log('POSITION=======>', rez.events[0].data.player_index);
                 }
 
                 if (rez.events.length > 0)
