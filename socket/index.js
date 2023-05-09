@@ -188,6 +188,7 @@ module.exports = function (io)
                 }
                 // If no room to join the game.
                 rez.table.room ? socket.join(rez.table.room) : socket.join();
+                process.env.CURRENT_TURN_POSITION = rez.current_turn;
                 return callback(rez);
 
             } catch(ex) {
@@ -483,6 +484,7 @@ module.exports = function (io)
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             callback(response.callback);
+            console.log('tournamnt_dice_rolled ====>', response.callback);
             console.log('myRoom ', JSON.stringify(myRoom));
             if (response.callback.status == 1) processEvents(response, myRoom);
             }
@@ -576,9 +578,9 @@ module.exports = function (io)
             var params_data = {
                 room: start.room,
             };
-            process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
             //call api to deduct money 
             io.to(start.room).emit('startGame', start);
+            process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
             console.log("AFter startGame fire - ", new Date());
 
             setInterval(async function ()
@@ -786,13 +788,11 @@ module.exports = function (io)
                             },
                             d.delay ? d.delay : 0
                         );
-                            if(rez.events[0].data.position != null) {
-                            //console.log('position=======>', rez.events[0].data.position);
-                                process.env.CURRENT_TURN_POSITION = rez.events[0].data.position;
-                            } else if(rez.events[0].data.player_index != null) {
-                            //console.log('player_index=======>', rez.events[0].data.player_index);
-                                process.env.CURRENT_TURN_POSITION = rez.events[0].data.player_index;
-                            }
+                            // if(rez.events[0].data.position != null) {
+                            //     process.env.CURRENT_TURN_POSITION = rez.events[0].data.position;
+                            // } else if(rez.events[0].data.player_index != null) {
+                            //     process.env.CURRENT_TURN_POSITION = rez.events[0].data.player_index;
+                            // }
                     }
                 }
             }
