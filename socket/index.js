@@ -387,7 +387,9 @@ module.exports = function (io)
                         // }
                         let gameTime = await checkGameExpireTime(start.room);
                         console.log("Below Winner Data -after timer--", start.room, gameTime);
-                        io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time}});
+                        io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn:1}});
+                        let toGetPlayerTurn = await redisCache.getRecordsByKeyRedis(start.room);
+                        console.log('PlayerTurn----------->',JSON.stringify(toGetPlayerTurn));
                         if(gameTime.time == 0){
                             console.log('gameTimerEnd...........................');
                             // sent event to socket Client for equal ture.                                            
