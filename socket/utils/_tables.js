@@ -605,8 +605,9 @@ class _Tables
                         myRoom.current_turn_type = 'roll';
                         myRoom.turn_start_at = new Date(dt).getTime(); //new Date().getTime();
                         myRoom.game_started_at = new Date(dt).getTime();//new Date().getTime();
+                        myRoom.server_time = new Date(dt).getTime();
                         let DICE_ROLLED_RES = this.rollDice(room, myRoom.users[pl].id, myRoom);
-                        console.log('DICE_ROLLED_RES >>', JSON.stringify(DICE_ROLLED_RES));
+                        //console.log('DICE_ROLLED_RES >>', JSON.stringify(DICE_ROLLED_RES));
                         let DICE_ROLLED;
                         if(DICE_ROLLED_RES) {
                             myRoom = DICE_ROLLED_RES.table;
@@ -624,6 +625,7 @@ class _Tables
                             table: myRoom,
                             dice: DICE_ROLLED,
                             turn_start_at: config.turnTimer,
+                            turn_timestamp : new Date().getTime(),
                             possition: pl,
                             default_diceroll_timer: config.turnTimer // bug_no_65
                         };
@@ -889,7 +891,8 @@ class _Tables
                 {
                     myRoom.current_turn = pos;
                     myRoom.turn_start_at = new Date().getTime();
-                    console.log("Line 701 turn set : ", new Date().getTime(), new Date());
+                    myRoom.turn_timestamp = new Date().getTime();
+                    //console.log("Line 701 turn set : ", new Date().getTime(), new Date());
                     myRoom.current_turn_type = type;
                 }
                 console.log('updateCurrentTurn res ' + JSON.stringify(myRoom))
@@ -900,6 +903,7 @@ class _Tables
     updateCurrentTime(room, myRoom)
     {
         myRoom.turn_start_at = new Date().getTime();
+        myRoom.turn_timestamp = new Date().getTime();
         console.log("Line 714 turn set : ", new Date().getTime(), new Date());
     }
 

@@ -189,6 +189,7 @@ module.exports = function (io)
                 // If no room to join the game.
                 rez.table.room ? socket.join(rez.table.room) : socket.join();
                 process.env.CURRENT_TURN_POSITION = rez.current_turn;
+                rez.server_time = new Date().getTime();
                 return callback(rez);
 
             } catch(ex) {
@@ -459,6 +460,10 @@ module.exports = function (io)
                 await redisCache.addToRedis(myRoom.room,myRoom);
                 console.log("leaveTable end response: " + JSON.stringify(response) );
                 //await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
+
+                response.callback.turn_timestamp = myRoom.turn_timestamp;
+                response.callback.server_time = new Date().getTime();
+
                 callback(response.callback);
                 if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
                 
@@ -491,6 +496,10 @@ module.exports = function (io)
             console.log('tournamnt_dice_rolled callback', response.callback);
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
+
+            response.callback.turn_timestamp = myRoom.turn_timestamp;
+            response.callback.server_time = new Date().getTime();
+
             callback(response.callback);
             if (response.callback.status == 1) processEvents(response, myRoom);
 
@@ -523,6 +532,11 @@ module.exports = function (io)
             console.log('Tournament_move_made callback', response);
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
+
+
+            response.callback.turn_timestamp = myRoom.turn_timestamp;
+            response.callback.server_time = new Date().getTime();
+
             callback(response.callback);
             if (response.callback.status == 1) processEvents(response, myRoom);
 
@@ -561,6 +575,11 @@ module.exports = function (io)
             gamePlayData = response.gameData;
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
+
+
+            response.callback.turn_timestamp = myRoom.turn_timestamp;
+            response.callback.server_time = new Date().getTime();
+            
             callback(response.callback);
             processEvents(response, myRoom);
 
@@ -609,6 +628,7 @@ module.exports = function (io)
                 room: start.room,
             };
             //call api to deduct money 
+            start.server_time = new Date().getTime();
             io.to(start.room).emit('startGame', start);
             process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
             console.log("AFter startGame fire - ", new Date());
