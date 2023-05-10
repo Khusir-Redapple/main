@@ -891,7 +891,7 @@ class _Tables
                 {
                     myRoom.current_turn = pos;
                     myRoom.turn_start_at = new Date().getTime();
-                    myRoom.turn_timestamp = new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds();
+                    myRoom.turn_timestamp = new Date().toString();
                     //console.log("Line 701 turn set : ", new Date().getTime(), new Date());
                     myRoom.current_turn_type = type;
                 }
@@ -903,7 +903,7 @@ class _Tables
     updateCurrentTime(room, myRoom)
     {
         myRoom.turn_start_at = new Date().getTime();
-        myRoom.turn_timestamp = new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds();
+        myRoom.turn_timestamp = new Date().toString();
         console.log("Line 714 turn set : ", new Date().getTime(), new Date());
     }
 

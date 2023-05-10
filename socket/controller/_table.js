@@ -129,7 +129,7 @@ module.exports = {
                     extra_move_animation: false,
                     skip_dice: true,
                     turn_timestamp : myRoom.turn_timestamp,
-                    server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                    server_time : new Date().toString(),
                 },
             };
             myRoom = await _tab.clearDices(params.room, myPos, myRoom);
@@ -171,7 +171,7 @@ module.exports = {
                     turn_start_at: config.turnTimer,
                     skip_dice: threeSix,
                     turn_timestamp : myRoom.turn_timestamp,
-                    server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                    server_time : new Date().toString(),
                 },
             };
             resObj.events.push(event);
@@ -217,7 +217,7 @@ module.exports = {
                         extra_move_animation: false,
                         skip_dice: true,
                         turn_timestamp : myRoom.turn_timestamp,
-                        server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                        server_time : new Date().toString(),
                     },
                 };
                 resObj.events.push(event);
@@ -262,7 +262,7 @@ module.exports = {
                         extra_move_animation: false,
                         skip_dice: true,
                         turn_timestamp : myRoom.turn_timestamp,
-                        server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                        server_time :new Date().toString(),
                     },
                 };
                 resObj.events.push(event);
@@ -298,7 +298,7 @@ module.exports = {
                         extra_move_animation: true,
                         skip_dice: false,
                         turn_timestamp : myRoom.turn_timestamp,
-                        server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                        server_time : new Date().toString(),
                     },
                 };
                 resObj.events.push(event);
@@ -427,7 +427,7 @@ module.exports = {
                             turn_start_at: config.turnTimer,
                             extra_move_animation: false,
                             turn_timestamp : myRoom.turn_timestamp,
-                            server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                            server_time : new Date().toString(),
                         },
                     };
                     resObj.events.push(event);
@@ -461,7 +461,7 @@ module.exports = {
                             turn_start_at: config.turnTimer,
                             extra_move_animation: true,
                             turn_timestamp : myRoom.turn_timestamp,
-                            server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                            server_time : new Date().toString(),
                         },
                     };
 
@@ -643,7 +643,7 @@ module.exports = {
                                     turn_start_at: config.turnTimer,
                                     extra_move_animation: false,
                                     turn_timestamp : myRoom.turn_timestamp,
-                                    server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                                    server_time : new Date().toString(),
                                 },
                             };
                             resObj.events.push(event);
@@ -768,7 +768,7 @@ module.exports = {
                                 dices_rolled: dices_rolled,
                                 turn_start_at: config.turnTimer,
                                 turn_timestamp : myRoom.turn_timestamp,
-                                server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                                server_time : new Date().toString(),
                             },
                         };
                         resObj.events.push(event);
@@ -816,7 +816,7 @@ module.exports = {
                                     turn_start_at: config.turnTimer,
                                     extra_move_animation: true,
                                     turn_timestamp : myRoom.turn_timestamp,
-                                    server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                                    server_time : new Date().toString(),
                                 },
                             };
                             resObj.events.push(event);
@@ -864,7 +864,7 @@ module.exports = {
                                     turn_start_at: config.turnTimer,
                                     extra_move_animation: false,
                                     turn_timestamp : myRoom.turn_timestamp,
-                                    server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                                    server_time : new Date().toString(),
                                 },
                             };
                             resObj.events.push(event);
@@ -1216,7 +1216,7 @@ module.exports = {
                             turn_start_at: config.turnTimer,
                             extra_move_animation: false,
                             turn_timestamp : myRoom.turn_timestamp,
-                            server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                            server_time : new Date().toString(),
                         },
                     };
                     rez_finalObj.events.push(event);
@@ -1273,7 +1273,7 @@ module.exports = {
                                 turn_start_at: config.turnTimer,
                                 extra_move_animation: false,
                                 turn_timestamp : myRoom.turn_timestamp,
-                                server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                                server_time : new Date().toString(),
                             },
                         };
 
@@ -1482,7 +1482,7 @@ module.exports = {
                                         turn_start_at: config.turnTimer,
                                         extra_move_animation: false,
                                         turn_timestamp : myRoom.turn_timestamp,
-                                        server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                                        server_time : new Date().toString(),
                                     },
                                 };
                                 rez_finalObj.events.push(event);
@@ -1528,7 +1528,7 @@ module.exports = {
                                             turn_start_at: config.turnTimer,
                                             extra_move_animation: false,
                                             turn_timestamp : myRoom.turn_timestamp,
-                                            server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                                            server_time : new Date().toString(),
                                         },
                                     };
 
@@ -1595,7 +1595,7 @@ module.exports = {
                                 turn_start_at: config.turnTimer,
                                 extra_move_animation: true,
                                 turn_timestamp : myRoom.turn_timestamp,
-                                server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                                server_time : new Date().toString(),
                             },
                         };
                         resObj.events.push(event);
@@ -1637,7 +1637,7 @@ module.exports = {
                                 turn_start_at: config.turnTimer,
                                 extra_move_animation: false,
                                 turn_timestamp : myRoom.turn_timestamp,
-                                server_time : new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+                                server_time : new Date().toString(),
                             },
                         };
 
