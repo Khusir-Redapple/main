@@ -59,6 +59,7 @@ module.exports = function (io)
             // if(response) {
             //     myRoom = response.table;
             // }
+            myRoom.server_time = new Date();
             return callback(myRoom);
         }
         catch(ex)
