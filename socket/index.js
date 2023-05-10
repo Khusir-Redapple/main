@@ -190,6 +190,7 @@ module.exports = function (io)
                 rez.table.room ? socket.join(rez.table.room) : socket.join();
                 process.env.CURRENT_TURN_POSITION = rez.current_turn;
                 rez.server_time = new Date().getTime();
+                console.log('BEFORE join_previous', rez);
                 return callback(rez);
 
             } catch(ex) {
@@ -463,7 +464,7 @@ module.exports = function (io)
 
                 response.callback.turn_timestamp = myRoom.turn_timestamp;
                 response.callback.server_time = new Date().getTime();
-
+                console.log('BEFORE leave_table', response.callback);
                 callback(response.callback);
                 if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
                 
@@ -499,7 +500,7 @@ module.exports = function (io)
 
             response.callback.turn_timestamp = myRoom.turn_timestamp;
             response.callback.server_time = new Date().getTime();
-
+            console.log('BEFORE dice_rolled', response.callback);
             callback(response.callback);
             if (response.callback.status == 1) processEvents(response, myRoom);
 
@@ -536,7 +537,7 @@ module.exports = function (io)
 
             response.callback.turn_timestamp = myRoom.turn_timestamp;
             response.callback.server_time = new Date().getTime();
-
+            console.log('BEFORE tournament_move_made', response.callback);
             callback(response.callback);
             if (response.callback.status == 1) processEvents(response, myRoom);
 
@@ -579,7 +580,7 @@ module.exports = function (io)
 
             response.callback.turn_timestamp = myRoom.turn_timestamp;
             response.callback.server_time = new Date().getTime();
-            
+            console.log('BEFORE skip', response.callback);
             callback(response.callback);
             processEvents(response, myRoom);
 
