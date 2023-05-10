@@ -189,7 +189,7 @@ module.exports = function (io)
                 // If no room to join the game.
                 rez.table.room ? socket.join(rez.table.room) : socket.join();
                 process.env.CURRENT_TURN_POSITION = rez.current_turn;
-                rez.server_time = new Date().toString();
+                rez.server_time = new Date();
                 return callback(rez);
 
             } catch(ex) {
