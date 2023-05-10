@@ -189,7 +189,7 @@ module.exports = function (io)
                 // If no room to join the game.
                 rez.table.room ? socket.join(rez.table.room) : socket.join();
                 process.env.CURRENT_TURN_POSITION = rez.current_turn;
-                rez.server_time = new Date().getTime();
+                rez.server_time = new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds();
                 return callback(rez);
 
             } catch(ex) {
@@ -610,7 +610,7 @@ module.exports = function (io)
                 room: start.room,
             };
             //call api to deduct money 
-            start.server_time = new Date().getTime();
+            start.server_time = new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds();
             io.to(start.room).emit('startGame', start);
             process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
             console.log("AFter startGame fire - ", new Date());
