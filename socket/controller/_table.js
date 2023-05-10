@@ -127,7 +127,9 @@ module.exports = {
                     dices_rolled: dices_rolled,
                     turn_start_at: config.turnTimer,
                     extra_move_animation: false,
-                    skip_dice: true
+                    skip_dice: true,
+                    turn_timestamp : myRoom.turn_timestamp,
+                    server_time : new Date().getTime(),
                 },
             };
             myRoom = await _tab.clearDices(params.room, myPos, myRoom);
@@ -167,7 +169,9 @@ module.exports = {
                     position: myPos,
                     dices_rolled: dices_roll,
                     turn_start_at: config.turnTimer,
-                    skip_dice: threeSix
+                    skip_dice: threeSix,
+                    turn_timestamp : myRoom.turn_timestamp,
+                    server_time : new Date().getTime(),
                 },
             };
             resObj.events.push(event);
@@ -211,7 +215,9 @@ module.exports = {
                         dices_rolled: dices_rolled,
                         turn_start_at: config.turnTimer,
                         extra_move_animation: false,
-                        skip_dice: true
+                        skip_dice: true,
+                        turn_timestamp : myRoom.turn_timestamp,
+                        server_time : new Date().getTime(),
                     },
                 };
                 resObj.events.push(event);
@@ -254,7 +260,9 @@ module.exports = {
                         dices_rolled: dices_rolled,
                         turn_start_at: config.turnTimer,
                         extra_move_animation: false,
-                        skip_dice: true
+                        skip_dice: true,
+                        turn_timestamp : myRoom.turn_timestamp,
+                        server_time : new Date().getTime(),
                     },
                 };
                 resObj.events.push(event);
@@ -288,7 +296,9 @@ module.exports = {
                         dices_rolled: dices_rolled,
                         turn_start_at: config.turnTimer,
                         extra_move_animation: true,
-                        skip_dice: false
+                        skip_dice: false,
+                        turn_timestamp : myRoom.turn_timestamp,
+                        server_time : new Date().getTime(),
                     },
                 };
                 resObj.events.push(event);
@@ -415,7 +425,9 @@ module.exports = {
                             dice: DICE_ROLLED,
                             dices_rolled: dices_rolled,
                             turn_start_at: config.turnTimer,
-                            extra_move_animation: false
+                            extra_move_animation: false,
+                            turn_timestamp : myRoom.turn_timestamp,
+                            server_time : new Date().getTime(),
                         },
                     };
                     resObj.events.push(event);
@@ -447,7 +459,9 @@ module.exports = {
                             dice: DICE_ROLLED,
                             dices_rolled: dices_rolled,
                             turn_start_at: config.turnTimer,
-                            extra_move_animation: true
+                            extra_move_animation: true,
+                            turn_timestamp : myRoom.turn_timestamp,
+                            server_time : new Date().getTime(),
                         },
                     };
 
@@ -627,7 +641,9 @@ module.exports = {
                                     dice: DICE_ROLLED,
                                     dices_rolled: dices_rolled,
                                     turn_start_at: config.turnTimer,
-                                    extra_move_animation: false
+                                    extra_move_animation: false,
+                                    turn_timestamp : myRoom.turn_timestamp,
+                                    server_time : new Date().getTime(),
                                 },
                             };
                             resObj.events.push(event);
@@ -750,7 +766,9 @@ module.exports = {
                                 room: params.room,
                                 position: myPos,
                                 dices_rolled: dices_rolled,
-                                turn_start_at: config.turnTimer
+                                turn_start_at: config.turnTimer,
+                                turn_timestamp : myRoom.turn_timestamp,
+                                server_time : new Date().getTime(),
                             },
                         };
                         resObj.events.push(event);
@@ -796,7 +814,9 @@ module.exports = {
                                     dice: DICE_ROLLED,
                                     dices_rolled: dices_rolled,
                                     turn_start_at: config.turnTimer,
-                                    extra_move_animation: true
+                                    extra_move_animation: true,
+                                    turn_timestamp : myRoom.turn_timestamp,
+                                    server_time : new Date().getTime(),
                                 },
                             };
                             resObj.events.push(event);
@@ -842,7 +862,9 @@ module.exports = {
                                     dice: DICE_ROLLED,
                                     dices_rolled: dices_rolled,
                                     turn_start_at: config.turnTimer,
-                                    extra_move_animation: false
+                                    extra_move_animation: false,
+                                    turn_timestamp : myRoom.turn_timestamp,
+                                    server_time : new Date().getTime(),
                                 },
                             };
                             resObj.events.push(event);
@@ -1192,7 +1214,9 @@ module.exports = {
                             dices_rolled: dices_rolled,
                             dice: DICE_ROLLED,
                             turn_start_at: config.turnTimer,
-                            extra_move_animation: false
+                            extra_move_animation: false,
+                            turn_timestamp : myRoom.turn_timestamp,
+                            server_time : new Date().getTime(),
                         },
                     };
                     rez_finalObj.events.push(event);
@@ -1247,7 +1271,9 @@ module.exports = {
                                 dice: DICE_ROLLED,
                                 dices_rolled: dices_rolled,
                                 turn_start_at: config.turnTimer,
-                                extra_move_animation: false
+                                extra_move_animation: false,
+                                turn_timestamp : myRoom.turn_timestamp,
+                                server_time : new Date().getTime(),
                             },
                         };
 
@@ -1454,7 +1480,9 @@ module.exports = {
                                         dice: DICE_ROLLED,
                                         dices_rolled: dices_rolled,
                                         turn_start_at: config.turnTimer,
-                                        extra_move_animation: false
+                                        extra_move_animation: false,
+                                        turn_timestamp : myRoom.turn_timestamp,
+                                        server_time : new Date().getTime(),
                                     },
                                 };
                                 rez_finalObj.events.push(event);
@@ -1498,7 +1526,9 @@ module.exports = {
                                             dice: DICE_ROLLED,
                                             dices_rolled: dices_rolled,
                                             turn_start_at: config.turnTimer,
-                                            extra_move_animation: false
+                                            extra_move_animation: false,
+                                            turn_timestamp : myRoom.turn_timestamp,
+                                            server_time : new Date().getTime(),
                                         },
                                     };
 
@@ -1563,7 +1593,9 @@ module.exports = {
                                 dice: DICE_ROLLED,
                                 dices_rolled: dices_rolled,
                                 turn_start_at: config.turnTimer,
-                                extra_move_animation: true
+                                extra_move_animation: true,
+                                turn_timestamp : myRoom.turn_timestamp,
+                                server_time : new Date().getTime(),
                             },
                         };
                         resObj.events.push(event);
@@ -1603,7 +1635,9 @@ module.exports = {
                                 dice: DICE_ROLLED,
                                 dices_rolled: dices_rolled,
                                 turn_start_at: config.turnTimer,
-                                extra_move_animation: false
+                                extra_move_animation: false,
+                                turn_timestamp : myRoom.turn_timestamp,
+                                server_time : new Date().getTime(),
                             },
                         };
 

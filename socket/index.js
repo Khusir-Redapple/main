@@ -190,7 +190,6 @@ module.exports = function (io)
                 rez.table.room ? socket.join(rez.table.room) : socket.join();
                 process.env.CURRENT_TURN_POSITION = rez.current_turn;
                 rez.server_time = new Date().getTime();
-                console.log('BEFORE join_previous', rez);
                 return callback(rez);
 
             } catch(ex) {
@@ -461,10 +460,6 @@ module.exports = function (io)
                 await redisCache.addToRedis(myRoom.room,myRoom);
                 console.log("leaveTable end response: " + JSON.stringify(response) );
                 //await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
-
-                response.callback.turn_timestamp = myRoom.turn_timestamp;
-                response.callback.server_time = new Date().getTime();
-                console.log('BEFORE leave_table', response.callback);
                 callback(response.callback);
                 if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
                 
@@ -497,10 +492,6 @@ module.exports = function (io)
             console.log('tournamnt_dice_rolled callback', response.callback);
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
-
-            response.callback.turn_timestamp = myRoom.turn_timestamp;
-            response.callback.server_time = new Date().getTime();
-            console.log('BEFORE dice_rolled', response.callback);
             callback(response.callback);
             if (response.callback.status == 1) processEvents(response, myRoom);
 
@@ -533,11 +524,6 @@ module.exports = function (io)
             console.log('Tournament_move_made callback', response);
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
-
-
-            response.callback.turn_timestamp = myRoom.turn_timestamp;
-            response.callback.server_time = new Date().getTime();
-            console.log('BEFORE tournament_move_made', response.callback);
             callback(response.callback);
             if (response.callback.status == 1) processEvents(response, myRoom);
 
@@ -576,11 +562,6 @@ module.exports = function (io)
             gamePlayData = response.gameData;
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
-
-
-            response.callback.turn_timestamp = myRoom.turn_timestamp;
-            response.callback.server_time = new Date().getTime();
-            console.log('BEFORE skip', response.callback);
             callback(response.callback);
             processEvents(response, myRoom);
 
@@ -802,7 +783,6 @@ module.exports = function (io)
                                      * To check time expire.
                                      **/
                                     let gameTime = await checkGameExpireTime(d.room);
-
                                     if(gameTime.isTimeExpired) {
                                         //To check player has equal turn or not.
                                         let equalTurn = await _TableInstance.checkPlayerEqualTurn(myRoom, d.data.position);
