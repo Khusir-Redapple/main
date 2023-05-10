@@ -55,11 +55,11 @@ module.exports = function (io)
         socket.on('fetchGameData', async function(params, callback) {
             try{
             let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-            let response = await _TableInstance.getDataByRoom(params.room, myRoom);
-            if(response) {
-                myRoom = response.table;
-            }
-            return callback(response);
+            // let response = await _TableInstance.getDataByRoom(params.room, myRoom);
+            // if(response) {
+            //     myRoom = response.table;
+            // }
+            return callback(myRoom);
         }
         catch(ex)
         {
