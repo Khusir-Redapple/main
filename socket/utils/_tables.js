@@ -605,7 +605,7 @@ class _Tables
                         myRoom.current_turn_type = 'roll';
                         myRoom.turn_start_at = new Date(dt).getTime(); //new Date().getTime();
                         myRoom.game_started_at = new Date(dt).getTime();//new Date().getTime();
-                        myRoom.server_time = new Date(dt).getTime();
+                        myRoom.server_time = new Date();
                         let DICE_ROLLED_RES = this.rollDice(room, myRoom.users[pl].id, myRoom);
                         //console.log('DICE_ROLLED_RES >>', JSON.stringify(DICE_ROLLED_RES));
                         let DICE_ROLLED;
@@ -625,7 +625,7 @@ class _Tables
                             table: myRoom,
                             dice: DICE_ROLLED,
                             turn_start_at: config.turnTimer,
-                            turn_timestamp : new Date().getTime(),
+                            turn_timestamp : new Date(),
                             possition: pl,
                             default_diceroll_timer: config.turnTimer // bug_no_65
                         };

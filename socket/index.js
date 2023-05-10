@@ -610,7 +610,7 @@ module.exports = function (io)
                 room: start.room,
             };
             //call api to deduct money 
-            start.server_time = new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds();
+            start.server_time = new Date();
             io.to(start.room).emit('startGame', start);
             process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
             console.log("AFter startGame fire - ", new Date());
