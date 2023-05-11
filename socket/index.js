@@ -59,7 +59,6 @@ module.exports = function (io)
             // if(response) {
             //     myRoom = response.table;
             // }
-            myRoom.turn_timestamp = new Date();
             myRoom.server_time = new Date();
             return callback(myRoom);
         }
