@@ -374,6 +374,8 @@ module.exports = {
                 console.log("in the params dice value 0................");
                 await _tab.addBonus(params.room, id, 1, 'six', myRoom, gamePlayData); //remove this for not giving 2nd turn on 6
                 await _tab.addSix(params.room, id, myRoom);
+            } else {
+                await _tab.setSix(params.room, id, myRoom);
             }
 
             // Check if move is possible
