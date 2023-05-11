@@ -59,11 +59,8 @@ module.exports = function (io)
             // if(response) {
             //     myRoom = response.table;
             // }
-            let start = new Date();
-            let newDate = new Date(start);
-            let nd = newDate.setMinutes(newDate.getSeconds() - 5);
+            myRoom.turn_timestamp = new Date(new Date().setMinutes(new Date().getSeconds() - 5));
             myRoom.server_time = new Date();
-            myRoom.turn_timestamp = nd;
             return callback(myRoom);
         }
         catch(ex)
