@@ -203,6 +203,10 @@ class _Tables
             let count = 0;
             let noPlayers = filteredTable.no_of_players;
 
+
+            // adding two property for gameData.
+            filteredTable.turn_start_at = config.turnTimer;
+            filteredTable.timeToCompleteGame = config.gameTime * 60;
             for (var pl = 0; pl < 4; pl++)
              if (filteredTable.users[pl] && filteredTable.users[pl].is_active) 
                  count++;
