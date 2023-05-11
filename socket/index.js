@@ -59,7 +59,7 @@ module.exports = function (io)
             // if(response) {
             //     myRoom = response.table;
             // }
-            myRoom.turn_timestamp = new Date(new Date().setMinutes(new Date().getSeconds() - 5));
+            //myRoom.turn_timestamp = new Date(new Date().setMinutes(new Date().getSeconds() - 5));
             myRoom.server_time = new Date();
             return callback(myRoom);
         }
@@ -613,7 +613,7 @@ module.exports = function (io)
             };
             //call api to deduct money 
             start.server_time = new Date();
-            start.turn_timestamp = new Date();
+            //start.turn_timestamp = new Date();
             io.to(start.room).emit('startGame', start);
             process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
             console.log("AFter startGame fire - ", new Date());
