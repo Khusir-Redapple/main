@@ -613,7 +613,8 @@ module.exports = function (io)
             };
             //call api to deduct money 
             start.server_time = new Date();
-            //start.turn_timestamp = new Date();
+            start.turn_timestamp = new Date();
+            myRoom.turn_timestamp = new Date();
             io.to(start.room).emit('startGame', start);
             process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
             console.log("AFter startGame fire - ", new Date());
