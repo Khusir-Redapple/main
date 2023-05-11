@@ -205,7 +205,7 @@ class _Tables
 
 
             // adding two property for gameData.
-            filteredTable.turn_start_at = config.turnTimer;
+            filteredTable.turn_time = config.turnTimer;
             filteredTable.timeToCompleteGame = config.gameTime * 60;
             for (var pl = 0; pl < 4; pl++)
              if (filteredTable.users[pl] && filteredTable.users[pl].is_active) 
