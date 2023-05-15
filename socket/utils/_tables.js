@@ -1641,9 +1641,7 @@ class _Tables
 
                 for (let k = 0; k < table.users.length; k++)
                 {   
-                    if(table.users[k].rank || table.users[k].rank == 0) {
-                        table.users[k].rank = UserRankArray.get(k);
-                    }
+                    table.users[k].rank = UserRankArray.get(k);
                     otherRank = table.users[k].rank;
                     console.log('Rank ------------------->', otherRank, UserRankWiseAmount.get(1));
                     let winAmount = 0;
