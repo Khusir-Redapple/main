@@ -1637,6 +1637,8 @@ class _Tables
                     } 
                 }
 
+                console.log('UserRankWiseAmount', UserRankWiseAmount, UserRankArray);
+
                 for (let k = 0; k < table.users.length; k++)
                 {   
                     if(table.users[k].rank || table.users[k].rank == 0) {
