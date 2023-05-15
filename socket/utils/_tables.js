@@ -1582,7 +1582,7 @@ class _Tables
 
                 for (let [key, value] of inactiveUserMap) {
                     let playerIndex = nonActiveUserPointArray.indexOf(value);
-                    let userRank = activeUserPointArray.count + playerIndex + 1;
+                    let userRank = activeUserPointArray.length + playerIndex + 1;
                     UserRankArray.set(key, userRank);
                 }
 
