@@ -628,7 +628,7 @@ module.exports = function (io)
                     room: params_data.room
                 });
                 //console.log('Before SKIPPED ', JSON.stringify(tableD));                
-                if (tableD.isGameCompleted)
+                if (tableD!= null && tableD.isGameCompleted)
                 {
                     clearInterval(this);
                 } else
