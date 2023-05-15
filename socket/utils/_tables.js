@@ -1421,6 +1421,126 @@ class _Tables
                 };
     }
 
+    // EndOfTournamentV2(room, amount, myRoom)
+    // {
+    //         const table = myRoom;
+    //         const activeUserPointArray = [];
+    //         const nonActiveUserPointArray = [];
+    //         const winner = [];
+    //         let activeUserMap = new Map();
+    //         let inactiveUserMap = new Map();
+    //         let UserRankArray = new Map();
+            
+    //             for (let j = 0; j < table.users.length; j++)
+    //             {
+    //                 let totalScore = table.users[j].points + table.users[j].bonusPoints;
+    //                 if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
+    //                     activeUserMap.set(j, totalScore);
+    //                     activeUserPointArray.push(totalScore);
+    //                 } else {
+    //                     inactiveUserMap.set(j, totalScore);
+    //                     nonActiveUserPointArray.push(totalScore);
+    //                 }
+    //             }
+    //             console.log({activeUserPointArray} , {activeUserMap}, {inactiveUserMap});
+    //             //var maxPoints = (Math.max(...pointArray));
+    //             activeUserPointArray.sort((a, b) => b - a);
+    //             nonActiveUserPointArray.sort((a, b) => b - a);
+
+    //             activeUserMap = new Map([...activeUserMap.entries()].sort((a, b) => b[1] - a[1]));
+    //             inactiveUserMap = new Map([...inactiveUserMap.entries()].sort((a, b) => b[1] - a[1]));
+    //             //let point = activeUserPointArray.concat(nonActiveUserPointArray);;
+    //             // point.sort((a, b) => b - a);
+    //             let otherRank = 0;
+    //             let lastRank = 0;
+
+    //             for (let [key, value] of activeUserMap) {
+    //                 //let userPoints = table.users[key].points + table.users[key].bonusPoints;
+    //                 let playerIndex = activeUserPointArray.indexOf(value);
+    //                 let userRank = playerIndex + 1;
+    //                 if (userRank > lastRank + 1) userRank--;
+    //                 UserRankArray.set(key, userRank);
+    //                 lastRank = userRank;
+    //             }
+
+
+    //             let maxRank = 0;
+    //             for (let [key, value] of UserRankArray) {
+    //                 if (value > maxRank ) {
+    //                     maxRank = value;
+    //                 }
+    //             }
+
+    //             for (let [key, value] of inactiveUserMap) {
+    //                 //let userPoints = table.users[key].points + table.users[key].bonusPoints;
+    //                 let playerIndex = nonActiveUserPointArray.indexOf(value);
+    //                 let userRank = maxRank + playerIndex + 1;
+    //                 if (userRank > lastRank + 1) userRank--;
+    //                 UserRankArray.set(key, userRank);
+    //                 lastRank = userRank;
+    //             }
+
+
+    //             let oneRankCounter = 0;
+    //             let twoRankCounter = 0;
+    //             let threeRankCounter = 0;
+
+    //             for (let [key, value] of UserRankArray)
+    //             {
+    //                 if (value == 1) {
+    //                     oneRankCounter++;
+    //                 } else if (value == 2) {
+    //                     twoRankCounter++;
+    //                 }  else if (value == 3) {
+    //                     threeRankCounter++;
+    //                 } 
+    //             }
+    //             for (let k = 0; k < table.users.length; k++)
+    //             {   
+    //                 if(table.users[k].rank || table.users[k].rank == 0) {
+    //                     table.users[k].rank = UserRankArray.get(k);
+    //                 }
+    //                 otherRank = table.users[k].rank;
+    //                 //console.log('rankCOunt------------------->', UserRankArray);
+    //                 let winAmount = 0;
+    //                 if (typeof amount != 'undefined' && otherRank == 1 
+    //                     && amount[1] && !table.users[k].hasOwnProperty("is_left"))
+    //                 {
+    //                     winAmount = otherRank == 1 ? Math.floor(amount[1]/(oneRankCounter == 0 ? 1 : oneRankCounter)) : 0;
+    //                     //winAmount = otherRank == 1 ? parseFloat(amount[1]/(oneRankCounter == 0 ? 1 : oneRankCounter)).toFixed(2) : 0;
+                                                    
+    //                 } else if (typeof amount != 'undefined' && otherRank == 2 
+    //                     && amount[2] && !table.users[k].hasOwnProperty("is_left"))
+    //                 {
+    //                     winAmount = otherRank == 2 ? Math.floor(amount[2]/(twoRankCounter == 0 ? 1 : twoRankCounter)) : 0;
+    //                     //winAmount = otherRank == 2 ? parseFloat(amount[2]/(twoRankCounter == 0 ? 1 : twoRankCounter)).toFixed(2) : 0;              
+                        
+    //                 } else if (typeof amount != 'undefined' && otherRank == 3 
+    //                     && amount[3] && !table.users[k].hasOwnProperty("is_left"))
+    //                 {
+    //                     winAmount = otherRank == 3 ? Math.floor(amount[3]/(threeRankCounter == 0 ? 1 : threeRankCounter)) : 0;
+    //                     //winAmount = otherRank == 3 ? parseFloat(amount[3]/(threeRankCounter == 0 ? 1 : threeRankCounter)).toFixed(2) : 0;
+    //                 }
+
+    //                 table.players_won += 1;
+    //                 table.players_done += 1;
+    //                 table.users[k].is_done = true;
+    //                 winner.push({
+    //                         player_index: table.users[k].position,
+    //                         name: table.users[k].name,
+    //                         numeric_id: table.users[k].numeric_id,
+    //                         rank: table.users[k].rank,
+    //                         id: table.users[k].id,
+    //                         amount: winAmount,
+    //                         score: table.users[k].points + table.users[k].bonusPoints
+    //                     });
+    //             }
+    //             return {
+    //                 'winner': winner,
+    //                 'table' : table
+    //             };
+    // }
+
     EndOfTournamentV2(room, amount, myRoom)
     {
             const table = myRoom;
@@ -1430,6 +1550,7 @@ class _Tables
             let activeUserMap = new Map();
             let inactiveUserMap = new Map();
             let UserRankArray = new Map();
+            let UserRankWiseAmount = new Map();
             
                 for (let j = 0; j < table.users.length; j++)
                 {
@@ -1452,49 +1573,70 @@ class _Tables
                 //let point = activeUserPointArray.concat(nonActiveUserPointArray);;
                 // point.sort((a, b) => b - a);
                 let otherRank = 0;
-                let lastRank = 0;
 
                 for (let [key, value] of activeUserMap) {
-                    //let userPoints = table.users[key].points + table.users[key].bonusPoints;
                     let playerIndex = activeUserPointArray.indexOf(value);
                     let userRank = playerIndex + 1;
-                    if (userRank > lastRank + 1) userRank--;
                     UserRankArray.set(key, userRank);
-                    lastRank = userRank;
-                }
-
-
-                let maxRank = 0;
-                for (let [key, value] of UserRankArray) {
-                    if (value > maxRank ) {
-                        maxRank = value;
-                    }
                 }
 
                 for (let [key, value] of inactiveUserMap) {
-                    //let userPoints = table.users[key].points + table.users[key].bonusPoints;
                     let playerIndex = nonActiveUserPointArray.indexOf(value);
-                    let userRank = maxRank + playerIndex + 1;
-                    if (userRank > lastRank + 1) userRank--;
+                    let userRank = activeUserPointArray.count + playerIndex + 1;
                     UserRankArray.set(key, userRank);
-                    lastRank = userRank;
                 }
 
 
                 let oneRankCounter = 0;
                 let twoRankCounter = 0;
                 let threeRankCounter = 0;
+                let fourRankCounter = 0;
 
                 for (let [key, value] of UserRankArray)
                 {
                     if (value == 1) {
+                        var currentAmount = 0;
+                        if (UserRankWiseAmount.get(value)) {
+                            currentAmount += UserRankWiseAmount.get(value);
+                        }
+                        if (amount[value + oneRankCounter]) {
+                            currentAmount += amount[value + oneRankCounter];
+                            UserRankWiseAmount.set(value, currentAmount);
+                        }
                         oneRankCounter++;
                     } else if (value == 2) {
+                        var currentAmount = 0;
+                        if (UserRankWiseAmount.get(value)) {
+                            currentAmount += UserRankWiseAmount.get(value);
+                        }
+                        if (amount[value + twoRankCounter]) {
+                            currentAmount += amount[value + twoRankCounter];
+                            UserRankWiseAmount.set(value, currentAmount);
+                        }
                         twoRankCounter++;
                     }  else if (value == 3) {
+                        var currentAmount = 0;
+                        if (UserRankWiseAmount.get(value)) {
+                            currentAmount += UserRankWiseAmount.get(value);
+                        }
+                        if (amount[value + threeRankCounter]) {
+                            currentAmount += amount[value + threeRankCounter];
+                            UserRankWiseAmount.set(value, currentAmount);
+                        }
                         threeRankCounter++;
+                    }  else if (value == 4) {
+                        var currentAmount = 0;
+                        if (UserRankWiseAmount.get(value)) {
+                            currentAmount += UserRankWiseAmount.get(value);
+                        }
+                        if (amount[value + fourRankCounter]) {
+                            currentAmount += amount[value + fourRankCounter];
+                            UserRankWiseAmount.set(value, currentAmount);
+                        }
+                        fourRankCounter++;
                     } 
                 }
+
                 for (let k = 0; k < table.users.length; k++)
                 {   
                     if(table.users[k].rank || table.users[k].rank == 0) {
@@ -1504,22 +1646,23 @@ class _Tables
                     //console.log('rankCOunt------------------->', UserRankArray);
                     let winAmount = 0;
                     if (typeof amount != 'undefined' && otherRank == 1 
-                        && amount[1] && !table.users[k].hasOwnProperty("is_left"))
+                        && UserRankWiseAmount.get[1] && !table.users[k].hasOwnProperty("is_left"))
                     {
-                        winAmount = otherRank == 1 ? Math.floor(amount[1]/(oneRankCounter == 0 ? 1 : oneRankCounter)) : 0;
-                        //winAmount = otherRank == 1 ? parseFloat(amount[1]/(oneRankCounter == 0 ? 1 : oneRankCounter)).toFixed(2) : 0;
+                        winAmount = otherRank == 1 ? Math.floor(UserRankWiseAmount.get[1]/(oneRankCounter == 0 ? 1 : oneRankCounter)) : 0;
                                                     
                     } else if (typeof amount != 'undefined' && otherRank == 2 
-                        && amount[2] && !table.users[k].hasOwnProperty("is_left"))
+                        && UserRankWiseAmount.get[2] && !table.users[k].hasOwnProperty("is_left"))
                     {
-                        winAmount = otherRank == 2 ? Math.floor(amount[2]/(twoRankCounter == 0 ? 1 : twoRankCounter)) : 0;
-                        //winAmount = otherRank == 2 ? parseFloat(amount[2]/(twoRankCounter == 0 ? 1 : twoRankCounter)).toFixed(2) : 0;              
+                        winAmount = otherRank == 2 ? Math.floor(UserRankWiseAmount.get[2]/(twoRankCounter == 0 ? 1 : twoRankCounter)) : 0;            
                         
                     } else if (typeof amount != 'undefined' && otherRank == 3 
-                        && amount[3] && !table.users[k].hasOwnProperty("is_left"))
+                        && UserRankWiseAmount.get[3] && !table.users[k].hasOwnProperty("is_left"))
                     {
-                        winAmount = otherRank == 3 ? Math.floor(amount[3]/(threeRankCounter == 0 ? 1 : threeRankCounter)) : 0;
-                        //winAmount = otherRank == 3 ? parseFloat(amount[3]/(threeRankCounter == 0 ? 1 : threeRankCounter)).toFixed(2) : 0;
+                        winAmount = otherRank == 3 ? Math.floor(UserRankWiseAmount.get[3]/(threeRankCounter == 0 ? 1 : threeRankCounter)) : 0;
+                    } else if (typeof amount != 'undefined' && otherRank == 4
+                        && UserRankWiseAmount.get[4] && !table.users[k].hasOwnProperty("is_left"))
+                    {
+                        winAmount = otherRank == 4 ? Math.floor(UserRankWiseAmount.get[4]/(fourRankCounter == 0 ? 1 : fourRankCounter)) : 0;
                     }
 
                     table.players_won += 1;
@@ -1949,10 +2092,16 @@ class _Tables
                 table.users[3].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
             }
             console.log('returnDiceValue >>>',returnDiceValue);
+            // return {
+            //     'returnDiceValue' : returnDiceValue,
+            //     'table' : table,
+            // }
+
             return {
-                'returnDiceValue' : returnDiceValue,
+                'returnDiceValue' : 3,
                 'table' : table,
             }
+
         } catch(exception) {
             logDNA.log('dice roll error', {level: 'debugg', meta: {room: room, userId: user_id}});
         }
