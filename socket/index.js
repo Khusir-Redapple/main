@@ -791,7 +791,7 @@ module.exports = function (io)
                                         let equalTurn = await _TableInstance.checkPlayerEqualTurn(myRoom, d.data.position);
                                         //console.log('Player position', d.data.position);
                                         if(equalTurn){
-                                            if(d.name == 'make_diceroll' && d.data.extra_move_animation == true) {
+                                            if(d.name == 'make_diceroll' && d.data.extra_move_animation == false) {
                                                 let data = await _TableInstance.checkwinnerOfTournament(d.room, myRoom);
                                                 myRoom = data.table;
                                                 processEvents(data,myRoom);                                            
@@ -800,6 +800,8 @@ module.exports = function (io)
                                             } else if(d.name == 'make_move') {
                                                 io.to(d.room).emit(d.name, d.data);
                                             } else if(d.name == 'life_deduct') {
+                                                io.to(d.room).emit(d.name, d.data);
+                                            } else {
                                                 io.to(d.room).emit(d.name, d.data);
                                             }
                                         } else {
