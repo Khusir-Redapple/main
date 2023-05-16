@@ -1680,6 +1680,7 @@ class _Tables
                             rank: table.users[k].rank,
                             id: table.users[k].id,
                             amount: winAmount,
+                            is_left: table.users[k].hasOwnProperty("is_left"),
                             score: table.users[k].points + table.users[k].bonusPoints
                         });
                 }
@@ -2097,12 +2098,8 @@ class _Tables
                 table.users[3].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
             }
             console.log('returnDiceValue >>>',returnDiceValue);
-            // return {
-            //     'returnDiceValue' : returnDiceValue,
-            //     'table' : table,
-            // }
             return {
-                'returnDiceValue' : 6,
+                'returnDiceValue' : returnDiceValue,
                 'table' : table,
             }
 
