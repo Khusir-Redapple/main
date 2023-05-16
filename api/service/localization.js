@@ -17,7 +17,8 @@ module.exports = {
 	"tableSuccess": "Private Room Created Successfully.",
 	"alreadyPlaying": "You are playing somewhere else.",
 	"tableDoesNotExist": "Table Does Not Exist",
-	"insufficientPlayer":  " Sorry! Match not found. Your entry fee has been refunded.",
+	// "insufficientPlayer":  "Sorry! Match not found. Your entry fee has been refunded.",
+	"insufficientPlayer":  "No opponent available, Please retry or join new game",
 	"apiError": "API having some issue!",
 	"joiningError": 'Error joining game, please try again'
 };

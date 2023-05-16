@@ -1072,6 +1072,7 @@ module.exports = {
             return {
                 callback: {
                     status: 1,
+                    header : refund != '' ? "Opponent Not Found" : "Server Error",
                     message: refund != '' ? refund : localization.ServerError,
                     refund: refund
                 },
