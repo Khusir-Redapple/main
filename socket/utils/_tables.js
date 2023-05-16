@@ -50,9 +50,11 @@ class _Tables
                 let random_number = Math.floor(Math.random() * colour.length);
                 let random_colour = colour[random_number];
                 colour.splice(random_number, 1);
+                // To generate random dice value range between 10 - 20
+                const random = Math.floor(Math.random() * (20 - 10)) + 10;
                 // To setup random number to 0 position index user.
                 if(pl == 0) {
-                    randomRumber = this.randomNumberGenerator(config.diceGenerateRange);
+                    randomRumber = this.randomNumberGenerator(random);
                 }                 
                 table_i.users[pl] = {
                     id: '',
@@ -2093,7 +2095,10 @@ class _Tables
             // pop from top of array and update the property value.
             returnDiceValue = table.users[idx].diceValue.shift();
             if(table.users[idx].diceValue.length == 0) {
-                randomNumber = this.randomNumberGenerator(config.diceGenerateRange);
+                // To generate random dice value range between 10 - 20
+                const random = Math.floor(Math.random() * (20 - 10)) + 10;
+                randomNumber = this.randomNumberGenerator(random);
+                // randomNumber = this.randomNumberGenerator(config.diceGenerateRange);
                 table.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
                 table.users[1].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
                 table.users[2].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
