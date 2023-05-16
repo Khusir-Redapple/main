@@ -1800,6 +1800,7 @@ class _Tables
                         rank: table.users[j].rank,
                         amount: amount,
                         id: table.users[j].id,
+                        is_left: table.users[j].hasOwnProperty('is_left'),
                         score: table.users[j].points + table.users[j].bonusPoints
                     });
                 }
@@ -1880,6 +1881,7 @@ class _Tables
                                 rank: table.users[j].rank,
                                 amount: amount,
                                 id: table.users[j].id,
+                                is_left: table.users[j].hasOwnProperty('is_left'),
                                 score: table.users[j].points + table.users[j].bonusPoints
                             });
                         }
