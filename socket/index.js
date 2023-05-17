@@ -468,7 +468,7 @@ module.exports = function (io)
                 const userData = [];
                 myRoom.users.map((cur) => {
                     userData.push({
-                        "position":cur.position,
+                        "player_index":cur.position,
                         "numeric_id":cur.numeric_id,
                         "id":cur.id,
                         "name":cur.name,
@@ -479,7 +479,7 @@ module.exports = function (io)
                     });
                 },[])
                 response.callback.data = userData;
-                
+
                 console.log("leaveTable adding left userData: " + JSON.stringify(response));
                 callback(response.callback);
                 if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
