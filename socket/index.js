@@ -465,6 +465,19 @@ module.exports = function (io)
                 //To add left user details with callback events.
                 // let playerPosition = response.events[0].data.position;
                 // let leftPlayerData = myRoom.users.filter((ele) => ele.position == playerPosition);
+                //const userData = [];
+                const userData = myRoom.users.reduce((acc,cur) => {
+                    acc.push({
+                        "position":cur.position,
+                        "numeric_id":cur.numeric_id,
+                        "id":cur.id,
+                        "name":cur.name,
+                        "rank":0,
+                        "amount":0,
+                        "is_left": cur.hasOwnProperty('is_left') ? cur.is_left : false,
+                        "score":0
+                    });
+                },[])
                 // response.callback.data = {
                 //     "player_index":leftPlayerData[0].position,
                 //     "numeric_id":leftPlayerData[0].numeric_id,
@@ -476,7 +489,7 @@ module.exports = function (io)
                 //     "score":0
                 //     };
 
-                response.callback.data = myRoom.users;
+                response.callback.data = userData;
                 console.log("leaveTable adding left userData: " + JSON.stringify(response));
                 callback(response.callback);
                 if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
