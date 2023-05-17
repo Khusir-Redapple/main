@@ -966,7 +966,7 @@ class _Tables
                 gamePlayData.data.game_time = 0,
                 gamePlayData.data.room_id = room,
                 gamePlayData.data.timestamp = new Date().getTime()
-
+                console.log('GAMEPLAY DATA after RESET ============> ', user.points , user.bonusPoints);
                 await redisCache.addToRedis('gamePlay_'+room, gamePlayData);
         // }
     }
