@@ -478,7 +478,8 @@ module.exports = function (io)
                         "score":0
                     });
                 },[])
-                response.callback.data = userData;
+                response.callback.room = myRoom.room; 
+                response.callback.game_data = userData;
 
                 console.log("leaveTable adding left userData: " + JSON.stringify(response));
                 callback(response.callback);
