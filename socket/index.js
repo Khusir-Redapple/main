@@ -463,7 +463,7 @@ module.exports = function (io)
                 //await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
 
                 //To add left user details with callback events.
-                let playerPosition = res.events[0].data.position;
+                let playerPosition = response.events[0].data.position;
                 let leftPlayerData = myRoom.users.filter((ele) => ele.position == playerPosition);
                 response.callback.data = leftPlayerData;
                 console.log("leaveTable adding left userData: " + JSON.stringify(response));
