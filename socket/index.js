@@ -465,9 +465,9 @@ module.exports = function (io)
                 //To add left user details with callback events.
                 // let playerPosition = response.events[0].data.position;
                 // let leftPlayerData = myRoom.users.filter((ele) => ele.position == playerPosition);
-                //const userData = [];
-                const userData = myRoom.users.reduce((acc,cur) => {
-                    acc.push({
+                const userData = [];
+                myRoom.users.map((cur) => {
+                    userData.push({
                         "position":cur.position,
                         "numeric_id":cur.numeric_id,
                         "id":cur.id,
