@@ -483,8 +483,12 @@ module.exports = function (io)
 
                 console.log("leaveTable adding left userData: " + JSON.stringify(response));
                 callback(response.callback);
-                if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
+
+                // To remove a particular socket ID from a room
+                let socketIdToRemove = socket.id;
+                io.sockets.sockets[socketIdToRemove].leave(myRoom.room);
                 
+                if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
                 // to update current turn for player if player miss the events.
                 if(response.events[1].data.position != null) {
                     process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
