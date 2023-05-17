@@ -463,18 +463,20 @@ module.exports = function (io)
                 //await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
 
                 //To add left user details with callback events.
-                let playerPosition = response.events[0].data.position;
-                let leftPlayerData = myRoom.users.filter((ele) => ele.position == playerPosition);
-                response.callback.data = {
-                    "player_index":leftPlayerData[0].position,
-                    "numeric_id":leftPlayerData[0].numeric_id,
-                    "id":leftPlayerData[0].id,
-                    "name":leftPlayerData[0].name,
-                    "rank":0,
-                    "amount":0,
-                    "is_left":leftPlayerData[0].is_left,
-                    "score":0
-                    };
+                // let playerPosition = response.events[0].data.position;
+                // let leftPlayerData = myRoom.users.filter((ele) => ele.position == playerPosition);
+                // response.callback.data = {
+                //     "player_index":leftPlayerData[0].position,
+                //     "numeric_id":leftPlayerData[0].numeric_id,
+                //     "id":leftPlayerData[0].id,
+                //     "name":leftPlayerData[0].name,
+                //     "rank":0,
+                //     "amount":0,
+                //     "is_left":leftPlayerData[0].is_left,
+                //     "score":0
+                //     };
+
+                response.callback.data = myRoom.users;
                 console.log("leaveTable adding left userData: " + JSON.stringify(response));
                 callback(response.callback);
                 if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
