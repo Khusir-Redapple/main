@@ -11,6 +11,7 @@ const logger        = require('./api/service/logger');
 const RedisIo       = require('ioredis');
 let   logDNA        = {};
 let   schedulers    = {};
+let   redis         = '';
 // Generate custom token 
 morgan.token('host', function (req) {
     return req.hostname;
@@ -128,7 +129,7 @@ try
                                         // make a connection to the instance of redis
                                         //  const redis = RedisIo.createClient(6379, 'staging-setup.avv3xf.0001.apse1.cache.amazonaws.com');
                                         // const redis = RedisIo.createClient('localhost:6379');  
-                                        const redis = RedisIo.createClient(process.env.Redis_Url+':6379')
+                                        redis = RedisIo.createClient(process.env.Redis_Url+':6379')
                                                      
                                         //const redis = await new RedisIo('localhost:6379');               
                                         redis.connect();                                  
