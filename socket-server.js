@@ -146,8 +146,7 @@ try
                                         //     }
                                         //     console.log(success);
                                         //   });
-                                        // module.exports.redis_Io = redis;
-                                        export {redis};         
+                                        module.exports.redis_Io = redis;         
                                         // For corn job. 
                                         //let task = cron.schedule('*/1 * * * *', () => {
                                         // console.log('Corn job running at every minutes');
