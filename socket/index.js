@@ -531,7 +531,7 @@ module.exports = function (io)
             }
             catch(ex)
             {
-                console.log(ex);
+                logDNA.log('dice_roll_error', {level: 'error',meta: ex});
                 return callback(); 
             }
         });

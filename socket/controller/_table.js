@@ -16,10 +16,6 @@ module.exports = {
     //Roll dice for tournament
     tournamntDiceRolled: async function (socket, params, id, myRoom, gamePlayData)
     {
-        console.log('tournamntDiceRolled - id ', id);
-        console.log('tournamntDiceRolled - param ', JSON.stringify(params));
-        console.log('tournamntDiceRolled - myRoom ', JSON.stringify(myRoom));
-        console.log('tournamntDiceRolled - gamePlayData ', JSON.stringify(gamePlayData));
         let isJackpot = false;
         let resObj = {callback: {status: 1, message: localization.success}, events: []};
         let threeSix=false;
@@ -28,29 +24,30 @@ module.exports = {
         if (!params.room) return {callback: {status: 0, message: localization.missingParamError}};
         // CHECK IF I EXIST IN THIS ROOM
         var myPos = await _tab.getMyPosition(params.room, id, myRoom);
-        console.log(socket.data_name, 'tournamntDiceRolled myPos ', myPos);
         if (myPos == -1) return {callback: {status: 0, message: localization.noDataFound}};
         let check = await _tab.isCurrentTurnMine(params.room, myPos, myRoom);
-        console.log(socket.data_name, 'tournamntDiceRolled check ', check);
         if (!check)
         {
             return {callback: {status: 0, message: localization.noDataFound}};
         }
         // GET DICE RANDOM
-        let DICE_ROLLED = await _tab.getMyDice(params.room, id, myRoom, gamePlayData);
-        console.log(socket.data_name, 'tournamntDiceRolled Rolled ', DICE_ROLLED);
-        // console.log('MY DICE FOUND', DICE_ROLLED);
+        //let DICE_ROLLED = await _tab.getMyDice(params.room, id, myRoom, gamePlayData);
+        
+        let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+        let DICE_ROLLED;
+        if(DICE_ROLLED_RES) {
+            DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
+        }
 
         if (DICE_ROLLED > 6 || DICE_ROLLED < 0) return {callback: {status: 0, message: localization.noDataFound}};
-
         resObj.callback.dice = DICE_ROLLED;
         let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
-        console.log("value got ", dices_rolled);
+        //console.log("value got ", dices_rolled);
         let verify = dices_rolled.every((val, i, arr) => val === 6)
-        console.log("verify", verify);
+        //console.log("verify", verify);
         if (verify && dices_rolled.length == 3) {isJackpot = true}
         dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
-        console.log("value got ", dices_rolled);
+        //console.log("value got ", dices_rolled);
         resObj.callback.dices_rolled = dices_rolled;
 
         // ADD DICEROLLED EVENT 
@@ -77,7 +74,7 @@ module.exports = {
 
         const jackPOT = await _tab.jackPot(params.room, id, myRoom);
         let sixCounts = await _tab.getSix(params.room, id, myRoom);
-        console.log("sixCounts : ", sixCounts);
+        //console.log("sixCounts : ", sixCounts);
 
         /**
          * To check current dice rolled value is 6 and move not possible. 
