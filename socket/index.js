@@ -372,7 +372,7 @@ module.exports = function (io)
                         var tableD = await Table.findOne({
                             room: params_data.room
                         });
-                        if (tableD.isGameCompleted)
+                        if (tableD!= null && tableD.isGameCompleted)
                         {
                             clearInterval(this);
                         }
@@ -446,7 +446,7 @@ module.exports = function (io)
                 room: params.room
             });
 
-            if(tableD.isGameCompleted) {
+            if(tableD!= null && tableD.isGameCompleted) {
                 return callback({'isGameCompleted': true, 'room': params.room});
             }
 
@@ -573,7 +573,7 @@ module.exports = function (io)
             let tableD = await Table.findOne({
                 room: params.room
             });
-            if(tableD.isGameCompleted) {
+            if(tableD!= null && tableD.isGameCompleted) {
                 return callback({'isGameCompleted': true, 'room': params.room});
             }
 
