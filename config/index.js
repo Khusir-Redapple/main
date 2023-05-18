@@ -17,7 +17,7 @@ class config
         this.diceGenerateRange = 25; // No. of dice value generate at the time of game start for each player
         this.safeZone = [1, 14, 27, 40, 22, 35, 9, 48]; // Pawn safe Zone.
         this.starPosition = [21]; // Pawn start position.
-        this.gameTime = 2; // Game EndTime is 10 minutes.
+        this.gameTime = 3; // Game EndTime is 10 minutes.
         this.turnTimer = 10; // Dice roll time 10 sec.
         this.countDownTime = 30; // previously it was 10 sec.
         this.pawnMoveTimer = 0.08; // Pawn move timer.

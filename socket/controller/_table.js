@@ -604,10 +604,10 @@ module.exports = {
                             let reqData = await this.getEndGameData(event.data, tableD.room_fee);
                             console.log("reqData >>>>", reqData)
                             let startGame = await requestTemplate.post(`endgame`, reqData)
-                            if (!startGame.isSuccess)
-                            {
-                                return {callback: {status: 0, message: startGame.error}};
-                            }
+                            // if (!startGame.isSuccess)
+                            // {
+                            //     return {callback: {status: 0, message: startGame.error}};
+                            // }
                         }
                         // Else [!endGame]
                         else
@@ -944,10 +944,10 @@ module.exports = {
                 console.log('BEfore cb end_game', JSON.stringify(winnerInfo));
                 let reqData = await this.getEndGameData(event.data, tableD.room_fee);
                 let startGame = await requestTemplate.post(`endgame`, reqData);
-                if (!startGame.isSuccess)
-                {
-                    return {callback: {status: 0, message: startGame.error}};
-                }
+                // if (!startGame.isSuccess)
+                // {
+                //     return {callback: {status: 0, message: startGame.error}};
+                // }
                 //return event;
                 let resObj = {
                     'events' : [],
@@ -1438,16 +1438,16 @@ module.exports = {
                                 let reqData = await this.getEndGameData(event.data, tableD.room_fee);
                                 console.log("reqData 3 >>>>", reqData)
                                 let startGame = await requestTemplate.post(`endgame`, reqData)
-                                if (!startGame.isSuccess)
-                                {
-                                    return {callback: {
-                                        status: 0, 
-                                        message: startGame.error
-                                    },
-                                    'table' : myRoom,
-                                    'gamePlayData' : gamePlayData
-                                };
-                                }
+                                // if (!startGame.isSuccess)
+                                // {
+                                //     return {callback: {
+                                //         status: 0, 
+                                //         message: startGame.error
+                                //     },
+                                //     'table' : myRoom,
+                                //     'gamePlayData' : gamePlayData
+                                // };
+                                // }
                             }
                             // Else [!endGame]
                             else
