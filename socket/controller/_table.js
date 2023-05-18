@@ -1083,7 +1083,11 @@ module.exports = {
                         name: 'leaveTable',
                         users: [id],
                         data: {
-                            room: params.room
+                            room: params.room,
+                            status: 0,
+                            header : refund != '' ? "Opponent Not Found" : "Server Error",
+                            message: refund != '' ? refund : localization.ServerError,
+                            refund: refund
                         },
                     },
                 ],
