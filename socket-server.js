@@ -138,7 +138,7 @@ try
                                         redis.on("ready", function() { 
                                             console.log("Connected to Redis server successfully");  
                                         });
-                                        module.exports = {redis};
+                                        
                                         //To delete all records from redisDB
                                         // redis.flushall((err, success) => {
                                         //     if (err) {
@@ -146,7 +146,7 @@ try
                                         //     }
                                         //     console.log(success);
                                         //   });
-                                        //module.exports.redis_Io = redis;                 
+                                        module.exports.redis_Io = redis;                 
                                         // For corn job. 
                                         //let task = cron.schedule('*/1 * * * *', () => {
                                         // console.log('Corn job running at every minutes');
