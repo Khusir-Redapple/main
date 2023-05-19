@@ -100,7 +100,7 @@ module.exports = {
             }
             _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
             dices_rolled  = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
-            await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData);
+            await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
 
             // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
             resObj.callback.skip_dice = true;
@@ -190,7 +190,7 @@ module.exports = {
                     DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                 }
                 await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-               await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData);
+               await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = true;
 
@@ -236,7 +236,7 @@ module.exports = {
                     DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                 }
                 await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-                await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData);
+                await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = true;
                 let event = {
@@ -405,7 +405,7 @@ module.exports = {
                     }
                     await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
                     // SEND EVENT
-                    await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData);
+                    await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
 
                     let event = {
                         type: 'room_including_me',
@@ -620,7 +620,7 @@ module.exports = {
                                 DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                             }
                             await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-                            await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData);
+                            await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
 
                             // SEND EVENT
                             let event = {
@@ -842,7 +842,7 @@ module.exports = {
                             }
                             await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
 
-                            await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData);
+                            await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                             // SEND EVENT
                             let event = {
                                 type: 'room_including_me',
@@ -1199,7 +1199,7 @@ module.exports = {
                     }
                     await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
 
-                    await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData);
+                    await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                     // SEND EVENT
                     let event = {
                         type: 'room_including_me',
@@ -1254,7 +1254,7 @@ module.exports = {
                         console.log('444444');
                         await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
                         console.log('55555');
-                        _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData);
+                        await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, mypos);
                     
                         
                         console.log('66666');
@@ -1464,7 +1464,7 @@ module.exports = {
                                     DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                                 }
                                 await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-                                await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData);
+                                await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
 
                                 // SEND EVENT
                                 let event = {
@@ -1511,7 +1511,7 @@ module.exports = {
                                         DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                                     }
                                     await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-                                    await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData);
+                                    await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, mypos);
 
                                     let event = {
                                         type: 'room_including_me',
@@ -1620,7 +1620,7 @@ module.exports = {
                         }
                         await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
                         console.log("gamePlayData before 3: " + JSON.stringify(gamePlayData));
-                        await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData);
+                        await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, mypos);
                         console.log("gamePlayData before 4: " + JSON.stringify(gamePlayData));
                         let event = {
                             type: 'room_including_me',

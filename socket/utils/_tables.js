@@ -638,7 +638,7 @@ class _Tables
                             possition: pl,
                             default_diceroll_timer: config.turnTimer // bug_no_65
                         };
-                        this.sendToSqsAndResetGamePlayData(room,myRoom,gamePlayData);
+                        this.sendToSqsAndResetGamePlayData(room,myRoom,gamePlayData,pl);
                         return resObj;
                     }
                 }
@@ -918,23 +918,23 @@ class _Tables
         }
         return [];
     }
-    async sendToSqsAndResetGamePlayData(room, myRoom, gamePlayData)
+    async sendToSqsAndResetGamePlayData(room, myRoom, gamePlayData, myPos)
     {
         // let i = this.gamePlayData.findIndex((x) => x.room == room);
         // let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+room);
         console.log('SQS SEND DATA  ============> ', gamePlayData);
         await sendMessage(gamePlayData);
         //send through SQS
-        await this.resetGamePlayData(room, myRoom, gamePlayData);
+        await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
     }
 
-    async resetGamePlayData(room, myRoom, gamePlayData)
+    async resetGamePlayData(room, myRoom, gamePlayData, myPos)
     {
         // var index = this.tables.findIndex((x) => x.room == room);
         // if (index >= 0)
         // {
-        
-            let user = myRoom.users[myRoom.current_turn];
+            let user = myRoom.users[myPos];
+            //let user = myRoom.users[myRoom.current_turn];
             // console.log("Table >>", this.tables[index])
                 gamePlayData.data.User = user.numeric_id,
                 gamePlayData.data.turn = user.turn,
