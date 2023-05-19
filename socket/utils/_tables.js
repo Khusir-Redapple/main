@@ -43,7 +43,8 @@ class _Tables
             };
             let colour = [0, 1, 2, 3];
             // To setup prior dice value for users.
-            var randomRumber;
+            let randomRumber;
+            let shuffleNumberForOtherPlayer;
 
             for (var pl = 0; pl < 4; pl++)
             {
@@ -55,7 +56,9 @@ class _Tables
                 // To setup random number to 0 position index user.
                 if(pl == 0) {
                     randomRumber = this.randomNumberGenerator(random);
-                }                 
+                } else {
+                    shuffleNumberForOtherPlayer = this.fisherShuffleGenerator(randomRumber);
+                }                
                 table_i.users[pl] = {
                     id: '',
                     numeric_id: '',
@@ -77,7 +80,7 @@ class _Tables
                     bonusPoints: 0,
                     moves: 0,
                     token_colour: random_colour,
-                    diceValue : pl == 0 ? JSON.parse((JSON.stringify(randomRumber))) : JSON.parse((JSON.stringify(this.fisherShuffleGenerator(randomRumber))))
+                    diceValue : pl == 0 ? JSON.parse((JSON.stringify(randomRumber))) : JSON.parse((JSON.stringify(shuffleNumberForOtherPlayer)))
                 };
             }
             await redisCache.addToRedis(table.room, table_i);
@@ -2060,41 +2063,26 @@ class _Tables
         try { 
             let returnDiceValue = null;
             let randomNumber    = null;
-            // this.tables = this.tables.reduce((prev, curr) =>
-            // {
-            //     if (curr.room == room)
-            //     {
-            //         let idx = curr.users.findIndex(element => element.id == user_id);
-            //         // pop from top of array and update the property value.
-            //         returnDiceValue = curr.users[idx].diceValue.shift();
-            //         // If the zero position of users dice value has ended then, update the new set of dice value. 
-            //         if(curr.users[idx].diceValue.length == 0) {
-            //             randomNumber = this.randomNumberGenerator(config.diceGenerateRange);
-            //             curr.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
-            //             curr.users[1].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
-            //             curr.users[2].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
-            //             curr.users[3].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
-            //         }
-            //     }
-            //     prev.push(curr);
-            //     return prev;
-            // }, []);
-            // return returnDiceValue;
+
             let table = myRoom;
             let idx = table.users.findIndex(element => element.id == user_id);
-            // pop from top of array and update the property value.
-            returnDiceValue = table.users[idx].diceValue.shift();
+            // To check if predefined dice value is empty then create set of dice value first.           
             if(table.users[idx].diceValue.length == 0) {
                 // To generate random dice value range between 10 - 20
                 const random = Math.floor(Math.random() * (20 - 10)) + 10;
+                // To generate dice value between 10 to 20 range.
                 randomNumber = this.randomNumberGenerator(random);
                 // randomNumber = this.randomNumberGenerator(config.diceGenerateRange);
                 table.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
-                table.users[1].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
-                table.users[2].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
-                table.users[3].diceValue = JSON.parse(JSON.stringify(this.fisherShuffleGenerator(randomNumber)));
+                let player_1 = this.fisherShuffleGenerator(randomNumber);
+                table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
+                let player_2 = this.fisherShuffleGenerator(randomNumber);
+                table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
+                let player_3 = this.fisherShuffleGenerator(randomNumber);
+                table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
             }
-            console.log('returnDiceValue >>>',returnDiceValue);
+             // pop from top of array and update the property value.
+            returnDiceValue = table.users[idx].diceValue.shift();
             return {
                 'returnDiceValue' : returnDiceValue,
                 'table' : table,

@@ -31,9 +31,10 @@ module.exports = {
             return {callback: {status: 0, message: localization.noDataFound}};
         }
         // GET DICE RANDOM
-        let DICE_ROLLED = await _tab.getMyDice(params.room, id, myRoom, gamePlayData);   
-        console.log('GET MY DICE=======>', id, myRoom, gamePlayData);
+        let DICE_ROLLED = await _tab.getMyDice(params.room, id, myRoom, gamePlayData);
+        //console.log('DICE_ROLLED ====>>>>>', DICE_ROLLED);
         if (DICE_ROLLED > 6 || DICE_ROLLED < 0) return {callback: {status: 0, message: localization.noDataFound}};
+        
         resObj.callback.dice = DICE_ROLLED;
         let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
         //console.log("value got ", dices_rolled);
