@@ -2387,8 +2387,8 @@ module.exports = {
     },
     // This function used to check equal turn for player.
     checkPlayerEqualTurn : async function(myRoom, playerPosition) {
-        console.log('EqualTurn------>', JSON.stringify(myRoom));
-        console.log('Player Position------>', {playerPosition});
+        //console.log('EqualTurn------>', JSON.stringify(myRoom));
+        //console.log('Player Position------>', {playerPosition});
         let foundFirstActiveUser = false;
         let firstActiveUserIndex = 0;
         for (var i = 0; i < myRoom.users.length; i++) {
@@ -2401,7 +2401,7 @@ module.exports = {
                 }
             }
         }
-       console.log('firstActiveUserIndex----------->', firstActiveUserIndex)
+       //console.log('firstActiveUserIndex----------->', firstActiveUserIndex)
         // if player_index == 0 logic
         return playerPosition == firstActiveUserIndex ? true : false;
     },
