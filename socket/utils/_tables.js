@@ -939,8 +939,8 @@ class _Tables
         // var index = this.tables.findIndex((x) => x.room == room);
         // if (index >= 0)
         // {
-            let user = myRoom.users[myPos];
-            //let user = myRoom.users[myRoom.current_turn];
+            // let user = myRoom.users[myPos];
+            let user = myRoom.users[myRoom.current_turn];
             // console.log("Table >>", this.tables[index])
                 gamePlayData.data.User = user.numeric_id,
                 gamePlayData.data.turn = user.turn,
