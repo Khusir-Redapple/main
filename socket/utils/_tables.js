@@ -638,7 +638,7 @@ class _Tables
                             possition: pl,
                             default_diceroll_timer: config.turnTimer // bug_no_65
                         };
-                        this.sendToSqsAndResetGamePlayData(room,myRoom,gamePlayData,pl);
+                        // this.sendToSqsAndResetGamePlayData(room,myRoom,gamePlayData,pl);
                         return resObj;
                     }
                 }
