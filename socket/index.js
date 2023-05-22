@@ -319,6 +319,7 @@ module.exports = function (io)
                 let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+myRoom.room);
                 await redisCache.addToRedis(myRoom.room,myRoom);
                 await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
+                console.log('GAME-PLAY-DATA-1', JSON.stringify(gamePlayData));
                 socket.join(rez.callback.table.room);
                 processEvents(rez,myRoom);
                 var params_data = {
@@ -403,6 +404,7 @@ module.exports = function (io)
                     }, 1000);     
                      await redisCache.addToRedis(myRoom.room,myRoom);
                      await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
+                     console.log('GAME-PLAY-DATA-2', JSON.stringify(gamePlayData));
                 }
                 else
                 {
@@ -513,17 +515,12 @@ module.exports = function (io)
             let myId = await Socketz.getId(socket.id);
              // redis call by room.
             let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-            let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
-
-            console.log('BEFORE DICE ROLLED=======>', JSON.stringify(gamePlayData));
-
+            let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room); 
             let response = await _TableInstance.tournamntDiceRolled(socket, params, myId, myRoom,gamePlayData);
             console.log('tournamnt_dice_rolled callback', response.callback);
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
-
-            console.log('AFTER DICE ROLLED=======>', JSON.stringify(gamePlayData));
-            
+            console.log('GAME-PLAY-DATA-3', JSON.stringify(gamePlayData));
             callback(response.callback);
             if (response.callback.status == 1) processEvents(response, myRoom);
 
@@ -556,6 +553,7 @@ module.exports = function (io)
             console.log('Tournament_move_made callback', response);
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
+            console.log('GAME-PLAY-DATA-4', JSON.stringify(gamePlayData));
             callback(response.callback);
             if (response.callback.status == 1) processEvents(response, myRoom);
 
@@ -594,6 +592,7 @@ module.exports = function (io)
             gamePlayData = response.gameData;
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
+            console.log('GAME-PLAY-DATA-5', JSON.stringify(gamePlayData));
             callback(response.callback);
             processEvents(response, myRoom);
 
@@ -696,6 +695,7 @@ module.exports = function (io)
         
                                 await redisCache.addToRedis(params_data.room, myRoom);
                                 await redisCache.addToRedis('gamePlay_'+params_data.room ,gamePlayData);
+                                console.log('GAME-PLAY-DATA-6', JSON.stringify(gamePlayData));
                                 //console.log("Room data  cb: " + JSON.stringify(myRoom));
                                 //console.log("gamePlayData cb: " + JSON.stringify(gamePlayData));
 
