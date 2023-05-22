@@ -922,7 +922,9 @@ class _Tables
     {
         // let i = this.gamePlayData.findIndex((x) => x.room == room);
         // let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+room);
-        console.log('SQS SEND DATA  ============> ', gamePlayData, myPos);
+        //console.log('SQS SEND DATA  ============> ', gamePlayData, myPos);
+        let me = myRoom.users[myPos];
+        gamePlayData.data.User = me.numeric_id,
         await sendMessage(gamePlayData);
         //send through SQS
         await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
