@@ -594,7 +594,7 @@ module.exports = {
                             resObj.events.push(event);
                             console.log("resObj >>>", resObj)
                             let reqData = await this.getEndGameData(event.data, tableD.room_fee);
-                            console.log("reqData >>>>", reqData)
+                            console.log("END-GAME-DATA-1", reqData);
                             let startGame = await requestTemplate.post(`endgame`, reqData)
                             // if (!startGame.isSuccess)
                             // {
@@ -935,6 +935,7 @@ module.exports = {
                 };
                 console.log('BEfore cb end_game', JSON.stringify(winnerInfo));
                 let reqData = await this.getEndGameData(event.data, tableD.room_fee);
+                console.log("END-GAME-DATA-2", reqData);
                 let startGame = await requestTemplate.post(`endgame`, reqData);
                 // if (!startGame.isSuccess)
                 // {
@@ -1172,7 +1173,7 @@ module.exports = {
                     };
                     rez_finalObj.events.push(event);
                     let reqData = await this.getEndGameData(event.data, tableD.room_fee);
-                    console.log("reqData 2 >>>>", reqData)
+                    console.log("END-GAME-DATA-3", reqData);
                     let startGame = await requestTemplate.post(`endgame`, reqData)
                     // if (!startGame.isSuccess)
                     // {
@@ -1432,7 +1433,7 @@ module.exports = {
                                 };
                                 rez_finalObj.events.push(event);
                                 let reqData = await this.getEndGameData(event.data, tableD.room_fee);
-                                console.log("reqData 3 >>>>", reqData)
+                                console.log("END-GAME-DATA-4", reqData);
                                 let startGame = await requestTemplate.post(`endgame`, reqData)
                                 // if (!startGame.isSuccess)
                                 // {
@@ -2377,9 +2378,8 @@ module.exports = {
                 reqData.users.push(json)
             }
         }
-        console.log("getEndGameData >", reqData);
         // After gameEnd records to be deleted from DB.
-        //await Table.deleteOne({room: data.room});
+        // await Table.deleteOne({room: data.room});
         return reqData;
     },
     getDataByRoom : async function (room, myRoom) {
