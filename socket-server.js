@@ -43,7 +43,7 @@ app.use('/hello', function (req, res)
 // Creating server
 const server = http.createServer(app);
 const socket = require('socket.io')(server, {perMessageDeflate: false});
-
+const redisAdapter = require("socket.io-redis");
 /**
  *	Server bootup section
  **/
@@ -110,7 +110,7 @@ try
                         //let dbConnectionUrl = process.env.NODE_ENV != 'production' ? `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}` : `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false`;
                                             
                         // for redapple staging. N.B: comment before image build.
-                        let dbConnectionUrl = 'mongodb://admin:admin@18.61.12.70:27017/nostra_playing?connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1';
+                       let dbConnectionUrl = 'mongodb://admin:admin@18.61.12.70:27017/nostra_playing?connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1';
 
                         mongoose.set('useCreateIndex', true);
                         mongoose.connect(
@@ -126,10 +126,12 @@ try
                                     logger.info('Socket Server listening at PORT:' + config.port);       
                                         
                                         // make a connection to the instance of redis
-                                        //  const redis = RedisIo.createClient(6379, 'staging-setup.avv3xf.0001.apse1.cache.amazonaws.com');
-                                        // const redis = RedisIo.createClient('localhost:6379');  
+                                        //  const redis = RedisIo.createClient(6379, 'staging-setup.avv3xf.0001.apse1.cache.amazonaws.com'); 
                                         const redis = RedisIo.createClient(process.env.Redis_Url+':6379')
-                                                     
+                                        // const redis = RedisIo.createClient('localhost:6379');
+                                        const subClient = redis.duplicate();
+                                        socket.adapter(redisAdapter({ pubClient: redis, subClient }));
+                                                  
                                         //const redis = await new RedisIo('localhost:6379');               
                                         redis.connect();                                  
                                         redis.on("error", (error) => {
@@ -138,32 +140,7 @@ try
                                         redis.on("ready", function() { 
                                             console.log("Connected to Redis server successfully");  
                                         });
-                                        
-                                        //To delete all records from redisDB
-                                        // redis.flushall((err, success) => {
-                                        //     if (err) {
-                                        //       throw new Error(err);
-                                        //     }
-                                        //     console.log(success);
-                                        //   });
-                                        module.exports.redis_Io = redis;         
-                                        // For corn job. 
-                                        //let task = cron.schedule('*/1 * * * *', () => {
-                                        // console.log('Corn job running at every minutes');
-                                        // To remove from Socket Object.
-                                        //let sckt = require('./socket/helper/sockets');
-                                        //new sckt.Sockets().removeSocketUserData();
-                                        // To remove room details from Global Object.
-                                        //let roomObj = require('./socket/utils/_tables');
-                                        //new roomObj._Tables().removeRoomDetailsFromTableObject();
-                                    // },                                    
-                                    // {
-                                    //     scheduled: true,
-                                    //     timezone: 'Asia/Kolkata',
-                                    // }); 
-                                    //schedulers[`${uuidv4()}`] = task;                                  
-                                    //cron.getTasks();
-                                    //task.start();
+                                        module.exports.redis_Io = redis; 
                                 });
                             }
                         );
