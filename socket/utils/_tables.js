@@ -2090,12 +2090,8 @@ class _Tables
             }
              // pop from top of array and update the property value.
             returnDiceValue = table.users[idx].diceValue.shift();
-            // return {
-            //     'returnDiceValue' : returnDiceValue,
-            //     'table' : table,
-            // }
             return {
-                'returnDiceValue' : 6,
+                'returnDiceValue' : returnDiceValue,
                 'table' : table,
             }
 
