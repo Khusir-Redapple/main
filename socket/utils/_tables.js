@@ -924,7 +924,7 @@ class _Tables
         gamePlayData.data.User = me.numeric_id;
         gamePlayData.data.player_score = me.points + me.bonusPoints;
 
-        console.log("GAME-PLAY-DATA", JSON.stringify(myRoom), JSON.stringify(gamePlayData), myPos);
+        console.log("GAME-PLAY-DATA", myPos);
         
         if('data' in gamePlayData) {
             await sendMessage(gamePlayData);
