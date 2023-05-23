@@ -879,6 +879,7 @@ class _Tables
                 if (prev != -1)
                 {
                     myRoom.users[prev].dices_rolled = [];
+                    myRoom.users[prev].six_counts = 0;
                     myRoom.users[pos].turn += 1;
                 }
                 if (move)

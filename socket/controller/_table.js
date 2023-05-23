@@ -72,10 +72,10 @@ module.exports = {
         //console.log("sixCounts : ", sixCounts);
 
         // six count issue 
-        if(sixCounts == 1 && dices_rolled[0] != 6) {
-            await _tab.setSix(params.room, id, myRoom);
-            sixCounts = await _tab.getSix(params.room, id, myRoom);
-        }
+        // if(sixCounts == 1 && dices_rolled[0] != 6) {
+        //     await _tab.setSix(params.room, id, myRoom);
+        //     sixCounts = await _tab.getSix(params.room, id, myRoom);
+        // }
         /**
          * To check current dice rolled value is 6 and move not possible. 
          * then user should't get next chance.
