@@ -390,7 +390,8 @@ module.exports = function (io)
                         //     io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: winnerData});
                         // }
                         let gameTime = await checkGameExpireTime(start.room);
-                        console.log("My room--", myRoom);
+                        let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
+                        console.log("My room--", latestRoomData);
                         console.log("Below Winner Data -after timer--", start.room, gameTime, myRoom.current_turn);
                         //let toGetPlayerTurn = await redisCache.getRecordsByKeyRedis(start.room);
                         io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: myRoom.current_turn}});
