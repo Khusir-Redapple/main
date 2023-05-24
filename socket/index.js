@@ -377,18 +377,7 @@ module.exports = function (io)
                         {
                             clearInterval(this);
                         }
-                        // const winnerData = await _TableInstance.checkwinnerOfTournament(start.room);
-                        // console.log("Below Winner Data -after timer--", winnerData)
-                        // if (winnerData.name && winnerData.name == 'end_game')
-                        // {
-                        //     let resObj = {events: []};
-                        //     resObj.events.push(winnerData);
-                        //     processEvents(resObj);
-
-                        // } else if (winnerData.time)
-                        // {
-                        //     io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: winnerData});
-                        // }
+                        
                         let gameTime = await checkGameExpireTime(start.room);
                         if(gameTime) { 
                             let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
