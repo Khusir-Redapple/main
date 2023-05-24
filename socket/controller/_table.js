@@ -8,10 +8,7 @@ let ObjectId        = require('mongoose').Types.ObjectId;
 const requestTemplate = require('../../api/service/request-template');
 const {_Tables}     = require('../utils/_tables');
 const _tab          = new _Tables();
-const Redis         = require("ioredis");
 const redisCache    = require('../../api/service/redis-cache');
-const table         = require('./../../api/models/table');
-const { json } = require('body-parser');
 module.exports = {
     //Roll dice for tournament
     tournamntDiceRolled: async function (socket, params, id, myRoom, gamePlayData)
