@@ -390,18 +390,20 @@ module.exports = function (io)
                         //     io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: winnerData});
                         // }
                         let gameTime = await checkGameExpireTime(start.room);
-                        let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
-                        // console.log("My room--", latestRoomData);
-                        console.log("Below Winner Data -after timer--", start.room, gameTime, latestRoomData.current_turn);
-                        //let toGetPlayerTurn = await redisCache.getRecordsByKeyRedis(start.room);
-                        io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: latestRoomData.current_turn}});
-                        // console.log('PlayerTurn----------->',JSON.stringify(toGetPlayerTurn)); 
-                        if(gameTime.time == 0){
-                            console.log('gameTimerEnd...........................');
-                            // sent event to socket Client for equal ture.                                            
-                            let equalTurnPlayerData = await _TableInstance.determineTotalTurn(start.room);
-                            io.to(start.room).emit('final_turn_initiated', equalTurnPlayerData);
-                            clearInterval(this);
+                        if(gameTime) { 
+                            let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
+                            // console.log("My room--", latestRoomData);
+                            console.log("Below Winner Data -after timer--", start.room, gameTime, latestRoomData.current_turn);
+                            //let toGetPlayerTurn = await redisCache.getRecordsByKeyRedis(start.room);
+                            io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: latestRoomData.current_turn}});
+                            // console.log('PlayerTurn----------->',JSON.stringify(toGetPlayerTurn)); 
+                            if(gameTime.time == 0){
+                                console.log('gameTimerEnd...........................');
+                                // sent event to socket Client for equal ture.                                            
+                                let equalTurnPlayerData = await _TableInstance.determineTotalTurn(start.room);
+                                io.to(start.room).emit('final_turn_initiated', equalTurnPlayerData);
+                                clearInterval(this);
+                            }
                         }
                     }, 1000);     
                      await redisCache.addToRedis(myRoom.room,myRoom);
