@@ -391,10 +391,10 @@ module.exports = function (io)
                         // }
                         let gameTime = await checkGameExpireTime(start.room);
                         let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
-                        console.log("My room--", latestRoomData);
-                        console.log("Below Winner Data -after timer--", start.room, gameTime, myRoom.current_turn);
+                        // console.log("My room--", latestRoomData);
+                        console.log("Below Winner Data -after timer--", start.room, gameTime, latestRoomData.current_turn);
                         //let toGetPlayerTurn = await redisCache.getRecordsByKeyRedis(start.room);
-                        io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: myRoom.current_turn}});
+                        io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: latestRoomData.current_turn}});
                         // console.log('PlayerTurn----------->',JSON.stringify(toGetPlayerTurn)); 
                         if(gameTime.time == 0){
                             console.log('gameTimerEnd...........................');
