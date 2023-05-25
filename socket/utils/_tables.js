@@ -912,7 +912,8 @@ class _Tables
     {
          if (myRoom && pos>-1)
         {
-           // gamePlayData.data.User = myRoom.users[pos].numeric_id;
+            //*****comment below line for Data Inconsistency Issue.
+            // gamePlayData.data.User = myRoom.users[pos].numeric_id;
             return myRoom.users[pos].dices_rolled;
         }
         return [];
