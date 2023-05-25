@@ -753,8 +753,7 @@ class _Tables
                 for (let j = 0; j < myRoom.users.length; j++)
                 {
                     if (myRoom.users[j].id == id)
-                    {
-                        gamePlayData.data.points += bonusPoint; 
+                    { 
                         console.log('Before Bonus Points updated- ', myRoom.users[j].bonusPoints);
                         myRoom.users[j].bonusPoints += bonusPoint;
                         console.log('After Bonus Points updated- ', myRoom.users[j].bonusPoints);
@@ -1285,7 +1284,7 @@ class _Tables
                             gamePlayData.data.move = gamePlayData.data.roll.length;
                             gamePlayData.data.points += dice_value;
                             gamePlayData.data.total_move += dice_value;
-                            gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoint;
+                            gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
                             // console.log("GAME PLAY DATA > ", this.gamePlayData[gamePlayDataIndex])
                             return {
