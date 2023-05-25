@@ -667,7 +667,7 @@ module.exports = {
                         myRoom = canIKillRes.myRoom;
                         gamePlayData = canIKillRes.gameData;
                         // added new line
-                        await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
+                        //await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
 
                         console.log("canIKill >>>", canIKillRes)
                         let canIKill=canIKillRes.dead_possible;

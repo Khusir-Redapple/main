@@ -928,7 +928,7 @@ class _Tables
         // if('data' in gamePlayData) {
         //     await sendMessage(gamePlayData);
         // }
-        let gamePlayData = redisCache.getRecordsByKeyRedis('gamePlay_'+room);
+        //let gamePlayData = redisCache.getRecordsByKeyRedis('gamePlay_'+room);
         console.log("GAME-PLAY-DATA", gamePlayData);
         await sendMessage(gamePlayData);
         //send through SQS
