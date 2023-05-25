@@ -928,12 +928,11 @@ class _Tables
         // if('data' in gamePlayData) {
         //     await sendMessage(gamePlayData);
         // }
-
-        let afterDeepCopy = JSON.parse(JSON.stringify(gamePlayData));
-        console.log("GAME-PLAY-DATA", afterDeepCopy);
-        await sendMessage(afterDeepCopy);
+        
+        console.log("GAME-PLAY-DATA", gamePlayData);
+        await sendMessage(gamePlayData);
         //send through SQS
-        await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
+        //await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
     }
 
     async resetGamePlayData(room, myRoom, gamePlayData, myPos)
