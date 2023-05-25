@@ -932,7 +932,7 @@ class _Tables
         console.log("GAME-PLAY-DATA", gamePlayData);
         await sendMessage(gamePlayData);
         //send through SQS
-        //await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
+        await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
     }
 
     async resetGamePlayData(room, myRoom, gamePlayData, myPos)
