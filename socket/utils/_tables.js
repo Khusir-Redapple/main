@@ -921,16 +921,17 @@ class _Tables
     }
     async sendToSqsAndResetGamePlayData(room, myRoom, gamePlayData, myPos)
     {
-        let me = myRoom.users[myPos];
-        gamePlayData.data.User = me.numeric_id;
-        gamePlayData.data.player_score = me.points + me.bonusPoints;
+        // let me = myRoom.users[myPos];
+        // gamePlayData.data.User = me.numeric_id;
+        // gamePlayData.data.player_score = me.points + me.bonusPoints;
 
-        console.log("GAME-PLAY-DATA", myPos);
-        
-        if('data' in gamePlayData) {
-            await sendMessage(gamePlayData);
-        }
-        
+        // if('data' in gamePlayData) {
+        //     await sendMessage(gamePlayData);
+        // }
+
+        let afterDeepCopy = JSON.parse(JSON.stringify(gamePlayData));
+        console.log("GAME-PLAY-DATA", afterDeepCopy);
+        await sendMessage(afterDeepCopy);
         //send through SQS
         await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
     }
