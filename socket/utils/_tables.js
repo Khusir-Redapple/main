@@ -958,6 +958,7 @@ class _Tables
                 gamePlayData.data.extra_roll_reason = [],
                 gamePlayData.data.checkpoint = 0,
                 gamePlayData.data.player_score = user.points + user.bonusPoints,
+                gamePlayData.data.points = 0,
                 gamePlayData.data.life_lost = 3 - user.life,
                 gamePlayData.data.lives_left = user.life,
                 gamePlayData.data.pawn_positions = user.tokens,
