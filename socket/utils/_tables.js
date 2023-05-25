@@ -921,16 +921,13 @@ class _Tables
     }
     async sendToSqsAndResetGamePlayData(room, myRoom, gamePlayData, myPos)
     {
-        // let me = myRoom.users[myPos];
-        // gamePlayData.data.User = me.numeric_id;
-        // gamePlayData.data.player_score = me.points + me.bonusPoints;
+        let me = myRoom.users[myPos];
+        gamePlayData.data.User = me.numeric_id;
+        gamePlayData.data.player_score = me.points + me.bonusPoints;
 
-        // if('data' in gamePlayData) {
-        //     await sendMessage(gamePlayData);
-        // }
-        //let gamePlayData = redisCache.getRecordsByKeyRedis('gamePlay_'+room);
-        console.log("GAME-PLAY-DATA", gamePlayData);
-        await sendMessage(gamePlayData);
+        if('data' in gamePlayData) {
+            await sendMessage(gamePlayData);
+        }
         //send through SQS
         await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
     }
