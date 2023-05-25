@@ -910,24 +910,23 @@ class _Tables
 
     gePlayerDices(room, pos, myRoom, gamePlayData)
     {
-        // var index = this.tables.findIndex((x) => x.room == room);
          if (myRoom && pos>-1)
         {
-            // let i = this.gamePlayData.findIndex((x) => x.room == room);
-            gamePlayData.data.User = myRoom.users[pos].numeric_id;
+           // gamePlayData.data.User = myRoom.users[pos].numeric_id;
             return myRoom.users[pos].dices_rolled;
         }
         return [];
     }
     async sendToSqsAndResetGamePlayData(room, myRoom, gamePlayData, myPos)
     {
-        let me = myRoom.users[myPos];
-        gamePlayData.data.User = me.numeric_id;
-        gamePlayData.data.player_score = me.points + me.bonusPoints;
+        // let me = myRoom.users[myPos];
+        // gamePlayData.data.User = me.numeric_id;
+        // gamePlayData.data.player_score = me.points + me.bonusPoints;
 
-        if('data' in gamePlayData) {
-            await sendMessage(gamePlayData);
-        }
+        // if('data' in gamePlayData) {
+        //     await sendMessage(gamePlayData);
+        // }
+        await sendMessage(gamePlayData);
         //send through SQS
         await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
     }
