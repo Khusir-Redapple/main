@@ -1248,7 +1248,7 @@ class _Tables
     {
         //let gameStartTime = myRoom.game_started_at;
         let tableD = await Table.findOne({
-            room: room,
+            room: myRoom.room,
         });                
         let gameStartTime = tableD.game_started_at;
         // To convert New Date() getTime to Second.
