@@ -1169,7 +1169,7 @@ class _Tables
                 dead_possible[i].tokenIndex = 0;
                 gamePlayData.data["cut_move " + i] = dead_possible[i].movebleBox + " - 0"
                 // added this line to store cut_player data.
-                gamePlayData.data["cut_player " + i] = dead_possible[i].user;
+                //gamePlayData.data["cut_player " + i] = dead_possible[i].user;
             }
             console.log("My Points >>> ", table.users[myPos].points, table.users[dead_possible[i].user].points, table.users[dead_possible[i].user].tokens)
         }
@@ -1290,7 +1290,7 @@ class _Tables
                             gamePlayData.data.total_move += dice_value;
                             gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
-                            gamePlayData.data.game_time = setGameTime(myRoom);
+                            //gamePlayData.data.game_time = setGameTime(myRoom);
                             // console.log("GAME PLAY DATA > ", this.gamePlayData[gamePlayDataIndex])
                             return {
                                 'token_position': table.users[j].tokens[token_index], 
