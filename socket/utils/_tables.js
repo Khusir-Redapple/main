@@ -1170,7 +1170,7 @@ class _Tables
                 dead_possible[i].tokenIndex = 0;
                 gamePlayData.data["cut_move " + i] = dead_possible[i].movebleBox + " - 0"
                 // added this line to store cut_player data.
-                gamePlayData.data["cut_player " + i] = dead_possible[i].user;
+                //gamePlayData.data["cut_player " + i] = dead_possible[i].user;
             }
             console.log("My Points >>> ", table.users[myPos].points, table.users[dead_possible[i].user].points, table.users[dead_possible[i].user].tokens)
         }
@@ -1249,7 +1249,8 @@ class _Tables
         //let gameStartTime = myRoom.game_started_at;
         let tableD = await Table.findOne({
             room: myRoom.room,
-        });                
+        });  
+        console.log('GAMETIME====>',tableD);              
         let gameStartTime = tableD.game_started_at;
         // To convert New Date() getTime to Second.
         let time = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
@@ -1263,7 +1264,7 @@ class _Tables
         return minutes + ":" + seconds;
     }
 
-    makeMoveForTournament(dice_value, room, id, token_index, myRoom, gamePlayData)
+    async makeMoveForTournament(dice_value, room, id, token_index, myRoom, gamePlayData)
     {
        const table = myRoom;
         // for (let i = 0; i < this.tables.length; i++)
@@ -1295,7 +1296,7 @@ class _Tables
                             gamePlayData.data.total_move += dice_value;
                             gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
-                            gamePlayData.data.game_time = this.setGameTime(myRoom);
+                            gamePlayData.data.game_time = await this.setGameTime(myRoom);
                             // console.log("GAME PLAY DATA > ", this.gamePlayData[gamePlayDataIndex])
                             return {
                                 'token_position': table.users[j].tokens[token_index], 
