@@ -1450,6 +1450,7 @@ module.exports = {
                                 //     'gamePlayData' : gamePlayData
                                 // };
                                 // }
+                                await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, mypos);
                             }
                             // Else [!endGame]
                             else
