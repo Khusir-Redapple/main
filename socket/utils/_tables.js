@@ -1168,7 +1168,8 @@ class _Tables
                 table.users[dead_possible[i].user].tokens[dead_possible[i].token] = 0;
                 dead_possible[i].tokenIndex = 0;
                 gamePlayData.data["cut_move " + i] = dead_possible[i].movebleBox + " - 0"
-
+                // added this line to store cut_player data.
+                gamePlayData.data["cut_player " + i] = dead_possible[i].user;
             }
             console.log("My Points >>> ", table.users[myPos].points, table.users[dead_possible[i].user].points, table.users[dead_possible[i].user].tokens)
         }
@@ -1242,18 +1243,20 @@ class _Tables
         }
     }
 
-    // setGameTime(room, time)
-    // {
-    //     console.log("setGameTime : ", room, time);
-    //     if (time < 0) time = 0;
-    //     let gameTime = config.gameTime * 60 - time;
-    //     let minutes = Math.floor(gameTime / 60);
-    //     let seconds = gameTime - minutes * 60;
-    //     let gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
-    //     console.log("GAMETIME :", minutes + ":" + seconds);
-    //     this.gamePlayData[gamePlayDataIndex].data.game_time = minutes + ":" + seconds;
-    //     return true;
-    // }
+    setGameTime(myRoom)
+    {
+        let gameStartTime = myRoom.game_started_at;
+        // To convert New Date() getTime to Second.
+        let time = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
+        let minutes = 0;
+        let seconds = 0;
+        if(time > 0) {
+            let gameTime = config.gameTime * 60 - time;
+            minutes = Math.floor(gameTime / 60);
+            seconds = gameTime - minutes * 60;
+        } 
+        return minutes + ":" + seconds;
+    }
 
     makeMoveForTournament(dice_value, room, id, token_index, myRoom, gamePlayData)
     {
@@ -1287,6 +1290,7 @@ class _Tables
                             gamePlayData.data.total_move += dice_value;
                             gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
+                            gamePlayData.data.game_time = setGameTime(myRoom);
                             // console.log("GAME PLAY DATA > ", this.gamePlayData[gamePlayDataIndex])
                             return {
                                 'token_position': table.users[j].tokens[token_index], 
