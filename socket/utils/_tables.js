@@ -4,6 +4,7 @@ const {sendMessage} = require('../../socket/controller/message_controllers');
 const logDNA        = require('../../api/service/logDNA');
 const timeLib       = require('../helper/timeLib');
 const redisCache    = require('../../api/service/redis-cache');
+const Table         = require('./../../api/models/table');
 let logger          = {};
 class _Tables
 {
@@ -1243,9 +1244,13 @@ class _Tables
         }
     }
 
-    setGameTime(myRoom)
+    async setGameTime(myRoom)
     {
-        let gameStartTime = myRoom.game_started_at;
+        //let gameStartTime = myRoom.game_started_at;
+        let tableD = await Table.findOne({
+            room: room,
+        });                
+        let gameStartTime = tableD.game_started_at;
         // To convert New Date() getTime to Second.
         let time = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
         let minutes = 0;
