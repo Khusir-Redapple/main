@@ -1128,7 +1128,7 @@ class _Tables
             }
         }
 
-        console.log('After loop DEAD POSSIBLE Tourney', dead_possible);
+        //console.log('After loop DEAD POSSIBLE Tourney', dead_possible);
        // let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+room);
         if (dead_possible.length)
         {
@@ -1142,9 +1142,9 @@ class _Tables
         {
             let checkPointActivated = false;
             let token_position = table.users[dead_possible[i].user].tokens[dead_possible[i].token];
-            console.log("Token Poisition - ", token_position)
+            //console.log("Token Poisition - ", token_position)
             if (token_position >= config.starPosition[0]) checkPointActivated = true;
-            console.log("My Points >>> ", table.users[myPos].points, table.users[dead_possible[i].user], checkPointActivated)
+            //console.log("My Points >>> ", table.users[myPos].points, table.users[dead_possible[i].user], checkPointActivated)
             // this.tables[tab_pos].users[dead_possible[i].user].points = this.tables[tab_pos].users[dead_possible[i].user].points - this.tables[tab_pos].users[dead_possible[i].user].tokens[dead_possible[i].token];
             dead_possible[i].checkPointActivated = checkPointActivated;
             gamePlayData.data["cut_player " + i] = dead_possible[i].user;
@@ -1157,9 +1157,9 @@ class _Tables
                 table.users[dead_possible[i].user].tokens[dead_possible[i].token] = config.starPosition[0];
                 dead_possible[i].tokenIndex = config.starPosition[0];
                 dead_possible[i].movebleBox = cutPoint - config.starPosition[0];
-                console.log("KILL TOKEN INDEX UPDATE _ ", table.users[dead_possible[i].user].points, cutPoint, typeof cutPoint)
+                //console.log("KILL TOKEN INDEX UPDATE _ ", table.users[dead_possible[i].user].points, cutPoint, typeof cutPoint)
                 table.users[dead_possible[i].user].points = table.users[dead_possible[i].user].points - cutPoint + config.starPosition[0];
-                console.log("AFTER KILL TOKEN INDEX UPDATE _", table.users[dead_possible[i].user].tokens[dead_possible[i].token], table.users[dead_possible[i].user].points)
+                //console.log("AFTER KILL TOKEN INDEX UPDATE _", table.users[dead_possible[i].user].tokens[dead_possible[i].token], table.users[dead_possible[i].user].points)
                 gamePlayData.data["cut_move " + i] = cutPoint + " - " + config.starPosition[0];
             }
             else
@@ -1172,10 +1172,10 @@ class _Tables
                 // added this line to store cut_player data.
                 //gamePlayData.data["cut_player " + i] = dead_possible[i].user;
             }
-            console.log("My Points >>> ", table.users[myPos].points, table.users[dead_possible[i].user].points, table.users[dead_possible[i].user].tokens)
+            //console.log("My Points >>> ", table.users[myPos].points, table.users[dead_possible[i].user].points, table.users[dead_possible[i].user].tokens)
         }
-        console.log("dead_possible >new>>>", dead_possible);
-        console.log('KILL TABLE INFO ::', table);
+        //console.log("dead_possible >new>>>", dead_possible);
+        //console.log('KILL TABLE INFO ::', table);
         //return dead_possible.length > 0 ? dead_possible : false;
         let responseObj = {
             'dead_possible' : dead_possible.length > 0 ? dead_possible : false,
