@@ -44,6 +44,8 @@ app.use('/hello', function (req, res)
 const server = http.createServer(app);
 const socket = require('socket.io')(server, {perMessageDeflate: false});
 const redisAdapter = require("socket.io-redis");
+const Queue = require('bull');
+
 /**
  *	Server bootup section
  **/
@@ -90,6 +92,10 @@ try
                     process.env.DB_PORT = keys[2] ? keys[2] : process.env.DB_PORT;
                     process.env.DB_USER = keys[3] ? keys[3] : process.env.DB_USER;
                     process.env.DB_NAME = process.env.DB_NAME ? process.env.DB_NAME : 'nostra_playing';
+                    
+                    // process.env.DB_HOST='localhost';
+
+
                     // FOR logDNA
                     process.env.LOG_DNA_API_KEY = keys[4] ? keys[4] : process.env.LOG_DNA_API_KEY;
                     // FOR SQS URL
@@ -100,17 +106,17 @@ try
                     process.env.API_SECRET_KEY = keys[7] ? keys[7] : process.env.API_SECRET_KEY;
                     // Moved here from top of file for availble logDNA apiKey. 
                     process.env.Redis_Url = keys[8] ? keys[8] : process.env.Redis_Url;
-                    require('./socket')(socket);
+                    // require('./socket')(socket);
                     let config = require('./config');
                     logDNA = require('./api/service/logDNA');
                     // DB Connect
                     setTimeout(function ()
                     {
                         // For staging & production. N.B: uncomment before image build.
-                        //let dbConnectionUrl = process.env.NODE_ENV != 'production' ? `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}` : `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false`;
+                        let dbConnectionUrl = process.env.NODE_ENV != 'production' ? `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}` : `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false`;
                                             
                         // for redapple staging. N.B: comment before image build.
-                       let dbConnectionUrl = 'mongodb://admin:admin@18.61.12.70:27017/nostra_playing?connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1';
+                       // let dbConnectionUrl = 'mongodb://admin:admin@18.61.12.70:27017/nostra_playing?connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1';
 
                         mongoose.set('useCreateIndex', true);
                         mongoose.connect(
@@ -126,12 +132,23 @@ try
                                     logger.info('Socket Server listening at PORT:' + config.port);       
                                         
                                         // make a connection to the instance of redis
-                                        //  const redis = RedisIo.createClient(6379, 'staging-setup.avv3xf.0001.apse1.cache.amazonaws.com'); 
+                                        //  const redis = RedisIo.createClient(6379, 'staging-setup.avv3xf.0001.apse1.cache.amazonaws.com');
+                                        
+                                        // const redis = RedisIo.createClient('localhost:6379');  
                                         const redis = RedisIo.createClient(process.env.Redis_Url+':6379')
-                                        // const redis = RedisIo.createClient('localhost:6379');
+                                        
                                         const subClient = redis.duplicate();
                                         socket.adapter(redisAdapter({ pubClient: redis, subClient }));
-                                                  
+                                        
+                                        // const redisConf = {host: 'localhost', port: 6379};
+                                        const redisConf = {host: process.env.Redis_Url, port: 6379};
+
+                                        let bullQueue = new Queue('bullQueue', {
+                                            redis: redisConf
+                                        });
+
+                                        require('./socket')(socket, bullQueue);
+
                                         //const redis = await new RedisIo('localhost:6379');               
                                         redis.connect();                                  
                                         redis.on("error", (error) => {

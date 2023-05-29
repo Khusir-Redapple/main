@@ -11,7 +11,7 @@ const ObjectId        = require('mongoose').Types.ObjectId;
 const logDNA          = require('../api/service/logDNA');
 const redisCache      = require('../api/service/redis-cache');
 const { CostExplorer } = require('aws-sdk');
-module.exports = function (io)
+module.exports = function (io, bullQueue)
 {
     
     // If the Promise is rejected this will catch it.
@@ -29,7 +29,27 @@ module.exports = function (io)
             level: 'error',
             meta: error
         });
-    } 
+    }
+    
+    bullQueue.process(async (job) => {
+        console.log("EVENT  ===>", job.data.name);
+        return processBullEvent(job.data);
+    });
+
+    bullQueue.on('completed', (job, result) => {
+        console.log(`Job completed with result ${result}`);
+        job.remove();
+    });
+
+    bullQueue.on('failed', (job, result) => {
+        console.log(`Job failed with result ${result}`);
+        let logData = {
+            level: 'debugg',
+            meta: {result}
+        };
+        logDNA.log(`Job failed ${logData}`);
+        job.remove();
+    });
     
     /**
      * The Socket connection start here
@@ -363,34 +383,13 @@ module.exports = function (io)
                     }
                     // if tournament possible
                     await startTournament(start, socket, myRoom, gamePlayData);
-                    setInterval(async function ()
-                    {
-                        let data = {
-                            room: start.room
-                        }
-                        //TODO: 
-                        checkTabel = await _TableInstance.istableExists(data,myRoom);
-                        var tableD = await Table.findOne({
-                            room: params_data.room
-                        });
-                        if (tableD!= null && tableD.isGameCompleted)
+                    await bullQueue.add(
+                        { name: "gameCompletionQueue", data:{start, params_data, myRoom}},
                         {
-                            clearInterval(this);
+                        delay: 1000
                         }
-                        
-                        let gameTime = await checkGameExpireTime(start.room);
-                        if(gameTime) { 
-                            let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
-                            io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: latestRoomData.current_turn}}); 
-                            if(gameTime.time == 0){
-                                console.log('gameTimerEnd...........................');
-                                // sent event to socket Client for equal ture.                                            
-                                let equalTurnPlayerData = await _TableInstance.determineTotalTurn(start.room);
-                                io.to(start.room).emit('final_turn_initiated', equalTurnPlayerData);
-                                clearInterval(this);
-                            }
-                        }
-                    }, 1000);     
+                    );
+
                      await redisCache.addToRedis(myRoom.room,myRoom);
                      await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
                     //  console.log('GAME-PLAY-DATA-2', JSON.stringify(gamePlayData));
@@ -624,7 +623,9 @@ module.exports = function (io)
         //     } 
         // });
 
-        async function startTournament(start, socket, myRoom, gamePlayData)
+    });
+
+    async function startTournament(start, socket, myRoom, gamePlayData)
         {
             var params_data = {
                 room: start.room,
@@ -637,75 +638,16 @@ module.exports = function (io)
             process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
             //console.log("AFter startGame fire - ", new Date());
 
-            setInterval(async function ()
-            {
-                try{
-                let myRoom = await redisCache.getRecordsByKeyRedis(params_data.room);
-                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params_data.room);
-                let checkTabel = await _TableInstance.istableExists(params_data,myRoom);
-                var tableD = await Table.findOne({
-                    room: params_data.room
-                });
-                //console.log('Before SKIPPED ', JSON.stringify(tableD));                
-                if (tableD!= null && tableD.isGameCompleted)
+            await bullQueue.add(
                 {
-                    clearInterval(this);
-                } else
+                    name:"playerTurnQueue",
+                    data:{room: start.room},
+                }, 
                 {
-                    var currTime = parseInt(new Date().getTime());
-                    if (currTime - checkTabel.start_at > (config.turnTimer + 2) * 1000)
-                    {   
-                        // console.log("Room data before cb1: " + Json.stringify(myRoom));
-                        // console.log("gamePlayData cb1: " + Json.stringify(gamePlayData));
-                        //console.log("IN timeOut ------------", new Date())
-                        //console.log("IN timeOutNew ------------", new Date())
-
-                        var id_of_current_turn = await _TableInstance.getMyIdByPossition(
-                            params_data,
-                            checkTabel.current_turn,
-                            myRoom
-                        );
-                         //console.log("curr turn " + id_of_current_turn);
-                        if (id_of_current_turn != -1)
-                        {
-
-                            //console.log("IN timeOutNew1 ------------", new Date())
-                           // console.log("Room data before cb: " + JSON.stringify(myRoom));
-                            //console.log("gamePlayData before cb: " + JSON.stringify(gamePlayData));
-                            let currentUser= tableD.players.find(x=>x.id.toString()==id_of_current_turn);
-                            //console.log("Db User: ",currentUser);
-                          
-                            if(currentUser && currentUser.is_active && !tableD.isGameCompleted)
-                            {
-                                //console.log('SKIPPED for extra life deduct------->>', JSON.stringify(tableD));
-                                let response = await _TableInstance.skipTurn(params_data, id_of_current_turn, myRoom, gamePlayData);
-                                myRoom = response.table;
-                                gamePlayData = response.gamePlayData;
-        
-                                await redisCache.addToRedis(params_data.room, myRoom);
-                                await redisCache.addToRedis('gamePlay_'+params_data.room ,gamePlayData);
-                                // console.log('GAME-PLAY-DATA-6', JSON.stringify(gamePlayData));
-                                //console.log("Room data  cb: " + JSON.stringify(myRoom));
-                                //console.log("gamePlayData cb: " + JSON.stringify(gamePlayData));
-
-                                processEvents(response, myRoom);
-
-                                // to update current turn for player if player miss the events.
-                                if(response.events[1].data.position != null) {
-                                    process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
-                                } else if(response.events[1].data.player_index != null) {
-                                    process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
-                                }
-                            }
-                        }
-                    }
+                    delay: 1500
                 }
-            }
-            catch(ex)
-            {
-                console.log("interval exception ", ex);
-            }
-            }, 1500);
+            );
+
         }
         async function calculateWinAmount(amount, payoutConfig)
         {
@@ -908,6 +850,132 @@ module.exports = function (io)
                 delete object[key];
             });
         }
-    });
+        
+        async function processBullEvent(job) {
+            if( job.name.indexOf('playerTurnQueue') > -1 ) {
+                console.log("playerTurn event fired", job.data)
+                return playerTurn(job);
+    
+            } else if( job.name.indexOf('gameCompletionQueue') > -1 ) {
+                console.log("checkGameCompletion event fired", job.data)
+                return checkGameCompletion(job);
+    
+            } else {
+                console.error('Error:: Invalid job name', job.name);
+            }
+        }
+
+        async function playerTurn(job) {
+            let params_data = job.data;
+            
+            try{
+                let myRoom = await redisCache.getRecordsByKeyRedis(params_data.room);
+                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params_data.room);
+                let checkTabel = await _TableInstance.istableExists(params_data,myRoom);
+                var tableD = await Table.findOne({
+                    room: params_data.room
+                });
+            //console.log('Before SKIPPED ', JSON.stringify(tableD));                
+            if (tableD!= null && tableD.isGameCompleted)
+            {
+                console.log('Game already completed');
+                return;
+            } else
+            {
+                var currTime = parseInt(new Date().getTime());
+                if (currTime - checkTabel.start_at > (config.turnTimer + 2) * 1000)
+                {   
+                    // console.log("Room data before cb1: " + Json.stringify(myRoom));
+                    // console.log("gamePlayData cb1: " + Json.stringify(gamePlayData));
+                    //console.log("IN timeOut ------------", new Date())
+                    //console.log("IN timeOutNew ------------", new Date())
+    
+                    var id_of_current_turn = await _TableInstance.getMyIdByPossition(
+                        params_data,
+                        checkTabel.current_turn,
+                        myRoom
+                    );
+                    //console.log("curr turn " + id_of_current_turn);
+                    if (id_of_current_turn != -1)
+                    {
+    
+                        //console.log("IN timeOutNew1 ------------", new Date())
+                    // console.log("Room data before cb: " + JSON.stringify(myRoom));
+                        //console.log("gamePlayData before cb: " + JSON.stringify(gamePlayData));
+                        let currentUser= tableD.players.find(x=>x.id.toString()==id_of_current_turn);
+                        //console.log("Db User: ",currentUser);
+                    
+                        if(currentUser && currentUser.is_active && !tableD.isGameCompleted)
+                        {
+                            //console.log('SKIPPED for extra life deduct------->>', JSON.stringify(tableD));
+                            let response = await _TableInstance.skipTurn(params_data, id_of_current_turn, myRoom, gamePlayData);
+                            myRoom = response.table;
+                            gamePlayData = response.gamePlayData;
+    
+                            await redisCache.addToRedis(params_data.room, myRoom);
+                            await redisCache.addToRedis('gamePlay_'+params_data.room ,gamePlayData);
+                            // console.log('GAME-PLAY-DATA-6', JSON.stringify(gamePlayData));
+                            //console.log("Room data  cb: " + JSON.stringify(myRoom));
+                            //console.log("gamePlayData cb: " + JSON.stringify(gamePlayData));
+    
+                            processEvents(response, myRoom);
+    
+                            // to update current turn for player if player miss the events.
+                            if(response.events[1].data.position != null) {
+                                process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
+                            } else if(response.events[1].data.player_index != null) {
+                                process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
+                            }
+                        }
+                    }
+                }
+                await bullQueue.add(job, {
+                    delay: 1500
+                });
+            }
+        }
+        catch(ex)
+        {
+            console.log("interval exception ", ex);
+        }
+                
+        }
+    
+        async function checkGameCompletion(job) {
+    
+            let {start, params_data, myRoom} = job.data;
+        
+            let data = {
+                room: start.room
+            }
+            //TODO: 
+            checkTabel = await _TableInstance.istableExists(data,myRoom);
+            var tableD = await Table.findOne({
+                room: params_data.room
+            });
+            if (tableD!= null && tableD.isGameCompleted)
+            {
+                console.log('Game already completed');
+                return;
+            }
+            
+            let gameTime = await checkGameExpireTime(start.room);
+            if(gameTime) { 
+                let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
+                io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: latestRoomData.current_turn}}); 
+                if(gameTime.time == 0){
+                    console.log('gameTimerEnd...........................');
+                    // sent event to socket Client for equal ture.                                            
+                    let equalTurnPlayerData = await _TableInstance.determineTotalTurn(start.room);
+                    io.to(start.room).emit('final_turn_initiated', equalTurnPlayerData);
+                    console.log('final_turn_initiated');
+                    return;
+                } else {
+                    await bullQueue.add(job, {
+                        delay: 1000
+                    });
+                }  
+            }        
+        }
 
 };
