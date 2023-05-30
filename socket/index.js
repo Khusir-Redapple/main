@@ -159,7 +159,7 @@ module.exports = function (io)
                 if (typeof callback == 'function')
                     return callback({
                         status: 0,
-                        message: 'Error occurred, Please try again.',
+                        message: 'An error was encountered. Please join a new game',
                     });
 
                 console.log("join",err); 
@@ -176,7 +176,7 @@ module.exports = function (io)
                 if (!myId)
                 {   return callback({
                         status: 0,
-                        message: 'Something went wrong!',
+                        message: 'An error was encountered. Please join a new game',
                     });
                 }
                 var rez = await _TableInstance.reconnectIfPlaying(myId);
@@ -237,7 +237,8 @@ module.exports = function (io)
             console.log("payout -- ", payout);
             params.winningAmount = payout.payoutConfig;
             params.totalWinning = payout.totalWinning;
-            params.lobbyId=verifyUser.lobbyId;
+            params.lobbyId = verifyUser.lobbyId;
+            params.entryFee = verifyUser.entryFee;
             logData = {
                 level: 'debugg',
                 meta: payout
@@ -301,10 +302,9 @@ module.exports = function (io)
             var myId = await Socketz.getId(socket.id);
             if (!myId)
             {
-                console.log('Socket disconnected');
                 return callback({
                     status: 0,
-                    message: 'Something went wrong! ',
+                    message: 'An error was encountered. Please join a new game',
                 });
             }
            

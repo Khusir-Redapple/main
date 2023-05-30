@@ -14,7 +14,7 @@ class _Tables
         this.gamePlayData = gamePlayObject;
     }
     //create table for tournament
-    async createTableforTourney(table)
+    async createTableforTourney(table,entry_Fee)
     {
         let playData = {
             room: table.room,
@@ -39,7 +39,8 @@ class _Tables
                 no_of_players: table.no_of_players,
                 //validity : timeLib.calculateExpTime(config.socketUserExpireTime),
                 users: [],
-                lobbyId: table.lobbyId
+                lobbyId: table.lobbyId,
+                entryFee : entry_Fee
 
             };
             let colour = [0, 1, 2, 3];

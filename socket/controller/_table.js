@@ -2230,7 +2230,7 @@ module.exports = {
                     },
                 };
             }
-            room_code = await _tab.createTableforTourney(tableX);
+            room_code = await _tab.createTableforTourney(tableX, params.entryFee);
             await redisCache.addToRedis('room_'+room_code, 0);            
             console.log('room_'+room_code+' 0');           
             await redisCache.addToRedis('lobbyId_'+params.lobbyId, room_code);
@@ -2332,7 +2332,7 @@ module.exports = {
                 return {
                     callback: {
                         status: 0,
-                        message: 'Error joining game, please try again',
+                        message: 'An error was encountered. Please join a new game',
                     },
                 };
         }
