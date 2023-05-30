@@ -2232,7 +2232,9 @@ module.exports = {
             }
             room_code = await _tab.createTableforTourney(tableX, params.entryFee);
             await redisCache.addToRedis('room_'+room_code, 0);            
-            console.log('room_'+room_code+' 0');           
+            console.log('room_'+room_code+' 0');
+            let xx = await redisCache.getRecordsByKeyRedis(room_code);
+            console.log(xx);       
             await redisCache.addToRedis('lobbyId_'+params.lobbyId, room_code);
 
             if (!room_code) {
