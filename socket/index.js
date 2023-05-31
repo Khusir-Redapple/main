@@ -238,7 +238,7 @@ module.exports = function (io)
             params.winningAmount = payout.payoutConfig;
             params.totalWinning = payout.totalWinning;
             params.lobbyId = verifyUser.lobbyId;
-            params.entryFee = verifyUser.entryFee;
+            params.entryFee = 0;
             logData = {
                 level: 'debugg',
                 meta: payout
