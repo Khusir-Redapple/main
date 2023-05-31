@@ -380,7 +380,7 @@ module.exports = function (io)
 
                         let gameTime = await checkGameExpireTime(start.room);
                         if(gameTime) { 
-                            console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
+                            //console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
                             io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: latestRoomData.current_turn}}); 
                             if(gameTime.time == 0){
                                 console.log('gameTimerEnd...........................');
@@ -643,13 +643,18 @@ module.exports = function (io)
                 let myRoom = await redisCache.getRecordsByKeyRedis(params_data.room);
                 let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params_data.room);
                 let checkTabel = await _TableInstance.istableExists(params_data,myRoom);
-                var tableD = await Table.findOne({
-                    room: params_data.room
-                });
+                // var tableD = await Table.findOne({
+                //     room: params_data.room
+                // });
                 //console.log('Before SKIPPED ', JSON.stringify(tableD));                
-                if (tableD!= null && tableD.isGameCompleted)
+                // if (tableD!= null && tableD.isGameCompleted)
+                // {
+                //     clearInterval(this);
+                // }
+                if (myRoom!= null && myRoom.isGameCompleted)
                 {
                     clearInterval(this);
+
                 } else
                 {
                     var currTime = parseInt(new Date().getTime());
@@ -672,10 +677,9 @@ module.exports = function (io)
                             //console.log("IN timeOutNew1 ------------", new Date())
                            // console.log("Room data before cb: " + JSON.stringify(myRoom));
                             //console.log("gamePlayData before cb: " + JSON.stringify(gamePlayData));
-                            let currentUser= tableD.players.find(x=>x.id.toString()==id_of_current_turn);
-                            //console.log("Db User: ",currentUser);
-                          
-                            if(currentUser && currentUser.is_active && !tableD.isGameCompleted)
+                            // let currentUser= tableD.players.find(x=>x.id.toString()==id_of_current_turn);
+                            let currentUser= myRoom.users.find(x=>x.id.toString() == id_of_current_turn);
+                            if(currentUser && currentUser.is_active && !myRoom.isGameCompleted)
                             {
                                 //console.log('SKIPPED for extra life deduct------->>', JSON.stringify(tableD));
                                 let response = await _TableInstance.skipTurn(params_data, id_of_current_turn, myRoom, gamePlayData);
