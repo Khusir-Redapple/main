@@ -271,6 +271,7 @@ module.exports = function (io)
                     },
                     {
                         $set: {
+                            'name'      : params.user_name,
                             'token'     : data.token,
                             'lobbyId'   : verifyUser.lobbyId,
                             'joinedAt'  : new Date().getTime()
@@ -381,6 +382,7 @@ module.exports = function (io)
                         let gameTime = await checkGameExpireTime(start.room);
                         if(gameTime) { 
                             let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
+                            console.log('isGameCompleted ====>', latestRoomData.isGameCompleted);
                             io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: latestRoomData.current_turn}}); 
                             if(gameTime.time == 0){
                                 console.log('gameTimerEnd...........................');

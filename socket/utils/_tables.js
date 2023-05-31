@@ -40,7 +40,8 @@ class _Tables
                 //validity : timeLib.calculateExpTime(config.socketUserExpireTime),
                 users: [],
                 lobbyId: table.lobbyId,
-                entryFee : entry_Fee
+                entryFee : entry_Fee,
+                isGameCompleted : false,
 
             };
             let colour = [0, 1, 2, 3];
