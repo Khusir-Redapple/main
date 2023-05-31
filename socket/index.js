@@ -197,7 +197,7 @@ module.exports = function (io)
                 console.log("join_previous" ,ex );
                 return callback({
                     status: 0,
-                    message: 'You ware removed from game.',
+                    message: 'An error was encountered. Please join a new game',
                 });
             }
         });
