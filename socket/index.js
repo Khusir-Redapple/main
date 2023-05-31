@@ -371,18 +371,16 @@ module.exports = function (io)
                         }
                         //TODO: 
                         checkTabel = await _TableInstance.istableExists(data,myRoom);
-                        var tableD = await Table.findOne({
-                            room: params_data.room
-                        });
-                        if (tableD!= null && tableD.isGameCompleted)
+                        let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
+                         // IF game completed, then clear the time interval.
+                        if (latestRoomData!= null && latestRoomData.isGameCompleted == true)
                         {
                             clearInterval(this);
                         }
-                        
+
                         let gameTime = await checkGameExpireTime(start.room);
                         if(gameTime) { 
-                            let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
-                            console.log('isGameCompleted ====>', latestRoomData.isGameCompleted);
+                            //console.log('isGameCompleted ====>', latestRoomData.isGameCompleted);
                             io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: latestRoomData.current_turn}}); 
                             if(gameTime.time == 0){
                                 console.log('gameTimerEnd...........................');
