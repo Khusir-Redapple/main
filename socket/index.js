@@ -312,7 +312,7 @@ module.exports = function (io)
             //var rez = await _TableInstance.joinTournament(params, myId, socket);
             //let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
             //let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
-            var rez = await _TableInstance.joinTournamentV2(params, myId, us,0);
+            var rez = await _TableInstance.joinTournamentV2(params, params.entryFee, myId, us,0);
             callback(rez.callback);
             if (rez.callback.status == 1)
             {  

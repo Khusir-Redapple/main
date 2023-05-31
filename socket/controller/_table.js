@@ -2131,7 +2131,7 @@ module.exports = {
     //         };
     //     }
     // },
-     joinTournamentV2: async function (params, myId, user, retryCount = 0) {
+     joinTournamentV2: async function (params, entry_Fee, myId, user, retryCount = 0) {
         params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId']);
         if (!params || !Service.validateObjectId(myId) || _.isEmpty(params.no_of_players) || _.isEmpty(params.room_fee)) {
             return {
@@ -2238,7 +2238,7 @@ module.exports = {
                     },
                 };
             }
-            room_code = await _tab.createTableforTourney(tableX,params.entryFee);
+            room_code = await _tab.createTableforTourney(tableX, entry_Fee);
             await redisCache.addToRedis('room_'+room_code, 0);            
             console.log('room_'+room_code+' 0');           
             await redisCache.addToRedis('lobbyId_'+params.lobbyId, room_code);
@@ -2272,7 +2272,7 @@ module.exports = {
         if (valueOfRoom > parseInt(params.no_of_players)) {
             // redisCache.getRecordsByKeyRedis(room_code);
             retryCount++;
-            this.joinTournamentV2(params, myId, user,retryCount);
+            this.joinTournamentV2(params, entry_Fee, myId, user,retryCount);
         }
 
         myRoom = await redisCache.getRecordsByKeyRedis(room_code);
@@ -2334,7 +2334,7 @@ module.exports = {
             if (retryCount<3)
             {
                 retryCount++;
-                return this.joinTournamentV2(params, myId, user, retryCount);
+                return this.joinTournamentV2(params, entry_Fee, myId, user, retryCount);
             }
             else
                 return {
