@@ -380,7 +380,7 @@ module.exports = function (io)
 
                         let gameTime = await checkGameExpireTime(start.room);
                         if(gameTime) { 
-                            //console.log('isGameCompleted ====>', latestRoomData.isGameCompleted);
+                            console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
                             io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: latestRoomData.current_turn}}); 
                             if(gameTime.time == 0){
                                 console.log('gameTimerEnd...........................');
