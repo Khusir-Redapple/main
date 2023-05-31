@@ -688,18 +688,7 @@ module.exports = function (io)
         
                                 await redisCache.addToRedis(params_data.room, myRoom);
                                 await redisCache.addToRedis('gamePlay_'+params_data.room ,gamePlayData);
-                                // console.log('GAME-PLAY-DATA-6', JSON.stringify(gamePlayData));
-                                //console.log("Room data  cb: " + JSON.stringify(myRoom));
-                                //console.log("gamePlayData cb: " + JSON.stringify(gamePlayData));
-
                                 processEvents(response, myRoom);
-
-                                // to update current turn for player if player miss the events.
-                                if(response.events[1].data.position != null) {
-                                    process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
-                                } else if(response.events[1].data.player_index != null) {
-                                    process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
-                                }
                             }
                         }
                     }
