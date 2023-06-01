@@ -1356,6 +1356,16 @@ module.exports = {
                                 {
                                     type: 'room_including_me',
                                     room: params.room,
+                                    name: 'life_deduct',
+                                    delay: 500,
+                                    data: {
+                                        room: params.room,
+                                        position: rez.position,
+                                    }
+                                },
+                                {
+                                    type: 'room_including_me',
+                                    room: params.room,
                                     name: 'playerLeft',
                                     delay: 500, //1500
                                     data: {
