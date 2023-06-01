@@ -1096,6 +1096,20 @@ module.exports = {
             };
         } else
         {
+            const userData = [];
+            myRoom.users.map((cur) => {
+                userData.push({
+                    "player_index":cur.position,
+                    "numeric_id":cur.numeric_id,
+                    "id":cur.id,
+                    "name":cur.name,
+                    "rank":0,
+                    "amount":0,
+                    "is_left": cur.hasOwnProperty('is_left') ? cur.is_left : false,
+                    "score":0
+                });
+            },[])
+
             var rez_finalObj = {
                 callback: {
                     status: 1,
@@ -1110,6 +1124,7 @@ module.exports = {
                         data: {
                             room: params.room,
                             position: rez.position,
+                            game_data: userData
                         },
                     },
                 ],
@@ -1345,6 +1360,20 @@ module.exports = {
                         };
                     } else
                     {
+                        const userData = [];
+                        myRoom.users.map((cur) => {
+                            userData.push({
+                                "player_index":cur.position,
+                                "numeric_id":cur.numeric_id,
+                                "id":cur.id,
+                                "name":cur.name,
+                                "rank":0,
+                                "amount":0,
+                                "is_left": cur.hasOwnProperty('is_left') ? cur.is_left : false,
+                                "score":0
+                            });
+                        },[])
+
                         var rez_finalObj = {
                             callback: {
                                 status: 2,
@@ -1370,6 +1399,7 @@ module.exports = {
                                     data: {
                                         room: params.room,
                                         position: rez.position,
+                                        game_data : userData
                                     },
                                 },
                             ],
