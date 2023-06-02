@@ -596,7 +596,6 @@ module.exports = {
                                 },
                             };
                             resObj.events.push(event);
-                            console.log("DB DATA==>>", JSON.stringify(endGame));
                             let reqData = await this.getEndGameData(event.data, tableD.room_fee);
                             console.log("END-GAME-DATA-1", reqData);
                             let startGame = await requestTemplate.post(`endgame`, reqData)
@@ -942,7 +941,6 @@ module.exports = {
                         game_data: winnerInfo,
                     },
                 };
-                console.log('DB DATA==>', JSON.stringify(winnerInfo));
                 let reqData = await this.getEndGameData(event.data, tableD.room_fee);
                 console.log("END-GAME-DATA-2", reqData);
                 let startGame = await requestTemplate.post(`endgame`, reqData);
@@ -1199,7 +1197,7 @@ module.exports = {
                     };
                     rez_finalObj.events.push(event);
                     let reqData = await this.getEndGameData(event.data, tableD.room_fee);
-                    console.log("DB DATA==>>", JSON.stringify(endGame));
+                    console.log("END-GAME-DATA-3", reqData);
                     let startGame = await requestTemplate.post(`endgame`, reqData)
                     // if (!startGame.isSuccess)
                     // {
@@ -1485,7 +1483,7 @@ module.exports = {
                                 };
                                 rez_finalObj.events.push(event);
                                 let reqData = await this.getEndGameData(event.data, tableD.room_fee);
-                                console.log("DB DATA==>>", JSON.stringify(endGame));
+                                console.log("END-GAME-DATA-4", reqData);
                                 let startGame = await requestTemplate.post(`endgame`, reqData)
                                 // if (!startGame.isSuccess)
                                 // {
