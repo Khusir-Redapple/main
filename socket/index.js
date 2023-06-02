@@ -398,7 +398,7 @@ module.exports = function (io)
                 }
                 else
                 {
-                    await Socketz.sleep(37000);
+                    await Socketz.sleep(40000);
                     myRoom = await redisCache.getRecordsByKeyRedis(myRoom.room);
                     gamePlayData=await redisCache.getRecordsByKeyRedis('gamePlay_'+ myRoom.room);
                     let tableD = await Table.findOne({
