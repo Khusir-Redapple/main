@@ -2422,7 +2422,7 @@ module.exports = {
             {
                 //var us = await User.findById(userData[i].id);
                 let json = {
-                    "user_id": us.numeric_id,
+                    "user_id": userData[i].numeric_id,
                     "token": userData[i].token,
                     "rank": userData[i].rank,
                     "score": userData[i].score,
