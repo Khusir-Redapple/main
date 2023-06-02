@@ -443,7 +443,7 @@ module.exports = function (io)
             }
 
             try{
-                console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
+                //console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
                 let myId = await Socketz.getId(socket.id);
                 await Socketz.userGone(socket.id, params.token);
                 params.isRefund = false;
@@ -451,7 +451,7 @@ module.exports = function (io)
                 let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+ params.room);
                 let response = await _TableInstance.leaveTable(params, myId, socket, myRoom,gamePlayData);
                 await redisCache.addToRedis(myRoom.room,myRoom);
-                console.log("leaveTable end response: " + JSON.stringify(response) );
+                //console.log("leaveTable end response: " + JSON.stringify(response) );
                 //await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
 
                 //To add left user details with callback events.
@@ -473,7 +473,7 @@ module.exports = function (io)
                 response.callback.room = myRoom.room; 
                 response.callback.game_data = userData;
 
-                console.log("leaveTable adding left userData: " + JSON.stringify(response));
+                //console.log("leaveTable adding left userData: " + JSON.stringify(response));
                 callback(response.callback);
 
                 // To remove a particular socket ID from a room
@@ -491,7 +491,7 @@ module.exports = function (io)
             }
             catch(ex)
             {
-                console.log("leaveTable", ex);
+                //console.log("leaveTable", ex);
                 return callback(); 
             }
 
