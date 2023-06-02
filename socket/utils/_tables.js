@@ -368,7 +368,7 @@ class _Tables
         // }
         var rez = {
             status: 0,
-            message: "Table not found."
+            message: "An error was encountered. Please join a new game."
         };
         return rez;
     }

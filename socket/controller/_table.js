@@ -1895,7 +1895,7 @@ module.exports = {
        } else {
             return {
                 status: 0,
-                message: "Table not found."
+                message: "An error was encountered. Please join a new game."
             }
        }
     },
@@ -2379,7 +2379,7 @@ module.exports = {
                 return {
                     callback: {
                         status: 0,
-                        message: 'An error was encountered. Please join a new game',
+                        message: 'An error was encountered. Please join a new game.',
                     },
                 };
         }

@@ -159,7 +159,7 @@ module.exports = function (io)
                 if (typeof callback == 'function')
                     return callback({
                         status: 0,
-                        message: 'An error was encountered. Please join a new game',
+                        message: 'An error was encountered. Please join a new game.',
                     });
 
                 console.log("join",err); 
@@ -176,7 +176,7 @@ module.exports = function (io)
                 if (!myId)
                 {   return callback({
                         status: 0,
-                        message: 'An error was encountered. Please join a new game',
+                        message: 'An error was encountered. Please join a new game.',
                     });
                 }
                 var rez = await _TableInstance.reconnectIfPlaying(myId);
@@ -184,7 +184,7 @@ module.exports = function (io)
                 {
                     return callback({
                         status: 0,
-                        message: 'Table not found.',
+                        message: 'An error was encountered. Please join a new game.',
                     })
                 }
                 // If no room to join the game.
@@ -197,7 +197,7 @@ module.exports = function (io)
                 console.log("join_previous" ,ex );
                 return callback({
                     status: 0,
-                    message: 'An error was encountered. Please join a new game',
+                    message: 'An error was encountered. Please join a new game.',
                 });
             }
         });
@@ -306,7 +306,7 @@ module.exports = function (io)
             {
                 return callback({
                     status: 0,
-                    message: 'An error was encountered. Please join a new game',
+                    message: 'An error was encountered. Please join a new game.',
                 });
             }
            
