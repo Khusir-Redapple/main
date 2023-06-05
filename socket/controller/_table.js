@@ -1099,6 +1099,7 @@ module.exports = {
                 userData.push({
                     "player_index":cur.position,
                     "numeric_id":cur.numeric_id,
+                    "token":cur.user_token,
                     "id":cur.id,
                     "name":cur.name,
                     "rank":0,
