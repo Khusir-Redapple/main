@@ -376,6 +376,7 @@ module.exports = function (io)
                         //TODO: 
                         checkTabel = await _TableInstance.istableExists(data,myRoom);
                         let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
+                        console.log('GAME_COMPLETE ', start.room, JSON.stringify(latestRoomData));
                          // IF game completed, then clear the time interval.
                         if (latestRoomData!= null && latestRoomData.isGameCompleted == true)
                         {
@@ -640,7 +641,6 @@ module.exports = function (io)
             io.to(start.room).emit('startGame', start);
             process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
             //console.log("AFter startGame fire - ", new Date());
-
             setInterval(async function ()
             {
                 try{
@@ -655,6 +655,7 @@ module.exports = function (io)
                 // {
                 //     clearInterval(this);
                 // }
+                console.log('GAME_COMPLETE_2 ', start.room, JSON.stringify(myRoom));
                 if (myRoom!= null && myRoom.isGameCompleted)
                 {
                     clearInterval(this);
