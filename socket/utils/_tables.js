@@ -1891,6 +1891,7 @@ class _Tables
                             rank.push({
                                 player_index: table.users[j].position,
                                 name: table.users[j].name,
+                                token : table.users[j].user_token,
                                 numeric_id: table.users[j].numeric_id,
                                 rank: table.users[j].rank,
                                 amount: amount,
