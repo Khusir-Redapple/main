@@ -266,7 +266,7 @@ module.exports = function (io)
                 socket.data_name = us.name;
                 socket.join(socket.data_id);
                 await Socketz.updateSocket(us._id, socket);
-                await User.findOneAndUpdate(
+                us = await User.findOneAndUpdate(
                     {
                         _id: ObjectId(us._id),
                     },
@@ -277,6 +277,9 @@ module.exports = function (io)
                             'lobbyId'   : verifyUser.lobbyId,
                             'joinedAt'  : new Date().getTime()
                         },
+                    },
+                    {
+                        new:true,
                     }
                 );
             }
