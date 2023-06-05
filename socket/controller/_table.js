@@ -558,6 +558,7 @@ module.exports = {
                                 console.log("GAME END :: >>>>>>>");
                                 // in redis updated isGameCompleted property
                                 myRoom.isGameCompleted = true;
+                                await redisCache.addToRedis(params.room, myRoom);
                                 endGame.map(async (eGame) =>
                                 {
                                     tableD.players.map(async (playersTable) =>
@@ -905,6 +906,7 @@ module.exports = {
             {   
                 // in redis updated isGameCompleted property
                 myRoom.isGameCompleted = true;
+                await redisCache.addToRedis(room, myRoom);
                 for (let j = 0; j < winnerInfo.length; j++)
                 {
                     for (let k = 0; k < tableD.players.length; k++)
@@ -1159,6 +1161,7 @@ module.exports = {
                     {
                         // in redis updated isGameCompleted property
                         myRoom.isGameCompleted = true;
+                        await redisCache.addToRedis(params.room, myRoom);
                         for (let j = 0; j < endGame.length; j++)
                         {
                             for (let k = 0; k < tableD.players.length; k++)
@@ -1445,6 +1448,7 @@ module.exports = {
                                     console.log(`PL:: <<<<<<<< END GAME >>>>>>>>>`);
                                     // in redis updated isGameCompleted property
                                     myRoom.isGameCompleted = true;
+                                    await redisCache.addToRedis(params.room, myRoom);
                                     endGame.map((eGame) =>
                                     {
                                         tableD.players.map((playersTable) =>
