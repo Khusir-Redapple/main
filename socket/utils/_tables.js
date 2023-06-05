@@ -1690,6 +1690,7 @@ class _Tables
                             player_index: table.users[k].position,
                             name: table.users[k].name,
                             numeric_id: table.users[k].numeric_id,
+                            token : table.users[k].user_token,
                             rank: table.users[k].rank,
                             id: table.users[k].id,
                             amount: winAmount,
