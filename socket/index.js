@@ -893,6 +893,7 @@ module.exports = function (io)
 
             } catch(Execption) {
                 // To log error
+                console.log('checkGameExpireTime ======>>', Execption);
                 logDNA.log('checkGameExpireTime', {level: 'error',meta: Execption});
             }
         }
