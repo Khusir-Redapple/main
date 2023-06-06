@@ -750,34 +750,26 @@ class _Tables
     addBonusPoints(room, id, points, length, type, myRoom, gamePlayData)
     {
         let bonusPoint = points * length;
-        // for (let i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room == room)
-        //     {
-                for (let j = 0; j < myRoom.users.length; j++)
-                {
-                    if (myRoom.users[j].id == id)
-                    { 
-                        console.log('Before Bonus Points updated- ', myRoom.users[j].bonusPoints);
-                        myRoom.users[j].bonusPoints += bonusPoint;
-                        console.log('After Bonus Points updated- ', myRoom.users[j].bonusPoints);
-                        // To update pawn kill count
-                        if(type == 'cut_bonus'){
-                            if(myRoom.users[j].hasOwnProperty('pawnKillCount')){
-                                myRoom.users[j].pawnKillCount = myRoom.users[j].pawnKillCount + 1;
-                            } else {
-                                myRoom.users[j].pawnKillCount = 1;
-                            }
-                        }
+        for (let j = 0; j < myRoom.users.length; j++)
+        {
+            if (myRoom.users[j].id == id)
+            { 
+                console.log('Before Bonus Points updated- ', myRoom.users[j].bonusPoints);
+                myRoom.users[j].bonusPoints += bonusPoint;
+                console.log('After Bonus Points updated- ', myRoom.users[j].bonusPoints);
+                // To update pawn kill count
+                if(type == 'cut_bonus'){
+                    if(myRoom.users[j].hasOwnProperty('pawnKillCount')){
+                        myRoom.users[j].pawnKillCount = myRoom.users[j].pawnKillCount + 1;
+                    } else {
+                        myRoom.users[j].pawnKillCount = 1;
                     }
                 }
-            // }
-        // }
-       // var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
+            }
+        }
        gamePlayData.data[type] = bonusPoint;
         if (type == 'home_base_bonus')
         {
-            gamePlayData.data.home_base = 1;
             gamePlayData.data.home_base = 1;
         }
     }
