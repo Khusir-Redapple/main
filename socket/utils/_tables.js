@@ -1062,14 +1062,6 @@ class _Tables
         } //MAIN USER 2 TOKEN 38 POSITION 11
 
         var dead_possible = [];
-        // for testing porpose, delete below line after testing
-        dead_possible.push({
-            user: 3,
-            token: 2,
-            checkPointActivated: true,
-            tokenIndex: 21,
-            movebleBox: 6
-        });
         var i = tab_pos;
         for (let j = 0; j < table.users.length; j++)
         {
@@ -1187,7 +1179,7 @@ class _Tables
                 //gamePlayData.data["cut_player " + i] = dead_possible[i].user;
             }
             // Send the Kill player object to gamePlayData
-            gamePlayData.data["killPlayerData"] = JSON.stringify(dead_possible);
+            gamePlayData.data["killPlayerData"] = dead_possible;
         }
         //console.log("dead_possible >new>>>", dead_possible);
         //console.log('KILL TABLE INFO ::', table);
