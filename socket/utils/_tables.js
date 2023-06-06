@@ -1362,6 +1362,7 @@ class _Tables
             if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left") 
                 && table.users[j].rank == 1) {
                 firstRank = 1;
+                UserRankArray.set(j, firstRank);
             } else if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
                 activeUserMap.set(j, totalScore);
                 activeUserPointArray.push(totalScore);
