@@ -1307,7 +1307,7 @@ class _Tables
                             // var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
                             gamePlayData.data.pawn = token_index + 1;
                             gamePlayData.data.move = gamePlayData.data.roll.length;
-                            gamePlayData.data.points += dice_value;
+                            gamePlayData.data.points += (dice_value + gamePlayData.data.cut_bonus + gamePlayData.data.home_base_bonus);
                             gamePlayData.data.total_move += dice_value;
                             gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
