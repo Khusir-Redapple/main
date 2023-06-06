@@ -542,7 +542,7 @@ module.exports = {
                         resObj.events.push(turnCompleteEvent);
 
                         // Check if EndGame Possible
-                        var endGameRes = await _tab.isThisTheEnd(params.room, tableD.win_amount, myRoom);
+                        var endGameRes = await _tab.calculateGameEndData(params.room, tableD.win_amount, myRoom);
                         let endGame;
                         if(endGameRes) {
                             myRoom = endGameRes.table;
@@ -1146,7 +1146,7 @@ module.exports = {
                 let tableD = await Table.findOne({
                     room: params.room,
                 });
-                var endGameRes = await _tab.isThisTheEnd(params.room, tableD.win_amount, myRoom);
+                var endGameRes = await _tab.calculateGameEndData(params.room, tableD.win_amount, myRoom);
                 let endGame;
                 if(endGameRes) {
                     myRoom = endGameRes.table;
@@ -1433,7 +1433,7 @@ module.exports = {
                         if (checkOnlyPlayerLeft)
                         {
                             // Check if EndGame Possible
-                            let endGameRes = await _tab.isThisTheEnd(params.room, tableD.win_amount,myRoom);
+                            let endGameRes = await _tab.calculateGameEndData(params.room, tableD.win_amount,myRoom);
                             let endGame;
                             if(endGameRes) {
                                 myRoom = endGameRes.table;

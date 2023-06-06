@@ -1342,414 +1342,188 @@ class _Tables
         // }
         return -1;
     }
-    EndOfTournament(room, amount, myRoom)
-    {
-        
-            const table = myRoom;
-            const pointArray = [];
-            const winner = []
-            
-                for (let j = 0; j < table.users.length; j++)
-                {
-                    pointArray.push(table.users[j].points + table.users[j].bonusPoints);
-                }
-                console.log("pointArray >>>", pointArray)
-                var maxPoints = (Math.max(...pointArray));
-                console.log("maxPoints >>>", maxPoints)
-                var count = 0;
-                let point = pointArray;
-                point.sort((a, b) => b - a);
-                let otherRank;
-                table.users.forEach(function (user)
-                {
-                    console.log("Points ....", user.points, user.bonusPoints, maxPoints, point)
-                    if (user.points + user.bonusPoints == maxPoints)
-                    {
-                        count++,
-                        otherRank = 1;
-                    }
-                    // else{
-                    //     for(let j=1; j<=point.length; j++){
-                    //         if(point[j] == user.points + user.bonusPoints) otherRank = j;
-                    //     }
-                    // }                     
-                });
-                // if(count > 1) amount = amount/count; //tie case
-                //console.log('amount', amount);
-                for (let k = 0; k < table.users.length; k++)
-                {
-                    for (let j = 0; j < point.length; j++)
-                    {
-                        //console.log("HERE - ", point[j], table.users[k].points + table.users[k].bonusPoints)
-                        if (point[j] == table.users[k].points + table.users[k].bonusPoints) 
-                        {
-                            otherRank = j + 1;
-                            while (this.isRankOccupied(room, otherRank, myRoom))
-                            {
-                                rank--;
-                                if (rank == 1) break;
-                            }
-                        };
-                    }
-                    let winAmount = 0;
-                    if (typeof amount != 'undefined' && otherRank == 1 && amount[1])
-                    {
-                        winAmount = otherRank == 1 ? amount[1] : 0;
-                                               
-                    } else if (typeof amount != 'undefined' && otherRank == 2 && amount[2])
-                    {
-                        winAmount = otherRank == 2 ? amount[2] : 0;              
-                        
-                    } else if (typeof amount != 'undefined' && otherRank == 3 && amount[3])
-                    {
-                        winAmount = otherRank == 3 ? amount[3] : 0;
-                    }
-                    //console.log("User's final rank ::::", otherRank)
-                    if (table.users[k].points + table.users[k].bonusPoints == maxPoints)
-                    {
-                        table.players_won += 1;
-                        table.players_done += 1;
-                        table.users[k].is_done = true;
-                        if(!table.users[k].rank || table.users[k].rank == 0) {
-                            table.users[k].rank = 1;
-                        }                        
-                        winner.push({
-                            player_index: table.users[k].position,
-                            name: table.users[k].name,
-                            numeric_id: table.users[k].numeric_id,
-                            rank: table.users[k].rank,
-                            id: table.users[k].id,
-                            amount: winAmount,
-                            score: table.users[k].points + table.users[k].bonusPoints
-                        });
-                    } else
-                    {
-
-                        table.players_done += 1;
-                        table.users[k].is_done = true;
-                        table.users[k].rank = otherRank;
-                        winner.push({
-                            player_index: table.users[k].position,
-                            name: table.users[k].name,
-                            numeric_id: table.users[k].numeric_id,
-                            rank: otherRank,
-                            id: table.users[k].id,
-                            amount: winAmount,
-                            score: table.users[k].points + table.users[k].bonusPoints
-                        });
-                    }
-                }
-                
-                return {
-                    'winner': winner,
-                    'table' : table
-                };
-    }
-
-    // EndOfTournamentV2(room, amount, myRoom)
-    // {
-    //         const table = myRoom;
-    //         const activeUserPointArray = [];
-    //         const nonActiveUserPointArray = [];
-    //         const winner = [];
-    //         let activeUserMap = new Map();
-    //         let inactiveUserMap = new Map();
-    //         let UserRankArray = new Map();
-            
-    //             for (let j = 0; j < table.users.length; j++)
-    //             {
-    //                 let totalScore = table.users[j].points + table.users[j].bonusPoints;
-    //                 if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
-    //                     activeUserMap.set(j, totalScore);
-    //                     activeUserPointArray.push(totalScore);
-    //                 } else {
-    //                     inactiveUserMap.set(j, totalScore);
-    //                     nonActiveUserPointArray.push(totalScore);
-    //                 }
-    //             }
-    //             console.log({activeUserPointArray} , {activeUserMap}, {inactiveUserMap});
-    //             //var maxPoints = (Math.max(...pointArray));
-    //             activeUserPointArray.sort((a, b) => b - a);
-    //             nonActiveUserPointArray.sort((a, b) => b - a);
-
-    //             activeUserMap = new Map([...activeUserMap.entries()].sort((a, b) => b[1] - a[1]));
-    //             inactiveUserMap = new Map([...inactiveUserMap.entries()].sort((a, b) => b[1] - a[1]));
-    //             //let point = activeUserPointArray.concat(nonActiveUserPointArray);;
-    //             // point.sort((a, b) => b - a);
-    //             let otherRank = 0;
-    //             let lastRank = 0;
-
-    //             for (let [key, value] of activeUserMap) {
-    //                 //let userPoints = table.users[key].points + table.users[key].bonusPoints;
-    //                 let playerIndex = activeUserPointArray.indexOf(value);
-    //                 let userRank = playerIndex + 1;
-    //                 if (userRank > lastRank + 1) userRank--;
-    //                 UserRankArray.set(key, userRank);
-    //                 lastRank = userRank;
-    //             }
-
-
-    //             let maxRank = 0;
-    //             for (let [key, value] of UserRankArray) {
-    //                 if (value > maxRank ) {
-    //                     maxRank = value;
-    //                 }
-    //             }
-
-    //             for (let [key, value] of inactiveUserMap) {
-    //                 //let userPoints = table.users[key].points + table.users[key].bonusPoints;
-    //                 let playerIndex = nonActiveUserPointArray.indexOf(value);
-    //                 let userRank = maxRank + playerIndex + 1;
-    //                 if (userRank > lastRank + 1) userRank--;
-    //                 UserRankArray.set(key, userRank);
-    //                 lastRank = userRank;
-    //             }
-
-
-    //             let oneRankCounter = 0;
-    //             let twoRankCounter = 0;
-    //             let threeRankCounter = 0;
-
-    //             for (let [key, value] of UserRankArray)
-    //             {
-    //                 if (value == 1) {
-    //                     oneRankCounter++;
-    //                 } else if (value == 2) {
-    //                     twoRankCounter++;
-    //                 }  else if (value == 3) {
-    //                     threeRankCounter++;
-    //                 } 
-    //             }
-    //             for (let k = 0; k < table.users.length; k++)
-    //             {   
-    //                 if(table.users[k].rank || table.users[k].rank == 0) {
-    //                     table.users[k].rank = UserRankArray.get(k);
-    //                 }
-    //                 otherRank = table.users[k].rank;
-    //                 //console.log('rankCOunt------------------->', UserRankArray);
-    //                 let winAmount = 0;
-    //                 if (typeof amount != 'undefined' && otherRank == 1 
-    //                     && amount[1] && !table.users[k].hasOwnProperty("is_left"))
-    //                 {
-    //                     winAmount = otherRank == 1 ? Math.floor(amount[1]/(oneRankCounter == 0 ? 1 : oneRankCounter)) : 0;
-    //                     //winAmount = otherRank == 1 ? parseFloat(amount[1]/(oneRankCounter == 0 ? 1 : oneRankCounter)).toFixed(2) : 0;
-                                                    
-    //                 } else if (typeof amount != 'undefined' && otherRank == 2 
-    //                     && amount[2] && !table.users[k].hasOwnProperty("is_left"))
-    //                 {
-    //                     winAmount = otherRank == 2 ? Math.floor(amount[2]/(twoRankCounter == 0 ? 1 : twoRankCounter)) : 0;
-    //                     //winAmount = otherRank == 2 ? parseFloat(amount[2]/(twoRankCounter == 0 ? 1 : twoRankCounter)).toFixed(2) : 0;              
-                        
-    //                 } else if (typeof amount != 'undefined' && otherRank == 3 
-    //                     && amount[3] && !table.users[k].hasOwnProperty("is_left"))
-    //                 {
-    //                     winAmount = otherRank == 3 ? Math.floor(amount[3]/(threeRankCounter == 0 ? 1 : threeRankCounter)) : 0;
-    //                     //winAmount = otherRank == 3 ? parseFloat(amount[3]/(threeRankCounter == 0 ? 1 : threeRankCounter)).toFixed(2) : 0;
-    //                 }
-
-    //                 table.players_won += 1;
-    //                 table.players_done += 1;
-    //                 table.users[k].is_done = true;
-    //                 winner.push({
-    //                         player_index: table.users[k].position,
-    //                         name: table.users[k].name,
-    //                         numeric_id: table.users[k].numeric_id,
-    //                         rank: table.users[k].rank,
-    //                         id: table.users[k].id,
-    //                         amount: winAmount,
-    //                         score: table.users[k].points + table.users[k].bonusPoints
-    //                     });
-    //             }
-    //             return {
-    //                 'winner': winner,
-    //                 'table' : table
-    //             };
-    // }
-
+  
     EndOfTournamentV2(room, amount, myRoom)
     {
-            const table = myRoom;
-            const activeUserPointArray = [];
-            const nonActiveUserPointArray = [];
-            const winner = [];
-            let activeUserMap = new Map();
-            let inactiveUserMap = new Map();
-            let UserRankArray = new Map();
-            let UserRankWiseAmount = new Map();
+        const table = myRoom;
+        const activeUserPointArray = [];
+        const nonActiveUserPointArray = [];
+        const winner = [];
+        let activeRankedUserMap = new Map();
+        let activeUserMap = new Map();
+        let inactiveUserMap = new Map();
+        let UserRankArray = new Map();
+        let UserRankWiseAmount = new Map();
+        let firstRank = 0;
             
-                for (let j = 0; j < table.users.length; j++)
-                {
-                    let totalScore = table.users[j].points + table.users[j].bonusPoints;
-                    if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
-                        activeUserMap.set(j, totalScore);
-                        activeUserPointArray.push(totalScore);
-                    } else {
-                        inactiveUserMap.set(j, totalScore);
-                        nonActiveUserPointArray.push(totalScore);
-                    }
+        for (let j = 0; j < table.users.length; j++)
+        {
+            let totalScore = table.users[j].points + table.users[j].bonusPoints;
+            if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left") 
+                && table.users[j].rank == 1) {
+                firstRank = 1;
+            } else if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
+                activeUserMap.set(j, totalScore);
+                activeUserPointArray.push(totalScore);
+            } else {
+                inactiveUserMap.set(j, totalScore);
+                nonActiveUserPointArray.push(totalScore);
+            }
+        }
+        console.log({activeUserPointArray} , {activeUserMap}, {inactiveUserMap});
+        //var maxPoints = (Math.max(...pointArray));
+        activeUserPointArray.sort((a, b) => b - a);
+        nonActiveUserPointArray.sort((a, b) => b - a);
+
+        activeUserMap = new Map([...activeUserMap.entries()].sort((a, b) => b[1] - a[1]));
+        inactiveUserMap = new Map([...inactiveUserMap.entries()].sort((a, b) => b[1] - a[1]));
+        // let point = activeUserPointArray.concat(nonActiveUserPointArray);;
+        // point.sort((a, b) => b - a);
+        let otherRank = 0;
+
+        for (let [key, value] of activeUserMap) {
+            let playerIndex = activeUserPointArray.indexOf(value);
+            let userRank = firstRank + playerIndex + 1;
+            UserRankArray.set(key, userRank);
+        }
+
+        for (let [key, value] of inactiveUserMap) {
+            let playerIndex = nonActiveUserPointArray.indexOf(value);
+            let userRank = firstRank + activeUserPointArray.length + playerIndex + 1;
+            UserRankArray.set(key, userRank);
+        }
+
+        let oneRankCounter = 0;
+        let twoRankCounter = 0;
+        let threeRankCounter = 0;
+        let fourRankCounter = 0;
+
+        for (let [key, value] of UserRankArray)
+        {
+            if (value == 1) {
+                var currentAmount = 0;
+                if (UserRankWiseAmount.get(value)) {
+                    currentAmount += UserRankWiseAmount.get(value);
                 }
-                console.log({activeUserPointArray} , {activeUserMap}, {inactiveUserMap});
-                //var maxPoints = (Math.max(...pointArray));
-                activeUserPointArray.sort((a, b) => b - a);
-                nonActiveUserPointArray.sort((a, b) => b - a);
-
-                activeUserMap = new Map([...activeUserMap.entries()].sort((a, b) => b[1] - a[1]));
-                inactiveUserMap = new Map([...inactiveUserMap.entries()].sort((a, b) => b[1] - a[1]));
-                //let point = activeUserPointArray.concat(nonActiveUserPointArray);;
-                // point.sort((a, b) => b - a);
-                let otherRank = 0;
-
-                for (let [key, value] of activeUserMap) {
-                    let playerIndex = activeUserPointArray.indexOf(value);
-                    let userRank = playerIndex + 1;
-                    UserRankArray.set(key, userRank);
+                if (amount[value + oneRankCounter]) {
+                    currentAmount += amount[value + oneRankCounter];
+                    UserRankWiseAmount.set(value, currentAmount);
                 }
-
-                for (let [key, value] of inactiveUserMap) {
-                    let playerIndex = nonActiveUserPointArray.indexOf(value);
-                    let userRank = activeUserPointArray.length + playerIndex + 1;
-                    UserRankArray.set(key, userRank);
+                oneRankCounter++;
+            } else if (value == 2) {
+                var currentAmount = 0;
+                if (UserRankWiseAmount.get(value)) {
+                    currentAmount += UserRankWiseAmount.get(value);
                 }
-
-
-                let oneRankCounter = 0;
-                let twoRankCounter = 0;
-                let threeRankCounter = 0;
-                let fourRankCounter = 0;
-
-                for (let [key, value] of UserRankArray)
-                {
-                    if (value == 1) {
-                        var currentAmount = 0;
-                        if (UserRankWiseAmount.get(value)) {
-                            currentAmount += UserRankWiseAmount.get(value);
-                        }
-                        if (amount[value + oneRankCounter]) {
-                            currentAmount += amount[value + oneRankCounter];
-                            UserRankWiseAmount.set(value, currentAmount);
-                        }
-                        oneRankCounter++;
-                    } else if (value == 2) {
-                        var currentAmount = 0;
-                        if (UserRankWiseAmount.get(value)) {
-                            currentAmount += UserRankWiseAmount.get(value);
-                        }
-                        if (amount[value + twoRankCounter]) {
-                            currentAmount += amount[value + twoRankCounter];
-                            UserRankWiseAmount.set(value, currentAmount);
-                        }
-                        twoRankCounter++;
-                    }  else if (value == 3) {
-                        var currentAmount = 0;
-                        if (UserRankWiseAmount.get(value)) {
-                            currentAmount += UserRankWiseAmount.get(value);
-                        }
-                        if (amount[value + threeRankCounter]) {
-                            currentAmount += amount[value + threeRankCounter];
-                            UserRankWiseAmount.set(value, currentAmount);
-                        }
-                        threeRankCounter++;
-                    }  else if (value == 4) {
-                        var currentAmount = 0;
-                        if (UserRankWiseAmount.get(value)) {
-                            currentAmount += UserRankWiseAmount.get(value);
-                        }
-                        if (amount[value + fourRankCounter]) {
-                            currentAmount += amount[value + fourRankCounter];
-                            UserRankWiseAmount.set(value, currentAmount);
-                        }
-                        fourRankCounter++;
-                    } 
+                if (amount[value + twoRankCounter]) {
+                    currentAmount += amount[value + twoRankCounter];
+                    UserRankWiseAmount.set(value, currentAmount);
                 }
-
-                console.log('UserRankWiseAmount', UserRankWiseAmount, UserRankArray);
-
-                for (let k = 0; k < table.users.length; k++)
-                {   
-                    table.users[k].rank = UserRankArray.get(k);
-                    otherRank = table.users[k].rank;
-                    console.log('Rank ------------------->', otherRank, UserRankWiseAmount.get(1));
-                    let winAmount = 0;
-                    if (typeof amount != 'undefined' && otherRank == 1 
-                        && UserRankWiseAmount.get(1) && !table.users[k].hasOwnProperty("is_left"))
-                    {
-                        console.log('Rank 1 ------------------->', UserRankWiseAmount.get(1));
-                        winAmount = otherRank == 1 ? Math.floor(UserRankWiseAmount.get(1)/(oneRankCounter == 0 ? 1 : oneRankCounter)) : 0;
-                                                    
-                    } else if (typeof amount != 'undefined' && otherRank == 2 
-                        && UserRankWiseAmount.get(2) && !table.users[k].hasOwnProperty("is_left"))
-                    {
-                        console.log('Rank 2 ------------------->', UserRankWiseAmount.get(2));
-                        winAmount = otherRank == 2 ? Math.floor(UserRankWiseAmount.get(2)/(twoRankCounter == 0 ? 1 : twoRankCounter)) : 0;            
-                        
-                    } else if (typeof amount != 'undefined' && otherRank == 3 
-                        && UserRankWiseAmount.get(3) && !table.users[k].hasOwnProperty("is_left"))
-                    {
-                        console.log('Rank 3 ------------------->', UserRankWiseAmount.get(3));
-                        winAmount = otherRank == 3 ? Math.floor(UserRankWiseAmount.get(3)/(threeRankCounter == 0 ? 1 : threeRankCounter)) : 0;
-                    } else if (typeof amount != 'undefined' && otherRank == 4
-                        && UserRankWiseAmount.get(4) && !table.users[k].hasOwnProperty("is_left"))
-                    {
-                        console.log('Rank 4 ------------------->', UserRankWiseAmount.get(4));
-                        winAmount = otherRank == 4 ? Math.floor(UserRankWiseAmount.get(4)/(fourRankCounter == 0 ? 1 : fourRankCounter)) : 0;
-                    }
-                    console.log('Rank Wise Amount ------------------->', winAmount);
-
-                    table.players_won += 1;
-                    table.players_done += 1;
-                    table.users[k].is_done = true;
-                    winner.push({
-                            player_index: table.users[k].position,
-                            name: table.users[k].name,
-                            numeric_id: table.users[k].numeric_id,
-                            token : table.users[k].user_token,
-                            rank: table.users[k].rank,
-                            id: table.users[k].id,
-                            amount: winAmount,
-                            is_left: table.users[k].hasOwnProperty("is_left"),
-                            score: table.users[k].points + table.users[k].bonusPoints
-                        });
+                twoRankCounter++;
+            }  else if (value == 3) {
+                var currentAmount = 0;
+                if (UserRankWiseAmount.get(value)) {
+                    currentAmount += UserRankWiseAmount.get(value);
                 }
-                return {
-                    'winner': winner,
-                    'table' : table
-                };
+                if (amount[value + threeRankCounter]) {
+                    currentAmount += amount[value + threeRankCounter];
+                    UserRankWiseAmount.set(value, currentAmount);
+                }
+                threeRankCounter++;
+            }  else if (value == 4) {
+                var currentAmount = 0;
+                if (UserRankWiseAmount.get(value)) {
+                    currentAmount += UserRankWiseAmount.get(value);
+                }
+                if (amount[value + fourRankCounter]) {
+                    currentAmount += amount[value + fourRankCounter];
+                    UserRankWiseAmount.set(value, currentAmount);
+                }
+                fourRankCounter++;
+            } 
+        }
+
+        console.log('UserRankWiseAmount', UserRankWiseAmount, UserRankArray);
+
+        for (let k = 0; k < table.users.length; k++)
+        {   
+            table.users[k].rank = UserRankArray.get(k);
+            otherRank = table.users[k].rank;
+            console.log('Rank ------------------->', otherRank, UserRankWiseAmount.get(1));
+            let winAmount = 0;
+            if (typeof amount != 'undefined' && otherRank == 1 
+                && UserRankWiseAmount.get(1) && !table.users[k].hasOwnProperty("is_left"))
+            {
+                console.log('Rank 1 ------------------->', UserRankWiseAmount.get(1));
+                winAmount = otherRank == 1 ? Math.floor(UserRankWiseAmount.get(1)/(oneRankCounter == 0 ? 1 : oneRankCounter)) : 0;
+                                            
+            } else if (typeof amount != 'undefined' && otherRank == 2 
+                && UserRankWiseAmount.get(2) && !table.users[k].hasOwnProperty("is_left"))
+            {
+                console.log('Rank 2 ------------------->', UserRankWiseAmount.get(2));
+                winAmount = otherRank == 2 ? Math.floor(UserRankWiseAmount.get(2)/(twoRankCounter == 0 ? 1 : twoRankCounter)) : 0;            
+                
+            } else if (typeof amount != 'undefined' && otherRank == 3 
+                && UserRankWiseAmount.get(3) && !table.users[k].hasOwnProperty("is_left"))
+            {
+                console.log('Rank 3 ------------------->', UserRankWiseAmount.get(3));
+                winAmount = otherRank == 3 ? Math.floor(UserRankWiseAmount.get(3)/(threeRankCounter == 0 ? 1 : threeRankCounter)) : 0;
+            } else if (typeof amount != 'undefined' && otherRank == 4
+                && UserRankWiseAmount.get(4) && !table.users[k].hasOwnProperty("is_left"))
+            {
+                console.log('Rank 4 ------------------->', UserRankWiseAmount.get(4));
+                winAmount = otherRank == 4 ? Math.floor(UserRankWiseAmount.get(4)/(fourRankCounter == 0 ? 1 : fourRankCounter)) : 0;
+            }
+            console.log('Rank Wise Amount ------------------->', winAmount);
+
+            table.players_won += 1;
+            table.players_done += 1;
+            table.users[k].is_done = true;
+            winner.push({
+                    player_index: table.users[k].position,
+                    name: table.users[k].name,
+                    numeric_id: table.users[k].numeric_id,
+                    token : table.users[k].user_token,
+                    rank: table.users[k].rank,
+                    id: table.users[k].id,
+                    amount: winAmount,
+                    is_left: table.users[k].hasOwnProperty("is_left"),
+                    score: table.users[k].points + table.users[k].bonusPoints
+                });
+        }
+        return {
+            'winner': winner,
+            'table' : table
+        };
     }
     allHome(room, id, myRoom)
     {
         let sum = 0;
         const table = myRoom;
-        // for (let i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room == room)
-        //     {
-                for (let j = 0; j < table.users.length; j++)
+        for (let j = 0; j < table.users.length; j++)
+        {
+            if (table.users[j].id == id)
+            {
+                for (var z = 0; z < 4; z++)
                 {
-                    if (table.users[j].id == id)
-                    {
-                        // console.log('Tokens:', this.tables[i].users[j].tokens);
-                        for (var z = 0; z < 4; z++)
-                        {
-                            sum = sum + table.users[j].tokens[z];
-                        }
-
-                        if (sum == 224)
-                        {
-                            table.players_won += 1;
-                            table.players_done += 1;
-                            table.users[j].is_done = true;
-                            table.users[j].rank = table.players_won;
-                            return {
-                                'rank': table.players_won,
-                                'position': table.users[j].position,
-                                'table' : table
-                            };
-                        }
-                        return false;
-                    }
+                    sum = sum + table.users[j].tokens[z];
                 }
-            // }
-        // }
+
+                if (sum == 224) // all the pawns reached home for id
+                {
+                    table.players_won += 1;
+                    table.players_done += 1;
+                    table.users[j].is_done = true;
+                    table.users[j].rank = table.players_won;
+                    return {
+                        'rank': table.players_won,
+                        'position': table.users[j].position,
+                        'table' : table
+                    };
+                }
+                return false;
+            }
+        }
         return false;
     }
     calculateUserRank(userData, myRoom)
@@ -1788,26 +1562,89 @@ class _Tables
         let table = myRoom;
 
         let rank = [];
-        // for (let i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room == room)
-        //     {
+        for (let j = 0; j < table.users.length; j++)
+        {
+            let amount = 0;
+            
+            if (table.users[j].rank === 0 && table.users[j].numeric_id != '')
+            {
+                table = this.calculateUserRank(table.users[j], table);
+            }
+
+            if (typeof win_amount != 'undefined' && table.users[j].rank == 1 && win_amount[1])
+            {
+                amount = table.users[j].rank == 1 ? win_amount[1] : 0;
+            } else if (typeof win_amount != 'undefined' && table.users[j].rank == 2 && win_amount[2])
+            {
+                amount = table.users[j].rank == 2 ? win_amount[2] : 0;
+            } else if (typeof win_amount != 'undefined' && table.users[j].rank == 3 && win_amount[3])
+            {
+                amount = table.users[j].rank == 3 ? win_amount[3] : 0;
+            }
+            console.log("for score >>>>", table.users[j])
+            rank.push({
+                player_index: table.users[j].position,
+                name: table.users[j].name,
+                numeric_id: table.users[j].numeric_id,
+                token : table.users[j].user_token,
+                rank: table.users[j].rank,
+                amount: amount,
+                id: table.users[j].id,
+                is_left: table.users[j].hasOwnProperty('is_left'),
+                score: table.users[j].points + table.users[j].bonusPoints
+            });
+        }
+        console.log("isThisTheEnd>> rank", room, JSON.stringify(rank));
+        if (table.no_of_players == 2 || table.no_of_players == 3)
+        {
+            if (table.players_won == 1 || table.players_done>=1)
+            {
+                return {
+                    'rank' : rank,
+                    'table' : table
+                };
+            } else return false;
+        }
+        else if (table.no_of_players == 4)
+        {
+            if (table.players_won == 2)
+            {
+                return {
+                    'rank' : rank,
+                    'table' : table
+                };
+            } 
+            else if (table.players_done >= 3)
+            {
+                if(!table.players_won)
+                    table.players_won=0;
+
+                for (let j = 0; j < table.users.length; j++)
+                {
+                    if (table.users[j].is_active && !table.users[j].is_done)
+                    {
+                        table.players_won += 1;
+                        table.players_done += 1;
+                        table.users[j].is_done = true;
+                        // table.users[j].rank = table.players_won;
+                        if(!table.users[j].rank)
+                        {
+                            let user_rank = myRoom.no_of_players;
+
+                            while (this.isRankOccupied(room, user_rank, myRoom))
+                            {
+                                user_rank--;
+                                if (user_rank == 1) break;
+                            }
+                            table.users[j].rank = user_rank;
+                        }
+                    }
+                }
+
+                rank = [];
                 for (let j = 0; j < table.users.length; j++)
                 {
                     let amount = 0;
-                    console.log("isThisTheEnd>>  table",table);
-                    console.log("isThisTheEnd>>  1 cond",table.users[j].rank == 0);
-                    console.log("isThisTheEnd>>  2nd cond",table.users[j].rank === 0);
-                    console.log("isThisTheEnd>>  3rd cond",table.users[j].numeric_id != '');
-                    if (table.users[j].rank === 0 && table.users[j].numeric_id != '')
-                    {
-                        console.log("isThisTheEnd>> j value ",j  );
-                        console.log("isThisTheEnd>> j rank ",table.users[j].rank  );
-                        console.log("isThisTheEnd>> j numeric_id ",table.users[j].numeric_id);
-                        table = this.calculateUserRank(table.users[j], table);
-                        console.log("isThisTheEnd>> My room", table)
-                    }
-
                     if (typeof win_amount != 'undefined' && table.users[j].rank == 1 && win_amount[1])
                     {
                         amount = table.users[j].rank == 1 ? win_amount[1] : 0;
@@ -1818,12 +1655,11 @@ class _Tables
                     {
                         amount = table.users[j].rank == 3 ? win_amount[3] : 0;
                     }
-                    console.log("for score >>>>", table.users[j])
                     rank.push({
                         player_index: table.users[j].position,
                         name: table.users[j].name,
-                        numeric_id: table.users[j].numeric_id,
                         token : table.users[j].user_token,
+                        numeric_id: table.users[j].numeric_id,
                         rank: table.users[j].rank,
                         amount: amount,
                         id: table.users[j].id,
@@ -1831,160 +1667,78 @@ class _Tables
                         score: table.users[j].points + table.users[j].bonusPoints
                     });
                 }
-                console.log("isThisTheEnd>> rank", room, JSON.stringify(rank));
-                if (table.no_of_players == 2 || table.no_of_players == 3)
-                {
-                    if (table.players_won == 1 || table.players_done>=1)
-                    {
-                        //this.tables = this.tables.filter((t) => t.room != room);
-                        //console.log('After Splice::', room);
-                        //console.log('End rank::', rank);
-                        //console.log('Tables::', this.tables);
-                        return {
-                            'rank' : rank,
-                            'table' : table
-                        };
-                    } else return false;
-                }
-                else if (table.no_of_players == 4)
-                {
-                    if (table.players_won == 2)
-                    {
-                        //this.tables = this.tables.filter((t) => t.room != room);
-                        //console.log("this.tables  >>0>", this.tables, rank)
-                        return {
-                            'rank' : rank,
-                            'table' : table
-                        };
-                    } 
-                    //else if (table.players_done >= 3 && table.players_won == 1)
-                    else if (table.players_done >= 3)
-                    {
-                        if(!table.players_won)
-                            table.players_won=0;
-
-                        for (let j = 0; j < table.users.length; j++)
-                        {
-                            if (table.users[j].is_active && !table.users[j].is_done)
-                            {
-                                table.players_won += 1;
-                                table.players_done += 1;
-                                table.users[j].is_done = true;
-                               // table.users[j].rank = table.players_won;
-                                if(!table.users[j].rank)
-                                {
-                                    let user_rank = myRoom.no_of_players;
-
-                                    while (this.isRankOccupied(room, user_rank, myRoom))
-                                    {
-                                        user_rank--;
-                                        if (user_rank == 1) break;
-                                    }
-                                    table.users[j].rank = user_rank;
-                                }
-                            }
-                        }
-
-                        rank = [];
-                        for (let j = 0; j < table.users.length; j++)
-                        {
-                            // let amount = 0 ;
-                            // if(typeof win_amount != 'undefined') amount =  this.tables[i].users[j].rank == 1 ? win_amount : 0;
-                            let amount = 0;
-                            if (typeof win_amount != 'undefined' && table.users[j].rank == 1 && win_amount[1])
-                            {
-                                amount = table.users[j].rank == 1 ? win_amount[1] : 0;
-                            } else if (typeof win_amount != 'undefined' && table.users[j].rank == 2 && win_amount[2])
-                            {
-                                amount = table.users[j].rank == 2 ? win_amount[2] : 0;
-                            } else if (typeof win_amount != 'undefined' && table.users[j].rank == 3 && win_amount[3])
-                            {
-                                amount = table.users[j].rank == 3 ? win_amount[3] : 0;
-                            }
-                            rank.push({
-                                player_index: table.users[j].position,
-                                name: table.users[j].name,
-                                token : table.users[j].user_token,
-                                numeric_id: table.users[j].numeric_id,
-                                rank: table.users[j].rank,
-                                amount: amount,
-                                id: table.users[j].id,
-                                is_left: table.users[j].hasOwnProperty('is_left'),
-                                score: table.users[j].points + table.users[j].bonusPoints
-                            });
-                        }
-                        // this.tables = this.tables.filter((t) => t.room != room);
-                        // console.log("this.tables  >1>>", this.tables, rank)
-                        return {
-                            'rank' : rank,
-                            'table' : table
-                        };
-                    } else return false;
-                // }
-            // }
+                return {
+                    'rank' : rank,
+                    'table' : table
+                };
+            } else return false;
         }
         return false;
+    }
+
+    calculateGameEndData(room, win_amount, myRoom)
+    {
+        console.log("isThisTheEnd>> ", room, win_amount,myRoom)
+        let endData = this.EndOfTournamentV2(room, win_amount, myRoom);
+        return {
+            'rank' : endData.winner,
+            'table' : endData.table
+        };
     }
 
     checkOnlyPlayerLeft(room, myRoom)
     {
         // console.log('CHECKING PLAYERS LEFT');
         let table = myRoom;
-        // for (let i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room == room)
-        //     {
-                console.log("checkOnlyPlayerLeft : Step 1: ")
-                if (table.no_of_players - table.players_done == 1)
+        console.log("checkOnlyPlayerLeft : Step 1: ")
+        if (table.no_of_players - table.players_done == 1)
+        {
+            console.log("checkOnlyPlayerLeft : Step 2: ")
+            for (let j = 0; j < table.users.length; j++)
+            {
+                // console.log('USER', this.tables[i].users[j]);
+                console.log("checkOnlyPlayerLeft : Step 3: ", table.users[j].is_active, !table.users[j].is_done, !table.users[j].is_left)
+                if (
+                    table.users[j].is_active &&
+                    !table.users[j].is_done &&
+                    !table.users[j].is_left
+                )
                 {
-                    console.log("checkOnlyPlayerLeft : Step 2: ")
-                    for (let j = 0; j < table.users.length; j++)
+                    table.players_won += 1;
+                    table.players_done += 1;
+                    table.users[j].is_done = true;
+                    //TO DO: 
+                    
+                    let rank = table.users[j].rank;
+                    console.log('Rank received: ', rank);
+                    if(!rank || rank<1)
                     {
-                        // console.log('USER', this.tables[i].users[j]);
-                        console.log("checkOnlyPlayerLeft : Step 3: ", table.users[j].is_active, !table.users[j].is_done, !table.users[j].is_left)
-                        if (
-                            table.users[j].is_active &&
-                            !table.users[j].is_done &&
-                            !table.users[j].is_left
-                        )
+                        rank=table.no_of_players;
+                        console.log('Inside rank calc');
+                        
+                        while (this.isRankOccupied(room, rank, myRoom))
                         {
-                            table.players_won += 1;
-                            table.players_done += 1;
-                            table.users[j].is_done = true;
-                            //TO DO: 
                             
-                            let rank = table.users[j].rank;
-                            console.log('Rank received: ', rank);
-                            if(!rank || rank<1)
-                            {
-                                rank=table.no_of_players;
-                                console.log('Inside rank calc');
-                                
-                                while (this.isRankOccupied(room, rank, myRoom))
-                                {
-                                    
-                                    console.log('Inside rank deduc');
-                                    rank--;
-                                    if (rank == 1) break;
-                                }
-                            }
-                            table.users[j].rank=rank;
-                            console.log('Rank alotted: ' +rank+  JSON.stringify(table.users[j]));
-                            //table.users[j].rank = table.players_won;
-                            return {
-                                'response': true,
-                                'table' : table,
-                            };
+                            console.log('Inside rank deduc');
+                            rank--;
+                            if (rank == 1) break;
                         }
-                        // console.log('table found', this.tables);
                     }
+                    table.users[j].rank=rank;
+                    console.log('Rank alotted: ' +rank+  JSON.stringify(table.users[j]));
+                    //table.users[j].rank = table.players_won;
                     return {
                         'response': true,
                         'table' : table,
                     };
                 }
-            // }
-        // }
+                // console.log('table found', this.tables);
+            }
+            return {
+                'response': true,
+                'table' : table,
+            };
+        }
         return {
             'response': false,
             'table' : table,
