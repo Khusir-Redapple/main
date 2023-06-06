@@ -1062,6 +1062,14 @@ class _Tables
         } //MAIN USER 2 TOKEN 38 POSITION 11
 
         var dead_possible = [];
+        // for testing porpose, delete below line after testing
+        dead_possible.push({
+            user: 3,
+            token: 2,
+            checkPointActivated: true,
+            tokenIndex: 21,
+            movebleBox: 6
+        });
         var i = tab_pos;
         for (let j = 0; j < table.users.length; j++)
         {
@@ -1096,17 +1104,14 @@ class _Tables
                 }
             }
         }
-
-        console.log('DEAD POSSIBLE', dead_possible);
-
         var us = [];
         let safe_user = []
 
         for (let i = 0; i < dead_possible.length; i++)
         {
-            console.log("dead_possible.length : ", dead_possible.length)
-            console.log("us : ", us, i)
-            console.log("dead_possible[i].user : ", dead_possible[i].user)
+            //console.log("dead_possible.length : ", dead_possible.length)
+            //console.log("us : ", us, i)
+           // console.log("dead_possible[i].user : ", dead_possible[i].user)
             if (us.indexOf(dead_possible[i].user) > -1)
             {
                 // dead_possible = dead_possible.filter((e) => e.user != dead_possible[i].user);
@@ -1116,7 +1121,7 @@ class _Tables
                 // continue; 
             } else
             {
-                console.log("else dead_possible[i].user : ", dead_possible[i].user)
+                //console.log("else dead_possible[i].user : ", dead_possible[i].user)
                 us.push(dead_possible[i].user);
             }
             // i++;
@@ -1126,7 +1131,7 @@ class _Tables
         {
             for (let j = 0; j < dead_possible.length; j++)
             {
-                console.log("safe_user[i] >>>>", i, safe_user[i], "dead_possible[j].user >>>>", j, dead_possible[j].user)
+                //console.log("safe_user[i] >>>>", i, safe_user[i], "dead_possible[j].user >>>>", j, dead_possible[j].user)
                 dead_possible = dead_possible.filter((e) => safe_user[i] != e.user);
             }
         }
@@ -1181,7 +1186,8 @@ class _Tables
                 // added this line to store cut_player data.
                 //gamePlayData.data["cut_player " + i] = dead_possible[i].user;
             }
-            //console.log("My Points >>> ", table.users[myPos].points, table.users[dead_possible[i].user].points, table.users[dead_possible[i].user].tokens)
+            // Send the Kill player object to gamePlayData
+            gamePlayData.data["killPlayerData"] = JSON.stringify(dead_possible);
         }
         //console.log("dead_possible >new>>>", dead_possible);
         //console.log('KILL TABLE INFO ::', table);
