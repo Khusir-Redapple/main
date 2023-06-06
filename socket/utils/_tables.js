@@ -1150,8 +1150,12 @@ class _Tables
             //console.log("My Points >>> ", table.users[myPos].points, table.users[dead_possible[i].user], checkPointActivated)
             // this.tables[tab_pos].users[dead_possible[i].user].points = this.tables[tab_pos].users[dead_possible[i].user].points - this.tables[tab_pos].users[dead_possible[i].user].tokens[dead_possible[i].token];
             dead_possible[i].checkPointActivated = checkPointActivated;
-            gamePlayData.data["cut_player " + i] = dead_possible[i].user;
-            gamePlayData.data["cut_pawn " + i] = dead_possible[i].token;
+            //gamePlayData.data["cut_player " + i] = dead_possible[i].user;
+            //gamePlayData.data["cut_pawn " + i] = dead_possible[i].token;
+
+            gamePlayData.data["cut_player"] = dead_possible[i].user;
+            gamePlayData.data["cut_pawn"] = dead_possible[i].token;
+
             // console.log("this.gamePlayData[gamePlayDataIndex].data >",this.gamePlayData[gamePlayDataIndex].data)
             if (checkPointActivated)
             {
@@ -1163,7 +1167,8 @@ class _Tables
                 //console.log("KILL TOKEN INDEX UPDATE _ ", table.users[dead_possible[i].user].points, cutPoint, typeof cutPoint)
                 table.users[dead_possible[i].user].points = table.users[dead_possible[i].user].points - cutPoint + config.starPosition[0];
                 //console.log("AFTER KILL TOKEN INDEX UPDATE _", table.users[dead_possible[i].user].tokens[dead_possible[i].token], table.users[dead_possible[i].user].points)
-                gamePlayData.data["cut_move " + i] = cutPoint + " - " + config.starPosition[0];
+                //gamePlayData.data["cut_move " + i] = cutPoint + " - " + config.starPosition[0];
+                gamePlayData.data["cut_move"] = cutPoint;
             }
             else
             {
@@ -1171,7 +1176,8 @@ class _Tables
                 table.users[dead_possible[i].user].points -= table.users[dead_possible[i].user].tokens[dead_possible[i].token]; //commented above line and replace with this line
                 table.users[dead_possible[i].user].tokens[dead_possible[i].token] = 0;
                 dead_possible[i].tokenIndex = 0;
-                gamePlayData.data["cut_move " + i] = dead_possible[i].movebleBox + " - 0"
+                // gamePlayData.data["cut_move " + i] = dead_possible[i].movebleBox + " - 0"
+                gamePlayData.data["cut_move"] = dead_possible[i].movebleBox;
                 // added this line to store cut_player data.
                 //gamePlayData.data["cut_player " + i] = dead_possible[i].user;
             }
