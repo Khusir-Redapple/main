@@ -960,6 +960,7 @@ class _Tables
                 gamePlayData.data.extra_roll = 0,
                 gamePlayData.data.extra_roll_count = 0,
                 gamePlayData.data.extra_roll_reason = [],
+                gamePlayData.data.kill_player_data = [],
                 gamePlayData.data.checkpoint = 0,
                 gamePlayData.data.player_score = user.points + user.bonusPoints,
                 gamePlayData.data.points = 0,
@@ -1179,7 +1180,14 @@ class _Tables
                 //gamePlayData.data["cut_player " + i] = dead_possible[i].user;
             }
             // Send the Kill player object to gamePlayData
-            gamePlayData.data["killPlayerData"] = dead_possible;
+            // gamePlayData.data["kill_player_data"] = dead_possible;
+            let killPlayerData = {
+                'cut' : dead_possible.length,
+                'cut_player' : dead_possible[i].user,
+                'cut_pawn' : dead_possible[i].token,
+                'cut_move' : dead_possible[i].movebleBox,
+            }
+            gamePlayData.data.kill_player_data.push(killPlayerData);
         }
         //console.log("dead_possible >new>>>", dead_possible);
         //console.log('KILL TABLE INFO ::', table);
