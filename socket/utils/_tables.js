@@ -80,6 +80,7 @@ class _Tables
                     six_counts: 0,
                     tokens: [0, 0, 0, 0],
                     points: 0,
+                    points_per_diceRoll = [],
                     bonusPoints: 0,
                     moves: 0,
                     token_colour: random_colour,
@@ -197,21 +198,11 @@ class _Tables
     //Seat on tournament table
     seatOnTableforTourney(room, user, optional, myRoom)
     {
-        // let index = this.tables.findIndex(function (data, i)
-        // {
-        //     return data.room == room
-        // });
-
-        // let filteredTable = this.tables.filter((x) => x.room == room);
-
         let filteredTable = myRoom;
-        
         if (filteredTable)
         {
             let count = 0;
             let noPlayers = filteredTable.no_of_players;
-
-
             // adding two property for gameData.
             filteredTable.turn_time = config.turnTimer;
             filteredTable.timeToCompleteGame = config.gameTime * 60;
@@ -254,12 +245,12 @@ class _Tables
                 six_counts: 0,
                 tokens: [0, 0, 0, 0],
                 points: 0,
+                points_per_diceRoll = [],
                 bonusPoints: 0,
                 moves: 0,
                 token_colour: filteredTable.users[pos].token_colour,
                 diceValue : readDiceValue
             };
-            // this.tables[index] = filteredTable[0];
             return {
                 table: filteredTable,
                 pos: pos,
@@ -727,26 +718,19 @@ class _Tables
 
     addBonus(room, id, length, type, myRoom, gamePlayData)
     {
-        // for (let i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room == room)
-        //     {
-                for (let j = 0; j < myRoom.users.length; j++)
-                {
-                    if (myRoom.users[j].id == id)
-                    {
-                        myRoom.users[j].bonus_dice += length;
-                        console.log('Bonus updated', myRoom.users[j].bonus_dice);
-                        //var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
-                        gamePlayData.data.extra_roll = 1
-                        gamePlayData.data.extra_roll_count += 1
-                        gamePlayData.data.extra_roll_reason.push(type)
-                    }
-                }
-            // }
-        // }
-
+        for (let j = 0; j < myRoom.users.length; j++)
+        {
+            if (myRoom.users[j].id == id)
+            {
+                myRoom.users[j].bonus_dice += length;
+                console.log('Bonus updated', myRoom.users[j].bonus_dice);
+                gamePlayData.data.extra_roll = 1
+                gamePlayData.data.extra_roll_count += 1
+                gamePlayData.data.extra_roll_reason.push(type)
+            }
+        }
     }
+
     addBonusPoints(room, id, points, length, type, myRoom, gamePlayData)
     {
         let bonusPoint = points * length;
@@ -754,9 +738,9 @@ class _Tables
         {
             if (myRoom.users[j].id == id)
             { 
-                console.log('Before Bonus Points updated- ', myRoom.users[j].bonusPoints);
+                
                 myRoom.users[j].bonusPoints += bonusPoint;
-                console.log('After Bonus Points updated- ', myRoom.users[j].bonusPoints);
+                myRoom.users[j].points_per_diceRoll.push(points);
                 // To update pawn kill count
                 if(type == 'cut_bonus'){
                     if(myRoom.users[j].hasOwnProperty('pawnKillCount')){
@@ -1259,6 +1243,10 @@ class _Tables
                     if (table.users[j].id == id)
                     {
                         console.log('PENDING DICES BEFORE', table.users[j].dices_rolled, table.users[j].points, dice_value);
+                        let user_points = 0;
+                        table.users[j].points_per_diceRoll.map(function(ele) {
+                            user_points += ele;
+                        });
 
                         if (table.users[j].tokens[token_index] + dice_value <= 56)
                         {
@@ -1276,8 +1264,8 @@ class _Tables
                             gamePlayData.data.pawn = token_index + 1;
                             gamePlayData.data.move = gamePlayData.data.roll.length;
                             //gamePlayData.data.points += (dice_value + gamePlayData.data.cut_bonus + gamePlayData.data.home_base_bonus);
-                            gamePlayData.data.points += table.users[j].points + dice_value;
                             gamePlayData.data.total_move += dice_value;
+                            gamePlayData.data.points = user_points + gamePlayData.data.total_move;
                             gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
                             gamePlayData.data.game_time = await this.setGameTime(myRoom);
@@ -1299,8 +1287,8 @@ class _Tables
                             gamePlayData.data.pawn = token_index + 1;
                             gamePlayData.data.move = gamePlayData.data.roll.length;
                             //gamePlayData.data.points += (dice_value + gamePlayData.data.cut_bonus + gamePlayData.data.home_base_bonus);
-                            gamePlayData.data.points += table.users[j].points + dice_value;
                             gamePlayData.data.total_move += dice_value;
+                            gamePlayData.data.points = user_points + gamePlayData.data.total_move;                            
                             gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
                             gamePlayData.data.game_time = await this.setGameTime(myRoom);
