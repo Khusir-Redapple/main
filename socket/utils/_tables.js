@@ -737,11 +737,10 @@ class _Tables
         for (let j = 0; j < myRoom.users.length; j++)
         {
             if (myRoom.users[j].id == id)
-            { 
-                
+            {
                 myRoom.users[j].bonusPoints += bonusPoint;
-                myRoom.users[j].points_per_diceRoll.push(points);
-                // To update pawn kill count
+                myRoom.users[j].points_per_diceRoll.push(bonusPoint);
+                // To update pawn kill count per user
                 if(type == 'cut_bonus'){
                     if(myRoom.users[j].hasOwnProperty('pawnKillCount')){
                         myRoom.users[j].pawnKillCount = myRoom.users[j].pawnKillCount + 1;
@@ -751,31 +750,24 @@ class _Tables
                 }
             }
         }
-       gamePlayData.data[type] = bonusPoint;
+        gamePlayData.data[type] = bonusPoint;
         if (type == 'home_base_bonus')
         {
             gamePlayData.data.home_base = 1;
         }
     }
+
     addSix(room, id, myRoom)
     {
-        // for (let i = 0; i < this.tables.length; i++)
-        // {
-        //     // console.log("id we got", id)
-        //     if (this.tables[i].room == room)
-        //     {
-                // console.log("room we got", room)
-                for (let j = 0; j < myRoom.users.length; j++)
-                {
-                    // console.log("id we got", this.tables[i].users[j])
-                    if (myRoom.users[j].id == id)
-                    {
-                        myRoom.users[j].six_counts += 1;
-                        console.log('Six updated', myRoom.users[j].six_counts);
-                    }
-                }
-            // }
-        // }
+        for (let j = 0; j < myRoom.users.length; j++)
+        {
+            // console.log("id we got", this.tables[i].users[j])
+            if (myRoom.users[j].id == id)
+            {
+                myRoom.users[j].six_counts += 1;
+                console.log('Six updated', myRoom.users[j].six_counts);
+            }
+        }
     }
 
     setSix(room, id, myRoom)
@@ -900,6 +892,7 @@ class _Tables
     }
     async sendToSqsAndResetGamePlayData(room, myRoom, gamePlayData, myPos)
     {
+        console.log('SQS DATA ======>', JSON.stringify(gamePlayData));
         await sendMessage(gamePlayData);
         //send through SQS
         await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
@@ -997,13 +990,13 @@ class _Tables
         );
         if (actual_token_position == -1) 
         {
-        let responseObj = {
-            'dead_possible' :  false,
-            'myRoom'    : table,
-            'gameData'  : gamePlayData
+            let responseObj = {
+                'dead_possible' :  false,
+                'myRoom'    : table,
+                'gameData'  : gamePlayData
+            }
+            return responseObj;
         }
-        return responseObj;
-    }
         if (config.safeZone.includes(actual_token_position)) 
         {
             let responseObj = {
@@ -1265,7 +1258,7 @@ class _Tables
                             gamePlayData.data.move = gamePlayData.data.roll.length;
                             //gamePlayData.data.points += (dice_value + gamePlayData.data.cut_bonus + gamePlayData.data.home_base_bonus);
                             gamePlayData.data.total_move += dice_value;
-                            gamePlayData.data.points = user_points + gamePlayData.data.total_move;
+                            gamePlayData.data.points = user_points + (+gamePlayData.data.total_move);
                             gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
                             gamePlayData.data.game_time = await this.setGameTime(myRoom);
