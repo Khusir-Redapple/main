@@ -952,7 +952,7 @@ class _Tables
         gamePlayData.data.timestamp = new Date().getTime()
         await redisCache.addToRedis('gamePlay_'+room, gamePlayData);
     }
-    
+
     clearDices(room, pos, myRoom)
     {
         let table = myRoom;
@@ -1275,7 +1275,8 @@ class _Tables
                             // var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
                             gamePlayData.data.pawn = token_index + 1;
                             gamePlayData.data.move = gamePlayData.data.roll.length;
-                            gamePlayData.data.points += (dice_value + gamePlayData.data.cut_bonus + gamePlayData.data.home_base_bonus);
+                            //gamePlayData.data.points += (dice_value + gamePlayData.data.cut_bonus + gamePlayData.data.home_base_bonus);
+                            gamePlayData.data.points += table.users[j].points + dice_value;
                             gamePlayData.data.total_move += dice_value;
                             gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
@@ -1297,7 +1298,8 @@ class _Tables
                             // Added gameplay Data//
                             gamePlayData.data.pawn = token_index + 1;
                             gamePlayData.data.move = gamePlayData.data.roll.length;
-                            gamePlayData.data.points += (dice_value + gamePlayData.data.cut_bonus + gamePlayData.data.home_base_bonus);
+                            //gamePlayData.data.points += (dice_value + gamePlayData.data.cut_bonus + gamePlayData.data.home_base_bonus);
+                            gamePlayData.data.points += table.users[j].points + dice_value;
                             gamePlayData.data.total_move += dice_value;
                             gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
