@@ -739,7 +739,7 @@ class _Tables
             if (myRoom.users[j].id == id)
             {
                 myRoom.users[j].bonusPoints += bonusPoint;
-                myRoom.users[j].points_per_diceRoll.push(bonusPoint);
+                gamePlayData.data.points_per_diceRoll.push(bonusPoint);
                 // To update pawn kill count per user
                 if(type == 'cut_bonus'){
                     if(myRoom.users[j].hasOwnProperty('pawnKillCount')){
@@ -892,7 +892,6 @@ class _Tables
     }
     async sendToSqsAndResetGamePlayData(room, myRoom, gamePlayData, myPos)
     {
-        console.log('SQS DATA ======>', JSON.stringify(gamePlayData));
         await sendMessage(gamePlayData);
         //send through SQS
         await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
@@ -921,6 +920,7 @@ class _Tables
         gamePlayData.data.checkpoint = 0,
         gamePlayData.data.player_score = user.points + user.bonusPoints,
         gamePlayData.data.points = 0,
+        gamePlayData.data.points_per_diceRoll = [],
         gamePlayData.data.life_lost = 3 - user.life,
         gamePlayData.data.lives_left = user.life,
         gamePlayData.data.pawn_positions = user.tokens,
@@ -1237,10 +1237,9 @@ class _Tables
                     {
                         console.log('PENDING DICES BEFORE', table.users[j].dices_rolled, table.users[j].points, dice_value);
                         let user_points = 0;
-                        table.users[j].points_per_diceRoll.map(function(ele) {
+                        gamePlayData.data.points_per_diceRoll.map(function(ele) {
                             user_points += ele;
                         });
-
                         if (table.users[j].tokens[token_index] + dice_value <= 56)
                         {
                             table.users[j].tokens[token_index] += dice_value;
@@ -1281,7 +1280,7 @@ class _Tables
                             gamePlayData.data.move = gamePlayData.data.roll.length;
                             //gamePlayData.data.points += (dice_value + gamePlayData.data.cut_bonus + gamePlayData.data.home_base_bonus);
                             gamePlayData.data.total_move += dice_value;
-                            gamePlayData.data.points = user_points + gamePlayData.data.total_move;                            
+                            gamePlayData.data.points = user_points + (+gamePlayData.data.total_move);                           
                             gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
                             gamePlayData.data.game_time = await this.setGameTime(myRoom);
