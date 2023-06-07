@@ -916,13 +916,6 @@ class _Tables
     }
     async sendToSqsAndResetGamePlayData(room, myRoom, gamePlayData, myPos)
     {
-        // let me = myRoom.users[myPos];
-        // gamePlayData.data.User = me.numeric_id;
-        // gamePlayData.data.player_score = me.points + me.bonusPoints;
-
-        // if('data' in gamePlayData) {
-        //     await sendMessage(gamePlayData);
-        // }
         await sendMessage(gamePlayData);
         //send through SQS
         await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
@@ -930,58 +923,41 @@ class _Tables
 
     async resetGamePlayData(room, myRoom, gamePlayData, myPos)
     {
-        // var index = this.tables.findIndex((x) => x.room == room);
-        // if (index >= 0)
-        // {
-            // let user = myRoom.users[myPos];
-            let user = myRoom.users[myRoom.current_turn];
-            // console.log("Table >>", this.tables[index])
-                gamePlayData.data.User = user.numeric_id,
-                gamePlayData.data.turn = user.turn,
-                gamePlayData.data.roll = [],
-                gamePlayData.data.pawn = 0,
-                gamePlayData.data.move = 0,
-                gamePlayData.data.total_move = 0,
-                gamePlayData.data.cut = 0,
-                gamePlayData.data.cut_player = 0,
-                gamePlayData.data.cut_pawn = 0,
-                gamePlayData.data.cut_move = 0,
-                gamePlayData.data.cut_bonus = 0,
-                gamePlayData.data.home_base = 0,
-                gamePlayData.data.home_base_bonus = 0,
-                gamePlayData.data.extra_roll = 0,
-                gamePlayData.data.extra_roll_count = 0,
-                gamePlayData.data.extra_roll_reason = [],
-                gamePlayData.data.kill_player_data = [],
-                gamePlayData.data.checkpoint = 0,
-                gamePlayData.data.player_score = user.points + user.bonusPoints,
-                gamePlayData.data.points = 0,
-                gamePlayData.data.life_lost = 3 - user.life,
-                gamePlayData.data.lives_left = user.life,
-                gamePlayData.data.pawn_positions = user.tokens,
-                gamePlayData.data.game_time = 0,
-                gamePlayData.data.room_id = room,
-                gamePlayData.data.timestamp = new Date().getTime()
-                await redisCache.addToRedis('gamePlay_'+room, gamePlayData);
-        // }
+        let user = myRoom.users[myRoom.current_turn];
+        gamePlayData.data.User = user.numeric_id,
+        gamePlayData.data.turn = user.turn,
+        gamePlayData.data.roll = [],
+        gamePlayData.data.pawn = 0,
+        gamePlayData.data.move = 0,
+        gamePlayData.data.total_move = 0,
+        gamePlayData.data.cut = 0,
+        gamePlayData.data.cut_player = 0,
+        gamePlayData.data.cut_pawn = 0,
+        gamePlayData.data.cut_move = 0,
+        gamePlayData.data.cut_bonus = 0,
+        gamePlayData.data.home_base = 0,
+        gamePlayData.data.home_base_bonus = 0,
+        gamePlayData.data.extra_roll = 0,
+        gamePlayData.data.extra_roll_count = 0,
+        gamePlayData.data.extra_roll_reason = [],
+        gamePlayData.data.kill_player_data = [],
+        gamePlayData.data.checkpoint = 0,
+        gamePlayData.data.player_score = user.points + user.bonusPoints,
+        gamePlayData.data.points = 0,
+        gamePlayData.data.life_lost = 3 - user.life,
+        gamePlayData.data.lives_left = user.life,
+        gamePlayData.data.pawn_positions = user.tokens,
+        gamePlayData.data.game_time = 0,
+        gamePlayData.data.room_id = room,
+        gamePlayData.data.timestamp = new Date().getTime()
+        await redisCache.addToRedis('gamePlay_'+room, gamePlayData);
     }
+    
     clearDices(room, pos, myRoom)
     {
         let table = myRoom;
         table.users[pos].dices_rolled = [];
         return table;
-         
-
-
-
-        // console.log("in the clear divces");
-        // for (let i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room == room)
-        //     {
-        //         this.tables[i].users[pos].dices_rolled = [];
-        //     }
-        // }
     }
 
     getNextPosition(room, pos, myRoom)
