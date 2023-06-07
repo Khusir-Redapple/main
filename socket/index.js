@@ -869,31 +869,35 @@ module.exports = function (io)
             try {
                 let tableD = await Table.findOne({
                     room: room,
-                });                
-                let gameStartTime = tableD.game_started_at;
-                // To convert New Date() getTime to Second.
-                let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
+                });
+                if(tableD) {     
+                    let gameStartTime = tableD.game_started_at;
+                    // To convert New Date() getTime to Second.
+                    let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
 
-                let flag;
-                if (timeInsecond >= config.gameTime * 60) { 
-                    flag =  true;
+                    let flag;
+                    if (timeInsecond >= config.gameTime * 60) { 
+                        flag =  true;
+                    } else {
+                        flag =  false;
+                    }
+                    if (timeInsecond < 0) timeInsecond = 0;
+
+                    let timer = config.gameTime * 60 - timeInsecond;
+                    if(timer < 0){
+                        timer = 0
+                    }
+                    return {
+                        isTimeExpired : flag,
+                        time : timer,
+                    }
                 } else {
-                    flag =  false;
-                }
-                if (timeInsecond < 0) timeInsecond = 0;
-
-                let timer = config.gameTime * 60 - timeInsecond;
-                if(timer < 0){
-                    timer = 0
-                }
-                return {
-                    isTimeExpired : flag,
-                    time : timer,
+                    return false;
                 }
 
             } catch(Execption) {
                 // To log error
-                console.log('checkGameExpireTime ======>>', Execption);
+                //console.log('checkGameExpireTime ======>>', Execption);
                 logDNA.log('checkGameExpireTime', {level: 'error',meta: Execption});
             }
         }
