@@ -376,7 +376,7 @@ module.exports = function (io)
                         //TODO: 
                         checkTabel = await _TableInstance.istableExists(data,myRoom);
                         let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
-                        console.log('GAME_COMPLETE', start.room, JSON.stringify(latestRoomData));
+                        console.log('GAME_COMPLETE', start.room, JSON.stringify(latestRoomData), myRoom);
                         console.log("is game completed ====>", latestRoomData.isGameCompleted);
                         // IF game completed, then clear the time interval.
                         if (latestRoomData!= null && latestRoomData.isGameCompleted == true)
@@ -648,15 +648,6 @@ module.exports = function (io)
                 let myRoom = await redisCache.getRecordsByKeyRedis(params_data.room);
                 let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params_data.room);
                 let checkTabel = await _TableInstance.istableExists(params_data,myRoom);
-                // var tableD = await Table.findOne({
-                //     room: params_data.room
-                // });
-                //console.log('Before SKIPPED ', JSON.stringify(tableD));                
-                // if (tableD!= null && tableD.isGameCompleted)
-                // {
-                //     clearInterval(this);
-                // }
-                // console.log('GAME_COMPLETE_2 ', start.room, JSON.stringify(myRoom));
                 if (myRoom!= null && myRoom.isGameCompleted)
                 {
                     clearInterval(this);
@@ -666,11 +657,6 @@ module.exports = function (io)
                     var currTime = parseInt(new Date().getTime());
                     if (currTime - checkTabel.start_at > (config.turnTimer + 2) * 1000)
                     {   
-                        // console.log("Room data before cb1: " + Json.stringify(myRoom));
-                        // console.log("gamePlayData cb1: " + Json.stringify(gamePlayData));
-                        //console.log("IN timeOut ------------", new Date())
-                        //console.log("IN timeOutNew ------------", new Date())
-
                         var id_of_current_turn = await _TableInstance.getMyIdByPossition(
                             params_data,
                             checkTabel.current_turn,
@@ -679,11 +665,6 @@ module.exports = function (io)
                          //console.log("curr turn " + id_of_current_turn);
                         if (id_of_current_turn != -1)
                         {
-
-                            //console.log("IN timeOutNew1 ------------", new Date())
-                           // console.log("Room data before cb: " + JSON.stringify(myRoom));
-                            //console.log("gamePlayData before cb: " + JSON.stringify(gamePlayData));
-                            // let currentUser= tableD.players.find(x=>x.id.toString()==id_of_current_turn);
                             let currentUser= myRoom.users.find(x=>x.id.toString() == id_of_current_turn);
                             if(currentUser && currentUser.is_active && !myRoom.isGameCompleted)
                             {
