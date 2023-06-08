@@ -382,6 +382,8 @@ module.exports = function (io)
                         if (latestRoomData!= null && latestRoomData.isGameCompleted == true)
                         {
                             clearInterval(this);
+                        } else if(latestRoomData.isGameCompleted == 'undefined'){
+                            clearInterval(this);
                         }
 
                         let gameTime = await checkGameExpireTime(start.room);
