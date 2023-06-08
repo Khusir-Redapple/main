@@ -319,6 +319,9 @@ module.exports = {
         // console.log('Move Made', params);
         try
         {
+            // To capture pawn tap time
+            gamePlayData.data.pawn_move_time = await _tab.setGameTime(myRoom);
+
             // VALIDATION
             if (!params)
             {

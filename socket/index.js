@@ -545,7 +545,6 @@ module.exports = function (io)
             let myId = await Socketz.getId(socket.id);
             let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
             let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
-
             let response = await _TableInstance.moveTourney(params, myId, gamePlayData, myRoom);
             console.log('Tournament_move_made callback', response);
             await redisCache.addToRedis(myRoom.room,myRoom);

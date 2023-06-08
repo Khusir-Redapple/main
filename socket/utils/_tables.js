@@ -917,6 +917,7 @@ class _Tables
         gamePlayData.data.extra_roll_count = 0,
         gamePlayData.data.extra_roll_reason = [],
         gamePlayData.data.kill_player_data = [],
+        gamePlayData.data.pawn_move_time = 0,
         gamePlayData.data.checkpoint = 0,
         gamePlayData.data.player_score = user.points + user.bonusPoints,
         gamePlayData.data.points = 0,
@@ -1203,6 +1204,12 @@ class _Tables
             }
         }
     }
+    // This function used to prefix an integer with 0.
+    pad(num, size) {
+        num = num.toString();
+        while (num.length < size) num = "0" + num;
+        return num;
+    }
 
     async setGameTime(myRoom)
     {
@@ -1221,7 +1228,7 @@ class _Tables
             minutes = Math.floor(gameTime / 60);
             seconds = gameTime - minutes * 60;
         } 
-        return minutes + ":" + seconds;
+        return this.pad(minutes,2) + ":" + this.pad(seconds,2);
     }
 
     async makeMoveForTournament(dice_value, room, id, token_index, myRoom, gamePlayData)
@@ -1318,11 +1325,12 @@ class _Tables
         for (let j = 0; j < table.users.length; j++)
         {
             let totalScore = table.users[j].points + table.users[j].bonusPoints;
-            if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left") 
-                && table.users[j].rank == 1) {
-                firstRank = 1;
-                UserRankArray.set(j, firstRank);
-            } else if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
+            // if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left") 
+            //     && table.users[j].rank == 1) {
+            //     firstRank = 1;
+            //     UserRankArray.set(j, firstRank);
+            // } else 
+            if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
                 activeUserMap.set(j, totalScore);
                 activeUserPointArray.push(totalScore);
             } else {
