@@ -604,6 +604,8 @@ module.exports = {
                             // {
                             //     return {callback: {status: 0, message: startGame.error}};
                             // }
+                            // send 
+                            await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                         }
                         // Else [!endGame]
                         else
