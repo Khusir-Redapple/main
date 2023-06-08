@@ -605,6 +605,12 @@ module.exports = {
                             //     return {callback: {status: 0, message: startGame.error}};
                             // }
                             // send 
+                            let user_points = 0;
+                            gamePlayData.data.points_per_diceRoll.map(function(ele) {
+                                user_points += ele;
+                            });
+                            gamePlayData.data.player_score += user_points;
+                            gamePlayData.data.points += user_points;
                             await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                         }
                         // Else [!endGame]
