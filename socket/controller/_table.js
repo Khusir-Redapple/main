@@ -609,6 +609,10 @@ module.exports = {
                             gamePlayData.data.points_per_diceRoll.map(function(ele) {
                                 user_points += ele;
                             });
+                            console.log("DICE VALUE BONUS ===>",  gamePlayData.data.points_per_diceRoll);
+                            console.log("AFTER ADDITION ===>",  user_points);
+                            
+                            
                             gamePlayData.data.player_score += user_points;
                             gamePlayData.data.points += user_points;
                             await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
