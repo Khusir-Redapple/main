@@ -390,8 +390,7 @@ module.exports = {
 
             if (!movePossibleExact)
             {
-                console.log('[NOT MOVE IMPOSSIBLE EXACT]');
-                // if (params.dice_value != 6) {
+                // if move not possible.
                 if (params.dice_value == 6)
                 {
                     //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
@@ -409,9 +408,6 @@ module.exports = {
                         DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                     }
                     await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-                    // SEND EVENT
-                    await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
-
                     let event = {
                         type: 'room_including_me',
                         room: params.room,
@@ -430,10 +426,6 @@ module.exports = {
                         },
                     };
                     resObj.events.push(event);
-                    // const winnerData = await this.checkwinnerOfTournament(params.room);
-                    // console.log("Below Winner Data --1--", winnerData)
-                    // if (winnerData) resObj.events.push(winnerData);
-
                 } else
                 {
                     // Send 'roll' to same player
@@ -466,6 +458,10 @@ module.exports = {
 
                     resObj.events.push(event);
                 }
+                    // SEND EVENT
+                    // update the gamePlay time at the time of skip happen for non moveble event.
+                    gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
+                    await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
 
             } else
             {

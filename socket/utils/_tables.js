@@ -1228,7 +1228,7 @@ class _Tables
             minutes = Math.floor(gameTime / 60);
             seconds = gameTime - minutes * 60;
         } 
-        return this.pad(minutes,2) + ":" + this.pad(seconds,2);
+        return minutes + ":" + this.pad(seconds,2);
     }
 
     async makeMoveForTournament(dice_value, room, id, token_index, myRoom, gamePlayData)
