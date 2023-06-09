@@ -917,7 +917,7 @@ class _Tables
         gamePlayData.data.extra_roll_count = 0,
         gamePlayData.data.extra_roll_reason = [],
         gamePlayData.data.kill_player_data = [],
-        gamePlayData.data.pawn_move_time = 0,
+        gamePlayData.data.pawn_move_time = 0.0,
         gamePlayData.data.checkpoint = 0,
         gamePlayData.data.player_score = user.points + user.bonusPoints,
         gamePlayData.data.points = 0,
@@ -1229,6 +1229,23 @@ class _Tables
             seconds = gameTime - minutes * 60;
         } 
         return minutes + ":" + this.pad(seconds,2);
+    }
+
+    async setPawnMoveTime(myRoom)
+    {
+        //let gameStartTime = myRoom.game_started_at;
+        let tableD = await Table.findOne({
+            room: myRoom.room,
+        });             
+        let gameStartTime = tableD.game_started_at;
+        // To convert New Date() getTime to Second.
+        let time = ((new Date().getTime() / 1000) - (gameStartTime / 1000));
+        let minutes = 0.0;
+        if(time > 0) {
+            let gameTime = config.gameTime * 60 - time;
+            minutes = (gameTime / 60);
+        } 
+        return minutes.toFixed(2);
     }
 
     async makeMoveForTournament(dice_value, room, id, token_index, myRoom, gamePlayData)

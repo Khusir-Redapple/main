@@ -320,7 +320,7 @@ module.exports = {
         try
         {
             // To capture pawn tap time
-            gamePlayData.data.pawn_move_time = await _tab.setGameTime(myRoom);
+            gamePlayData.data.pawn_move_time = await _tab.setPawnMoveTime(myRoom);
 
             // VALIDATION
             if (!params)
@@ -426,6 +426,11 @@ module.exports = {
                         },
                     };
                     resObj.events.push(event);
+                    // SEND EVENT
+                    // update the gamePlay time at the time of skip happen for non moveble event.
+                    gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
+                    console.log('game time from non movable event', gamePlayData.data.game_time);
+                    await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                 } else
                 {
                     // Send 'roll' to same player
@@ -457,11 +462,13 @@ module.exports = {
                     };
 
                     resObj.events.push(event);
-                }
+
                     // SEND EVENT
                     // update the gamePlay time at the time of skip happen for non moveble event.
                     gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
+                    console.log('game time from non movable event', gamePlayData.data.game_time);
                     await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
+                }
 
             } else
             {
