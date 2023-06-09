@@ -368,8 +368,6 @@ module.exports = {
             // const allEqual = diceVales => diceVales.every(v => v === 6);
             if (params.dice_value == 6)
             {
-
-                console.log("in the params dice value 0................");
                 await _tab.addBonus(params.room, id, 1, 'six', myRoom, gamePlayData); //remove this for not giving 2nd turn on 6
                 await _tab.addSix(params.room, id, myRoom);
             } else {
@@ -718,6 +716,16 @@ module.exports = {
                             // If cut/home happen with 6, then only one extra move given. not two
                             if (params.dice_value == 6)
                             {
+                               // If kill happans with six, then extra_roll_reason should be Kill.
+                               if(gamePlayData.data.extra_roll_reason.includes("six")) 
+                               {
+                                    gamePlayData.data.extra_roll_reason.map((ele,index) => {
+                                        if(ele == 'six'){
+                                            gamePlayData.data.extra_roll_reason.splice(index,1);
+                                        }
+                                    });
+                                }
+
                                 moveBonusCheck = true;
                                 killed = true;
                                 await _tab.addBonus(params.room, id, 0, "Kill", myRoom, gamePlayData);

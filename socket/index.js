@@ -607,23 +607,6 @@ module.exports = function (io)
             //Socketz.userGone(socket.id);
         });
 
-        // socket.on('sendToQueue', async (data, callback) =>
-        // {
-        //     if (!data || !data.token)
-        //     {
-        //         return callback({
-        //             status: 0,
-        //             message: localization.missingTokenError,
-        //         });
-        //     } else {
-        //         await sqsService.SendMessage(socket, io, data.token);
-        //         return callback({
-        //             status: 1,
-        //             message: 'success',
-        //         });
-        //     } 
-        // });
-
         async function startTournament(start, socket, myRoom, gamePlayData)
         {
             var params_data = {

@@ -701,19 +701,14 @@ class _Tables
 
     useBonus(room, id, myRoom)
     {
-        // for (let i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room == room)
-        //     {
-                for (let j = 0; j < myRoom.users.length; j++)
-                {
-                    if (myRoom.users[j].id == id)
-                    {
-                        if (myRoom.users[j].bonus_dice > 0) myRoom.users[j].bonus_dice--;
-                    }
-                }
-            // }
-        // }
+        for (let j = 0; j < myRoom.users.length; j++)
+        {
+            if (myRoom.users[j].id == id)
+            {
+                if (myRoom.users[j].bonus_dice > 0) myRoom.users[j].bonus_dice--;
+            }
+        }
+            
     }
 
     addBonus(room, id, length, type, myRoom, gamePlayData)
@@ -723,7 +718,6 @@ class _Tables
             if (myRoom.users[j].id == id)
             {
                 myRoom.users[j].bonus_dice += length;
-                console.log('Bonus updated', myRoom.users[j].bonus_dice);
                 gamePlayData.data.extra_roll = 1
                 gamePlayData.data.extra_roll_count += 1
                 gamePlayData.data.extra_roll_reason.push(type)
@@ -772,23 +766,14 @@ class _Tables
 
     setSix(room, id, myRoom)
     {
-        // for (let i = 0; i < this.tables.length; i++)
-        // {
-        //     // console.log("id we got", id)
-        //     if (this.tables[i].room == room)
-        //     {
-                // console.log("room we got", room)
-                for (let j = 0; j < myRoom.users.length; j++)
-                {
-                    // console.log("id we got", this.tables[i].users[j].id,this.tables[i].users[j].six_counts)
-                    if (myRoom.users[j].id == id)
-                    {
-                        myRoom.users[j].six_counts = 0;
-                        console.log('Six updated', myRoom.users[j].six_counts);
-                    }
-                }
-            // }
-        // }
+        for (let j = 0; j < myRoom.users.length; j++)
+        {
+            if (myRoom.users[j].id == id)
+            {
+                myRoom.users[j].six_counts = 0;
+                console.log('Six updated', myRoom.users[j].six_counts);
+            }
+        }
     }
 
     getSix(room, id, myRoom)
@@ -917,6 +902,7 @@ class _Tables
         gamePlayData.data.extra_roll_count = 0,
         gamePlayData.data.extra_roll_reason = [],
         gamePlayData.data.kill_player_data = [],
+        gamePlayData.data.pawnSafe_status = user.pawnSafe_status,
         gamePlayData.data.pawn_move_time = 0.0,
         gamePlayData.data.checkpoint = 0,
         gamePlayData.data.player_score = user.points + user.bonusPoints,
@@ -1285,6 +1271,27 @@ class _Tables
                             gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
                             gamePlayData.data.game_time = await this.setGameTime(myRoom);
+                            
+                            // to set checkpoint status for all pawns
+                            let myPawnPosition = table.users[j].tokens;
+                            const pawnSafeArray = [false, false, false, false];
+                            for (let index = 0; index < myPawnPosition.length; index++) {
+                                const element = myPawnPosition[index];
+                                if(config.safeZone.includes(element) || element == 56 || element == 0){
+                                    pawnSafeArray[index] = true;
+                                } else {
+                                    for (let jIndex = index + 1; jIndex < myPawnPosition.length; jIndex++) {
+                                        const nextElement = myPawnPosition[jIndex];
+                                        if (element == nextElement) {
+                                            pawnSafeArray[index] = true;
+                                            pawnSafeArray[jIndex] = true;
+                                        }
+                                    }
+                                }
+                            }
+                            gamePlayData.data.pawnSafe_status = pawnSafeArray;
+                            table.users[j].pawnSafe_status = pawnSafeArray;
+                            
                             // console.log("GAME PLAY DATA > ", this.gamePlayData[gamePlayDataIndex])
                             return {
                                 'token_position': table.users[j].tokens[token_index], 
@@ -1308,6 +1315,25 @@ class _Tables
                             gamePlayData.data.player_score = table.users[j].points + table.users[j].bonusPoints;
                             gamePlayData.data.pawn_positions = table.users[j].tokens;
                             gamePlayData.data.game_time = await this.setGameTime(myRoom);
+                            // to set checkpoint status for all pawns
+                            let myPawnPosition = table.users[j].tokens;
+                            const pawnSafeArray = [false, false, false, false];
+                            for (let index = 0; index < myPawnPosition.length; index++) {
+                                const element = myPawnPosition[index];
+                                if(config.safeZone.includes(element) || element == 56 || element == 0){
+                                    pawnSafeArray[index] = true;
+                                } else {
+                                    for (let jIndex = index + 1; jIndex < myPawnPosition.length; jIndex++) {
+                                        const nextElement = myPawnPosition[jIndex];
+                                        if (element == nextElement) {
+                                            pawnSafeArray[index] = true;
+                                            pawnSafeArray[jIndex] = true;
+                                        }
+                                    }
+                                }
+                            }
+                            gamePlayData.data.pawnSafe_status = pawnSafeArray;
+                            table.users[j].pawnSafe_status = pawnSafeArray;                            
 
                             console.log('PENDING DICES AFTER', table.users[j].dices_rolled, table.users[j].points);
                             return {
