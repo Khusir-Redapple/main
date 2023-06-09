@@ -1276,12 +1276,12 @@ class _Tables
                             let myPawnPosition = table.users[j].tokens;
                             const pawnSafeArray = [false, false, false, false];
                             for (let index = 0; index < myPawnPosition.length; index++) {
-                                const element = myPawnPosition[index];
-                                if(config.safeZone.includes(element) || element == 56 || element == 0){
+                                const element = myPawnPosition[index] + 1;
+                                if(config.safeZone.includes(element) || element == 57){
                                     pawnSafeArray[index] = true;
                                 } else {
                                     for (let jIndex = index + 1; jIndex < myPawnPosition.length; jIndex++) {
-                                        const nextElement = myPawnPosition[jIndex];
+                                        const nextElement = myPawnPosition[jIndex] + 1;
                                         if (element == nextElement) {
                                             pawnSafeArray[index] = true;
                                             pawnSafeArray[jIndex] = true;
@@ -1319,12 +1319,12 @@ class _Tables
                             let myPawnPosition = table.users[j].tokens;
                             const pawnSafeArray = [false, false, false, false];
                             for (let index = 0; index < myPawnPosition.length; index++) {
-                                const element = myPawnPosition[index];
-                                if(config.safeZone.includes(element) || element == 56 || element == 0){
+                                const element = myPawnPosition[index] + 1;
+                                if(config.safeZone.includes(element) || element == 57){
                                     pawnSafeArray[index] = true;
                                 } else {
                                     for (let jIndex = index + 1; jIndex < myPawnPosition.length; jIndex++) {
-                                        const nextElement = myPawnPosition[jIndex];
+                                        const nextElement = myPawnPosition[jIndex]+1;
                                         if (element == nextElement) {
                                             pawnSafeArray[index] = true;
                                             pawnSafeArray[jIndex] = true;
