@@ -102,6 +102,9 @@ module.exports = {
             }
             _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
             dices_rolled  = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
+            
+            gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
+            console.log('game time from non movable event', gamePlayData.data.game_time);
             await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
 
             // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
@@ -192,7 +195,10 @@ module.exports = {
                     DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                 }
                 await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-               await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
+                
+                gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
+                console.log('game time from non movable event', gamePlayData.data.game_time);
+                await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = true;
 
@@ -238,6 +244,8 @@ module.exports = {
                     DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                 }
                 await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
+                gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
+                console.log('game time from non movable event', gamePlayData.data.game_time);
                 await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = true;
@@ -343,16 +351,9 @@ module.exports = {
             params.dice_value = parseInt(params.dice_value);
 
             let resObj = {callback: {status: 1, message: localization.success}, events: []};
-
-            console.log('my room data : ' +JSON.stringify(myRoom));
-            console.log("id is : "+ id);
             let myPos = await _tab.getMyPosition(params.room, id, myRoom);
             //if (myPos == -1) return {callback: {status: 0, message: localization.noDataFound}};
 
-
-
-
-            
             let params_data = {
                 room: params.room,
             };
