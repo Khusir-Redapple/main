@@ -539,7 +539,7 @@ class _Tables
             if(timer < 0){
                 timer = 0.0;
             }
-            return timer.toFixed(2);
+            return Math.round((timer + Number.EPSILON) * 100) / 100;
         } else {
             return 0.0;
         }
@@ -1313,10 +1313,12 @@ class _Tables
         const table = myRoom;
         const activeUserPointArray = [];
         const nonActiveUserPointArray = [];
+        const leftUsersLeavingGameTimeArray = [];
         const winner = [];
         let activeRankedUserMap = new Map();
         let activeUserMap = new Map();
         let inactiveUserMap = new Map();
+        let leftUserMap = new Map();
         let UserRankArray = new Map();
         let UserRankWiseAmount = new Map();
         let firstRank = 0;
@@ -1332,6 +1334,9 @@ class _Tables
             if (table.users[j].is_active && !table.users[j].hasOwnProperty("is_left")) {
                 activeUserMap.set(j, totalScore);
                 activeUserPointArray.push(totalScore);
+            } else if (table.users[j].hasOwnProperty("is_left")) {
+                leftUserMap.set(j, table.users[j].left_time);
+                leftUsersLeavingGameTimeArray.push(table.users[j].left_time);
             } else {
                 inactiveUserMap.set(j, totalScore);
                 nonActiveUserPointArray.push(totalScore);
@@ -1341,22 +1346,30 @@ class _Tables
         //var maxPoints = (Math.max(...pointArray));
         activeUserPointArray.sort((a, b) => b - a);
         nonActiveUserPointArray.sort((a, b) => b - a);
+        leftUsersLeavingGameTimeArray.sort((a, b) => a - b);
 
         activeUserMap = new Map([...activeUserMap.entries()].sort((a, b) => b[1] - a[1]));
         inactiveUserMap = new Map([...inactiveUserMap.entries()].sort((a, b) => b[1] - a[1]));
+        leftUserMap = new Map([...leftUserMap.entries()].sort((a, b) => a[1] - b[1]));
         // let point = activeUserPointArray.concat(nonActiveUserPointArray);;
         // point.sort((a, b) => b - a);
         let otherRank = 0;
 
         for (let [key, value] of activeUserMap) {
             let playerIndex = activeUserPointArray.indexOf(value);
-            let userRank = firstRank + playerIndex + 1;
+            let userRank = playerIndex + 1;
+            UserRankArray.set(key, userRank);
+        }
+
+        for (let [key, value] of leftUserMap) {
+            let playerIndex = leftUsersLeavingGameTimeArray.indexOf(value);
+            let userRank = activeUserPointArray.length + playerIndex + 1;
             UserRankArray.set(key, userRank);
         }
 
         for (let [key, value] of inactiveUserMap) {
             let playerIndex = nonActiveUserPointArray.indexOf(value);
-            let userRank = firstRank + activeUserPointArray.length + playerIndex + 1;
+            let userRank = activeUserPointArray.length + leftUsersLeavingGameTimeArray.length + playerIndex + 1;
             UserRankArray.set(key, userRank);
         }
 
