@@ -479,21 +479,17 @@ module.exports = function (io)
                 },[])
                 response.callback.room = myRoom.room; 
                 response.callback.game_data = userData;
+                
+                // after logger we can remove those line.
+                let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+                console.log("add left_time in leave events: " + JSON.stringify(myRoom));
 
-                //console.log("leaveTable adding left userData: " + JSON.stringify(response));
+
                 callback(response.callback);
-
                 // To remove a particular socket ID from a room
                 let socketIdToRemove = socket.id;
                 io.sockets.sockets[socketIdToRemove].leave(myRoom.room);
-                
                 if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
-                // to update current turn for player if player miss the events.
-                if(response.events[1].data.position != null) {
-                    process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
-                } else if(response.events[1].data.player_index != null) {
-                    process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
-                }
 
             }
             catch(ex)

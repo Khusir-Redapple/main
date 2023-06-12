@@ -435,15 +435,10 @@ class _Tables
     }
 
     //Leave Room
-    leave(room, id, myRoom)
+    async leave(room, id, myRoom)
     {   
-        //let table = myRoom;
         console.log('Leave Room Started', id);
-        // for (var i = 0; i < this.tables.length; i++)
-        // {
-            // console.log('TABLE FOUND - ',this.tables,id);
-            // if (this.tables[i].room == room)
-            // {
+        
                 console.log('myRoom - ', myRoom);
                 for (var pl = 0; pl < myRoom.users.length; pl++)
                 {
@@ -477,12 +472,6 @@ class _Tables
                                     count++;
                                 }
                             }
-                            // console.log('Count-->', count);
-
-                            // if (count == 0)
-                            // {
-                            //     this.tables.splice(i, 1);
-                            // }
 
                             return {
                                 res: false,
@@ -495,6 +484,7 @@ class _Tables
                         {
                             myRoom.users[pl].is_left = true;
                             myRoom.users[pl].is_done = true;
+                            myRoom.users[pl].left_time = await this.checkGameExpireTime(myRoom.room);
 
                             let rank = myRoom.no_of_players;
 
@@ -522,6 +512,7 @@ class _Tables
                         } else
                         {
                             myRoom.users[pl].is_left = true;
+                            myRoom.users[pl].left_time = await this.checkGameExpireTime(myRoom.room);
                             return {
                                 res: true,
                                 position: pl,
@@ -533,62 +524,27 @@ class _Tables
                 return {
                     res: false,
                 };
-            // }
-        // }
-        // return {
-        //     res: false,
-        // };
     }
 
-    // leaveIf(room, id)
-    // {
-    //     // console.log('Leave Room Started', id);
-    //     for (var i = 0; i < this.tables.length; i++)
-    //     {
-    //         if (this.tables[i].room == room)
-    //         {
-    //             // console.log('TABLE FOUND');
-    //             for (var pl = 0; pl < this.tables[i].users.length; pl++)
-    //             {
-    //                 if (this.tables[i].users[pl].id == id)
-    //                 {
-    //                     // console.log('USER FOUND');
-    //                     if (this.tables[i].turn_start_at == 0)
-    //                     {
-    //                         this.tables[i].users[pl] = {
-    //                             id: '',
-    //                             numeric_id: '',
-    //                             name: '',
-    //                             profile_pic: '',
-    //                             position: pl,
-    //                             is_active: false,
-    //                             is_done: false,
-    //                             is_left: false,
-    //                             rank: 0,
-    //                             life: 0,
-    //                             dices_rolled: [],
-    //                             bonus_dice: 0,
-    //                             six_counts: 0,
-    //                             tokens: [0, 0, 0, 0],
-    //                         };
+    async checkGameExpireTime(room) {
+        let tableD = await Table.findOne({
+            room: room,
+        });
+        if(tableD) {     
+            let gameStartTime = tableD.game_started_at;
+            // To convert New Date() getTime to Second.
+            let timeInsecond = (new Date().getTime() / 1000) - (gameStartTime / 1000);
+            if (timeInsecond < 0) timeInsecond = 0;
+            let timer = config.gameTime * 60 - timeInsecond;
+            if(timer < 0){
+                timer = 0.0;
+            }
+            return timer.toFixed(2);
+        } else {
+            return 0.0;
+        }
+    }
 
-    //                         return {
-    //                             res: false,
-    //                             flag: 1,
-    //                         };
-    //                     }
-
-    //                 }
-    //             }
-    //             return {
-    //                 res: false,
-    //             };
-    //         }
-    //     }
-    //     return {
-    //         res: false,
-    //     };
-    // }
     //Start Game
     async tournamentStartGame(room, myRoom, gamePlayData)
     {
