@@ -510,7 +510,7 @@ module.exports = function (io)
             let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
             let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room); 
             let response = await _TableInstance.tournamntDiceRolled(socket, params, myId, myRoom,gamePlayData);
-            //console.log('tournamnt_dice_rolled callback', response.callback);
+            console.log('tournamnt_dice_rolled callback', params, response.callback);
             await redisCache.addToRedis(myRoom.room,myRoom);
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             // console.log('GAME-PLAY-DATA-3', JSON.stringify(gamePlayData));
