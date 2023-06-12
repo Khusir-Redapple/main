@@ -1036,7 +1036,7 @@ module.exports = {
                 },
             };
        
-        var rez = _tab.leave(params.room, id, myRoom);
+        var rez = await _tab.leave(params.room, id, myRoom);
         console.log('LEAVE RES', rez); //2|socket  | [2022-04-13T11:01:02.572] [INFO] default - LEAVE RES { res: false, flag: 1, remove: true }
 
         if (!rez.res && rez.flag == 1)
@@ -1375,7 +1375,7 @@ module.exports = {
                 if (checkLife == 0)
                 {
                     //leave table and pass turn to next player
-                    var rez = _tab.leave(params.room, id, myRoom);
+                    var rez = await _tab.leave(params.room, id, myRoom);
                     // console.log('REZ', rez);
                     if (!rez.res)
                     {
