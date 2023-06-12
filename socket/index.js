@@ -481,8 +481,8 @@ module.exports = function (io)
                 response.callback.game_data = userData;
                 
                 // after logger we can remove those line.
-                let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-                console.log("add left_time in leave events: " + JSON.stringify(myRoom));
+                let consolemyRoom = await redisCache.getRecordsByKeyRedis(params.room);
+                console.log("add left_time in leave events: " + JSON.stringify(consolemyRoom));
 
 
                 callback(response.callback);
