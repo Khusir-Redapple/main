@@ -710,7 +710,7 @@ module.exports = {
                             // add extra propery for Kill animation.
                             resObj.callback.isKillable = true;
                             
-                            for (let index = 0; index <= resObj.events.length; index++) {
+                            for (let index = 0; index < resObj.events.length; index++) {
                                 if(resObj.events[index].name == 'move_made'){
                                     resObj.events[index].data.isKillable = true;
                                 }
