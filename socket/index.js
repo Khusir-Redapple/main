@@ -766,10 +766,6 @@ module.exports = function (io)
                                         //console.log('Player position', d.data.position);
                                         if(equalTurn){
                                             if(d.name == 'make_diceroll' && d.data.extra_move_animation == false) {
-                                                // issue for equal turn inconsystency turn msg
-                                                let equalTurnPlayerData = await _TableInstance.determineTotalTurn(d.room);
-                                                io.to(d.room).emit('final_turn_initiated', equalTurnPlayerData);
-
                                                 let data = await _TableInstance.checkwinnerOfTournament(d.room, myRoom);
                                                 myRoom = data.table;
                                                 processEvents(data,myRoom);                                            
