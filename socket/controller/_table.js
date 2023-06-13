@@ -495,6 +495,7 @@ module.exports = {
                         token_index: params.token_index,
                         dice_value: params.dice_value,
                         dices_rolled: dices_rolled,
+                        isKillable : false,
                         // safeZoneAnimation:checkPointActivated, 
                         // homeAnimation: homeAnimation
                     },
@@ -706,7 +707,15 @@ module.exports = {
                                     kill_anim_timer: config.pawnMoveTimer
                                 },
                             };
+                            // add extra propery for Kill animation.
                             resObj.callback.isKillable = true;
+                            
+                            for (let index = 0; index <= resObj.events.length; index++) {
+                                if(resObj.events[index].name == 'move_made'){
+                                    resObj.events[index].data.isKillable = true;
+                                }
+                            }
+
                             resObj.events.push(event);
 
                             /**
