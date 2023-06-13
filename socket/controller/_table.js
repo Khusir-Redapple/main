@@ -350,7 +350,7 @@ module.exports = {
             params.token_index = parseInt(params.token_index);
             params.dice_value = parseInt(params.dice_value);
 
-            let resObj = {callback: {status: 1, message: localization.success}, events: []};
+            let resObj = {callback: {status: 1, message: localization.success, isKillable : false}, events: []};
             let myPos = await _tab.getMyPosition(params.room, id, myRoom);
             //if (myPos == -1) return {callback: {status: 0, message: localization.noDataFound}};
 
@@ -706,6 +706,7 @@ module.exports = {
                                     kill_anim_timer: config.pawnMoveTimer
                                 },
                             };
+                            resObj.callback.isKillable = true;
                             resObj.events.push(event);
 
                             /**
