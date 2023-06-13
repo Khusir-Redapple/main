@@ -434,7 +434,10 @@ module.exports = {
                 {
                     // Send 'roll' to same player
                     console.log('update turn 8');
-                    await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0,myRoom);
+                    let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
+                    //await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0,myRoom);
+                    await _tab.updateCurrentTurn(params.room, nextPos, 'roll', -1, 0,myRoom);
+
                     // let DICE_ROLLED = _tab.rollDice(params.room, id);
                     let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
                     // console.log('[DICE VALUE SIX]', DICE_ROLLED);
@@ -449,7 +452,7 @@ module.exports = {
                         name: 'make_diceroll',
                         data: {
                             room: params.room,
-                            position: myPos,
+                            position: nextPos,
                             tokens: await _tab.getTokens(params.room, myRoom),
                             dice: DICE_ROLLED,
                             dices_rolled: dices_rolled,
@@ -1832,6 +1835,9 @@ module.exports = {
             // start.timeToCompleteGame = seconds;
             start.timeToCompleteGame = config.gameTime * 60;
         }
+        start.table.users.forEach(element => {
+            element.diceValue=[];
+        });
         return start;
     },
 
