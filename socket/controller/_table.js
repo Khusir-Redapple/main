@@ -699,7 +699,7 @@ module.exports = {
                             let event = {
                                 type: 'room_including_me',
                                 room: params.room,
-                                delay: 1800,//1000,//800,
+                                delay: 1700,
                                 name: 'token_killed',
                                 data: {
                                     room: params.room,
@@ -708,8 +708,7 @@ module.exports = {
                                 },
                             };
                             // add extra propery for Kill animation.
-                            resObj.callback.isKillable = true;
-                            
+                            resObj.callback.isKillable = true;                            
                             for (let index = 0; index < resObj.events.length; index++) {
                                 if(resObj.events[index].name == 'move_made'){
                                     resObj.events[index].data.isKillable = true;
