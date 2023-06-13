@@ -698,7 +698,7 @@ module.exports = {
                             let event = {
                                 type: 'room_including_me',
                                 room: params.room,
-                                delay: 1000,//800,
+                                delay: 1500,//1000,//800,
                                 name: 'token_killed',
                                 data: {
                                     room: params.room,
