@@ -1843,6 +1843,7 @@ module.exports = {
             // start.timeToCompleteGame = seconds;
             start.timeToCompleteGame = config.gameTime * 60;
         }
+        console.log("START====>", JSON.stringify(start));
         start.table.users.forEach(element => {
             element.diceValue=[];
         });
