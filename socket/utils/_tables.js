@@ -1744,36 +1744,15 @@ class _Tables
 
     deductLife(room, id, myRoom, gamePlayData)
     {
-        
         let table = myRoom;
-        // New modification with same result
-        // this.tables = this.tables.reduce((prev, curr) =>
-        // {
-        //     if (curr.room == room)
-        //     {
-        //         let idx = curr.users.findIndex(element => element.id == id);
-        //         curr.users[idx].life--;
-        //     }
-        //     prev.push(curr);
-        //     return prev;
-        // }, []);
-
         let idx = table.users.findIndex(element => element.id == id);
         table.users[idx].life--;
-
-
-        // To update player life.
-        // let gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
-
-        //console.log("this.gamePlayData[gamePlayDataIndex].data.life_lost0 >", this.gamePlayData[gamePlayDataIndex].data.life_lost, this.gamePlayData[gamePlayDataIndex].data.lives_left)
         gamePlayData.data.life_lost += 1;
         gamePlayData.data.lives_left -= 1;
         return {
             'table' : table,
             'gameData' : gamePlayData
         }
-        //console.log("this.gamePlayData[gamePlayDataIndex].data.life_lost1 >", this.gamePlayData[gamePlayDataIndex].data.life_lost, this.gamePlayData[gamePlayDataIndex].data.lives_left)
-
     }
 
     getMyIdByPosition(room, position, myRoom)
