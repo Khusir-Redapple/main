@@ -90,6 +90,10 @@ module.exports = {
 
             await _tab.setSix(params.room, id, myRoom);
             console.log('setSix');
+            // if consicutive 3 six happans the reset pending bonus.
+            console.log('reset pending bonus');
+            await _tab.useBonus(params.room, id, myRoom);
+
             console.log("1_"+ params.room + "_"+myPos + "_"+myRoom)
             let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
             console.log('update turn 1');

@@ -661,7 +661,9 @@ class _Tables
         {
             if (myRoom.users[j].id == id)
             {
-                if (myRoom.users[j].bonus_dice > 0) myRoom.users[j].bonus_dice--;
+                if (myRoom.users[j].bonus_dice > 0) {
+                    myRoom.users[j].bonus_dice--;
+                }
             }
         }
             
@@ -674,8 +676,8 @@ class _Tables
             if (myRoom.users[j].id == id)
             {
                 myRoom.users[j].bonus_dice += length;
-                gamePlayData.data.extra_roll = 1
-                gamePlayData.data.extra_roll_count += 1
+                gamePlayData.data.extra_roll = 1;
+                gamePlayData.data.extra_roll_count += 1;
                 gamePlayData.data.extra_roll_reason.push(type)
             }
         }
