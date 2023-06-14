@@ -90,7 +90,7 @@ module.exports = {
 
             await _tab.setSix(params.room, id, myRoom);
             console.log('setSix');
-            // if consicutive 3 six happans the reset pending bonus.
+            // if consecutive 3 six happans the reset pending bonus.
             console.log('reset pending bonus');
             await _tab.useBonus(params.room, id, myRoom);
 
@@ -233,6 +233,9 @@ module.exports = {
             else if (movePossible == false && DICE_ROLLED == 6)
             {
                 console.log('[DICE ROLLED NOT SIX]');
+                // reset bonus dice roll & six count.
+                await _tab.setSix(params.room, id, myRoom);
+                await _tab.useBonus(params.room, id, myRoom);
                 //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
                 _tab.scrapTurn(params.room, myPos, myRoom);
                 // DICE_ROLL TO NEXT
@@ -772,10 +775,6 @@ module.exports = {
                         {
                             moveBonusCheck = true;
                         }
-                        // console.log("Above Winner Data ----")
-                        // const winnerData = await this.checkwinnerOfTournament(params.room);
-                        // console.log("Below Winner Data ----", winnerData)
-                        // if (winnerData) resObj.events.push(winnerData);
                     } catch (error)
                     {
                         console.lof("CATCH ERROR _ ", error)
@@ -872,16 +871,8 @@ module.exports = {
                         // Else [!BonusPending]
                         else
                         {
-                            console.log("in the SCRAP TURNB 22");
-                            //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
-                            console.log('myRoom 3 ' +   JSON.stringify(myRoom) );
-                            try{
+                            // If no pending dice roll then reset the six counter.
                             await _tab.setSix(params.room, id, myRoom);
-                            }
-                            catch(ex)
-                            {
-                                console.log(ex);
-                            }
                             await  _tab.scrapTurn(params.room, myPos, myRoom);
                             let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                             console.log('update turn 12');

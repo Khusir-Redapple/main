@@ -819,7 +819,6 @@ class _Tables
     {
         myRoom.turn_start_at = new Date().getTime();
         myRoom.turn_timestamp = new Date();
-        console.log("Line 714 turn set : ", new Date().getTime(), new Date());
     }
 
 
