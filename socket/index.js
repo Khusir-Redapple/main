@@ -479,12 +479,6 @@ module.exports = function (io)
                 },[])
                 response.callback.room = myRoom.room; 
                 response.callback.game_data = userData;
-                
-                // after logger we can remove those line.
-                let consolemyRoom = await redisCache.getRecordsByKeyRedis(params.room);
-                console.log("add left_time in leave events: " + JSON.stringify(consolemyRoom));
-
-
                 callback(response.callback);
                 // To remove a particular socket ID from a room
                 let socketIdToRemove = socket.id;

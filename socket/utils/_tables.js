@@ -1193,7 +1193,11 @@ class _Tables
         let turnStarted = new Date(myRoom.turn_timestamp).getTime();
         let currentTime = new Date().getTime();
         let timeDiff = currentTime - turnStarted;
-        return (timeDiff/1000).toFixed(2);
+        if(timeDiff > 10){
+            return 10;
+        } else {
+            return Math.round(((timeDiff/1000) + Number.EPSILON) * 100) / 100;
+        }
     }
 
     async makeMoveForTournament(dice_value, room, id, token_index, myRoom, gamePlayData)
