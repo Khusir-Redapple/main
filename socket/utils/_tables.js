@@ -1177,18 +1177,23 @@ class _Tables
     async setPawnMoveTime(myRoom)
     {
         //let gameStartTime = myRoom.game_started_at;
-        let tableD = await Table.findOne({
-            room: myRoom.room,
-        });             
-        let gameStartTime = tableD.game_started_at;
-        // To convert New Date() getTime to Second.
-        let time = ((new Date().getTime() / 1000) - (gameStartTime / 1000));
-        let minutes = 0.0;
-        if(time > 0) {
-            let gameTime = config.gameTime * 60 - time;
-            minutes = (gameTime / 60);
-        } 
-        return minutes.toFixed(2);
+        // let tableD = await Table.findOne({
+        //     room: myRoom.room,
+        // });             
+        // let gameStartTime = tableD.game_started_at;
+        // // To convert New Date() getTime to Second.
+        // let time = ((new Date().getTime() / 1000) - (gameStartTime / 1000));
+        // let minutes = 0.0;
+        // if(time > 0) {
+        //     let gameTime = config.gameTime * 60 - time;
+        //     minutes = (gameTime / 60);
+        // } 
+        // return minutes.toFixed(2);
+
+        let turnStarted = new Date(myRoom.turn_timestamp).getTime();
+        let currentTime = new Date().getTime();
+        let timeDiff = currentTime - turnStarted;
+        return (timeDiff/1000).toFixed(2);
     }
 
     async makeMoveForTournament(dice_value, room, id, token_index, myRoom, gamePlayData)
