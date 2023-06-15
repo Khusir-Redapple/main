@@ -25,6 +25,10 @@ var UserModel = new Schema({
     joinedAt:{
         type: String,
         required: true
+    },
+    updatedAt : {
+        type: String,
+        default: '-1'
     }
 });
 

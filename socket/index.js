@@ -191,6 +191,7 @@ module.exports = function (io)
                 rez.table.room ? socket.join(rez.table.room) : socket.join();
                 process.env.CURRENT_TURN_POSITION = rez.current_turn;
                 rez.server_time = new Date();
+                rez.table.server_time = new Date();
                 return callback(rez);
 
             } catch(ex) {
@@ -275,7 +276,8 @@ module.exports = function (io)
                             'name'      : params.user_name,
                             'token'     : data.token,
                             'lobbyId'   : verifyUser.lobbyId,
-                            'joinedAt'  : new Date().getTime()
+                            'joinedAt'  : new Date().getTime(),
+                            'updatedAt' : new Date().getTime()
                         },
                     },
                     {
