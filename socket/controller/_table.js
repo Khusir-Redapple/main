@@ -2294,7 +2294,7 @@ module.exports = {
         }
         // return {'totalTurn':playerTurn[0],'finalTurn':playersFinalTurn}
 
-        // REVAMP for final turn logic
+        //TODO: REVAMP: for final turn logic
         const users = myRoom.users;
         // Filter the user based on condition
         const activeUsers = users.filter(user => user.is_active && !user.is_left);

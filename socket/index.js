@@ -183,7 +183,7 @@ module.exports = function (io)
                 if (rez.status == 0)
                 {
                     return callback({
-                        status: 0,
+                        status: 2,
                         message: 'An error was encountered. Please join a new game.',
                     })
                 }
