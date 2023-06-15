@@ -37,6 +37,15 @@ app.use('/hello', function (req, res)
 {
     logger.info('404 Hit>', req.method, req.url, req.body);
 });
+// This endpoint used to clean older records from db.
+app.get('/deleteData', async (req, res) => {
+    const table = require('./socket/controller/_table');
+    const response = await table.deleteRecords();
+    if(response){
+        res.status(200).send('success');
+    }
+    res.status(200).send('failed');
+});
 // Creating server
 const server = http.createServer(app);
 const socket = require('socket.io')(server, {perMessageDeflate: false});
@@ -103,7 +112,7 @@ try
                     // DB Connect
                     setTimeout(function ()
                     {
-                       // let dbConnectionUrl = process.env.NODE_ENV != 'production' ? `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}` : `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false`;
+                       //let dbConnectionUrl = process.env.NODE_ENV != 'production' ? `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}` : `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false`;
                        let dbConnectionUrl = 'mongodb://admin:admin@18.61.12.70:27017/nostra_playing?connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1'; 
                        mongoose.set('useCreateIndex', true);
                         mongoose.connect(
