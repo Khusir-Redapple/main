@@ -43,8 +43,9 @@ app.get('/deleteData', async (req, res) => {
     const response = await table.deleteRecords();
     if(response){
         res.status(200).send('success');
+    } else {
+        res.status(200).send('failed');
     }
-    res.status(200).send('failed');
 });
 // Creating server
 const server = http.createServer(app);
