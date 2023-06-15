@@ -2308,7 +2308,7 @@ module.exports = {
 
             // To delete records from Users table.
             const tweentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-            await User.deleteMany({ updatedAt: { $lte: tweentyFourHoursAgo.getTime() } });
+            await User.deleteMany({ updatedAt: { $ne: -1, $lte: tweentyFourHoursAgo.getTime() } });
 
             return true;
         } catch (error) {
