@@ -1193,7 +1193,7 @@ class _Tables
         let turnStarted = new Date(myRoom.turn_timestamp).getTime();
         let currentTime = new Date().getTime();
         let timeDiff = currentTime - turnStarted;
-        let pawnTapTime = timeDiff.toFixed(2);
+        let pawnTapTime = (timeDiff/1000).toFixed(2);
         if(pawnTapTime > 10){
             return "10";
         } else {
