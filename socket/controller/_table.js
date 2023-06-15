@@ -2307,7 +2307,7 @@ module.exports = {
          //return the sorted array        
         usersWithMinTurn.map((user) => user.position);
         // return the result
-        return {'totalTurn':playerTurn[0],'finalTurn':usersWithMinTurn}               
+        return {'totalTurn':maxTurn,'finalTurn':usersWithMinTurn}               
     },
     deleteRecords : async function () {
         //TODO: delete logic
