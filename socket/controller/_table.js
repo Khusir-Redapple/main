@@ -2292,22 +2292,22 @@ module.exports = {
                 playersFinalTurn.push(i);
             }
         }
-        // return {'totalTurn':playerTurn[0],'finalTurn':playersFinalTurn}
+        return {'totalTurn':playerTurn[0],'finalTurn':playersFinalTurn}
 
         //TODO: REVAMP: for final turn logic
-        const users = myRoom.users;
-        // Filter the user based on condition
-        const activeUsers = users.filter(user => user.is_active && !user.is_left);
-        // Find the minimum turn number among active users
-        const maxTurn = Math.max(...activeUsers.map(user => user.turn));
-        // Filter active users with the minimum turn number
-        const usersWithMinTurn = activeUsers.filter(user => user.turn < maxTurn);
-        // Sort the users based on their position
-        usersWithMinTurn.sort((a, b) => a.position - b.position);
-         //return the sorted array        
-        usersWithMinTurn.map((user) => user.position);
-        // return the result
-        return {'totalTurn':maxTurn,'finalTurn':usersWithMinTurn}               
+        // const users = myRoom.users;
+        // // Filter the user based on condition
+        // const activeUsers = users.filter(user => user.is_active && !user.is_left);
+        // // Find the minimum turn number among active users
+        // const maxTurn = Math.max(...activeUsers.map(user => user.turn));
+        // // Filter active users with the minimum turn number
+        // const usersWithMinTurn = activeUsers.filter(user => user.turn < maxTurn);
+        // // Sort the users based on their position
+        // usersWithMinTurn.sort((a, b) => a.position - b.position);
+        //  //return the sorted array        
+        // usersWithMinTurn.map((user) => user.position);
+        // // return the result
+        // return {'totalTurn':maxTurn,'finalTurn':usersWithMinTurn}               
     },
     deleteRecords : async function () {
         //TODO: delete logic
