@@ -335,7 +335,8 @@ module.exports = {
         try
         {
             // To capture pawn tap time
-            gamePlayData.data.pawn_move_time = await _tab.setPawnMoveTime(myRoom);
+            let pawnTime = await _tab.setPawnMoveTime(myRoom);
+            gamePlayData.data.pawn_move_time.push(pawnTime);
 
             // VALIDATION
             if (!params)

@@ -860,8 +860,8 @@ class _Tables
         gamePlayData.data.extra_roll_reason = [],
         gamePlayData.data.kill_player_data = [],
         gamePlayData.data.pawnSafe_status = user.pawnSafe_status,
-        gamePlayData.data.pawn_move_time = 0.0,
-        gamePlayData.data.checkpoint = 0,
+        gamePlayData.data.pawn_move_time = [],
+        gamePlayData.data.checkpoint = user.checkpoint,
         gamePlayData.data.player_score = user.points + user.bonusPoints,
         gamePlayData.data.points = 0,
         gamePlayData.data.points_per_diceRoll = [],
@@ -1025,7 +1025,7 @@ class _Tables
            // var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
            // this.gamePlayData[gamePlayDataIndex].data.cut = 1;
 
-           gamePlayData.data.cut = 1;
+           gamePlayData.data.cut = dead_possible.length;
         }
 
         for (i = 0; i < dead_possible.length; i++)
@@ -1072,8 +1072,8 @@ class _Tables
             // gamePlayData.data["kill_player_data"] = dead_possible;
             let killPlayerData = {
                 'cut' : dead_possible.length,
-                'cut_player' : dead_possible[i].user,
-                'cut_pawn' : dead_possible[i].token,
+                'cut_player' : dead_possible[i].user +1,
+                'cut_pawn' : dead_possible[i].token +1,
                 'cut_move' : dead_possible[i].movebleBox,
             }
             gamePlayData.data.kill_player_data.push(killPlayerData);
@@ -1195,9 +1195,11 @@ class _Tables
         let timeDiff = currentTime - turnStarted;
         let pawnTapTime = (timeDiff/1000).toFixed(2);
         if(pawnTapTime > 10){
-            return "10";
+            //return "10";
+            return "0";
         } else {
-           return pawnTapTime;
+           //return pawnTapTime;
+            return (10 - pawnTapTime).toFixed(2);
         }
     }
 
@@ -1242,7 +1244,13 @@ class _Tables
                             // to set checkpoint status for all pawns
                             let myPawnPosition = table.users[j].tokens;
                             const pawnSafeArray = [false, false, false, false];
+                            const pawnCheckpointArray = [false,false,false,false];
                             for (let index = 0; index < myPawnPosition.length; index++) {
+
+                                if (myPawnPosition[index] >= config.starPosition[0]){
+                                    pawnCheckpointArray[index] = true;
+                                }
+
                                 const element = myPawnPosition[index] + 1;
                                 if(config.safeZone.includes(element) || element == 57){
                                     pawnSafeArray[index] = true;
@@ -1256,8 +1264,12 @@ class _Tables
                                     }
                                 }
                             }
+                            // To save pawn safe status
                             gamePlayData.data.pawnSafe_status = pawnSafeArray;
                             table.users[j].pawnSafe_status = pawnSafeArray;
+                            // To save pawn checkpoint status                           
+                            gamePlayData.data.checkpoint = pawnCheckpointArray;
+                            table.users[j].checkpoint = pawnCheckpointArray;
                             
                             // console.log("GAME PLAY DATA > ", this.gamePlayData[gamePlayDataIndex])
                             return {
@@ -1285,7 +1297,13 @@ class _Tables
                             // to set checkpoint status for all pawns
                             let myPawnPosition = table.users[j].tokens;
                             const pawnSafeArray = [false, false, false, false];
+                            const pawnCheckpointArray = [false,false,false,false];
                             for (let index = 0; index < myPawnPosition.length; index++) {
+
+                                if (myPawnPosition[index] >= config.starPosition[0]){
+                                    pawnCheckpointArray[index] = true;
+                                }
+                                
                                 const element = myPawnPosition[index] + 1;
                                 if(config.safeZone.includes(element) || element == 57){
                                     pawnSafeArray[index] = true;
@@ -1299,8 +1317,12 @@ class _Tables
                                     }
                                 }
                             }
+                            // To save pawn safe zone status
                             gamePlayData.data.pawnSafe_status = pawnSafeArray;
                             table.users[j].pawnSafe_status = pawnSafeArray;                            
+                            // To save pawn checkpoint status                           
+                            gamePlayData.data.checkpoint = pawnCheckpointArray;
+                            table.users[j].checkpoint = pawnCheckpointArray;
 
                             console.log('PENDING DICES AFTER', table.users[j].dices_rolled, table.users[j].points);
                             return {
@@ -1941,7 +1963,7 @@ class _Tables
             }
         }
        // var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
-        gamePlayData.data.checkpoint = checkPointActivated ? true : false;
+        //gamePlayData.data.checkpoint = checkPointActivated ? true : false;
         return {
             'checkPointActivated' : checkPointActivated,
             'table' : table,

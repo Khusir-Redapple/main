@@ -378,8 +378,6 @@ module.exports = function (io)
                         //TODO: 
                         checkTabel = await _TableInstance.istableExists(data,myRoom);
                         let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
-                        console.log('GAME_COMPLETE', start.room, JSON.stringify(latestRoomData), myRoom);
-                        console.log("is game completed ====>", latestRoomData.isGameCompleted);
                         // IF game completed, then clear the time interval.
                         if (latestRoomData!= null && latestRoomData.isGameCompleted == true)
                         {
