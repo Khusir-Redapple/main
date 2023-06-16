@@ -524,13 +524,23 @@ module.exports = {
                     */
                     if (params.dice_value != 6)
                     {
-                        // Add Bonus
+                        // Add extra Bonus
                        await _tab.addBonus(params.room, id, 1, "Home", myRoom, gamePlayData);
                        await _tab.addBonusPoints(params.room, id, 50, 1, 'home_base_bonus', myRoom, gamePlayData);
                     }
                     else if (params.dice_value == 6)
                     {
-                        // Add Bonus
+                        // If home happans with six, then extra_roll_reason should be home.
+                        if(gamePlayData.data.extra_roll_reason.includes("six")) 
+                        {
+                            gamePlayData.data.extra_roll_reason.map((ele,index) => {
+                                if(ele == 'six'){
+                                    gamePlayData.data.extra_roll_reason.splice(index,1);
+                                }
+                            });
+                        }
+
+                        // Add one bonus if home happans on Six.
                         await _tab.addBonus(params.room, id, 0, "Home", myRoom, gamePlayData);
                         await _tab.addBonusPoints(params.room, id, 50, 1, 'home_base_bonus', myRoom, gamePlayData);
                     }
@@ -2292,22 +2302,22 @@ module.exports = {
                 playersFinalTurn.push(i);
             }
         }
-        return {'totalTurn':playerTurn[0],'finalTurn':playersFinalTurn}
+        //return {'totalTurn':playerTurn[0],'finalTurn':playersFinalTurn}
 
         //TODO: REVAMP: for final turn logic
-        // const users = myRoom.users;
-        // // Filter the user based on condition
-        // const activeUsers = users.filter(user => user.is_active && !user.is_left);
-        // // Find the minimum turn number among active users
-        // const maxTurn = Math.max(...activeUsers.map(user => user.turn));
-        // // Filter active users with the minimum turn number
-        // const usersWithMinTurn = activeUsers.filter(user => user.turn < maxTurn);
-        // // Sort the users based on their position
-        // usersWithMinTurn.sort((a, b) => a.position - b.position);
-        //  //return the sorted array        
-        // usersWithMinTurn.map((user) => user.position);
-        // // return the result
-        // return {'totalTurn':maxTurn,'finalTurn':usersWithMinTurn}               
+        const users = myRoom.users;
+        // Filter the user based on condition
+        const activeUsers = users.filter(user => user.is_active && !user.is_left);
+        // Find the minimum turn number among active users
+        const maxTurn = Math.max(...activeUsers.map(user => user.turn));
+        // Filter active users with the minimum turn number
+        const usersWithMinTurn = activeUsers.filter(user => user.turn < maxTurn);
+        // Sort the users based on their position
+        usersWithMinTurn.sort((a, b) => a.position - b.position);
+         //return the sorted array        
+        usersWithMinTurn.map((user) => user.position);
+        // return the result
+        return {'totalTurn':maxTurn,'finalTurn':usersWithMinTurn}               
     },
     deleteRecords : async function () {
         //TODO: delete logic
