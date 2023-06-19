@@ -437,6 +437,12 @@ module.exports = {
                     // update the gamePlay time at the time of skip happen for non moveble event.
                     gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
                     console.log('game time from non movable event', gamePlayData.data.game_time);
+                    let user_points = 0;
+                    gamePlayData.data.points_per_diceRoll.map(function(ele) {
+                        user_points += ele;
+                    });
+                    gamePlayData.data.points = user_points + (+gamePlayData.data.total_move);                           
+                    gamePlayData.data.player_score = myRoom.users[myPos].points + myRoom.users[myPos].bonusPoints;
                     await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                 } else
                 {
@@ -477,6 +483,12 @@ module.exports = {
                     // update the gamePlay time at the time of skip happen for non moveble event.
                     gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
                     console.log('game time from non movable event', gamePlayData.data.game_time);
+                    let user_points = 0;
+                    gamePlayData.data.points_per_diceRoll.map(function(ele) {
+                        user_points += ele;
+                    });
+                    gamePlayData.data.points = user_points + (+gamePlayData.data.total_move);                           
+                    gamePlayData.data.player_score = myRoom.users[myPos].points + myRoom.users[myPos].bonusPoints;
                     await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                 }
 
