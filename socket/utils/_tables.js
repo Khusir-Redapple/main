@@ -980,6 +980,7 @@ class _Tables
                             dead_possible.push({
                                 user: j,
                                 token: k,
+                                user_id : table.users[j].numeric_id,
                             });
                         }
                     }
@@ -1022,10 +1023,7 @@ class _Tables
        // let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+room);
         if (dead_possible.length)
         {
-           // var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
-           // this.gamePlayData[gamePlayDataIndex].data.cut = 1;
-
-           gamePlayData.data.cut = dead_possible.length;
+           gamePlayData.data.cut += dead_possible.length;
         }
 
         for (i = 0; i < dead_possible.length; i++)
@@ -1071,8 +1069,7 @@ class _Tables
             // Send the Kill player object to gamePlayData
             // gamePlayData.data["kill_player_data"] = dead_possible;
             let killPlayerData = {
-                'cut' : dead_possible.length,
-                'cut_player' : dead_possible[i].user +1,
+                'cut_player' : dead_possible[i].user_id,
                 'cut_pawn' : dead_possible[i].token +1,
                 'cut_move' : dead_possible[i].movebleBox,
             }
