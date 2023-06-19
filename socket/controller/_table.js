@@ -433,17 +433,6 @@ module.exports = {
                         },
                     };
                     resObj.events.push(event);
-                    // SEND EVENT
-                    // update the gamePlay time at the time of skip happen for non moveble event.
-                    gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
-                    console.log('game time from non movable event', gamePlayData.data.game_time);
-                    let user_points = 0;
-                    gamePlayData.data.points_per_diceRoll.map(function(ele) {
-                        user_points += ele;
-                    });
-                    gamePlayData.data.points = user_points + (+gamePlayData.data.total_move);                           
-                    gamePlayData.data.player_score = myRoom.users[myPos].points + myRoom.users[myPos].bonusPoints;
-                    await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                 } else
                 {
                     // Send 'roll' to same player
@@ -478,19 +467,17 @@ module.exports = {
                     };
 
                     resObj.events.push(event);
-
-                    // SEND EVENT
-                    // update the gamePlay time at the time of skip happen for non moveble event.
-                    gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
-                    console.log('game time from non movable event', gamePlayData.data.game_time);
-                    let user_points = 0;
-                    gamePlayData.data.points_per_diceRoll.map(function(ele) {
-                        user_points += ele;
-                    });
-                    gamePlayData.data.points = user_points + (+gamePlayData.data.total_move);                           
-                    gamePlayData.data.player_score = myRoom.users[myPos].points + myRoom.users[myPos].bonusPoints;
-                    await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                 }
+                // SEND EVENT
+                // update the gamePlay data at the time of skip happen for non moveble event.
+                gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
+                let user_points = 0;
+                gamePlayData.data.points_per_diceRoll.map(function(ele) {
+                    user_points += ele;
+                });
+                gamePlayData.data.points = user_points + (+gamePlayData.data.total_move);                           
+                gamePlayData.data.player_score = myRoom.users[myPos].points + myRoom.users[myPos].bonusPoints;
+                await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
 
             } else
             {
@@ -909,8 +896,16 @@ module.exports = {
                                 DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                             }
                             await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-
+                            // Update player_score and player_points in gamePlayData
+                            // SEND EVENT
+                            let user_points = 0;
+                            gamePlayData.data.points_per_diceRoll.map(function(ele) {
+                                user_points += ele;
+                            });
+                            gamePlayData.data.points = user_points + (+gamePlayData.data.total_move);                           
+                            gamePlayData.data.player_score = myRoom.users[myPos].points + myRoom.users[myPos].bonusPoints;
                             await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
+                            
                             // SEND EVENT
                             let event = {
                                 type: 'room_including_me',
