@@ -1856,7 +1856,8 @@ module.exports = {
             // start.timeToCompleteGame = seconds;
             start.timeToCompleteGame = config.gameTime * 60;
         }
-        if(start) {
+        if(start && start.table && start.table.users && start.table.users.length > 0)
+        {
             start.table.users.forEach(element => {
                 element.diceValue=[];
             });
