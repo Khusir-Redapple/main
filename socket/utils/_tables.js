@@ -837,6 +837,14 @@ class _Tables
         await sendMessage(gamePlayData);
         //send through SQS
         await this.resetGamePlayData(room, myRoom, gamePlayData,myPos);
+
+        // To save in db for testing...
+        let table = await Table.findOneAndUpdate(
+            {'room': room},
+            {$push: {'gamePlayData': {'user': gamePlayData.data.User, 'turn': gamePlayData.data.turn, 'score' : gamePlayData.data.player_score}}},
+            {new: true}
+        );
+
     }
 
     async resetGamePlayData(room, myRoom, gamePlayData, myPos)

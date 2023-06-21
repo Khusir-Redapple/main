@@ -56,6 +56,20 @@ var TableModel = new Schema({
             default: false
         }
     }],
+    gamePlayData: [{
+        user: {
+            type: String,
+            default: 0
+        },
+        turn: {
+            type: String,
+            default: 0
+        },
+        score : {
+            type: String,
+            default: 0
+        }
+    }],
     lobbyId : {
         type: String,
         default: false
