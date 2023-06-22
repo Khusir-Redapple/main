@@ -2287,46 +2287,22 @@ module.exports = {
     determineTotalTurn : async function(room) {
         let myRoom = await redisCache.getRecordsByKeyRedis(room);
         console.log("Room data :::: " + JSON.stringify(myRoom));
-        let playerTurn         = [];
         const playersFinalTurn = [];
-        // create a numeric array for dice roll count
-        for (var i = 0; i < myRoom.users.length; i++) {
-            if(myRoom.users[i].is_active == true){
-                playerTurn.push(myRoom.users[i].turn);
-            }
-        }
-        // sort the array at descending order.
-        playerTurn = playerTurn.sort((a,b) => b-a);
 
-
-        for (var i = 0; i < myRoom.users.length; i++) {
-            if(myRoom.users[i].turn < playerTurn[0] 
-                && myRoom.users[i].is_active == true
-                && !myRoom.users[i].hasOwnProperty("is_left")){
-                playersFinalTurn.push(i);
-            } else if(myRoom.users[i].turn == playerTurn[0] 
-                && myRoom.users[i].is_active == true 
-                && i == myRoom.current_turn
-                && !myRoom.users[i].hasOwnProperty("is_left")) {
-                playersFinalTurn.push(i);
-            }
-        }
-        //return {'totalTurn':playerTurn[0],'finalTurn':playersFinalTurn}
-
-        //TODO: REVAMP: for final turn logic
-        const users = myRoom.users;
-        // Filter the user based on condition
         const activeUsers = users.filter(user => user.is_active && !user.is_left);
-        // Find the minimum turn number among active users
+        let firstActiveUserIndex = activeUsers[0].position;
+        let currentTurnIndex = myRoom.current_turn;
         const maxTurn = Math.max(...activeUsers.map(user => user.turn));
-        // Filter active users with the minimum turn number
-        const usersWithMinTurn = activeUsers.filter(user => user.turn < maxTurn);
-        // Sort the users based on their position
-        usersWithMinTurn.sort((a, b) => a.position - b.position);
-         //return the sorted array        
-        usersWithMinTurn.map((user) => user.position);
-        // return the result
-        return {'totalTurn':maxTurn,'finalTurn':usersWithMinTurn}               
+
+        for (var i = 0; i < activeUsers.length; i++) {
+            if(activeUsers[i].turn < maxTurn){
+                playersFinalTurn.push(i);
+            } else if(activeUsers[i].turn == maxTurn 
+                && firstActiveUserIndex == currentTurnIndex) {
+                playersFinalTurn.push(i);
+            }
+        }
+        return {'totalTurn':maxTurn,'finalTurn':playersFinalTurn};              
     },
     deleteRecords : async function () {
         //TODO: delete logic
