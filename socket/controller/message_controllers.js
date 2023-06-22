@@ -44,7 +44,7 @@ class MessageController
             // for SQS Success
             let logData = {
                 level: 'error',
-                meta: error
+                meta: {'message' : error.message, 'code' : error.code}
             };
             logDNA.log('SQS sendMessage ERROR', logData);
             return false;
