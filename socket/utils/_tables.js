@@ -67,6 +67,7 @@ class _Tables
                     numeric_id: '',
                     name: '',
                     profile_pic: '',
+                    lobbyId : '',
                     position: pl,
                     is_active: false,
                     is_done: false,
@@ -235,6 +236,7 @@ class _Tables
                 name: user.name,
                 user_token : user.token,
                 profile_pic: user.profilepic || config.default_user_pic,
+                lobbyId : user.lobbyId,
                 position: pos,
                 is_active: true,
                 rank: 0,
@@ -843,6 +845,7 @@ class _Tables
     {
         let user = myRoom.users[myRoom.current_turn];
         gamePlayData.data.User = user.numeric_id,
+        gamePlayData.data.lobbyId = user.lobbyId,
         gamePlayData.data.turn = user.turn,
         gamePlayData.data.roll = [],
         gamePlayData.data.pawn = 0,

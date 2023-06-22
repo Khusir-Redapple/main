@@ -20,17 +20,7 @@ class MessageController
                 // MessageGroupId: id,
                 // MessageDeduplicationId: id,
             };
-            // JSON to object convert
-            let parseData = JSON.parse(params.MessageBody);
-            // db search for lobbyId
-            let userData = await User.findOne({
-                numeric_id: parseData.User
-            });
-            // To add lobbyId in existing object   
-            parseData.lobbyId = userData.lobbyId;
-            // To build final object
-            let finalParams = {MessageBody: JSON.stringify(parseData)};
-            let result = await sqsSendMessage(finalParams);
+            let result = await sqsSendMessage(params);
             // for SQS Success
             let logData = {
                 level: 'debugg',
