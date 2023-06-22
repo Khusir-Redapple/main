@@ -2289,7 +2289,7 @@ module.exports = {
         console.log("Room data :::: " + JSON.stringify(myRoom));
         const playersFinalTurn = [];
 
-        const activeUsers = users.filter(user => user.is_active && !user.is_left);
+        const activeUsers = myRoom.users.filter(user => user.is_active && !user.is_left);
         let firstActiveUserIndex = activeUsers[0].position;
         let currentTurnIndex = myRoom.current_turn;
         const maxTurn = Math.max(...activeUsers.map(user => user.turn));
