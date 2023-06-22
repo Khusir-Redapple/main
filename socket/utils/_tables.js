@@ -704,7 +704,7 @@ class _Tables
                 }
             }
         }
-        gamePlayData.data[type] = bonusPoint;
+        gamePlayData.data[type] += bonusPoint;
         if (type == 'home_base_bonus')
         {
             gamePlayData.data.home_base = 1;
