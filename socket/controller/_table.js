@@ -2300,6 +2300,9 @@ module.exports = {
             } else if(activeUsers[i].turn == maxTurn 
                 && firstActiveUserIndex == currentTurnIndex) {
                 playersFinalTurn.push(activeUsers[i].position);
+            } else if(activeUsers[i].turn == maxTurn 
+                && activeUsers[i].bonus_dice == 1) {
+                playersFinalTurn.push(activeUsers[i].position);
             }
         }
         console.log('totalTurn==>', maxTurn, 'finalTurn==>', playersFinalTurn);
