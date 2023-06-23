@@ -2286,11 +2286,8 @@ module.exports = {
     },
     determineTotalTurn : async function(room) {
         let myRoom = await redisCache.getRecordsByKeyRedis(room);
-        console.log("Room data :::: " + JSON.stringify(myRoom));
         const playersFinalTurn = [];
-
         const activeUsers = myRoom.users.filter(user => user.is_active && !user.is_left);
-        let firstActiveUserIndex = activeUsers[0].position;
         let currentTurnIndex = myRoom.current_turn;
         const maxTurn = Math.max(...activeUsers.map(user => user.turn));
 
@@ -2302,8 +2299,6 @@ module.exports = {
                 playersFinalTurn.push(activeUsers[i].position);
             }
         }
-        console.log('activeUsers ==>', activeUsers);
-        console.log('totalTurn==>', maxTurn, 'finalTurn==>', playersFinalTurn);
         return {'totalTurn':maxTurn,'finalTurn':playersFinalTurn};              
     },
     deleteRecords : async function () {
