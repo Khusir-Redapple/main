@@ -2302,6 +2302,7 @@ module.exports = {
                 playersFinalTurn.push(i);
             }
         }
+        console.log('totalTurn==>', maxTurn, 'finalTurn==>', playersFinalTurn);
         return {'totalTurn':maxTurn,'finalTurn':playersFinalTurn};              
     },
     deleteRecords : async function () {
