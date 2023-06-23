@@ -2296,10 +2296,10 @@ module.exports = {
 
         for (var i = 0; i < activeUsers.length; i++) {
             if(activeUsers[i].turn < maxTurn){
-                playersFinalTurn.push(i);
+                playersFinalTurn.push(activeUsers[i].position);
             } else if(activeUsers[i].turn == maxTurn 
                 && firstActiveUserIndex == currentTurnIndex) {
-                playersFinalTurn.push(i);
+                playersFinalTurn.push(activeUsers[i].position);
             }
         }
         console.log('totalTurn==>', maxTurn, 'finalTurn==>', playersFinalTurn);
