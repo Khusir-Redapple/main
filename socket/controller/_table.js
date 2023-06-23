@@ -2298,10 +2298,7 @@ module.exports = {
             if(activeUsers[i].turn < maxTurn){
                 playersFinalTurn.push(activeUsers[i].position);
             } else if(activeUsers[i].turn == maxTurn 
-                && firstActiveUserIndex == currentTurnIndex) {
-                playersFinalTurn.push(activeUsers[i].position);
-            } else if(activeUsers[i].turn == maxTurn 
-                && activeUsers[i].bonus_dice == 1) {
+                && activeUsers[i].turn == currentTurnIndex) {
                 playersFinalTurn.push(activeUsers[i].position);
             }
         }
