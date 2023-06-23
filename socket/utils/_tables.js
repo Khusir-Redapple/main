@@ -84,6 +84,8 @@ class _Tables
                     points_per_diceRoll: [],
                     bonusPoints: 0,
                     moves: 0,
+                    pawnSafe_status : [],
+                    checkpoint : [],
                     token_colour: random_colour,
                     diceValue : pl == 0 ? JSON.parse((JSON.stringify(randomRumber))) : JSON.parse((JSON.stringify(shuffleNumberForOtherPlayer)))
                 };
@@ -250,6 +252,8 @@ class _Tables
                 points_per_diceRoll : [],
                 bonusPoints: 0,
                 moves: 0,
+                pawnSafe_status : [],
+                checkpoint : [],
                 token_colour: filteredTable.users[pos].token_colour,
                 diceValue : readDiceValue
             };
@@ -1161,18 +1165,21 @@ class _Tables
         let tableD = await Table.findOne({
             room: myRoom.room,
         });  
-        console.log('GAMETIME====>',tableD);              
-        let gameStartTime = tableD.game_started_at;
-        // To convert New Date() getTime to Second.
-        let time = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
-        let minutes = 0;
-        let seconds = 0;
-        if(time > 0) {
-            let gameTime = config.gameTime * 60 - time;
-            minutes = Math.floor(gameTime / 60);
-            seconds = gameTime - minutes * 60;
-        } 
-        return minutes + ":" + this.pad(seconds,2);
+        if(tableD) {              
+            let gameStartTime = tableD.game_started_at;
+            // To convert New Date() getTime to Second.
+            let time = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
+            let minutes = 0;
+            let seconds = 0;
+            if(time > 0) {
+                let gameTime = config.gameTime * 60 - time;
+                minutes = Math.floor(gameTime / 60);
+                seconds = gameTime - minutes * 60;
+            } 
+            return minutes + ":" + this.pad(seconds,2);
+        } else {
+            return "10:00";
+        }
     }
 
     async setPawnMoveTime(myRoom)
