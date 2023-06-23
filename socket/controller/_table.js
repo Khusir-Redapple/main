@@ -2305,6 +2305,7 @@ module.exports = {
                 playersFinalTurn.push(activeUsers[i].position);
             }
         }
+        console.log('activeUsers ==>', activeUsers);
         console.log('totalTurn==>', maxTurn, 'finalTurn==>', playersFinalTurn);
         return {'totalTurn':maxTurn,'finalTurn':playersFinalTurn};              
     },
