@@ -490,7 +490,7 @@ class _Tables
                         {
                             myRoom.users[pl].is_left = true;
                             myRoom.users[pl].is_done = true;
-                            myRoom.users[pl].left_time = await this.checkGameExpireTime(myRoom.room);
+                            myRoom.users[pl].left_time = await this.checkGameExpireTime(myRoom);
 
                             let rank = myRoom.no_of_players;
 
@@ -518,7 +518,7 @@ class _Tables
                         } else
                         {
                             myRoom.users[pl].is_left = true;
-                            myRoom.users[pl].left_time = await this.checkGameExpireTime(myRoom.room);
+                            myRoom.users[pl].left_time = await this.checkGameExpireTime(myRoom);
                             return {
                                 res: true,
                                 position: pl,
@@ -532,12 +532,9 @@ class _Tables
                 };
     }
 
-    async checkGameExpireTime(room) {
-        let tableD = await Table.findOne({
-            room: room,
-        });
-        if(tableD) {     
-            let gameStartTime = tableD.game_started_at;
+    async checkGameExpireTime(myRoom) {
+        if(myRoom.game_started_at) {     
+            let gameStartTime = myRoom.game_started_at;
             // To convert New Date() getTime to Second.
             let timeInsecond = (new Date().getTime() / 1000) - (gameStartTime / 1000);
             if (timeInsecond < 0) timeInsecond = 0;

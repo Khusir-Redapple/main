@@ -386,7 +386,7 @@ module.exports = function (io)
                             clearInterval(this);
                         }
 
-                        let gameTime = await checkGameExpireTime(start.room);
+                        let gameTime = await checkGameExpireTime(latestRoomData);
                         if(gameTime) { 
                             //console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
                             io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: latestRoomData.current_turn}}); 
@@ -753,7 +753,7 @@ module.exports = function (io)
                                      * To check that make_diceroll event has occured.
                                      * To check time expire.
                                      **/
-                                    let gameTime = await checkGameExpireTime(d.room);
+                                    let gameTime = await checkGameExpireTime(myRoom);
                                     if(gameTime.isTimeExpired) {
                                         //To check player has equal turn or not.
                                         let equalTurn = await _TableInstance.checkPlayerEqualTurn(myRoom, d.data.position);
@@ -815,13 +815,10 @@ module.exports = function (io)
          * 
          * @returns boolean  
          */
-        async function checkGameExpireTime(room) {
+        async function checkGameExpireTime(MyRoom) {
             try {
-                let tableD = await Table.findOne({
-                    room: room,
-                });
-                if(tableD) {     
-                    let gameStartTime = tableD.game_started_at;
+                if(MyRoom.game_started_at) {     
+                    let gameStartTime = MyRoom.game_started_at;
                     // To convert New Date() getTime to Second.
                     let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
 
@@ -847,7 +844,7 @@ module.exports = function (io)
 
             } catch(Execption) {
                 // To log error
-                logDNA.log('checkGameExpireTime', {level: 'error',meta: Execption});
+                logDNA.log('checkGameExpireTime', {level: 'error',meta: {'error' : Execption}});
             }
         }
 
