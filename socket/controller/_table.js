@@ -1023,7 +1023,8 @@ module.exports = {
     // Quit Game / Leave Table
     leaveTable: async function (params, id, socket, myRoom, gamePlayData)
     {
-        console.log('LeaveRequest Request IN', params);
+        // To set game time in leave table 
+        gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
         let refund = '';
         if (!Service.validateObjectId(id))
             return {
@@ -1839,15 +1840,20 @@ module.exports = {
         let tableD = await Table.findOne({room: params.room});
         if (tableD)
         {
-            var dt = new Date();
+            //var dt = new Date();
             //dt.setSeconds( dt.getSeconds() + 7);
             // tableD.game_started_at = new Date(dt).getTime();
             // tableD.turn_start_at = new Date(dt).getTime();
+           // dt.setSeconds(dt.getSeconds() + 1);
 
-            dt.setSeconds(dt.getSeconds() + 1);
-            tableD.game_started_at = new Date(dt).getTime();
-            tableD.turn_start_at = new Date(dt).getTime();
+           // if game start & move happend at tie time then
+            let currentData = new Date();
+            currentData.setSeconds(currentData.getSeconds()-1);
+            let time = new Date(currentData).getTime();
 
+            tableD.game_started_at = new Date().getTime();
+            tableD.turn_start_at = new Date().getTime();
+            myRoom.game_started_at = time;
             await tableD.save();
             console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at), tableD.game_started_at)
             let timeToAdd = new Date(new Date().getTime() + config.gameTime * 60000);

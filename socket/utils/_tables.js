@@ -84,8 +84,8 @@ class _Tables
                     points_per_diceRoll: [],
                     bonusPoints: 0,
                     moves: 0,
-                    pawnSafe_status : [],
-                    checkpoint : [],
+                    pawnSafe_status : [true, true, true, true],
+                    checkpoint : [false, false, false, false],
                     token_colour: random_colour,
                     diceValue : pl == 0 ? JSON.parse((JSON.stringify(randomRumber))) : JSON.parse((JSON.stringify(shuffleNumberForOtherPlayer)))
                 };
@@ -252,8 +252,8 @@ class _Tables
                 points_per_diceRoll : [],
                 bonusPoints: 0,
                 moves: 0,
-                pawnSafe_status : [],
-                checkpoint : [],
+                pawnSafe_status : [true, true, true, true],
+                checkpoint : [false, false, false, false],
                 token_colour: filteredTable.users[pos].token_colour,
                 diceValue : readDiceValue
             };
@@ -567,10 +567,15 @@ class _Tables
                 {
                     if (myRoom.users[pl].is_active)
                     {
+                        // if game start & move happend at tie time then
+                        let currentData = new Date();
+                        currentData.setSeconds(currentData.getSeconds()-1);
+                        let time = new Date(currentData).getTime();
+
                         myRoom.current_turn = pl;
                         myRoom.current_turn_type = 'roll';
-                        myRoom.turn_start_at = new Date(dt).getTime(); //new Date().getTime();
-                        myRoom.game_started_at = new Date(dt).getTime();//new Date().getTime();
+                        myRoom.turn_start_at = new Date().getTime(); //new Date().getTime();
+                        myRoom.game_started_at = time;
                         myRoom.server_time = new Date();
                         let DICE_ROLLED_RES = this.rollDice(room, myRoom.users[pl].id, myRoom);
                         //console.log('DICE_ROLLED_RES >>', JSON.stringify(DICE_ROLLED_RES));
@@ -1161,21 +1166,21 @@ class _Tables
 
     async setGameTime(myRoom)
     {
-        //let gameStartTime = myRoom.game_started_at;
-        let tableD = await Table.findOne({
-            room: myRoom.room,
-        });  
-        if(tableD) {              
-            let gameStartTime = tableD.game_started_at;
+        let gameStartTime = myRoom.game_started_at; 
+        if(gameStartTime) {
             // To convert New Date() getTime to Second.
             let time = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
             let minutes = 0;
             let seconds = 0;
+            let remainingTime = 0;
             if(time > 0) {
-                let gameTime = config.gameTime * 60 - time;
-                minutes = Math.floor(gameTime / 60);
-                seconds = gameTime - minutes * 60;
+                remainingTime = config.gameTime * 60 - time;
+                minutes = Math.floor(Math.abs(remainingTime) / 60);
+                seconds = Math.abs(remainingTime) - Math.abs(minutes) * 60;
             } 
+            if (remainingTime < 0) {
+                return "-"+Math.abs(minutes) +":"+this.pad(seconds,2);  
+            }
             return minutes + ":" + this.pad(seconds,2);
         } else {
             return "10:00";
@@ -1980,10 +1985,6 @@ class _Tables
     }
     getDataByRoom(room,myRoom) {
         let table = myRoom;
-        // for (var i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room === room)
-        //     {
                 var dt = new Date();
                 dt.setSeconds(dt.getSeconds() + 4);
                 for (let pl = 0; pl < table.users.length; pl++)
@@ -1992,8 +1993,8 @@ class _Tables
                     {
                         table.current_turn = pl;
                         table.current_turn_type = 'roll';
-                        table.turn_start_at = new Date(dt).getTime(); 
-                        table.game_started_at = new Date(dt).getTime();
+                        table.turn_start_at = new Date().getTime(); 
+                        table.game_started_at = new Date().getTime();
                         let DICE_ROLLED_RES = this.rollDice(room, table.users[pl].id,myRoom);
                         let DICE_ROLLED;
                         if(DICE_ROLLED_RES) {
@@ -2018,8 +2019,6 @@ class _Tables
                         return resObj;
                     }
                 }
-            // }
-        // }
         return false;
     }
 }
