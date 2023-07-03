@@ -492,7 +492,7 @@ class _Tables
                             myRoom.users[pl].is_done = true;
                             myRoom.users[pl].left_time = await this.checkGameExpireTime(myRoom);
 
-                            let rank = myRoom.no_of_players;
+                          let rank = myRoom.no_of_players;
 
                             while (this.isRankOccupied(room, rank, myRoom))
                             {
@@ -531,6 +531,7 @@ class _Tables
                     res: false,
                 };
     }
+
 
     async checkGameExpireTime(myRoom) {
         if(myRoom.game_started_at) {     
@@ -710,10 +711,11 @@ class _Tables
                 }
             }
         }
+
         gamePlayData.data[type] += bonusPoint;
         if (type == 'home_base_bonus')
         {
-            gamePlayData.data.home_base = 1;
+            gamePlayData.data.home_base += 1;
         }
     }
 
@@ -761,7 +763,6 @@ class _Tables
         if (!myRoom) return -1;
 
         const me = myRoom.users.find((elem) => elem.id == id);
-
         return me ? myRoom.users.indexOf(me) : -1;
     }
 
@@ -1186,20 +1187,6 @@ class _Tables
 
     async setPawnMoveTime(myRoom)
     {
-        //let gameStartTime = myRoom.game_started_at;
-        // let tableD = await Table.findOne({
-        //     room: myRoom.room,
-        // });             
-        // let gameStartTime = tableD.game_started_at;
-        // // To convert New Date() getTime to Second.
-        // let time = ((new Date().getTime() / 1000) - (gameStartTime / 1000));
-        // let minutes = 0.0;
-        // if(time > 0) {
-        //     let gameTime = config.gameTime * 60 - time;
-        //     minutes = (gameTime / 60);
-        // } 
-        // return minutes.toFixed(2);
-
         let turnStarted = new Date(myRoom.turn_timestamp).getTime();
         let currentTime = new Date().getTime();
         let timeDiff = currentTime - turnStarted;

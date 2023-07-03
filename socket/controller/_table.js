@@ -553,10 +553,6 @@ module.exports = {
                     
                     if (allHome)
                     {
-                        var tableD = await Table.findOne({
-                            room: params.room,
-                        });
-
                         // Add TurnComplete Event
                         let turnCompleteEvent = {
                             type: 'room_including_me',
@@ -572,7 +568,7 @@ module.exports = {
                         resObj.events.push(turnCompleteEvent);
 
                         // Check if EndGame Possible
-                        var endGameRes = await _tab.calculateGameEndData(params.room, tableD.win_amount, myRoom);
+                        var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
                         let endGame;
                         if(endGameRes) {
                             myRoom = endGameRes.table;
@@ -581,6 +577,10 @@ module.exports = {
 
                         if (endGame)
                         {
+                            var tableD = await Table.findOne({
+                                room: params.room,
+                            });
+
                             // Update values in user wallets & table data [DB]
                             // console.log('tableD::', tableD);
                             if (tableD)
@@ -627,7 +627,7 @@ module.exports = {
                                 },
                             };
                             resObj.events.push(event);
-                            let reqData = await this.getEndGameData(event.data, tableD.room_fee);
+                            let reqData = await this.getEndGameData(event.data, myRoom.room_fee);
                             console.log("END-GAME-DATA-1", reqData);
                             let startGame = await requestTemplate.post(`endgame`, reqData)
                             // if (!startGame.isSuccess)
@@ -999,7 +999,7 @@ module.exports = {
                         game_data: winnerInfo,
                     },
                 };
-                let reqData = await this.getEndGameData(event.data, tableD.room_fee);
+                let reqData = await this.getEndGameData(event.data, myRoom.room_fee);
                 console.log("END-GAME-DATA-2", reqData);
                 let startGame = await requestTemplate.post(`endgame`, reqData);
                 // if (!startGame.isSuccess)
@@ -1203,7 +1203,7 @@ module.exports = {
                 let tableD = await Table.findOne({
                     room: params.room,
                 });
-                var endGameRes = await _tab.calculateGameEndData(params.room, tableD.win_amount, myRoom);
+                var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
                 let endGame;
                 if(endGameRes) {
                     myRoom = endGameRes.table;
@@ -1257,7 +1257,7 @@ module.exports = {
                         },
                     };
                     rez_finalObj.events.push(event);
-                    let reqData = await this.getEndGameData(event.data, tableD.room_fee);
+                    let reqData = await this.getEndGameData(event.data, myRoom.room_fee);
                     console.log("END-GAME-DATA-3", reqData);
                     let startGame = await requestTemplate.post(`endgame`, reqData)
                     // if (!startGame.isSuccess)
@@ -1548,7 +1548,7 @@ module.exports = {
                                     },
                                 };
                                 rez_finalObj.events.push(event);
-                                let reqData = await this.getEndGameData(event.data, tableD.room_fee);
+                                let reqData = await this.getEndGameData(event.data, myRoom.room_fee);
                                 console.log("END-GAME-DATA-4", reqData);
                                 let startGame = await requestTemplate.post(`endgame`, reqData)
                                 // if (!startGame.isSuccess)

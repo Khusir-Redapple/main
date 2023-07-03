@@ -27,7 +27,7 @@ module.exports = function (io)
         // for logDNA 
         logDNA.log('Global error', {
             level: 'error',
-            meta: error
+            meta: {'message': error.message, 'stack' : error.stack}
         });
     } 
     
@@ -54,11 +54,12 @@ module.exports = function (io)
          */
         socket.on('fetchGameData', async function(params, callback) {
             try{
+            // Start the timer
+            const startTime = Date.now();
             let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-            // let response = await _TableInstance.getDataByRoom(params.room, myRoom);
-            // if(response) {
-            //     myRoom = response.table;
-            // }
+            // End the timer
+            const endTime = (Date.now() - startTime);
+            logDNA.log('fetchGameData::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'fetchGameData'}});
             myRoom.server_time = new Date();
             return callback(myRoom);
         }
@@ -81,6 +82,8 @@ module.exports = function (io)
         // New connection to Socket with Auth
         socket.on('join', async (params, callback) =>
         {
+            // Start the timer
+            const startTime = Date.now();
             let responseObj = {};
             console.log("Socket join fired", socket.id);
             console.log('TS1 ::', 'join', socket.id, JSON.stringify(params));
@@ -128,7 +131,6 @@ module.exports = function (io)
                 socket.data_name = us.name;
                 socket.join(socket.data_id);
                 await Socketz.updateSocket(us._id, socket);
-                startTime = new Date();
                 us.save();
 
                 //Check if user already playing
@@ -144,6 +146,11 @@ module.exports = function (io)
                 responseObj.joined = rez.status;
                 // To delete boject
                 // deleteObjectProperty(rez);
+
+                // End the timer
+                const endTime = (Date.now() - startTime);
+                // calculate the execution time
+                logDNA.log('Join::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'Join'}});
                 console.log('TS1 ::', 'joinRes', socket.id, JSON.stringify(responseObj));
                 return callback(responseObj);
             } catch (err)
@@ -169,6 +176,8 @@ module.exports = function (io)
 
         socket.on('join_previous', async (params, callback) =>
         {
+            // Start the timer
+            const startTime = Date.now();
             console.log('TS1 ::', 'join_previous', socket.id, JSON.stringify(params));
             var myId = await Socketz.getId(socket.id);
             try
@@ -192,6 +201,10 @@ module.exports = function (io)
                 process.env.CURRENT_TURN_POSITION = rez.current_turn;
                 rez.server_time = new Date();
                 rez.table.server_time = new Date();
+
+               // End the timer
+                const endTime = (Date.now() - startTime);
+                logDNA.log('Join_Previous::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'Join_Previous'}});
                 return callback(rez);
 
             } catch(ex) {
@@ -216,6 +229,8 @@ module.exports = function (io)
         socket.on('joinTournament', async (data, callback) =>
         {
             try{
+            // Start the timer
+            const startTime = Date.now();
             if (!data || !data.token)
             {
                 return callback({
@@ -430,6 +445,9 @@ module.exports = function (io)
                     }
                 }
             }
+            // End the timer
+            const endTime = (Date.now() - startTime);
+            logDNA.log('JoinTournament::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'JoinTournament'}});
         }
         catch(ex)
         {
@@ -441,6 +459,9 @@ module.exports = function (io)
         // Leave Table / Quit Game
         socket.on('leaveTable', async (params, callback) =>
         {
+            // Start the timer
+            const startTime = Date.now();
+
             let tableD = await Table.findOne({
                 room: params.room
             });
@@ -483,6 +504,10 @@ module.exports = function (io)
                 // To remove a particular socket ID from a room
                 let socketIdToRemove = socket.id;
                 io.sockets.sockets[socketIdToRemove].leave(myRoom.room);
+                // End the timer
+                const endTime = (Date.now() - startTime);
+                logDNA.log('LeaveTable::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'LeaveTable'}});
+
                 if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
 
             }
@@ -497,6 +522,8 @@ module.exports = function (io)
         socket.on('tournamnt_dice_rolled', async (params, callback) =>
         {
             try{
+            // Start the timer
+            const startTime = Date.now();
             //console.log("TS1 ::", 'tournamnt_dice_rolled', socket.id, JSON.stringify(params), new Date());
            // console.log(socket.data_name, " Rolled ", params.dice_value);
             let myId = await Socketz.getId(socket.id);
@@ -509,8 +536,11 @@ module.exports = function (io)
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             // console.log('GAME-PLAY-DATA-3', JSON.stringify(gamePlayData));
             callback(response.callback);
-            if (response.callback.status == 1) processEvents(response, myRoom);
+            // End the timer
+            const endTime = (Date.now() - startTime);
+            logDNA.log('Tournamnt_dice_rolled::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'Tournamnt_dice_rolled'}});
 
+            if (response.callback.status == 1) processEvents(response, myRoom);
             }
             catch(error)
             {
@@ -523,6 +553,8 @@ module.exports = function (io)
         socket.on('tournament_move_made', async (params, callback) =>
         {
             try{
+            // Start the timer
+            const startTime = Date.now();
             console.log("Tournament_move_made ::", JSON.stringify(params));
             console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
 
@@ -535,15 +567,12 @@ module.exports = function (io)
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             // console.log('GAME-PLAY-DATA-4', JSON.stringify(gamePlayData));
             callback(response.callback);
+
+            // End the timer
+            const endTime = (Date.now() - startTime);
+            logDNA.log('Tournament_move_made::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'Tournament_move_made'}});
+
             if (response.callback.status == 1) processEvents(response, myRoom);
-
-            // to update current turn for player if player miss the events.
-            if(response.events[1].data.position != null) {
-                process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
-            } else if(response.events[1].data.player_index != null) {
-                process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
-            }
-
             }
             catch(err)
             {
@@ -554,6 +583,9 @@ module.exports = function (io)
         //Skip Turn
         socket.on('skip_turn', async (params, callback) =>
         {
+            // Start the timer
+            const startTime = Date.now();
+
             let tableD = await Table.findOne({
                 room: params.room
             });
@@ -574,15 +606,12 @@ module.exports = function (io)
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             // console.log('GAME-PLAY-DATA-5', JSON.stringify(gamePlayData));
             callback(response.callback);
+
+            // End the timer
+            const endTime = (Date.now() - startTime);
+            logDNA.log('Skip_turn::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'Skip_turn'}});
+
             processEvents(response, myRoom);
-
-            // to update current turn for player if player miss the events.
-            if(response.events[1].data.position != null) {
-                process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
-            } else if(response.events[1].data.player_index != null) {
-                process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
-            }
-
             }
             catch(ex)
             {
@@ -753,6 +782,7 @@ module.exports = function (io)
                                      * To check that make_diceroll event has occured.
                                      * To check time expire.
                                      **/
+
                                     let gameTime = await checkGameExpireTime(myRoom);
                                     if(gameTime.isTimeExpired) {
                                         //To check player has equal turn or not.
@@ -815,6 +845,7 @@ module.exports = function (io)
          * 
          * @returns boolean  
          */
+
         async function checkGameExpireTime(MyRoom) {
             try {
                 if(MyRoom.game_started_at) {     
