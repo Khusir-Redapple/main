@@ -38,7 +38,7 @@ module.exports = {
         let verify = dices_rolled.every((val, i, arr) => val === 6)
         //console.log("verify", verify);
         if (verify && dices_rolled.length == 3) {isJackpot = true}
-        dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
+        //dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
         //console.log("value got ", dices_rolled);
         resObj.callback.dices_rolled = dices_rolled;
 
@@ -150,7 +150,7 @@ module.exports = {
             if (threeSix) 
             {
                 console.log('update turn 2');
-                await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos,0,myRoom);
+                //await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos,0,myRoom);
             }
             else {
                 console.log('update turn 3');
