@@ -639,18 +639,13 @@ class _Tables
 
     diceRolled(room, pos, DICE_ROLLED, myRoom)
     {
-        //var index = this.tables.findIndex((x) => x.room == room);
-        // if (index >= 0)
-        // {
         if(pos > -1)
         {
-            if (myRoom.users[pos].dices_rolled.length > 0)
+            if (myRoom.users[pos].dices_rolled.length > 0) {
                 myRoom.users[pos].dices_rolled = [];
-
-            myRoom.users[pos].dices_rolled.push(DICE_ROLLED);
-    }
-
-        // }
+                myRoom.users[pos].dices_rolled.push(DICE_ROLLED);
+            }
+        }
     }
 
     getBonus(room, id, myRoom)

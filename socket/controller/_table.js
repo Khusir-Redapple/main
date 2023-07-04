@@ -150,7 +150,7 @@ module.exports = {
             if (threeSix) 
             {
                 console.log('update turn 2');
-                await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos,0,myRoom);
+               // await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos,0,myRoom);
             }
             else {
                 console.log('update turn 3');
@@ -361,6 +361,9 @@ module.exports = {
             let resObj = {callback: {status: 1, message: localization.success, isKillable : false}, events: []};
             let myPos = await _tab.getMyPosition(params.room, id, myRoom);
             //if (myPos == -1) return {callback: {status: 0, message: localization.noDataFound}};
+            
+            // get dice_value from user property.
+            params.dice_value = myRoom.users[myPos].dices_rolled;
 
             let params_data = {
                 room: params.room,
@@ -944,7 +947,7 @@ module.exports = {
             return resObj;
         } catch (err)
         {
-            // console.log('ERROR', err);
+            console.log('ERROR', err);
         }
     },
     checkwinnerOfTournament: async function (room,myRoom)
