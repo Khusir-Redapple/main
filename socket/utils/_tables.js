@@ -233,7 +233,7 @@ class _Tables
             if (pos == -1) return false;
             let readDiceValue = filteredTable.users[pos].diceValue;
             filteredTable.users[pos] = {
-                id: user._id,
+                id: user.id,
                 numeric_id: user.numeric_id,
                 name: user.name,
                 user_token : user.token,

@@ -325,7 +325,16 @@ module.exports = function (io)
             //     await Socketz.updateSocket(us._id, socket);
             // }
 
-            socket.data_id = params.user_id;
+            var us = {
+                'id' : params.user_id.toString(),
+                'name': params.user_name,
+                'numeric_id': params.user_id.toString(),
+                'lobbyId': verifyUser.lobbyId,
+                'profilepic': params.profile_pic,
+                'token': params.token,
+                'joinedAt' : new Date().getTime()
+            };
+            socket.data_id = params.user_id.toString();
             socket.data_name = params.user_name;
             socket.join(socket.data_id);
             await Socketz.updateSocket(params.user_id, socket);
