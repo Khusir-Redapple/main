@@ -103,47 +103,47 @@ module.exports = function (io)
                         message: 'No Token provided',
                     });
                 }
-                let us = await User.findOne({
-                    'token': params.token,
-                });
-                if (!us)
-                {
-                    responseObj = {
-                        status: 1,
-                        message: 'Socket registered successfully',
-                        server_time: new Date().getTime().toString(),
-                        joined: 0
-                    };
-                    return callback(responseObj);
-                }
-                await User.findOneAndUpdate(
-                    {
-                        _id: ObjectId(us._id),
-                    },
-                    {
-                        $set: {
-                            'token'     : params.token,
-                            'joinedAt'  : new Date().getTime()
-                        },
-                    }
-                );
-                socket.data_id = us._id.toString();
-                socket.data_name = us.name;
-                socket.join(socket.data_id);
-                await Socketz.updateSocket(us._id, socket);
-                us.save();
+                // let us = await User.findOne({
+                //     'token': params.token,
+                // });
+                // if (!us)
+                // {
+                //     responseObj = {
+                //         status: 1,
+                //         message: 'Socket registered successfully',
+                //         server_time: new Date().getTime().toString(),
+                //         joined: 0
+                //     };
+                //     return callback(responseObj);
+                // }
+                // await User.findOneAndUpdate(
+                //     {
+                //         _id: ObjectId(us._id),
+                //     },
+                //     {
+                //         $set: {
+                //             'token'     : params.token,
+                //             'joinedAt'  : new Date().getTime()
+                //         },
+                //     }
+                // );
+                // socket.data_id = us._id.toString();
+                // socket.data_name = us.name;
+                // socket.join(socket.data_id);
+                // await Socketz.updateSocket(us._id, socket);
+                // us.save();
 
-                //Check if user already playing
-                var rez = await _TableInstance.reconnectIfPlaying(us._id);
-                console.log('PLAYER ID :: >>>', us._id);
-                console.log('ALREADY PLAYING OR NOT :: >>>', rez);
+                // //Check if user already playing
+                // var rez = await _TableInstance.reconnectIfPlaying(us._id);
+                // console.log('PLAYER ID :: >>>', us._id);
+                // console.log('ALREADY PLAYING OR NOT :: >>>', rez);
 
-                responseObj = {
-                    status: 1,
-                    message: 'Socket registered successfully',
-                    server_time: new Date().getTime().toString(),
-                };
-                responseObj.joined = rez.status;
+                // responseObj = {
+                //     status: 1,
+                //     message: 'Socket registered successfully',
+                //     server_time: new Date().getTime().toString(),
+                // };
+                // responseObj.joined = rez.status;
                 // To delete boject
                 // deleteObjectProperty(rez);
 
@@ -151,7 +151,13 @@ module.exports = function (io)
                 const endTime = (Date.now() - startTime);
                 // calculate the execution time
                 logDNA.log('Join::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'Join'}});
-                console.log('TS1 ::', 'joinRes', socket.id, JSON.stringify(responseObj));
+                
+                responseObj = {
+                    status: 1,
+                    message: 'Socket registered successfully',
+                    server_time: new Date().getTime().toString(),
+                    joined: 0
+                };
                 return callback(responseObj);
             } catch (err)
             {
@@ -272,55 +278,59 @@ module.exports = function (io)
                 });
             }
             
-            let us = await User.findOne({
-                'numeric_id': params.user_id,
-            });
-            console.log("us >>", us)
-            if (us)
-            {
-                socket.data_id = us._id.toString();
-                socket.data_name = us.name;
-                socket.join(socket.data_id);
-                await Socketz.updateSocket(us._id, socket);
-                us = await User.findOneAndUpdate(
-                    {
-                        _id: ObjectId(us._id),
-                    },
-                    {
-                        $set: {
-                            'name'      : params.user_name,
-                            'token'     : data.token,
-                            'lobbyId'   : verifyUser.lobbyId,
-                            'joinedAt'  : new Date().getTime(),
-                            'updatedAt' : new Date().getTime()
-                        },
-                    },
-                    {
-                        new:true,
-                    }
-                );
-            }
-            else
-            {
-                var newUser = new User({
-                    name: params.user_name,
-                    numeric_id: params.user_id.toString(),
-                    lobbyId: verifyUser.lobbyId,
-                    profilepic: params.profile_pic,
-                    token: params.token,
-                    joinedAt : new Date().getTime()
-                });
-                console.log("newUser > ", newUser)
-                us = await newUser.save();
-                console.log("us > ", us)
-                socket.data_id = us._id.toString();
-                socket.data_name = us.name;
-                socket.join(socket.data_id);
-                await Socketz.updateSocket(us._id, socket);
-                // To delete object
-                // deleteObjectProperty(newUser);
-            }
-            await redisCache.addToRedis(data.token, us._id.toString());
+            // let us = await User.findOne({
+            //     'numeric_id': params.user_id,
+            // });
+            // console.log("us >>", us)
+            // if (us)
+            // {
+            //     socket.data_id = us._id.toString();
+            //     socket.data_name = us.name;
+            //     socket.join(socket.data_id);
+            //     await Socketz.updateSocket(us._id, socket);
+            //     us = await User.findOneAndUpdate(
+            //         {
+            //             _id: ObjectId(us._id),
+            //         },
+            //         {
+            //             $set: {
+            //                 'name'      : params.user_name,
+            //                 'token'     : data.token,
+            //                 'lobbyId'   : verifyUser.lobbyId,
+            //                 'joinedAt'  : new Date().getTime(),
+            //                 'updatedAt' : new Date().getTime()
+            //             },
+            //         },
+            //         {
+            //             new:true,
+            //         }
+            //     );
+            // }
+            // else
+            // {
+            //     var newUser = new User({
+            //         name: params.user_name,
+            //         numeric_id: params.user_id.toString(),
+            //         lobbyId: verifyUser.lobbyId,
+            //         profilepic: params.profile_pic,
+            //         token: params.token,
+            //         joinedAt : new Date().getTime()
+            //     });
+            //     console.log("newUser > ", newUser)
+            //     us = await newUser.save();
+            //     console.log("us > ", us)
+            //     socket.data_id = us._id.toString();
+            //     socket.data_name = us.name;
+            //     socket.join(socket.data_id);
+            //     await Socketz.updateSocket(us._id, socket);
+            // }
+
+            socket.data_id = params.user_id;
+            socket.data_name = params.user_name;
+            socket.join(socket.data_id);
+            await Socketz.updateSocket(params.user_id, socket);
+
+            await redisCache.addToRedis(data.token, params.user_id.toString());
             var myId = await Socketz.getId(socket.id);
             if (!myId)
             {
