@@ -641,10 +641,9 @@ class _Tables
     {
         if(pos > -1)
         {
-            if (myRoom.users[pos].dices_rolled.length > 0) {
+            if (myRoom.users[pos].dices_rolled.length > 0) 
                 myRoom.users[pos].dices_rolled = [];
-                myRoom.users[pos].dices_rolled.push(DICE_ROLLED);
-            }
+            myRoom.users[pos].dices_rolled.push(DICE_ROLLED);
         }
     }
 
