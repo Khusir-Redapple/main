@@ -364,7 +364,7 @@ module.exports = {
             
             // get dice_value from user property.
             params.dice_value = myRoom.users[myPos].dices_rolled;
-
+            console.log('position===>', myPos, params.dice_value);
             let params_data = {
                 room: params.room,
             };
