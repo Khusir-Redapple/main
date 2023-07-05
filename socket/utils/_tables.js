@@ -456,7 +456,7 @@ class _Tables
                         // to track game started time.
                         let gameStartTime = await redisCache.getRecordsByKeyRedis(`table_${room}`);
                         gameStartTime.game_started_at = new Date().getTime();
-                        await redisCache.addToRedis(`table_${params.room}`, gameStartTime);
+                        await redisCache.addToRedis(`table_${room}`, gameStartTime);
 
                         this.sendToSqsAndResetGamePlayData(room,myRoom,gamePlayData,pl);
                         return resObj;
