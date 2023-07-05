@@ -2179,7 +2179,7 @@ module.exports = {
         }
         // To check multiple same lobbyId try to join game.
         let isGameStarted = await redisCache.getRecordsByKeyRedis(`table_${params.lobbyId}`);
-        if(isGameStarted.game_started_at !== '-1') {
+        if(isGameStarted && isGameStarted.game_started_at !== '-1') {
             return {
                 callback: {
                     status: 0,
