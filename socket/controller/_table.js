@@ -1097,13 +1097,13 @@ module.exports = {
             await redisCache.removeDataFromRedis('room_'+params.room);
             await redisCache.removeDataFromRedis('gamePlay_'+params.room);
         }
-        let myUser = myRoom.users.find((element) => element.id == id);
+        let myUser = myRoom.users.find((element) => element.id == id.toString());
         let reqData = {
             room: params.room,
             amount: myRoom.room_fee.toString(),
             users: [{
-                "user_id": myUser[0].numeric_id,
-                "token": myUser[0].user_token,
+                "user_id": myUser.numeric_id,
+                "token": myUser.user_token,
                 "isRefund": params.isRefund ? params.isRefund : false
             }]
         }
