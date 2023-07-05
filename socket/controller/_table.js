@@ -1097,13 +1097,15 @@ module.exports = {
             await redisCache.removeDataFromRedis('room_'+params.room);
             await redisCache.removeDataFromRedis('gamePlay_'+params.room);
         }
-        let myUser = myRoom.users.find((element) => element.id == id.toString());
+        // let myUser = myRoom.users.find((element) => element.id == id.toString());
+        let myUser = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
+        myUser = myUser.players.find((ele) => ele.id == id.toString());
         let reqData = {
             room: params.room,
             amount: myRoom.room_fee.toString(),
             users: [{
-                "user_id": myUser.numeric_id,
-                "token": myUser.user_token,
+                "user_id": myUser.id,
+                "token": myUser.token,
                 "isRefund": params.isRefund ? params.isRefund : false
             }]
         }
@@ -2102,6 +2104,7 @@ module.exports = {
 
             var player = {
                 id: user.id,
+                token : user.token,
                 fees: params.room_fee,
                 is_active: true
             };
@@ -2332,6 +2335,7 @@ module.exports = {
 
             var player = {
                 id: user.id,
+                token : user.token,
                 fees: params.room_fee,
                 is_active: true
             };
