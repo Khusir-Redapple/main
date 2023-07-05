@@ -1098,8 +1098,8 @@ module.exports = {
             await redisCache.removeDataFromRedis('gamePlay_'+params.room);
         }
         // let myUser = myRoom.users.find((element) => element.id == id.toString());
-        let myUser = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
-        myUser = myUser.players.find((ele) => ele.id == id.toString());
+        let myTable = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
+        let myUser = myTable.players.find((ele) => ele.id == id.toString());
         let reqData = {
             room: params.room,
             amount: myRoom.room_fee.toString(),
@@ -1109,6 +1109,22 @@ module.exports = {
                 "isRefund": params.isRefund ? params.isRefund : false
             }]
         }
+
+        if (!rez.res && rez.flag == 1)
+        {
+            //remove player
+            const newArr = myTable.players.filter(object => {
+                return object.id !== id.toString();
+              });
+            myTable.players = newArr;
+
+        } else {
+            // update status false to player
+            let idx = myTable.players.findIndex(x => x.id == id.toString());
+            myTable.players[idx].is_active = false;
+        }
+        await redisCache.addToRedis(`table_${params.room}`, myTable);
+
         //Bug_no: 79 comment this line for testing.
         await requestTemplate.post(`matchmakingFailed`, reqData);
         console.log('BEFORE API calling :: ', rez);
