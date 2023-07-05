@@ -1098,7 +1098,6 @@ module.exports = {
             await redisCache.removeDataFromRedis('gamePlay_'+params.room);
         }
         let myUser = myRoom.users.find((element) => element.id == id.toString());
-        console.log('myRoom====>', JSON.stringify(myRoom), id);
         let reqData = {
             room: params.room,
             amount: myRoom.room_fee.toString(),

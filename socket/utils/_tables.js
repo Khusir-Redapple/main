@@ -96,29 +96,6 @@ class _Tables
         });
     }
 
-    // Check Seat Available
-    // checkSeatAvailable(room)
-    // {
-    //     let count = 0;
-    //     let noPlayers = 0;
-    //     // New modification
-    //     this.tables.reduce((accumulator, current) =>
-    //     {
-    //         if (current.room == room)
-    //         {
-    //             noPlayers = current.no_of_players;
-    //             count = current.users.filter(users => users.is_active === true).length;
-    //         }
-    //         accumulator.push(current);
-    //         return accumulator;
-    //     }, []);
-
-    //     let current_time = new Date().getTime();
-    //     let time_diff = (current_time - (this.tables[i] ? this.tables[i].created_at : 0)) / 1000;
-
-    //     return {flag: count < noPlayers, timerStart: 240 - time_diff};
-    // }
-
     checkTournamentTable(room_fee, no_of_players)
     {
         // new modification equivalent to above code.
@@ -140,20 +117,6 @@ class _Tables
     }    
 
     checkTournamentTableV2(lobbyId,myRoom) {
-        // new modification equivalent to above code.
-        // let count, noPlayers, room = 0;
-        // this.tables.reduce(function (accumulator, currentValue) {
-        //     if (currentValue.lobbyId == lobbyId) {
-        //         noPlayers = currentValue.no_of_players;
-        //         count = currentValue.users.filter(users => users.is_active === true).length;
-        //         room = currentValue.room;
-        //     }
-        //     accumulator.push(currentValue);
-        //     return accumulator;
-        // }, []);
-        // if (count < noPlayers) return { room: room, timerStart: 60 };
-
-        // return false;
         let count, noPlayers, room = 0;
         if(!myRoom) return false;
         if (myRoom.lobbyId == lobbyId) {
@@ -168,23 +131,6 @@ class _Tables
     //Check Table Exists
     checkTableExists(room, myRoom)
     {
-        // for (var i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room == room)
-        //     {
-        //         let res = {
-        //             status: true,
-        //             start_at: parseInt(this.tables[i].turn_start_at),
-        //             current_turn: this.tables[i].current_turn,
-        //         };
-        //         return res;
-        //     }
-        // }
-        // let res = {
-        //     status: false,
-        // };
-        // return res;
-
         if(myRoom) {
             let res = {
                     status: true,
@@ -194,8 +140,6 @@ class _Tables
                 return res;
         }
         return false;
-
-
     }
 
     //Seat on tournament table
@@ -274,9 +218,6 @@ class _Tables
         };
         logDNA.log('If already playing This.tables', logger);
 
-        // console.log('THIS.TABLES DATA :: ', this.tables[0].users);
-        // for (var i = 0; i < this.tables.length; i++)
-        // {
             for (var pl = 0; pl < myRoom.users.length; pl++)
             {
                 if (myRoom.users[pl].id)
@@ -310,7 +251,6 @@ class _Tables
                     }
                 }
             }
-        // }
         var rez = {
             status: 0,
             message: "An error was encountered. Please join a new game."
@@ -320,12 +260,7 @@ class _Tables
 
     getTokRoom(room, id, myRoom)
     {
-        // console.log('getTokRoom Started >>', id);
         let table = myRoom;
-        // for (var i = 0; i < this.tables.length; i++)
-        // {
-            // if (this.tables[i].room == room)
-            // {
                 for (var pl = 0; pl < table.users.length; pl++)
                 {
                     if (table.users[pl].id)
@@ -349,33 +284,11 @@ class _Tables
                         }
                     }
                 }
-            // }
-        // }
         var rez = {
             status: 0,
         };
         return rez;
     }
-
-    // leaveIfPlaying(id)
-    // {
-    //     // console.log('AlreadyPlaying Started >>', id);
-    //     for (var i = 0; i < this.tables.length; i++)
-    //     {
-    //         for (var pl = 0; pl < this.tables[i].users.length; pl++)
-    //         {
-    //             if (this.tables[i].users[pl].id)
-    //             {
-    //                 if (this.tables[i].users[pl].id.toString() == id.toString())
-    //                 {
-    //                     // console.log('You are playing on this table', this.tables[i]);
-    //                     return this.tables[i].room;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
 
     isRankOccupied(room, rank, myRoom)
     {
