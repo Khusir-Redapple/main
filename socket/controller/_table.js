@@ -1880,7 +1880,7 @@ module.exports = {
             myRoom = await redisCache.getRecordsByKeyRedis(roomId);
         }
         if(myRoom) {
-            let us = myRoom.users.find((ele) => ele.id == id);
+            let us = myRoom.users.find((ele) => ele.id == id.toString());
             let alreadyPlaying = _tab.alreadyPlayingTable(us[0].id,myRoom);
             if (alreadyPlaying.status == 1)
             {
