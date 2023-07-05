@@ -1460,8 +1460,8 @@ module.exports = {
                             //amount: tableD.room_fee.toString(),
                             amount: myRoom.room_fee.toString(),
                             users: [{
-                                "user_id": us[0].numeric_id,
-                                "token": us[0].user_token,
+                                "user_id": us.numeric_id,
+                                "token": us.user_token,
                                 "isRefund": params.isRefund ? params.isRefund : false
                             }]
                         }
@@ -1881,7 +1881,7 @@ module.exports = {
         }
         if(myRoom) {
             let us = myRoom.users.find((ele) => ele.id == id.toString());
-            let alreadyPlaying = _tab.alreadyPlayingTable(us[0].id,myRoom);
+            let alreadyPlaying = _tab.alreadyPlayingTable(us.id,myRoom);
             if (alreadyPlaying.status == 1)
             {
                 // var tab = await Table.findOne({room: alreadyPlaying.table.room, 'players.id': id});
@@ -1921,8 +1921,8 @@ module.exports = {
     {
         if (!Service.validateObjectId(id)) false;
         //let us = await User.findById(id);
-        let us = myRoom.users.find((ele) => ele.id == id);
-        let alreadyPlaying = _tab.getTokRoom(room, us[0].id, myRoom);
+        let us = myRoom.users.find((ele) => ele.id == id.toString());
+        let alreadyPlaying = _tab.getTokRoom(room, us.id, myRoom);
 
         // console.log('User Playing On Table', alreadyPlaying);
         return alreadyPlaying;
