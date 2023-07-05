@@ -1454,6 +1454,7 @@ module.exports = {
 
                         //var us = await User.findById(id);
                         let us = myRoom.users.find((ele) => ele.id == id);
+                        console.log("MyRoom====>", myRoom);
                         let reqData = {
                             room: params.room,
                             //amount: tableD.room_fee.toString(),
