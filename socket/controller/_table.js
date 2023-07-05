@@ -1781,6 +1781,11 @@ module.exports = {
             tableD.turn_start_at = new Date().getTime();
             myRoom.game_started_at = time;
             // await tableD.save();
+
+            // to track game started time.
+            if(start) {
+                tableD.game_started_at = new Date().getTime();
+            }
             await redisCache.addToRedis(`table_${params.room}`, tableD);
             console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at), tableD.game_started_at)
             let timeToAdd = new Date(new Date().getTime() + config.gameTime * 60000);

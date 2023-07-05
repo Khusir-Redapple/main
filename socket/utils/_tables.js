@@ -453,11 +453,6 @@ class _Tables
                             possition: pl,
                             default_diceroll_timer: config.turnTimer // bug_no_65
                         };
-                        // to track game started time.
-                        let gameStartTime = await redisCache.getRecordsByKeyRedis(`table_${room}`);
-                        gameStartTime.game_started_at = new Date().getTime();
-                        await redisCache.addToRedis(`table_${room}`, gameStartTime);
-
                         this.sendToSqsAndResetGamePlayData(room,myRoom,gamePlayData,pl);
                         return resObj;
                     }
