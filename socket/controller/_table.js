@@ -2177,6 +2177,16 @@ module.exports = {
                 },
             };
         }
+        // To check multiple same lobbyId try to join game.
+        let isGameStarted = await redisCache.getRecordsByKeyRedis(`table_${params.lobbyId}`);
+        if(isGameStarted.game_started_at !== '-1') {
+            return {
+                callback: {
+                    status: 0,
+                    message: 'An error was encountered. Please join a new game.',
+                },
+            };
+        }
 
         let lobbyAlreadyReceived = await redisCache.incrFromRedis('lobbyIdAtom_'+params.lobbyId);
         let roomId = await redisCache.getRecordsByKeyRedis('lobbyId_'+params.lobbyId);
@@ -2225,7 +2235,6 @@ module.exports = {
                 }
             }
         }
-
         let checkTourneyRes = await _tab.checkTournamentTableV2(params.lobbyId, myRoom);
         let isAnyTableEmpty = checkTourneyRes ? checkTourneyRes.room : false;
         let secTime = config.countDownTime;
