@@ -412,11 +412,6 @@ class _Tables
     //Start Game
     async tournamentStartGame(room, myRoom, gamePlayData)
     {
-        // let table = myRoom;
-        // for (var i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room === room)
-        //     {
                 var canStart = await this.canStartGame(myRoom);
                 if (!canStart) return false;
                 var dt = new Date();
@@ -458,13 +453,15 @@ class _Tables
                             possition: pl,
                             default_diceroll_timer: config.turnTimer // bug_no_65
                         };
+                        // to track game started time.
+                        let gameStartTime = await redisCache.getRecordsByKeyRedis(`table_${room}`);
+                        gameStartTime.game_started_at = new Date().getTime();
+                        await redisCache.addToRedis(`table_${params.room}`, gameStartTime);
+
                         this.sendToSqsAndResetGamePlayData(room,myRoom,gamePlayData,pl);
                         return resObj;
                     }
                 }
-
-            // }
-        // }
 
         return false;
     }
