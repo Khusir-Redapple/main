@@ -264,60 +264,7 @@ class _Tables
         }
         return false;
     }
-    // setTableData(room, user)
-    // {
-    //     console.log("setTableData :: >>>", room, user.name, this.tables);
-    //     // New modification
-    //     this.table = this.tables.reduce(function (accumulator, currentValue)
-    //     {
-    //         if (currentValue.room == room)
-    //         {
-    //             let idx = currentValue.users.findIndex(element => element.id == user._id.toString());
-    //             currentValue.users[idx].is_joined = true;
-    //         }
-    //         accumulator.push(currentValue);
-    //         return accumulator;
-    //     }, []);
-    // }
 
-    // tableInfo()
-    // {
-    //     console.log('AlreadyPlaying Started >>', this.tables.length);
-    //     for (let i = 0; i < this.tables.length; i++)
-    //     {
-    //         console.log('totaltables', this.tables[i]);
-    //     }
-    // }
-
-    //To check user already playing in another room / table
-    // alreadyPlaying(id)
-    // {
-    //     for (let i = 0; i < this.tables.length; i++)
-    //     {
-    //         for (let pl = 0; pl < this.tables[i].users.length; pl++)
-    //         {
-    //             if (this.tables[i].users[pl].id)
-    //             {
-    //                 if (this.tables[i].users[pl].id.toString() == id.toString() && !this.tables[i].users[pl].is_left)
-    //                 {
-    //                     return true;
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     return false;
-
-    // //     let data =  this.tables.reduce(function(acc,cur) {
-    // //         let index = cur.users.findIndex(userDara => userDara.id.toString() == id.toString() && !userDara.is_left);
-    // //         if(index == -1) {
-    // //              return false;
-    // //         }
-    // //         return true;
-    // //    },[]);
-    // //    return false;
-    
-    // }
     alreadyPlayingTable(id, myRoom)
     {
         // for logDNA logger
@@ -612,14 +559,14 @@ class _Tables
     //Abort Game
     async abortGame(room)
     {
-        for (var i = 0; i < this.tables.length; i++)
-        {
-            if (this.tables[i].room == room)
-            {
-                this.tables.splice(i, 1);
-                console.log('SPLICED', this.tables);
-            }
-        }
+        // for (var i = 0; i < this.tables.length; i++)
+        // {
+        //     if (this.tables[i].room == room)
+        //     {
+        //         this.tables.splice(i, 1);
+        //         console.log('SPLICED', this.tables);
+        //     }
+        // }
 
         return true;
     }
@@ -892,11 +839,6 @@ class _Tables
         let table = myRoom;
         console.log("getNextPosition Room : " + JSON.stringify(myRoom));
         console.log("getNextPosition pos: " + pos);
-        // let i = this.tables.findIndex(element => element.room == room);
-        // if (i == -1)
-        // {
-        //     return -1;
-        // }
         for (let j = pos + 1; j < table.users.length; j++)
         {
             if (table.users[j].is_active && !table.users[j].is_done)
@@ -1093,47 +1035,26 @@ class _Tables
 
     isMovePossible(room, id, myRoom)
     {
-
-        // const table = this.tables.find((elem) => elem.room == room);
         const table = myRoom;
-        // if (!table) return false;
         const me = table.users.find((elem) => elem.id == id);
         if (!me) return false;
-
         for (let k = 0; k < me.tokens.length; k++)
         {
             for (const dice_value of me.dices_rolled)
-            {  // new implemention for pawn should't get chance to another move, If there is no enough index.
+            {
                 if (me.tokens[k] + dice_value <= 56)
                 {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
-    // To get user dice rolled value
-    // getDiceValue(room, id)
-    // {
-    //     const table = this.tables.find((elem) => elem.room == room);
-    //     if (!table) return 0;
-    //     const me = table.users.find((elem) => elem.id == id);
-    //     if (!me) return 0;
-    //     for (let k = 0; k < me.tokens.length; k++)
-    //     {
-    //         for (const dice_value of me.dices_rolled)
-    //         {
-    //             return dice_value;
-    //         }
-    //     }
-    // }
-
+    
     isMovePossibleExact(dice_value, room, id, token_index, myRoom)
     {
-        const table = myRoom;
-        // const table = this.tables.find((elem) => elem.room == room);        
+        const table = myRoom;        
         if (!table) return false;
         const me = table.users.find((elem) => elem.id == id);        
         if (!me) return false;

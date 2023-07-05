@@ -576,10 +576,10 @@ module.exports = {
 
                         if (endGame)
                         {
-                            var tableD = await Table.findOne({
-                                room: params.room,
-                            });
-
+                            // var tableD = await Table.findOne({
+                            //     room: params.room,
+                            // });
+                            let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
                             // Update values in user wallets & table data [DB]
                             // console.log('tableD::', tableD);
                             if (tableD)
@@ -602,16 +602,7 @@ module.exports = {
 
                                 tableD.game_completed_at = new Date().getTime();
                                 tableD.isGameCompleted   = true;
-                                tableD
-                                    .save()
-                                    .then((d) =>
-                                    {
-                                        // console.log(d);
-                                    })
-                                    .catch((e) =>
-                                    {
-                                        // console.log('Error::', e);
-                                    });
+                                await redisCache.addToRedis(`table_${params.room}`,tableD);
                             }
 
                             // Update values in user wallets & table data [DB]
@@ -948,9 +939,10 @@ module.exports = {
     },
     checkwinnerOfTournament: async function (room,myRoom)
     {
-        let tableD = await Table.findOne({
-            room: room,
-        });
+        // let tableD = await Table.findOne({
+        //     room: room,
+        // });
+        let tableD = await redisCache.getRecordsByKeyRedis(`table_${room}`);
         if (tableD)
         {
             console.log('AMount>>>', tableD.win_amount);
@@ -976,16 +968,7 @@ module.exports = {
                 }
                 tableD.game_completed_at = new Date().getTime();
                 tableD.isGameCompleted   = true;
-                tableD
-                    .save()
-                    .then((d) =>
-                    {
-                        console.log(d);
-                    })
-                    .catch((e) =>
-                    {
-                        console.log('Error::', e);
-                    });
+                await redisCache.addToRedis(`table_${room}`, tableD);
 
                 // Update values in user wallets & table data [DB]
                 let event = {
@@ -1034,8 +1017,8 @@ module.exports = {
                 },
             };
 
-        var us = await User.findById(id);
-        if (!params || !us)
+        // var us = await User.findById(id);
+        if (!params)
             return {
                 callback: {
                     status: 0,
@@ -1053,56 +1036,57 @@ module.exports = {
                 },
             };
 
-        var tableD = await Table.findOne({
-            room: params.room,
-        });
-        if (!tableD)
-            return {
-                callback: {
-                    status: 0,
-                    message: localization.tableDoesNotExist,
-                    refund: refund
-                },
-            };
+        // var tableD = await Table.findOne({
+        //     room: params.room,
+        // });
+        //let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
+        // if (!tableD)
+        //     return {
+        //         callback: {
+        //             status: 0,
+        //             message: localization.tableDoesNotExist,
+        //             refund: refund
+        //         },
+        //     };
        
         var rez = await _tab.leave(params.room, id, myRoom);
         console.log('LEAVE RES', rez); //2|socket  | [2022-04-13T11:01:02.572] [INFO] default - LEAVE RES { res: false, flag: 1, remove: true }
 
-        if (!rez.res && rez.flag == 1)
-        {
-            // console.log('User Left Before Game Start');
+        // if (!rez.res && rez.flag == 1)
+        // {
+        //     // console.log('User Left Before Game Start');
 
-            await Table.findByIdAndUpdate(tableD._id, {
-                $pull: {
-                    players: {
-                        id: ObjectId(id),
-                    },
-                },
-            });
-        }
-        else
-        {
-            let playerIndex = 0;
-            for (let k = 0; k < tableD.players.length; k++)
-            {
-                if (id.toString() == tableD.players[k].id.toString())
-                {
-                    playerIndex = k;
-                }
-            }
-            await Table.update({
-                "_id": tableD._id,
-                "players.id": id
-            },
-                {
-                    "$set": {
-                        "players.$.is_active": false
-                    }
-                },
-                {
-                    "new": true
-                })
-        }
+        //     await Table.findByIdAndUpdate(tableD._id, {
+        //         $pull: {
+        //             players: {
+        //                 id: ObjectId(id),
+        //             },
+        //         },
+        //     });
+        // }
+        // else
+        // {
+        //     let playerIndex = 0;
+        //     for (let k = 0; k < tableD.players.length; k++)
+        //     {
+        //         if (id.toString() == tableD.players[k].id.toString())
+        //         {
+        //             playerIndex = k;
+        //         }
+        //     }
+        //     await Table.update({
+        //         "_id": tableD._id,
+        //         "players.id": id
+        //     },
+        //         {
+        //             "$set": {
+        //                 "players.$.is_active": false
+        //             }
+        //         },
+        //         {
+        //             "new": true
+        //         })
+        // }
 
         if (params && params.gameNotStarted && params.gameNotStarted == 'true')
         {
@@ -1113,12 +1097,13 @@ module.exports = {
             await redisCache.removeDataFromRedis('room_'+params.room);
             await redisCache.removeDataFromRedis('gamePlay_'+params.room);
         }
+        let myUser = myRoom.users.find((element) => element.id == id);
         let reqData = {
             room: params.room,
-            amount: tableD.room_fee.toString(),
+            amount: myRoom.room_fee.toString(),
             users: [{
-                "user_id": us.numeric_id,
-                "token": us.token,
+                "user_id": myUser[0].numeric_id,
+                "token": myUser[0].user_token,
                 "isRefund": params.isRefund ? params.isRefund : false
             }]
         }
@@ -1199,9 +1184,10 @@ module.exports = {
             if (checkOnlyPlayerLeft)
             {
                 // Check if EndGame Possible
-                let tableD = await Table.findOne({
-                    room: params.room,
-                });
+                // let tableD = await Table.findOne({
+                //     room: params.room,
+                // });
+                let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
                 var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
                 let endGame;
                 if(endGameRes) {
@@ -1232,16 +1218,7 @@ module.exports = {
 
                         tableD.game_completed_at = new Date().getTime();
                         tableD.isGameCompleted   = true;
-                        tableD
-                            .save()
-                            .then((d) =>
-                            {
-                                // console.log(d);
-                            })
-                            .catch((e) =>
-                            {
-                                // console.log('Error::', e);
-                            });
+                        await redisCache.addToRedis(`table_${params.room}`,tableD);
                     }
 
                     // Update values in user wallets & table data [DB]
@@ -1474,14 +1451,16 @@ module.exports = {
                         // let tableD = await Table.findOne({
                         //     room: params.room,
                         // });
-                        var us = await User.findById(id);
+
+                        //var us = await User.findById(id);
+                        let us = myRoom.users.find((ele) => ele.id == id);
                         let reqData = {
                             room: params.room,
                             //amount: tableD.room_fee.toString(),
                             amount: myRoom.room_fee.toString(),
                             users: [{
-                                "user_id": us.numeric_id,
-                                "token": us.token,
+                                "user_id": us[0].numeric_id,
+                                "token": us[0].user_token,
                                 "isRefund": params.isRefund ? params.isRefund : false
                             }]
                         }
@@ -1499,10 +1478,10 @@ module.exports = {
                             if (endGame)
                             {
                                 // Update values in user wallets & table data [DB]                                
-                                let tableD = await Table.findOne({
-                                    room: params.room,
-                                  });
-                                
+                                // let tableD = await Table.findOne({
+                                //     room: params.room,
+                                //   });
+                                let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
                                 if (tableD)
                                 {
                                     console.log(`PL:: <<<<<<<< END GAME >>>>>>>>>`);
@@ -1523,16 +1502,7 @@ module.exports = {
 
                                     tableD.game_completed_at = new Date().getTime();
                                     tableD.isGameCompleted   = true;
-                                    tableD
-                                        .save()
-                                        .then((d) =>
-                                        {
-                                            // console.log(d);
-                                        })
-                                        .catch((e) =>
-                                        {
-                                            // console.log('Error::', e);
-                                        });
+                                    await redisCache.addToRedis(`table_${params.room}`,tableD);
                                 }
 
                                 // Update values in user wallets & table data [DB]
@@ -1786,45 +1756,6 @@ module.exports = {
             };
         }
     },
-
-
-    // checkLeaveTable: async function (id)
-    // {
-    //     // console.log('check leave teable');
-    //     let leaveIfPlaying = await _tab.leaveIfPlaying(id);
-
-    //     if (leaveIfPlaying)
-    //     {
-    //         var rez = _tab.leaveIf(leaveIfPlaying, id);
-    //         // console.log('REZ', rez);
-
-    //         if (!rez.res && rez.flag == 1)
-    //         {
-    //             // console.log('User Left Before Game Start');
-    //             let getTable = await Table.findOne({
-    //                 room: leaveIfPlaying,
-    //             });
-
-    //             await Table.findByIdAndUpdate(getTable._id, {
-    //                 $pull: {
-    //                     players: {
-    //                         id: ObjectId(id),
-    //                     },
-    //                 },
-    //             });
-    //         }
-    //         return true;
-    //     } else
-    //     {
-    //         return {
-    //             callback: {
-    //                 status: 0,
-    //                 message: localization.tableDoesNotExist,
-    //             },
-    //         };
-    //     }
-    // },
-
     startIfPossibleTournament: async function (params, myRoom, gamePlayData)
     {
         // console.log('StartIfPossible request IN', params);
@@ -1836,7 +1767,9 @@ module.exports = {
         let start = await _tab.tournamentStartGame(params.room, myRoom, gamePlayData);
         // console.log('AFTER START ==>');
 
-        let tableD = await Table.findOne({room: params.room});
+        // let tableD = await Table.findOne({room: params.room});
+        let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
+
         if (tableD)
         {
             //var dt = new Date();
@@ -1853,7 +1786,9 @@ module.exports = {
             tableD.game_started_at = new Date().getTime();
             tableD.turn_start_at = new Date().getTime();
             myRoom.game_started_at = time;
-            await tableD.save();
+            // await tableD.save();
+            await redisCache.addToRedis(`table_${params.room}`, tableD);
+
             console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at), tableD.game_started_at)
             let timeToAdd = new Date(new Date().getTime() + config.gameTime * 60000);
             var seconds = (timeToAdd - new Date().getTime()) / 1000;
@@ -1873,20 +1808,20 @@ module.exports = {
 
     abortGame: async function (table)
     {
-        let nw = await Table.findOneAndUpdate(
-            {
-                room: table.room,
-            },
-            {
-                $set: {
-                    game_completed_at: new Date().getTime(),
-                    players: [],
-                },
-            },
-            {
-                new: true,
-            }
-        );
+        // let nw = await Table.findOneAndUpdate(
+        //     {
+        //         room: table.room,
+        //     },
+        //     {
+        //         $set: {
+        //             game_completed_at: new Date().getTime(),
+        //             players: [],
+        //         },
+        //     },
+        //     {
+        //         new: true,
+        //     }
+        // );
 
         console.log('NW DONE', nw);
 
@@ -1935,18 +1870,25 @@ module.exports = {
     {
         console.log('User Playing On Table');
         //if (!Service.validateObjectId(id)) false;
-        let us = await User.findById(id);
-        console.log('USERS DETAILS BY ID', us);
+        // let us = await User.findById(id);
+
+        // console.log('USERS DETAILS BY ID', us);
         let roomId = await redisCache.getRecordsByKeyRedis('user_id'+id.toString());
         let myRoom;
         if(roomId) {
             myRoom = await redisCache.getRecordsByKeyRedis(roomId);
         }
         if(myRoom) {
-            let alreadyPlaying = _tab.alreadyPlayingTable(us._id,myRoom);
+            let us = myRoom.users.find((ele) => ele.id == id);
+            let alreadyPlaying = _tab.alreadyPlayingTable(us[0].id,myRoom);
             if (alreadyPlaying.status == 1)
             {
-                var tab = await Table.findOne({room: alreadyPlaying.table.room, 'players.id': id});
+                // var tab = await Table.findOne({room: alreadyPlaying.table.room, 'players.id': id});
+                let tab = false;
+                let table = await redisCache.getRecordsByKeyRedis(`table_${alreadyPlaying.table.room}`);
+                if(table){
+                    table = table.players.find((ele) => ele.id == id);
+                }
                 if (!tab)
                 {
                     // FIX_2407 : ALREADY PLAYING
@@ -1977,9 +1919,9 @@ module.exports = {
     getTokens: async function (room, id, myRoom)
     {
         if (!Service.validateObjectId(id)) false;
-        let us = await User.findById(id);
-
-        let alreadyPlaying = _tab.getTokRoom(room, us._id, myRoom);
+        //let us = await User.findById(id);
+        let us = myRoom.users.find((ele) => ele.id == id);
+        let alreadyPlaying = _tab.getTokRoom(room, us[0].id, myRoom);
 
         // console.log('User Playing On Table', alreadyPlaying);
         return alreadyPlaying;
@@ -1987,7 +1929,7 @@ module.exports = {
 
      sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 
-     joinTournamentV2: async function (params, entry_Fee, myId, user, retryCount = 0) {
+     joinTournamentV2_orginal: async function (params, entry_Fee, myId, user, retryCount = 0) {
         params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId']);
         if (!params || !Service.validateObjectId(myId) || _.isEmpty(params.no_of_players) || _.isEmpty(params.room_fee)) {
             return {
@@ -2215,6 +2157,228 @@ module.exports = {
                 };
         }
     },
+
+    // for Redis work..
+    joinTournamentV2: async function (params, entry_Fee, myId, user, retryCount = 0) {
+        params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId']);
+        if (!params || !myId || _.isEmpty(params.no_of_players) || _.isEmpty(params.room_fee)) {
+            return {
+                callback: {
+                    status: 0,
+                    message: localization.invalidRequestParams,
+                },
+            };
+        }
+
+        //check valid user and valid no of user
+        if (!user || !config.noOfPlayersInTournament.includes(parseInt(params.no_of_players))) {
+            return {
+                callback: {
+                    status: 0,
+                    message: localization.ServerError,
+                },
+            };
+        }
+
+        let lobbyAlreadyReceived = await redisCache.incrFromRedis('lobbyIdAtom_'+params.lobbyId);
+        let roomId = await redisCache.getRecordsByKeyRedis('lobbyId_'+params.lobbyId);
+        let myRoom;
+        let tableD;
+        if(!roomId && lobbyAlreadyReceived>1)
+        {
+            console.log("race condition triggered for lobby: "+params.lobbyId);
+            for(i=0;i<10;i++)
+            {
+                console.log("race condition triggered for value: " + i );
+                await this.sleep(1000 * 1);
+                roomId = await redisCache.getRecordsByKeyRedis('lobbyId_'+params.lobbyId);
+                if(roomId)
+                   break;
+            } 
+        }
+        if(roomId) {
+            myRoom = await redisCache.getRecordsByKeyRedis(roomId);
+        }
+        
+        // redis replacement.
+        tableD = await redisCache.getRecordsByKeyRedis(`table_${params.lobbyId}`);
+
+        // if(roomId) {            
+        //     tableD = await Table.findOne({
+        //         'lobbyId': params.lobbyId,
+        //         'room':roomId
+        //     });
+        // } else {
+        //     tableD = await Table.findOne({
+        //         'lobbyId': params.lobbyId
+        //     });
+        // }
+
+        if (tableD) {
+            let players = tableD.players;
+            for (let i = 0; i < players.length; i++) {
+                if (players[i].id == myId && players[i].is_active == true) {
+                    return {
+                        callback: {
+                            status: 0,
+                            message: localization.invalidRequestParams,
+                        },
+                    };
+                }
+            }
+        }
+
+        let checkTourneyRes = await _tab.checkTournamentTableV2(params.lobbyId, myRoom);
+        let isAnyTableEmpty = checkTourneyRes ? checkTourneyRes.room : false;
+        let secTime = config.countDownTime;
+        if (params.startTime) secTime = Math.round(params.startTime / 1000) - Math.round(new Date().getTime() / 1000) + 5;
+        let timerStart = secTime;
+        let tableX;
+        let room_code;
+        if (!isAnyTableEmpty) {
+            // let room = await Service.randomNumber(6);
+            // let data;
+            // while (true) {
+            //     data = await Table.find({
+            //         room: room,
+            //     });
+
+            //     if (data.length > 0) {
+            //         room = await Service.randomNumber(6);
+            //     }
+            //     else {
+            //         break;
+            //     }
+            // }
+
+            if (params) {
+                params.win_amount = params.winningAmount;
+                params.totalWinning = params.totalWinning;
+            }
+            params.room = params.lobbyId;
+            params.created_at = new Date().getTime();
+            params.players = [];
+            // let table = new Table(params);
+            // tableX = await table.save();
+            tableX = await redisCache.addToRedis(`table_${params.lobbyId}`, params);
+            if (!tableX) {
+                return {
+                    callback: {
+                        status: 0,
+                        message: localization.ServerError,
+                    },
+                };
+            }
+            tableX = params;
+            room_code = await _tab.createTableforTourney(tableX, entry_Fee);
+            await redisCache.addToRedis('room_'+room_code, 0);            
+            console.log('room_'+room_code+' 0');           
+            await redisCache.addToRedis('lobbyId_'+params.lobbyId, room_code);
+
+            if (!room_code) {
+                return {
+                    callback: {
+                        status: 0,
+                        message: localization.ServerError,
+                    },
+                };
+            }
+        } else {
+            room_code=isAnyTableEmpty;
+            // tableX = await Table.findOne({
+            //     room: room_code,
+            // });
+            tableX = await redisCache.getRecordsByKeyRedis(`table_${params.lobbyId}`);
+            
+            if (!tableX) {
+                return {
+                    callback: {
+                        status: 0,
+                        message: localization.ServerError,
+                    },
+                };
+            }
+        }
+
+        let valueOfRoom = await redisCache.incrFromRedis('room_'+room_code);
+        console.log('room_'+room_code+' '+valueOfRoom);
+        if (valueOfRoom > parseInt(params.no_of_players)) {
+            // redisCache.getRecordsByKeyRedis(room_code);
+            retryCount++;
+            this.joinTournamentV2(params, entry_Fee, myId, user,retryCount);
+        }
+
+        myRoom = await redisCache.getRecordsByKeyRedis(room_code);
+        let optional = 0;
+        var seatOnTable = await _tab.seatOnTableforTourney(room_code, user, optional, myRoom);
+        myRoom = seatOnTable.table;
+        if (seatOnTable) {
+            await redisCache.addToRedis('user_id'+myId, room_code);
+            var callbackRes = {
+                status: 1,
+                message: 'Done',
+                table: seatOnTable.table,
+                position: seatOnTable.pos,
+                timerStart: timerStart,
+                default_diceroll_timer: config.turnTimer // bugg_no_65
+            };
+
+            var player = {
+                id: user.id,
+                fees: params.room_fee,
+                is_active: true
+            };
+
+            let flag = false;
+            console.log('redisdata==>', JSON.stringify(tableX));
+            for (let i = 0; i < tableX.players.length; i++) {
+                if (tableX.players[i].id.toString() == player.id.toString()) {
+                    console.log("i ->", i, tableX.players[i])
+                    tableX.players[i] = player;
+                    flag = true;
+                    break;
+                }
+            }
+
+            //Save Player to DB
+            if (!flag) tableX.players.push(player);
+            tableX.created_at = new Date().getTime();
+            //await tableX.save();
+           // await redisCache.addToRedis(room_code,myRoom);
+            await redisCache.addToRedis(`table_${params.lobbyId}`, tableX);
+            return {
+                callback: callbackRes,
+                events: [
+                    {
+                        type: 'room_excluding_me',
+                        room: room_code,
+                        name: 'playerJoin',
+                        data: {
+                            room: room_code,
+                            name: user.name,
+                            profile: user.profilepic,
+                            position: seatOnTable.pos,
+                        },
+                    },
+                ],
+                myRoom: myRoom
+            };
+
+        } else {
+            if (retryCount<3)
+            {
+                retryCount++;
+                return this.joinTournamentV2(params, entry_Fee, myId, user, retryCount);
+            }
+            else
+                return {
+                    callback: {
+                        status: 0,
+                        message: 'An error was encountered. Please join a new game.',
+                    },
+                };
+        }
+    },
     getGameUsersData: async function (data)
     {
 
@@ -2228,11 +2392,10 @@ module.exports = {
         for (let i = 0; i < userData.length; i++)
         {
             if (userData[i].id != "")
-            {
-                var us = await User.findById(userData[i].id);
+            {              
                 let json = {
-                    "user_id": us.numeric_id,
-                    "token": us.token
+                    "user_id": userData[i].id,
+                    "token": userData[i].user_token,
                 }
                 reqData.users.push(json)
             }

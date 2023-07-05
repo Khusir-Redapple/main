@@ -103,50 +103,7 @@ module.exports = function (io)
                         message: 'No Token provided',
                     });
                 }
-                // let us = await User.findOne({
-                //     'token': params.token,
-                // });
-                // if (!us)
-                // {
-                //     responseObj = {
-                //         status: 1,
-                //         message: 'Socket registered successfully',
-                //         server_time: new Date().getTime().toString(),
-                //         joined: 0
-                //     };
-                //     return callback(responseObj);
-                // }
-                // await User.findOneAndUpdate(
-                //     {
-                //         _id: ObjectId(us._id),
-                //     },
-                //     {
-                //         $set: {
-                //             'token'     : params.token,
-                //             'joinedAt'  : new Date().getTime()
-                //         },
-                //     }
-                // );
-                // socket.data_id = us._id.toString();
-                // socket.data_name = us.name;
-                // socket.join(socket.data_id);
-                // await Socketz.updateSocket(us._id, socket);
-                // us.save();
-
-                // //Check if user already playing
-                // var rez = await _TableInstance.reconnectIfPlaying(us._id);
-                // console.log('PLAYER ID :: >>>', us._id);
-                // console.log('ALREADY PLAYING OR NOT :: >>>', rez);
-
-                // responseObj = {
-                //     status: 1,
-                //     message: 'Socket registered successfully',
-                //     server_time: new Date().getTime().toString(),
-                // };
-                // responseObj.joined = rez.status;
-                // To delete boject
-                // deleteObjectProperty(rez);
-
+                
                 // End the timer
                 const endTime = (Date.now() - startTime);
                 // calculate the execution time
@@ -369,7 +326,7 @@ module.exports = function (io)
 
                 var start = await _TableInstance.startIfPossibleTournament(params_data, myRoom, gamePlayData);
 
-                console.log("Start", start);
+                console.log("Start", JSON.stringify(start));
                 if (start)
                 {
                     let reqData = await _TableInstance.getGameUsersData(start);
@@ -442,9 +399,10 @@ module.exports = function (io)
                     await Socketz.sleep(40000);
                     myRoom = await redisCache.getRecordsByKeyRedis(myRoom.room);
                     gamePlayData=await redisCache.getRecordsByKeyRedis('gamePlay_'+ myRoom.room);
-                    let tableD = await Table.findOne({
-                        room: params_data.room
-                    });
+                    // let tableD = await Table.findOne({
+                    //     room: params_data.room
+                    // });
+                    let tableD = await redisCache.getRecordsByKeyRedis(`table_${params_data.room}`);
                     if (tableD && tableD.players.length < tableD.no_of_players)
                     {
                         for (let i = 0; i < 4; i++)
@@ -481,10 +439,10 @@ module.exports = function (io)
             // Start the timer
             const startTime = Date.now();
 
-            let tableD = await Table.findOne({
-                room: params.room
-            });
-
+            // let tableD = await Table.findOne({
+            //     room: params.room
+            // });
+            let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
             if(tableD!= null && tableD.isGameCompleted) {
                 return callback({'isGameCompleted': true, 'room': params.room});
             }
@@ -605,9 +563,10 @@ module.exports = function (io)
             // Start the timer
             const startTime = Date.now();
 
-            let tableD = await Table.findOne({
-                room: params.room
-            });
+            // let tableD = await Table.findOne({
+            //     room: params.room
+            // });
+            let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
             if(tableD!= null && tableD.isGameCompleted) {
                 return callback({'isGameCompleted': true, 'room': params.room});
             }
