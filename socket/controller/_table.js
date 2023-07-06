@@ -1227,6 +1227,7 @@ module.exports = {
                                 {
                                     tableD.players[k].rank = endGame[j].rank;
                                     tableD.players[k].pl += endGame[j].amount;
+                                    console.log('PL=====2===amount', endGame[j].amount);
                                 }
                             }
                         }
