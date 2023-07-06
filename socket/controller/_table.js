@@ -1,6 +1,6 @@
 const _             = require('lodash');
-const {User}        = require('./../../api/models/user');
-const Table         = require('./../../api/models/table');
+// const {User}        = require('./../../api/models/user');
+// const Table         = require('./../../api/models/table');
 let Service         = require('./../../api/service');
 const config        = require('./../../config');
 const localization  = require('./../../api/service/localization');
@@ -1945,236 +1945,6 @@ module.exports = {
 
      sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 
-     joinTournamentV2_orginal: async function (params, entry_Fee, myId, user, retryCount = 0) {
-        params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId']);
-        if (!params || !Service.validateObjectId(myId) || _.isEmpty(params.no_of_players) || _.isEmpty(params.room_fee)) {
-            return {
-                callback: {
-                    status: 0,
-                    message: localization.invalidRequestParams,
-                },
-            };
-        }
-
-        //check valid user and valid no of user
-        if (!user || !config.noOfPlayersInTournament.includes(parseInt(params.no_of_players))) {
-            return {
-                callback: {
-                    status: 0,
-                    message: localization.ServerError,
-                },
-            };
-        }
-
-        // var tableD = await Table.findOne({
-        //     'room_fee': params.room_fee,
-        //     'players.id': ObjectId(myId),
-        //     "game_completed_at": "-1"
-        // });
-
-        let lobbyAlreadyReceived = await redisCache.incrFromRedis('lobbyIdAtom_'+params.lobbyId);
-
-        let roomId = await redisCache.getRecordsByKeyRedis('lobbyId_'+params.lobbyId);
-        let myRoom;
-        let tableD;
-        if(!roomId && lobbyAlreadyReceived>1)
-        {
-            console.log("race condition triggered for lobby: "+params.lobbyId);
-            for(i=0;i<10;i++)
-            {
-                console.log("race condition triggered for value: " + i );
-                await this.sleep(1000 * 1);
-                roomId = await redisCache.getRecordsByKeyRedis('lobbyId_'+params.lobbyId);
-                if(roomId)
-                   break;
-            } 
-        }
-        if(roomId) {
-            myRoom = await redisCache.getRecordsByKeyRedis(roomId);
-        }
-        if(roomId){
-         tableD = await Table.findOne({
-            'lobbyId': params.lobbyId,
-            'room':roomId
-        });
-            }
-            else
-            {
-                 tableD = await Table.findOne({
-                    'lobbyId': params.lobbyId
-                });
-            }
-
-        if (tableD) {
-            let players = tableD.players;
-            for (let i = 0; i < players.length; i++) {
-                if (players[i].id == myId && players[i].is_active == true) {
-                    return {
-                        callback: {
-                            status: 0,
-                            message: localization.invalidRequestParams,
-                        },
-                    };
-                }
-            }
-        }
-
-        // let checkTourneyRes = await _tab.checkTournamentTable(params.room_fee, params.no_of_players);
-        // let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-        // let roomId = await redisCache.getRecordsByKeyRedis('lobbyId_'+params.lobbyId);
-        // let myRoom;
-        // if(roomId) {
-        //     myRoom = await redisCache.getRecordsByKeyRedis(roomId);
-        // }
-        let checkTourneyRes = await _tab.checkTournamentTableV2(params.lobbyId, myRoom);
-        let isAnyTableEmpty = checkTourneyRes ? checkTourneyRes.room : false;
-
-        let secTime = config.countDownTime;
-        if (params.startTime) secTime = Math.round(params.startTime / 1000) - Math.round(new Date().getTime() / 1000) + 5;
-        let timerStart = secTime;
-        let tableX;
-        let room_code;
-        if (!isAnyTableEmpty) {
-            let room = await Service.randomNumber(6);
-            let data;
-            while (true) {
-                data = await Table.find({
-                    room: room,
-                });
-
-                if (data.length > 0) {
-                    room = await Service.randomNumber(6);
-                }
-                else {
-                    break;
-                }
-            }
-
-            if (params) {
-                params.win_amount = params.winningAmount;
-                params.totalWinning = params.totalWinning;
-            }
-            params.room = room;
-            params.created_at = new Date().getTime();
-            let table = new Table(params);
-            tableX = await table.save();
-            if (!tableX) {
-                return {
-                    callback: {
-                        status: 0,
-                        message: localization.ServerError,
-                    },
-                };
-            }
-            room_code = await _tab.createTableforTourney(tableX, entry_Fee);
-            await redisCache.addToRedis('room_'+room_code, 0);            
-            console.log('room_'+room_code+' 0');           
-            await redisCache.addToRedis('lobbyId_'+params.lobbyId, room_code);
-
-            if (!room_code) {
-                return {
-                    callback: {
-                        status: 0,
-                        message: localization.ServerError,
-                    },
-                };
-            }
-        } else {
-            room_code=isAnyTableEmpty;
-            tableX = await Table.findOne({
-                room: room_code,
-            });
-
-            if (!tableX) {
-                return {
-                    callback: {
-                        status: 0,
-                        message: localization.ServerError,
-                    },
-                };
-            }
-        }
-
-        let valueOfRoom = await redisCache.incrFromRedis('room_'+room_code);
-        console.log('room_'+room_code+' '+valueOfRoom);
-        if (valueOfRoom > parseInt(params.no_of_players)) {
-            // redisCache.getRecordsByKeyRedis(room_code);
-            retryCount++;
-            this.joinTournamentV2(params, entry_Fee, myId, user,retryCount);
-        }
-
-        myRoom = await redisCache.getRecordsByKeyRedis(room_code);
-        let optional = 0;
-        var seatOnTable = await _tab.seatOnTableforTourney(room_code, user, optional, myRoom);
-        myRoom = seatOnTable.table;
-        if (seatOnTable) {
-            await redisCache.addToRedis('user_id'+myId, room_code);
-            var callbackRes = {
-                status: 1,
-                message: 'Done',
-                table: seatOnTable.table,
-                position: seatOnTable.pos,
-                timerStart: timerStart,
-                default_diceroll_timer: config.turnTimer // bugg_no_65
-            };
-
-            var player = {
-                id: user.id,
-                token : user.token,
-                fees: params.room_fee,
-                is_active: true
-            };
-
-            let flag = false;
-
-            for (let i = 0; i < tableX.players.length; i++) {
-                if (tableX.players[i].id.toString() == player.id.toString()) {
-                    console.log("i ->", i, tableX.players[i])
-                    tableX.players[i] = player;
-                    flag = true;
-                    break;
-                }
-            }
-
-            //Save Player to DB
-            if (!flag) tableX.players.push(player);
-            tableX.created_at = new Date().getTime();
-            await tableX.save();
-           // await redisCache.addToRedis(room_code,myRoom);
-            return {
-                callback: callbackRes,
-                events: [
-                    {
-                        type: 'room_excluding_me',
-                        room: room_code,
-                        name: 'playerJoin',
-                        data: {
-                            room: room_code,
-                            name: user.name,
-                            profile: user.profilepic,
-                            position: seatOnTable.pos,
-                        },
-                    },
-                ],
-                myRoom: myRoom
-            };
-
-        } else {
-            if (retryCount<3)
-            {
-                retryCount++;
-                return this.joinTournamentV2(params, entry_Fee, myId, user, retryCount);
-            }
-            else
-                return {
-                    callback: {
-                        status: 0,
-                        message: 'An error was encountered. Please join a new game.',
-                    },
-                };
-        }
-    },
-
     // for Redis work..
     joinTournamentV2: async function (params, entry_Fee, myId, user, retryCount = 0) {
         params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId']);
@@ -2479,6 +2249,7 @@ module.exports = {
         // if player_index == 0 logic
         return playerPosition == firstActiveUserIndex ? true : false;
     },
+
     determineTotalTurn : async function(room) {
         let myRoom = await redisCache.getRecordsByKeyRedis(room);
         const playersFinalTurn = [];
@@ -2496,24 +2267,27 @@ module.exports = {
         }
         return {'totalTurn':maxTurn,'finalTurn':playersFinalTurn};              
     },
+
     deleteRecords : async function () {
         //TODO: delete logic
         //tables: createdOn < = Date.Now - 1 hour // before 1 hour or equal
         //users: updatedAt <= Date.Now-24 hour // before 24 hour or equal
-        try {
-            // To delete records from Tables table.
-            const oneHourAgo = new Date(Date.now() - 1 * 60 * 60 * 1000);
-            await Table.deleteMany({ created_at: { $lte: oneHourAgo.getTime() } });
+        // try {
+        //     // To delete records from Tables table.
+        //     const oneHourAgo = new Date(Date.now() - 1 * 60 * 60 * 1000);
+        //     await Table.deleteMany({ created_at: { $lte: oneHourAgo.getTime() } });
 
-            // To delete records from Users table.
-            const tweentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-            await User.deleteMany({ updatedAt: { $ne: -1, $lte: tweentyFourHoursAgo.getTime() } });
+        //     // To delete records from Users table.
+        //     const tweentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        //     await User.deleteMany({ updatedAt: { $ne: -1, $lte: tweentyFourHoursAgo.getTime() } });
 
-            return true;
-        } catch (error) {
-            console.log(error)
-            return false;
-        }
+        //     return true;
+        // } catch (error) {
+        //     console.log(error)
+        //     return false;
+        // }
+
+        return true;
         
     }
 };

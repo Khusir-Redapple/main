@@ -1,8 +1,8 @@
 const _               = require('lodash');
 const {Sockets}       = require('./helper/sockets');
 const _TableInstance  = require('./controller/_table');
-const Table           = require('./../api/models/table');
-const {User}          = require('./../api/models/user');
+// const Table           = require('./../api/models/table');
+// const {User}          = require('./../api/models/user');
 const localization    = require('./../api/service/localization');
 const Socketz         = new Sockets();
 const requestTemplate = require('../api/service/request-template');
@@ -161,7 +161,6 @@ module.exports = function (io)
                 }
                 // If no room to join the game.
                 rez.table.room ? socket.join(rez.table.room) : socket.join();
-                process.env.CURRENT_TURN_POSITION = rez.current_turn;
                 rez.server_time = new Date();
                 rez.table.server_time = new Date();
 
@@ -234,54 +233,6 @@ module.exports = function (io)
                     message: localization.missingParamError,
                 });
             }
-            
-            // let us = await User.findOne({
-            //     'numeric_id': params.user_id,
-            // });
-            // console.log("us >>", us)
-            // if (us)
-            // {
-            //     socket.data_id = us._id.toString();
-            //     socket.data_name = us.name;
-            //     socket.join(socket.data_id);
-            //     await Socketz.updateSocket(us._id, socket);
-            //     us = await User.findOneAndUpdate(
-            //         {
-            //             _id: ObjectId(us._id),
-            //         },
-            //         {
-            //             $set: {
-            //                 'name'      : params.user_name,
-            //                 'token'     : data.token,
-            //                 'lobbyId'   : verifyUser.lobbyId,
-            //                 'joinedAt'  : new Date().getTime(),
-            //                 'updatedAt' : new Date().getTime()
-            //             },
-            //         },
-            //         {
-            //             new:true,
-            //         }
-            //     );
-            // }
-            // else
-            // {
-            //     var newUser = new User({
-            //         name: params.user_name,
-            //         numeric_id: params.user_id.toString(),
-            //         lobbyId: verifyUser.lobbyId,
-            //         profilepic: params.profile_pic,
-            //         token: params.token,
-            //         joinedAt : new Date().getTime()
-            //     });
-            //     console.log("newUser > ", newUser)
-            //     us = await newUser.save();
-            //     console.log("us > ", us)
-            //     socket.data_id = us._id.toString();
-            //     socket.data_name = us.name;
-            //     socket.join(socket.data_id);
-            //     await Socketz.updateSocket(us._id, socket);
-            // }
-
             var us = {
                 'id' : params.user_id.toString(),
                 'name': params.user_name,

@@ -4,7 +4,7 @@ const {sendMessage} = require('../../socket/controller/message_controllers');
 const logDNA        = require('../../api/service/logDNA');
 const timeLib       = require('../helper/timeLib');
 const redisCache    = require('../../api/service/redis-cache');
-const Table         = require('./../../api/models/table');
+// const Table         = require('./../../api/models/table');
 let logger          = {};
 class _Tables
 {

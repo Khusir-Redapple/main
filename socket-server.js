@@ -91,12 +91,11 @@ try
                 else
                 {
                     // Read the value from SSM in AWS
-                    process.env.DB_HOST = keys[0] ? keys[0] : process.env.DB_HOST;
-                    //process.env.DB_HOST='localhost';
-                    process.env.DB_PASS = keys[1] ? keys[1] : process.env.DB_PASS;
-                    process.env.DB_PORT = keys[2] ? keys[2] : process.env.DB_PORT;
-                    process.env.DB_USER = keys[3] ? keys[3] : process.env.DB_USER;
-                    process.env.DB_NAME = process.env.DB_NAME ? process.env.DB_NAME : 'nostra_playing';
+                    // process.env.DB_HOST = keys[0] ? keys[0] : process.env.DB_HOST;
+                    // process.env.DB_PASS = keys[1] ? keys[1] : process.env.DB_PASS;
+                    // process.env.DB_PORT = keys[2] ? keys[2] : process.env.DB_PORT;
+                    // process.env.DB_USER = keys[3] ? keys[3] : process.env.DB_USER;
+                    // process.env.DB_NAME = process.env.DB_NAME ? process.env.DB_NAME : 'nostra_playing';
                     // FOR logDNA
                     process.env.LOG_DNA_API_KEY = keys[4] ? keys[4] : process.env.LOG_DNA_API_KEY;
                     // FOR SQS URL
@@ -110,54 +109,32 @@ try
                     require('./socket')(socket);
                     let config = require('./config');
                     logDNA = require('./api/service/logDNA');
-                    // DB Connect
-                    setTimeout(function ()
+                    server.listen(config.port, async function (err)
                     {
-                       //let dbConnectionUrl = process.env.NODE_ENV != 'production' ? `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}` : `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false`;
-                       let dbConnectionUrl = 'mongodb://root:root@18.61.4.52:27017/nostra_playing?connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1'; 
-                       mongoose.set('useCreateIndex', true);
-                        mongoose.connect(
-                            `${dbConnectionUrl}`,
-                            {useNewUrlParser: true, useFindAndModify: false},
-                            d =>
-                            {
-                                if (d) return logger.info(`ERROR CONNECTING TO DB ${dbConnectionUrl}`, d, dbConnectionUrl);
-                                logger.info(`Connected to ${process.env.NODE_ENV} database: `, `${dbConnectionUrl}`);
-                                server.listen(config.port, async function (err)
-                                {
-                                    if (err) throw err;
-                                    logger.info('Socket Server listening at PORT:' + config.port);       
+                        if (err) throw err;
+                        logger.info('Socket Server listening at PORT:' + config.port);       
+                            
+                            // make a connection to the instance of redis
+                            //  const redis = RedisIo.createClient(6379, 'staging-setup.avv3xf.0001.apse1.cache.amazonaws.com'); 
+                            const redis = RedisIo.createClient(process.env.Redis_Url+':6379')
+                            // const redis = RedisIo.createClient('localhost:6379');
+                            const subClient = redis.duplicate();
+                            socket.adapter(redisAdapter({ pubClient: redis, subClient }));
                                         
-                                        // make a connection to the instance of redis
-                                        //  const redis = RedisIo.createClient(6379, 'staging-setup.avv3xf.0001.apse1.cache.amazonaws.com'); 
-                                        const redis = RedisIo.createClient(process.env.Redis_Url+':6379')
-                                        // const redis = RedisIo.createClient('localhost:6379');
-                                        const subClient = redis.duplicate();
-                                        socket.adapter(redisAdapter({ pubClient: redis, subClient }));
-                                                  
-                                        //const redis = await new RedisIo('localhost:6379');               
-                                        redis.connect();                                  
-                                        redis.on("error", (error) => {
-                                            console.log(error);
-                                        });
-                                        redis.on("ready", function() { 
-                                            console.log("Connected to Redis server successfully");  
-                                        });
-                                        module.exports.redis_Io = redis; 
-                                });
-                            }
-                        );
-                    }, 500)
+                            //const redis = await new RedisIo('localhost:6379');               
+                            redis.connect();                                  
+                            redis.on("error", (error) => {
+                                console.log(error);
+                            });
+                            redis.on("ready", function() { 
+                                console.log("Connected to Redis server successfully");  
+                            });
+                            module.exports.redis_Io = redis; 
+                    });
                 }
             } catch (error)
             {
-                console.log("SSM Get Params error - ", error);
-                // logger for logDNA
-                let logData = {
-                    level: 'debugg', //error and log are availble tag.
-                    meta: error,
-                  };
-                logDNA.log('SSM Get Params error', logData);
+                console.log("SSM Get Params error", error);
             }
         }
         await getParams(Names, 0)
@@ -166,13 +143,7 @@ try
 
 } catch (error)
 {
-    logger.info('DBCONNECT ERROR', error);
-    // logger for logDNA
-    let logData = {
-        level: 'debugg', //error and log are availble tag.
-        meta: error,
-      };
-    logDNA.log('DBCONNECT ERROR', logData);
+    console.log('NODE SERVER ERROR', error);
 }
 
 module.exports = {server};
