@@ -1226,7 +1226,7 @@ module.exports = {
                                 if (endGame[j].id.toString() == tableD.players[k].id.toString())
                                 {
                                     tableD.players[k].rank = endGame[j].rank;
-                                    tableD.players[k].pl += endGame[j].amount;
+                                    tableD.players[k].pl = endGame[j].amount;
                                     console.log('PL=====2===amount', endGame[j].amount);
                                 }
                             }
