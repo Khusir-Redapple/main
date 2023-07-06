@@ -576,7 +576,6 @@ module.exports = {
 
                         if (endGame)
                         {
-                            console.log('PL=====4', endGame);
                             let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
                             // Update values in user wallets & table data [DB]
                             // console.log('tableD::', tableD);
@@ -593,7 +592,7 @@ module.exports = {
                                         if (eGame.id.toString() == playersTable.id.toString())
                                         {
                                             playersTable.rank = eGame.rank;
-                                            playersTable.pl += eGame.amount;
+                                            playersTable.pl = eGame.amount;
                                         }
                                     });
                                 });
@@ -1032,59 +1031,10 @@ module.exports = {
                     refund: refund
                 },
             };
-
-        // var tableD = await Table.findOne({
-        //     room: params.room,
-        // });
-        //let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
-        // if (!tableD)
-        //     return {
-        //         callback: {
-        //             status: 0,
-        //             message: localization.tableDoesNotExist,
-        //             refund: refund
-        //         },
-        //     };
-       
+                   
         var rez = await _tab.leave(params.room, id, myRoom);
         console.log('LEAVE RES', rez); //2|socket  | [2022-04-13T11:01:02.572] [INFO] default - LEAVE RES { res: false, flag: 1, remove: true }
-
-        // if (!rez.res && rez.flag == 1)
-        // {
-        //     // console.log('User Left Before Game Start');
-
-        //     await Table.findByIdAndUpdate(tableD._id, {
-        //         $pull: {
-        //             players: {
-        //                 id: ObjectId(id),
-        //             },
-        //         },
-        //     });
-        // }
-        // else
-        // {
-        //     let playerIndex = 0;
-        //     for (let k = 0; k < tableD.players.length; k++)
-        //     {
-        //         if (id.toString() == tableD.players[k].id.toString())
-        //         {
-        //             playerIndex = k;
-        //         }
-        //     }
-        //     await Table.update({
-        //         "_id": tableD._id,
-        //         "players.id": id
-        //     },
-        //         {
-        //             "$set": {
-        //                 "players.$.is_active": false
-        //             }
-        //         },
-        //         {
-        //             "new": true
-        //         })
-        // }
-
+ 
         if (params && params.gameNotStarted && params.gameNotStarted == 'true')
         {
             // this.refundMoney(tableD,id);
