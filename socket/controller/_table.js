@@ -576,9 +576,7 @@ module.exports = {
 
                         if (endGame)
                         {
-                            // var tableD = await Table.findOne({
-                            //     room: params.room,
-                            // });
+                            console.log('PL=====4', endGame);
                             let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
                             // Update values in user wallets & table data [DB]
                             // console.log('tableD::', tableD);
@@ -951,6 +949,7 @@ module.exports = {
             let winnerInfo = winnerRes.winner;
             if (winnerInfo)
             {   
+                console.log('PL=====3', winnerInfo);
                 // in redis updated isGameCompleted property
                 myRoom.isGameCompleted = true;
                 await redisCache.addToRedis(room, myRoom);
@@ -1214,9 +1213,7 @@ module.exports = {
                 }
                 if (endGame)
                 {
-                    // Update values in user wallets & table data [DB]                 
-                    // console.log('tableD::', tableD);
-
+                    console.log('PL=====2', endGame);
                     if (tableD)
                     {
                         // in redis updated isGameCompleted property
@@ -1496,6 +1493,7 @@ module.exports = {
                             }
                             if (endGame)
                             {
+                                console.log('PL=====1', endGame);
                                 // Update values in user wallets & table data [DB]                                
                                 // let tableD = await Table.findOne({
                                 //     room: params.room,
