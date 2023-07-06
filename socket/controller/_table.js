@@ -949,7 +949,6 @@ module.exports = {
             let winnerInfo = winnerRes.winner;
             if (winnerInfo)
             {   
-                console.log('PL=====3', winnerInfo);
                 // in redis updated isGameCompleted property
                 myRoom.isGameCompleted = true;
                 await redisCache.addToRedis(room, myRoom);
@@ -960,8 +959,7 @@ module.exports = {
                         if (winnerInfo[j].id.toString() == tableD.players[k].id.toString())
                         {
                             tableD.players[k].rank = winnerInfo[j].rank;
-                            tableD.players[k].pl += winnerInfo[j].amount;
-                            console.log('EG >1> ', winnerInfo[j].amount);
+                            tableD.players[k].pl = winnerInfo[j].amount;
                         }
                     }
                 }
@@ -1213,7 +1211,6 @@ module.exports = {
                 }
                 if (endGame)
                 {
-                    console.log('PL=====2', endGame);
                     if (tableD)
                     {
                         // in redis updated isGameCompleted property
@@ -1227,7 +1224,6 @@ module.exports = {
                                 {
                                     tableD.players[k].rank = endGame[j].rank;
                                     tableD.players[k].pl = endGame[j].amount;
-                                    console.log('PL=====2===amount', endGame[j].amount);
                                 }
                             }
                         }
@@ -1494,11 +1490,6 @@ module.exports = {
                             }
                             if (endGame)
                             {
-                                console.log('PL=====1', endGame);
-                                // Update values in user wallets & table data [DB]                                
-                                // let tableD = await Table.findOne({
-                                //     room: params.room,
-                                //   });
                                 let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
                                 if (tableD)
                                 {
@@ -1513,7 +1504,7 @@ module.exports = {
                                             if (eGame.id.toString() == playersTable.id.toString())
                                             {
                                                 playersTable.rank = eGame.rank;
-                                                playersTable.pl += eGame.amount;
+                                                playersTable.pl = eGame.amount;
                                             }
                                         })
                                     })
