@@ -3,7 +3,6 @@ const bodyParser    = require('body-parser');
 const app           = express();
 const router        = express.Router();
 const http          = require('http');
-const mongoose      = require('mongoose');
 const morgan        = require('morgan');
 const logger        = require('./api/service/logger');
 const RedisIo       = require('ioredis');
