@@ -36,16 +36,6 @@ app.use('/hello', function (req, res)
 {
     logger.info('404 Hit>', req.method, req.url, req.body);
 });
-// This endpoint used to clean older records from db.
-app.get('/deleteData', async (req, res) => {
-    const table = require('./socket/controller/_table');
-    const response = await table.deleteRecords();
-    if(response){
-        res.status(200).send('success');
-    } else {
-        res.status(200).send('failed');
-    }
-});
 // Creating server
 const server = http.createServer(app);
 const socket = require('socket.io')(server, {perMessageDeflate: false});

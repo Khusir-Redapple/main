@@ -2207,27 +2207,4 @@ module.exports = {
         }
         return {'totalTurn':maxTurn,'finalTurn':playersFinalTurn};              
     },
-
-    deleteRecords : async function () {
-        //TODO: delete logic
-        //tables: createdOn < = Date.Now - 1 hour // before 1 hour or equal
-        //users: updatedAt <= Date.Now-24 hour // before 24 hour or equal
-        // try {
-        //     // To delete records from Tables table.
-        //     const oneHourAgo = new Date(Date.now() - 1 * 60 * 60 * 1000);
-        //     await Table.deleteMany({ created_at: { $lte: oneHourAgo.getTime() } });
-
-        //     // To delete records from Users table.
-        //     const tweentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-        //     await User.deleteMany({ updatedAt: { $ne: -1, $lte: tweentyFourHoursAgo.getTime() } });
-
-        //     return true;
-        // } catch (error) {
-        //     console.log(error)
-        //     return false;
-        // }
-
-        return true;
-        
-    }
 };
