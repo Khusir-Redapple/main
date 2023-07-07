@@ -218,9 +218,9 @@ module.exports = function (io, bullQueue) {
 
         socket.on('joinTournament', async (data, callback) =>
         {
-            try{
             // Start the timer
             const startTime = Date.now();
+            try{
             if (!data || !data.token)
             {
                 return callback({
@@ -348,9 +348,7 @@ module.exports = function (io, bullQueue) {
                         await Socketz.sleep(40000);
                         myRoom = await redisCache.getRecordsByKeyRedis(myRoom.room);
                         gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + myRoom.room);
-                        let tableD = await Table.findOne({
-                            room: params_data.room
-                        });
+                        let tableD = await redisCache.getRecordsByKeyRedis(`table_${params_data.room}`);
                         if (tableD && tableD.players.length < tableD.no_of_players) {
                             for (let i = 0; i < 4; i++) {
                                 if (tableD.players[i] && tableD.players[i].id) {
