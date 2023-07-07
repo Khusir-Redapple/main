@@ -44,10 +44,10 @@ class RedisCache
     }
 
     async incrFromRedis(id) {
-        return await redis.incr(id)
+        const res= await redis.incr(id)
+        await redis.expire(id,config.socketUserExpireTime);
+        return res;
     }
-
-    
 }
 
 module.exports = new RedisCache();

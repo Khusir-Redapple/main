@@ -40,6 +40,8 @@ app.use('/hello', function (req, res)
 const server = http.createServer(app);
 const socket = require('socket.io')(server, {perMessageDeflate: false});
 const redisAdapter = require("socket.io-redis");
+const Queue = require('bull');
+
 /**
  *	Server bootup section
  **/
@@ -49,10 +51,12 @@ try
     (async () =>
     {
 
-         AWS.config = new AWS.Config();
+        AWS.config = new AWS.Config();
+
         // process.env.ACCESS_KEY_ID='AKIAXHARTGKVFSZSVHV2'
         // process.env.SECRET_ACCESS_KEY='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'
         // process.env.AWS_REGION='ap-southeast-1'
+
         let AWS_REGION = process.env.AWS_REGION || 'ap-south-2';
         console.log("IAWS_REGION-", AWS_REGION)
         let ssm = new AWS.SSM({region: AWS_REGION});
@@ -95,22 +99,25 @@ try
                     process.env.API_SECRET_KEY = keys[7] ? keys[7] : process.env.API_SECRET_KEY;
                     // Moved here from top of file for availble logDNA apiKey. 
                     process.env.Redis_Url = keys[8] ? keys[8] : process.env.Redis_Url;
-                    require('./socket')(socket);
+                    
                     let config = require('./config');
                     logDNA = require('./api/service/logDNA');
                     server.listen(config.port, async function (err)
                     {
                         if (err) throw err;
-                        logger.info('Socket Server listening at PORT:' + config.port);       
-                            
+                        logger.info('Socket Server listening at PORT:' + config.port);                  
                             // make a connection to the instance of redis
-                            //  const redis = RedisIo.createClient(6379, 'staging-setup.avv3xf.0001.apse1.cache.amazonaws.com'); 
+                            //  const redis = RedisIo.createClient(6379, 'staging-setup.avv3xf.0001.apse1.cache.amazonaws.com');                 
                             const redis = RedisIo.createClient(process.env.Redis_Url+':6379')
                             // const redis = RedisIo.createClient('localhost:6379');
                             const subClient = redis.duplicate();
                             socket.adapter(redisAdapter({ pubClient: redis, subClient }));
-                                        
-                            //const redis = await new RedisIo('localhost:6379');               
+                            // const redisConf = {host: 'localhost', port: 6379};
+                            const redisConf = {host: process.env.Redis_Url, port: 6379};
+                            let bullQueue = new Queue('bullQueue', {
+                                redis: redisConf
+                            });
+                            require('./socket')(socket, bullQueue);               
                             redis.connect();                                  
                             redis.on("error", (error) => {
                                 console.log(error);
@@ -120,6 +127,7 @@ try
                             });
                             module.exports.redis_Io = redis; 
                     });
+
                 }
             } catch (error)
             {

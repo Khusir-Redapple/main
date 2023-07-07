@@ -6,14 +6,14 @@ const _TableInstance  = require('./controller/_table');
 const localization    = require('./../api/service/localization');
 const Socketz         = new Sockets();
 const requestTemplate = require('../api/service/request-template');
-const config          = require('../config');
-const ObjectId        = require('mongoose').Types.ObjectId;
-const logDNA          = require('../api/service/logDNA');
-const redisCache      = require('../api/service/redis-cache');
+const config = require('../config');
+// const ObjectId = require('mongoose').Types.ObjectId;
+const logDNA = require('../api/service/logDNA');
+const redisCache = require('../api/service/redis-cache');
 const { CostExplorer } = require('aws-sdk');
-module.exports = function (io)
-{
-    
+const e = require('express');
+module.exports = function (io, bullQueue) {
+
     // If the Promise is rejected this will catch it.
     process.on('unhandledRejection', error => {
         GlobalError(error);
@@ -23,24 +23,38 @@ module.exports = function (io)
         GlobalError(error);
     });
     //The function used to log unhandle exception.
-    function GlobalError(error){
+    function GlobalError(error) {
         // for logDNA 
         logDNA.log('Global error', {
             level: 'error',
             meta: {'message': error.message, 'stack' : error.stack}
         });
-    } 
-    
+    }
+
+    bullQueue.process(async (job) => {
+        console.log("EVENT  ===>", job.data.name);
+        return processBullEvent(job);
+    });
+
+    bullQueue.on('completed', (job, result) => {
+        console.log(`Job completed with result`, job.data);
+        job.remove();
+    });
+
+    bullQueue.on('failed', (job, result) => {
+        console.log(`Job failed with result ${job.data}`);
+        job.remove();
+    });
+
     /**
      * The Socket connection start here
      */
-    io.on('connection', function (socket)
-    {
+    io.on('connection', function (socket) {
         // const sqsService      = require('../api/operations/sqs_fifo_services');
         // for logDNA 
         let logData = {
             level: 'debugg',
-            meta: {'socketId': socket.id}
+            meta: { 'socketId': socket.id }
         };
         logDNA.log('DEVICE :: connected', logData);
         // reset the socket connection for all listeners
@@ -52,21 +66,23 @@ module.exports = function (io)
          * 
          * @return array of object. 
          */
-        socket.on('fetchGameData', async function(params, callback) {
-            try{
-            // Start the timer
-            const startTime = Date.now();
-            let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-            // End the timer
-            const endTime = (Date.now() - startTime);
-            logDNA.log('fetchGameData::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'fetchGameData'}});
-            myRoom.server_time = new Date();
-            return callback(myRoom);
-        }
-        catch(ex)
-        {
-            console.log("fetchGameData",ex);
-        }
+        socket.on('fetchGameData', async function (params, callback) {
+            try {
+               
+                const startTime = Date.now();
+                let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+                myRoom.server_time = new Date();
+                const endTime = (Date.now() - startTime);
+                let logData = {
+                    level: 'warning',
+                    meta: { p: 'fetchGameData',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                };
+                logDNA.warn(`fetchGameData`, logData);
+                return callback(myRoom);
+            }
+            catch (ex) {
+                console.log("fetchGameData", ex);
+            }
         });
 
         /**
@@ -75,9 +91,17 @@ module.exports = function (io)
          * @param params contains user token.
          * @output return params data as output.
          */
-        socket.on('ping', function (params, callback)
-        {
+        socket.on('ping', function (params, callback) {
+
+            const startTime = Date.now();
+            const endTime = (Date.now() - startTime);
+            let logData = {
+                level: 'warning',
+                meta: { p: 'ping',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+            };
+            logDNA.warn(`ping`,logData);
             return callback(params);
+            
         });
         // New connection to Socket with Auth
         socket.on('join', async (params, callback) =>
@@ -85,30 +109,22 @@ module.exports = function (io)
             // Start the timer
             const startTime = Date.now();
             let responseObj = {};
-            console.log("Socket join fired", socket.id);
-            console.log('TS1 ::', 'join', socket.id, JSON.stringify(params));
+            const start = Date.now();
+
             // for logDNA 
             let logData = {
                 level: 'debugg',
-                meta: {'socketId': socket.id, 'params': params}
+                meta: { 'socketId': socket.id, 'params': params }
             };
             logDNA.log('Socket join fired', logData);
             await redisCache.addToRedis(socket.id, params.token);
-            try
-            {
-                if (!params.token)
-                {
+            try {
+                if (!params.token) {
                     return callback({
                         status: 0,
                         message: 'No Token provided',
                     });
                 }
-                
-                // End the timer
-                const endTime = (Date.now() - startTime);
-                // calculate the execution time
-                logDNA.log('Join::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'Join'}});
-                
                 responseObj = {
                     status: 1,
                     message: 'Socket registered successfully',
@@ -122,9 +138,9 @@ module.exports = function (io)
                 // for logDNA 
                 let logData = {
                     level: 'error',
-                    meta: {'error': err, 'params': params}
+                    meta: {'env' : `${process.env.NODE_ENV}`, 'error': err, 'params': params,stackTrace : err.stack }
                 };
-                logDNA.log('JOIN :: Event :: Error', logData);
+                logDNA.error('JOIN :: Event :: Error', logData);
 
                 if (typeof callback == 'function')
                     return callback({
@@ -132,28 +148,31 @@ module.exports = function (io)
                         message: 'An error was encountered. Please join a new game.',
                     });
 
-                console.log("join",err); 
-                return callback();   
+                console.log("join", err);
+                return callback();
+            } finally {
+                const endTime = (Date.now() - start);
+                let logData = {
+                    level: 'warning',
+                    meta: { p: 'join',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                };
+                logDNA.warn(`join`, logData);
             }
         });
 
-        socket.on('join_previous', async (params, callback) =>
-        {
-            // Start the timer
+        socket.on('join_previous', async (params, callback) => {
             const startTime = Date.now();
             console.log('TS1 ::', 'join_previous', socket.id, JSON.stringify(params));
             var myId = await Socketz.getId(socket.id);
-            try
-            {
-                if (!myId)
-                {   return callback({
+            try {
+                if (!myId) {
+                    return callback({
                         status: 0,
                         message: 'An error was encountered. Please join a new game.',
                     });
                 }
                 var rez = await _TableInstance.reconnectIfPlaying(myId);
-                if (rez.status == 0)
-                {
+                if (rez.status == 0) {
                     return callback({
                         status: 2,
                         message: 'An error was encountered. Please join a new game.',
@@ -163,29 +182,38 @@ module.exports = function (io)
                 rez.table.room ? socket.join(rez.table.room) : socket.join();
                 rez.server_time = new Date();
                 rez.table.server_time = new Date();
-
-               // End the timer
-                const endTime = (Date.now() - startTime);
-                logDNA.log('Join_Previous::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'Join_Previous'}});
                 return callback(rez);
 
-            } catch(ex) {
-                console.log("join_previous" ,ex );
+            } catch (ex) {
+                console.log("join_previous", ex);
+                let logData = {
+                    level: 'error',
+                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': ex, 'params': params, stackTrace : ex.stack}
+                };
+                logDNA.error('join_previous :: Event :: Error', logData);
                 return callback({
                     status: 0,
                     message: 'An error was encountered. Please join a new game.',
                 });
+            } finally {          
+                const endTime = (Date.now() - startTime);
+                let logData = {
+                    level: 'warning',
+                    meta: { p: 'join_previous',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                };
+                logDNA.warn(`join_previous`, logData);
             }
         });
-        socket.on('go_in_background', async () =>
-        {
+
+        socket.on('go_in_background', async () => {
             // for logDNA 
             let logData = {
                 level: 'debugg',
-                meta: {'socketId': socket.id}
+                meta: { 'socketId': socket.id }
             };
             logDNA.log('user_go_in_background', logData);
             socket.leaveAll();
+            
         });
 
         socket.on('joinTournament', async (data, callback) =>
@@ -270,242 +298,231 @@ module.exports = function (io)
                 await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
                 // console.log('GAME-PLAY-DATA-1', JSON.stringify(gamePlayData));
                 socket.join(rez.callback.table.room);
-                processEvents(rez,myRoom);
+                processEvents(rez,myRoom, socket);
                 var params_data = {
                     room: rez.callback.table.room,
-                };
+                }
+                    var start = await _TableInstance.startIfPossibleTournament(params_data, myRoom, gamePlayData);
+                    console.log("Start", start);
+                    if (start) {
+                        let reqData = await _TableInstance.getGameUsersData(start);
+                        let startGame = await requestTemplate.post(`startgame`, reqData)
 
-                var start = await _TableInstance.startIfPossibleTournament(params_data, myRoom, gamePlayData);
+                        if (!startGame.isSuccess) {
+                            let i = 0;
+                            leaveUser(i, start);
+                            async function leaveUser(i, start) {
+                                if (i < 4) {
+                                    console.log("start game error > ", start.table)
+                                    if (start.table.users[i] && start.table.users[i].id) {
+                                        let data = {
+                                            room: params_data.room,
+                                            isRefund: true
+                                        }
+                                        var resp = await _TableInstance.leaveTable(data, start.table.users[i].id, socket, myRoom, gamePlayData);
+                                        processEvents(resp, myRoom, socket);
+                                        i++;
+                                        leaveUser(i, start);
+                                    }
+                                }
+                            }
+                            return callback({
+                                status: 0,
+                                message: startGame.error,
+                            });
+                        }
+                        // if tournament possible
+                        await startTournament(start, socket, myRoom, gamePlayData);
 
-                console.log("Start", JSON.stringify(start));
-                if (start)
-                {
-                    let reqData = await _TableInstance.getGameUsersData(start);
-                    let startGame = await requestTemplate.post(`startgame`, reqData)
-
-                    if (!startGame.isSuccess)
-                    {
-                        let i = 0;
-                        leaveUser(i, start);
-                        async function leaveUser(i, start)
-                        {
-                            if (i < 4)
+                        await bullQueue.add(
+                            { name: "gameCompletionQueue", payload: { start, myRoom } },
                             {
-                                console.log("start game error > ", start.table)
-                                if (start.table.users[i] && start.table.users[i].id)
-                                {
+                                delay: 500
+                            }
+                        );
+                        await redisCache.addToRedis(myRoom.room, myRoom);
+                        await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
+                        //  console.log('GAME-PLAY-DATA-2', JSON.stringify(gamePlayData));
+                    }
+                    else {
+                        await Socketz.sleep(40000);
+                        myRoom = await redisCache.getRecordsByKeyRedis(myRoom.room);
+                        gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + myRoom.room);
+                        let tableD = await Table.findOne({
+                            room: params_data.room
+                        });
+                        if (tableD && tableD.players.length < tableD.no_of_players) {
+                            for (let i = 0; i < 4; i++) {
+                                if (tableD.players[i] && tableD.players[i].id) {
                                     let data = {
-                                        room: params_data.room,
+                                        room: tableD.room,
+                                        gameNotStarted: 'true',
                                         isRefund: true
                                     }
-                                    var resp = await _TableInstance.leaveTable(data, start.table.users[i].id, socket, myRoom,gamePlayData);
-                                    processEvents(resp, myRoom);
-                                    i++;
-                                    leaveUser(i, start);
+                                    let rez = await _TableInstance.leaveTable(data, tableD.players[i].id, socket, myRoom, gamePlayData);
+                                    console.log("rez--", rez);
+                                    processEvents(rez, myRoom, socket);
                                 }
-                            }
-                        }
-                        return callback({
-                            status: 0,
-                            message: startGame.error,
-                        });
-                    }
-                    // if tournament possible
-                    await startTournament(start, socket, myRoom, gamePlayData);
-                    setInterval(async function ()
-                    {
-                        let data = {
-                            room: start.room
-                        }
-                        //TODO: 
-                        checkTabel = await _TableInstance.istableExists(data,myRoom);
-                        let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
-                        // IF game completed, then clear the time interval.
-                        if (latestRoomData!= null && latestRoomData.isGameCompleted == true)
-                        {
-                            clearInterval(this);
-                        } else if(latestRoomData.isGameCompleted == 'undefined'){
-                            clearInterval(this);
-                        }
-
-                        let gameTime = await checkGameExpireTime(latestRoomData);
-                        if(gameTime) { 
-                            //console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
-                            io.to(start.room).emit('gameTime', {status: 1, status_code: 200, data: {time : gameTime.time, current_turn: latestRoomData.current_turn}}); 
-                            if(gameTime.time == 0){
-                                console.log('gameTimerEnd...........................');
-                                // sent event to socket Client for equal ture.                                            
-                                let equalTurnPlayerData = await _TableInstance.determineTotalTurn(start.room);
-                                io.to(start.room).emit('final_turn_initiated', equalTurnPlayerData);
-                                clearInterval(this);
-                            }
-                        }
-                    }, 1000);     
-                     await redisCache.addToRedis(myRoom.room,myRoom);
-                     await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
-                    //  console.log('GAME-PLAY-DATA-2', JSON.stringify(gamePlayData));
-                }
-                else
-                {
-                    await Socketz.sleep(40000);
-                    myRoom = await redisCache.getRecordsByKeyRedis(myRoom.room);
-                    gamePlayData=await redisCache.getRecordsByKeyRedis('gamePlay_'+ myRoom.room);
-                    // let tableD = await Table.findOne({
-                    //     room: params_data.room
-                    // });
-                    let tableD = await redisCache.getRecordsByKeyRedis(`table_${params_data.room}`);
-                    if (tableD && tableD.players.length < tableD.no_of_players)
-                    {
-                        for (let i = 0; i < 4; i++)
-                        {
-                            if (tableD.players[i] && tableD.players[i].id)
-                            {
-                                let data = {
-                                    room: tableD.room,
-                                    gameNotStarted: 'true',
-                                    isRefund: true
-                                }
-                                let rez = await _TableInstance.leaveTable(data, tableD.players[i].id, socket, myRoom, gamePlayData);
-                                console.log("rez--", rez);
-                                processEvents(rez, myRoom);
                             }
                         }
                     }
                 }
+            }           
+            catch (ex) {
+                console.log("joinTournament ", ex);
+                let logData = {
+                    level: 'error',
+                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': ex, 'params': data, stackTrace : ex.stack}
+                };
+                logDNA.error('joinTournament :: Event :: Error', logData);
+                return callback();
+            } finally {
+                const endTime = (Date.now() - startTime);
+                let logData = {
+                    level: 'warning',
+                    meta: { p: 'joinTournament',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                };
+                logDNA.warn(`joinTournament`,logData);
             }
-            // End the timer
-            const endTime = (Date.now() - startTime);
-            logDNA.log('JoinTournament::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'JoinTournament'}});
-        }
-        catch(ex)
-        {
-            console.log("joinTournament " ,ex );
-            return callback(); 
-        }
         });
 
         // Leave Table / Quit Game
-        socket.on('leaveTable', async (params, callback) =>
-        {
-            // Start the timer
+        socket.on('leaveTable', async (params, callback) => {
             const startTime = Date.now();
-
-            // let tableD = await Table.findOne({
-            //     room: params.room
-            // });
             let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
-            if(tableD!= null && tableD.isGameCompleted) {
-                return callback({'isGameCompleted': true, 'room': params.room});
+            if (tableD != null && tableD.isGameCompleted) {
+                return callback({ 'isGameCompleted': true, 'room': params.room });
             }
 
-            try{
+            try {
                 //console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
                 let myId = await Socketz.getId(socket.id);
                 await Socketz.userGone(socket.id, params.token);
                 params.isRefund = false;
                 let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+ params.room);
-                let response = await _TableInstance.leaveTable(params, myId, socket, myRoom,gamePlayData);
-                await redisCache.addToRedis(myRoom.room,myRoom);
-                //console.log("leaveTable end response: " + JSON.stringify(response) );
-                //await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
-
-                //To add left user details with callback events.
-                // let playerPosition = response.events[0].data.position;
-                // let leftPlayerData = myRoom.users.filter((ele) => ele.position == playerPosition);
+                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params.room);
+                let response = await _TableInstance.leaveTable(params, myId, socket, myRoom, gamePlayData);
+                await redisCache.addToRedis(myRoom.room, myRoom);
                 const userData = [];
                 myRoom.users.map((cur) => {
                     userData.push({
-                        "player_index":cur.position,
-                        "numeric_id":cur.numeric_id,
-                        "id":cur.id,
-                        "name":cur.name,
-                        "rank":0,
-                        "amount":0,
+                        "player_index": cur.position,
+                        "numeric_id": cur.numeric_id,
+                        "id": cur.id,
+                        "name": cur.name,
+                        "rank": 0,
+                        "amount": 0,
                         "is_left": cur.hasOwnProperty('is_left') ? cur.is_left : false,
-                        "score":0
+                        "score": 0
                     });
-                },[])
-                response.callback.room = myRoom.room; 
+                }, [])
+                response.callback.room = myRoom.room;
                 response.callback.game_data = userData;
                 callback(response.callback);
                 // To remove a particular socket ID from a room
                 let socketIdToRemove = socket.id;
                 io.sockets.sockets[socketIdToRemove].leave(myRoom.room);
-                // End the timer
-                const endTime = (Date.now() - startTime);
-                logDNA.log('LeaveTable::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'LeaveTable'}});
-
-                if (response.callback && response.callback.status == 1) processEvents(response, myRoom);
+                if (response.callback && response.callback.status == 1) processEvents(response, myRoom, socket);
 
             }
-            catch(ex)
-            {
+            catch (ex) {
                 //console.log("leaveTable", ex);
-                return callback(); 
+                let logData = {
+                    level: 'error',
+                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': ex, 'params': params, stackTrace : ex.stack}
+                };
+                logDNA.error('leaveTable :: Event :: Error', logData);              
+                return callback();
+            } finally {
+                const endTime = (Date.now() - startTime);
+                let logData = {
+                    level: 'warning',
+                    meta: { p: 'leaveTable',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                };
+                logDNA.warn(`leaveTable`,logData);
             }
 
         });
 
-        socket.on('tournamnt_dice_rolled', async (params, callback) =>
-        {
-            try{
-            // Start the timer
+        socket.on('tournamnt_dice_rolled', async (params, callback) => {
             const startTime = Date.now();
-            //console.log("TS1 ::", 'tournamnt_dice_rolled', socket.id, JSON.stringify(params), new Date());
-           // console.log(socket.data_name, " Rolled ", params.dice_value);
-            let myId = await Socketz.getId(socket.id);
-             // redis call by room.
-            let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-            let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room); 
-            let response = await _TableInstance.tournamntDiceRolled(socket, params, myId, myRoom,gamePlayData);
-            //console.log('tournamnt_dice_rolled callback', params, response.callback);
-            await redisCache.addToRedis(myRoom.room,myRoom);
-            await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
-            // console.log('GAME-PLAY-DATA-3', JSON.stringify(gamePlayData));
-            callback(response.callback);
-            // End the timer
-            const endTime = (Date.now() - startTime);
-            logDNA.log('Tournamnt_dice_rolled::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'Tournamnt_dice_rolled'}});
-
-            if (response.callback.status == 1) processEvents(response, myRoom);
+            try {
+                //console.log("TS1 ::", 'tournamnt_dice_rolled', socket.id, JSON.stringify(params), new Date());
+                // console.log(socket.data_name, " Rolled ", params.dice_value);
+                let myId = await Socketz.getId(socket.id);
+                // redis call by room.
+                let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params.room);
+                let response = await _TableInstance.tournamntDiceRolled(socket, params, myId, myRoom, gamePlayData);
+                //console.log('tournamnt_dice_rolled callback', params, response.callback);
+                await redisCache.addToRedis(myRoom.room, myRoom);
+                await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
+                // console.log('GAME-PLAY-DATA-3', JSON.stringify(gamePlayData));
+                callback(response.callback);
+                if (response.callback.status == 1) processEvents(response, myRoom, socket);
             }
-            catch(error)
-            {
+            catch (error) {
                 console.log('dice_roll_error', error);
-                logDNA.log('dice_roll_error', {level: 'error', meta: {'error' : error}});
-                return callback(); 
+               // logDNA.log('dice_roll_error', { level: 'error', meta: { 'error': error } });
+                let logData = {
+                    level: 'error',
+                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': error, 'params': params, stackTrace : error.stack}
+                };
+                logDNA.error('tournamnt_dice_rolled :: Event :: Error', logData);
+                return callback();
+                
+            } finally {
+                const endTime = (Date.now() - startTime);
+                let logData = {
+                    level: 'warning',
+                    meta: { p: 'tournamnt_dice_rolled',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                };
+                logDNA.warn(`tournamnt_dice_rolled`,logData);
             }
         });
 
-        socket.on('tournament_move_made', async (params, callback) =>
-        {
-            try{
-            // Start the timer
+        socket.on('tournament_move_made', async (params, callback) => {
             const startTime = Date.now();
-            console.log("Tournament_move_made ::", JSON.stringify(params));
-            console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
+            try {
+                console.log("Tournament_move_made ::", JSON.stringify(params));
+                console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
 
-            let myId = await Socketz.getId(socket.id);
-            let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-            let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
-            let response = await _TableInstance.moveTourney(params, myId, gamePlayData, myRoom);
-            console.log('Tournament_move_made callback', response);
-            await redisCache.addToRedis(myRoom.room,myRoom);
-            await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
-            // console.log('GAME-PLAY-DATA-4', JSON.stringify(gamePlayData));
-            callback(response.callback);
+                let myId = await Socketz.getId(socket.id);
+                let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params.room);
+                let response = await _TableInstance.moveTourney(params, myId, gamePlayData, myRoom);
+                console.log('Tournament_move_made callback', response);
+                await redisCache.addToRedis(myRoom.room, myRoom);
+                await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
+                // console.log('GAME-PLAY-DATA-4', JSON.stringify(gamePlayData));
+                await bullQueue.add(
+                    {
+                        name: "playerTurnQueue",
+                        payload: { room: params.room },
+                    },
+                    {
+                        delay: 1000 * 12
+                    }
+                );
 
-            // End the timer
-            const endTime = (Date.now() - startTime);
-            logDNA.log('Tournament_move_made::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'Tournament_move_made'}});
-
-            if (response.callback.status == 1) processEvents(response, myRoom);
+                callback(response.callback);
+                if (response.callback.status == 1) processEvents(response, myRoom, socket);
             }
-            catch(err)
-            {
+            catch (err) {
                 console.error("tournament_move_made", err);
-                return callback(); 
+                let logData = {
+                    level: 'error',
+                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, 'params': params, stackTrace : err.stack}
+                };
+                logDNA.error('tournament_move_made :: Event :: Error', logData);
+                return callback();
+            } finally {
+                const endTime = (Date.now() - startTime);
+                let logData = {
+                    level: 'warning',
+                    meta: { p: 'tournament_move_made',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                };
+                logDNA.warn(`tournament_move_made`, logData);
             }
         });
         //Skip Turn
@@ -513,10 +530,6 @@ module.exports = function (io)
         {
             // Start the timer
             const startTime = Date.now();
-
-            // let tableD = await Table.findOne({
-            //     room: params.room
-            // });
             let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
             if(tableD!= null && tableD.isGameCompleted) {
                 return callback({'isGameCompleted': true, 'room': params.room});
@@ -535,288 +548,328 @@ module.exports = function (io)
             await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
             // console.log('GAME-PLAY-DATA-5', JSON.stringify(gamePlayData));
             callback(response.callback);
-
-            // End the timer
-            const endTime = (Date.now() - startTime);
-            logDNA.log('Skip_turn::ExecutionTime', {level : 'debugg', meta: {'responseTime' : endTime, 'env' : `${process.env.NODE_ENV}`, 'eventName' : 'Skip_turn'}});
-
-            processEvents(response, myRoom);
+            processEvents(response, myRoom, socket);
             }
-            catch(ex)
-            {
-                console.log("skip_turn",ex );
-                return callback(); 
+            catch (ex) {
+                console.log("skip_turn", ex);
+                let logData = {
+                    level: 'error',
+                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': ex, 'params': params, stackTrace : ex.stack}
+                };
+                logDNA.error('skip_turn :: Event :: Error', logData);
+                return callback();
+            } finally {
+                const endTime = (Date.now() - startTime);
+                let logData = {
+                    level: 'warning',
+                    meta: { p: 'skip_turn',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                };
+                logDNA.warn(`skip_turn`, logData);
             }
         });
         // This event for Socket Disconnect.
-        socket.on('disconnect', async () =>
-        {
+        socket.on('disconnect', async () => {
             logDNA.log('DEVICE :: Disconnected', logData);
             // var myId = Socketz.getId(socket.id);
             //Socketz.userGone(socket.id);
         });
 
-        async function startTournament(start, socket, myRoom, gamePlayData)
-        {
-            var params_data = {
-                room: start.room,
-            };
-            //call api to deduct money 
-            start.server_time = new Date();
-            start.turn_timestamp = new Date();
-            myRoom.turn_timestamp = new Date();
-            io.to(start.room).emit('startGame', start);
-            process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
-            //console.log("AFter startGame fire - ", new Date());
-            setInterval(async function ()
-            {
-                try{
-                let myRoom = await redisCache.getRecordsByKeyRedis(params_data.room);
-                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params_data.room);
-                let checkTabel = await _TableInstance.istableExists(params_data,myRoom);
-                if (myRoom!= null && myRoom.isGameCompleted)
-                {
-                    clearInterval(this);
+    });
 
-                } else
-                {
-                    var currTime = parseInt(new Date().getTime());
-                    if (currTime - checkTabel.start_at > (config.turnTimer + 2) * 1000)
-                    {   
-                        var id_of_current_turn = await _TableInstance.getMyIdByPossition(
-                            params_data,
-                            checkTabel.current_turn,
-                            myRoom
-                        );
-                         //console.log("curr turn " + id_of_current_turn);
-                        if (id_of_current_turn != -1)
-                        {
-                            let currentUser= myRoom.users.find(x=>x.id.toString() == id_of_current_turn);
-                            if(currentUser && currentUser.is_active && !myRoom.isGameCompleted)
-                            {
-                                //console.log('SKIPPED for extra life deduct------->>', JSON.stringify(tableD));
-                                let response = await _TableInstance.skipTurn(params_data, id_of_current_turn, myRoom, gamePlayData);
-                                myRoom = response.table;
-                                gamePlayData = response.gamePlayData;
-        
-                                await redisCache.addToRedis(params_data.room, myRoom);
-                                await redisCache.addToRedis('gamePlay_'+params_data.room ,gamePlayData);
-                                processEvents(response, myRoom);
-                            }
-                        }
-                    }
-                }
-            }
-            catch(ex)
-            {
-                console.log("interval exception ", ex);
-            }
-            }, 1500);
-        }
-        async function calculateWinAmount(amount, payoutConfig)
-        {
-            let room_fee = amount;
-            let payConfig = payoutConfig;
-            console.log(" >>>", room_fee, payConfig)
-            let winnerConfig = {};
-            let totalWinning = 0;
-            for (let i = 0; i < 4; i++)
-            {
-                if (payConfig && payConfig[i])
-                {
-                    console.log("payConfig[i] * room_fee  >>>", payConfig[i] * room_fee)
-                    winnerConfig[i] = Math.floor(payConfig[i] * room_fee);
-                    console.log("totalWinning , winnerConfig[i] >>>", totalWinning, winnerConfig[i])
+    async function startTournament(start, socket, myRoom, gamePlayData) {
 
-                    totalWinning = totalWinning + winnerConfig[i]
-                }
+        //call api to deduct money 
+        start.server_time = new Date();
+        start.turn_timestamp = new Date();
+        myRoom.turn_timestamp = new Date();
+        io.to(start.room).emit('startGame', start);
+        process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
+        //console.log("AFter startGame fire - ", new Date());
+
+        await bullQueue.add(
+            {
+                name: "playerTurnQueue",
+                payload: { room: start.room },
+            },
+            {
+                delay: 12 * 1000
             }
-            console.log("calculateWinAmount -- ", winnerConfig, totalWinning)
-            return {
-                payoutConfig: winnerConfig,
-                totalWinning: totalWinning
+        );
+    }
+
+    async function calculateWinAmount(amount, payoutConfig) {
+        let room_fee = amount;
+        let payConfig = payoutConfig;
+        console.log(" >>>", room_fee, payConfig)
+        let winnerConfig = {};
+        let totalWinning = 0;
+        for (let i = 0; i < 4; i++) {
+            if (payConfig && payConfig[i]) {
+                console.log("payConfig[i] * room_fee  >>>", payConfig[i] * room_fee)
+                winnerConfig[i] = Math.floor(payConfig[i] * room_fee);
+                console.log("totalWinning , winnerConfig[i] >>>", totalWinning, winnerConfig[i])
+
+                totalWinning = totalWinning + winnerConfig[i]
             }
         }
-        async function removePlayer(tableD)
-        {
-            const users = [];
-            console.log("tableD >>>", tableD)
-            if (tableD && tableD.players.length < tableD.no_of_players)
-            {
-                for (let i = 0; i < 4; i++)
-                {
-                    if (tableD.players[i] && tableD.players[i].id)
-                    {
-                        console.log("Here>>", i, tableD.players[i])
-                        users.push(tableD.players[i])
-                    }
-                }
-                console.log(">>USERS>>", users)
-                return users;
-            }
+        console.log("calculateWinAmount -- ", winnerConfig, totalWinning)
+        return {
+            payoutConfig: winnerConfig,
+            totalWinning: totalWinning
         }
-        async function processEvents(rez,myRoom)
-        {
-            if (_.isArray(rez.events))
-            {
-                console.log('Process Events ::: ', JSON.stringify(rez.events));               
-                if (rez.events.length > 0)
-                {
-                    for (const d of rez.events)
-                    {
-                        let logData = {
-                            level: 'debugg',
-                            meta: d
-                        };
-                        d.name ? logDNA.log(`Event ${d.name} fired`, logData) : '';
-                        deleteObjectProperty(logData);
-                        setTimeout(
-                            async function ()
-                            {   
-                                if (d.name == 'make_move')
-                                {
-                                    let params_data = {
-                                        room: d.room,
-                                    };
-                                    var checkTabel = await _TableInstance.istableExists(params_data, myRoom);
-                                    if (checkTabel.current_turn != d.data.position)
-                                    {
-                                        return;
-                                    }
+    }
+    async function removePlayer(tableD) {
+        const users = [];
+        console.log("tableD >>>", tableD)
+        if (tableD && tableD.players.length < tableD.no_of_players) {
+            for (let i = 0; i < 4; i++) {
+                if (tableD.players[i] && tableD.players[i].id) {
+                    console.log("Here>>", i, tableD.players[i])
+                    users.push(tableD.players[i])
+                }
+            }
+            console.log(">>USERS>>", users)
+            return users;
+        }
+    }
+    async function processEvents(rez, myRoom, socket) {
+        if (_.isArray(rez.events)) {
+            console.log('Process Events ::: ', JSON.stringify(rez.events));
+            if (rez.events.length > 0) {
+                for (const d of rez.events) {
+                    let logData = {
+                        level: 'debugg',
+                        meta: d
+                    };
+                    d.name ? logDNA.log(`Event ${d.name} fired`, logData) : '';
+                    deleteObjectProperty(logData);
+                    setTimeout(
+                        async function () {
+                            if (d.name == 'make_move') {
+                                let params_data = {
+                                    room: d.room,
+                                };
+                                var checkTabel = await _TableInstance.istableExists(params_data, myRoom);
+                                if (checkTabel.current_turn != d.data.position) {
+                                    return;
                                 }
-                                console.log(d.name + ' firing after delay of ' + d.delay, d.name, d, new Date());
-                                if (d.type == 'users_including_me')
-                                {
-                                    for (const g of d.users)
-                                    {
-                                        var id = await Socketz.getSocket(g);
-                                        console.log("user", g);
-                                        console.log("socket", id);
-                                        io.to(id).emit(d.name, d.data);
-                                    }
-                                } else if (d.type == 'users_excluding_me')
-                                {
-                                    for (const g of d.users)
-                                    {
-                                        var id = await Socketz.getSocket(g);
-                                        console.log("user", g);
-                                        console.log("socket", id);
-                                        socket.to(id).emit(d.name, d.data);
-                                    }
-                                } else if (d.type == 'room_including_me')
-                                {
-                                    /**
-                                     * Last move animation & equal turns logic at backend.
-                                     * 
-                                     * To check that make_diceroll event has occured.
-                                     * To check time expire.
-                                     **/
-
-                                    let gameTime = await checkGameExpireTime(myRoom);
-                                    if(gameTime.isTimeExpired) {
-                                        //To check player has equal turn or not.
-                                        let equalTurn = await _TableInstance.checkPlayerEqualTurn(myRoom, d.data.position);
-                                        //console.log('Player position', d.data.position);
-                                        if(equalTurn){
-                                            if(d.name == 'make_diceroll' && d.data.extra_move_animation == false) {
-                                                let data = await _TableInstance.checkwinnerOfTournament(d.room, myRoom);
-                                                myRoom = data.table;
-                                                processEvents(data,myRoom);                                            
-                                            } else if(d.name == 'end_game') {                                             
-                                                io.to(d.room).emit(d.name, d.data);
-                                            } else if(d.name == 'make_move') {
-                                                io.to(d.room).emit(d.name, d.data);
-                                            } else if(d.name == 'life_deduct') {
-                                                io.to(d.room).emit(d.name, d.data);
-                                            } else {
-                                                io.to(d.room).emit(d.name, d.data);
-                                            }
+                            }
+                            console.log(d.name + ' firing after delay of ' + d.delay, d.name, d, new Date());
+                            if (d.type == 'users_including_me') {
+                                for (const g of d.users) {
+                                    var id = await Socketz.getSocket(g);
+                                    console.log("user", g);
+                                    console.log("socket", id);
+                                    io.to(id).emit(d.name, d.data);
+                                }
+                            } else if (d.type == 'users_excluding_me') {
+                                for (const g of d.users) {
+                                    var id = await Socketz.getSocket(g);
+                                    console.log("user", g);
+                                    console.log("socket", id);
+                                    socket.to(id).emit(d.name, d.data);
+                                }
+                            } else if (d.type == 'room_including_me') {
+                                /**
+                                 * Last move animation & equal turns logic at backend.
+                                 * 
+                                 * To check that make_diceroll event has occured.
+                                 * To check time expire.
+                                 **/
+                                let gameTime = await checkGameExpireTime(myRoom);
+                                if (gameTime.isTimeExpired) {
+                                    //To check player has equal turn or not.
+                                    let equalTurn = await _TableInstance.checkPlayerEqualTurn(myRoom, d.data.position);
+                                    //console.log('Player position', d.data.position);
+                                    if (equalTurn) {
+                                        if (d.name == 'make_diceroll' && d.data.extra_move_animation == false) {
+                                            let data = await _TableInstance.checkwinnerOfTournament(d.room, myRoom);
+                                            myRoom = data.table;
+                                            processEvents(data, myRoom, socket);
+                                        } else if (d.name == 'end_game') {
+                                            io.to(d.room).emit(d.name, d.data);
+                                        } else if (d.name == 'make_move') {
+                                            io.to(d.room).emit(d.name, d.data);
+                                        } else if (d.name == 'life_deduct') {
+                                            io.to(d.room).emit(d.name, d.data);
                                         } else {
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
                                         io.to(d.room).emit(d.name, d.data);
-                                    }                                 
-                                } else if (d.type == 'room_excluding_me')
-                                {                                  
-                                    console.log("room_excluding_me", d.data);
-                                    socket.to(d.room).emit(d.name, d.data);                                   
-                                }
-
-                                if (d.name == 'newTableCreated')
-                                {
-                                    for (const g of d.users)
-                                    {
-                                        var id = await Socketz.getSocketIS(g);
-                                        id.join(d.data.table.room, function (err)
-                                        {
-                                            // if (err) return console.log('ERR', err);
-                                            // console.log('JOINED new Room, all rooms now >> ', id.rooms);
-                                        });
                                     }
+                                } else {
+                                    io.to(d.room).emit(d.name, d.data);
                                 }
-                            },
-                            d.delay ? d.delay : 0
-                        );
-                            // if(rez.events[0].data.position != null) {
-                            //     process.env.CURRENT_TURN_POSITION = rez.events[0].data.position;
-                            // } else if(rez.events[0].data.player_index != null) {
-                            //     process.env.CURRENT_TURN_POSITION = rez.events[0].data.player_index;
-                            // }
-                    }
+                            } else if (d.type == 'room_excluding_me') {
+                                console.log("room_excluding_me", d.data);
+                                socket.to(d.room).emit(d.name, d.data);
+                            }
+
+                            if (d.name == 'newTableCreated') {
+                                for (const g of d.users) {
+                                    var id = await Socketz.getSocketIS(g);
+                                    id.join(d.data.table.room, function (err) {
+                                        // if (err) return console.log('ERR', err);
+                                        // console.log('JOINED new Room, all rooms now >> ', id.rooms);
+                                    });
+                                }
+                            }
+                        },
+                        d.delay ? d.delay : 0
+                    );
                 }
             }
         }
+    }
 
-        /**
-         * The function used to check the gameTime expired or not.
-         * @param {room} number means room id
-         * 
-         * @returns boolean  
-         */
+    /**
+     * The function used to check the gameTime expired or not.
+     * @param {room} number means room id
+     * 
+     * @returns boolean  
+     */
+    async function checkGameExpireTime(MyRoom) {
+        try {
+            if (MyRoom.game_started_at) {
+                let gameStartTime = MyRoom.game_started_at;
+                // To convert New Date() getTime to Second.
+                let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
 
-        async function checkGameExpireTime(MyRoom) {
-            try {
-                if(MyRoom.game_started_at) {     
-                    let gameStartTime = MyRoom.game_started_at;
-                    // To convert New Date() getTime to Second.
-                    let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
-
-                    let flag;
-                    if (timeInsecond >= config.gameTime * 60) { 
-                        flag =  true;
-                    } else {
-                        flag =  false;
-                    }
-                    if (timeInsecond < 0) timeInsecond = 0;
-
-                    let timer = config.gameTime * 60 - timeInsecond;
-                    if(timer < 0){
-                        timer = 0
-                    }
-                    return {
-                        isTimeExpired : flag,
-                        time : timer,
-                    }
+                let flag;
+                if (timeInsecond >= config.gameTime * 60) {
+                    flag = true;
                 } else {
-                    return false;
+                    flag = false;
                 }
+                if (timeInsecond < 0) timeInsecond = 0;
 
-            } catch(Execption) {
-                // To log error
-                logDNA.log('checkGameExpireTime', {level: 'error',meta: {'error' : Execption}});
+                let timer = config.gameTime * 60 - timeInsecond;
+                if (timer < 0) {
+                    timer = 0
+                }
+                return {
+                    isTimeExpired: flag,
+                    time: timer,
+                }
+            } else {
+                return false;
             }
-        }
 
-        /**
-         * The function used to delete object.
-         * @param {object} object 
-         */
-        function deleteObjectProperty(object) {
-            Object.keys(object).forEach(key => {
-                delete object[key];
+        } catch (Execption) {
+            // To log error
+            logDNA.log('checkGameExpireTime', { level: 'error', meta: { 'error': Execption } });
+        }
+    }
+
+    /**
+     * The function used to delete object.
+     * @param {object} object 
+     */
+    function deleteObjectProperty(object) {
+        Object.keys(object).forEach(key => {
+            delete object[key];
+        });
+    }
+
+
+    async function processBullEvent(job) {
+        if (job.data.name.indexOf('playerTurnQueue') > -1) {
+            console.log("playerTurn event fired", job.data.payload)
+            return playerTurn(job.data);
+        } else if (job.data.name.indexOf('gameCompletionQueue') > -1) {
+            console.log("checkGameCompletion event fired", job.data.payload)
+            return checkGameCompletion(job);
+        }
+        // else if (job.data.name.indexOf('gameTimer') > -1) {
+        //     let latestRoomData = await redisCache.getRecordsByKeyRedis(job.data.payload.room);
+        //     let gameTime = await checkGameExpireTime(latestRoomData);
+        //     io.to(job.data.payload.room).emit('gameTime', { status: 1, status_code: 200, data: { time: gameTime.time, current_turn: latestRoomData.current_turn } });
+          
+        //     if (gameTime.time == 0) {
+        //         console.error('gameTimer removed------> ' + job.name);
+        //         bullQueue.removeRepeatableByKey(job.id);
+        //     }
+        // }
+        else {
+            console.error('Error:: Invalid job name', job.data.name);
+        }
+    }
+
+    async function playerTurn(job) {
+        let params_data = job.payload;
+
+        try {
+            let myRoom = await redisCache.getRecordsByKeyRedis(params_data.room);
+            let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params_data.room);
+            let checkTabel = await _TableInstance.istableExists(params_data, myRoom);
+            if (myRoom != null && myRoom.isGameCompleted) {
+                console.log('Game already completed');
+                return;
+            } else {
+                var currTime = parseInt(new Date().getTime());
+                if (currTime - checkTabel.start_at > (config.turnTimer + 2) * 1000) {
+                    var id_of_current_turn = await _TableInstance.getMyIdByPossition(
+                        params_data,
+                        checkTabel.current_turn,
+                        myRoom
+                    );
+                    //console.log("curr turn " + id_of_current_turn);
+                    if (id_of_current_turn != -1) {
+                        let currentUser = myRoom.users.find(x => x.id.toString() == id_of_current_turn);
+                        if (currentUser && currentUser.is_active && !myRoom.isGameCompleted) {
+                            //console.log('SKIPPED for extra life deduct------->>', JSON.stringify(tableD));
+                            let response = await _TableInstance.skipTurn(params_data, id_of_current_turn, myRoom, gamePlayData);
+                            myRoom = response.table;
+                            gamePlayData = response.gamePlayData;
+
+                            await redisCache.addToRedis(params_data.room, myRoom);
+                            await redisCache.addToRedis('gamePlay_' + params_data.room, gamePlayData);
+                            await bullQueue.add(
+                                {
+                                    name: "playerTurnQueue",
+                                    payload: { room: params_data.room },
+                                },
+                                {
+                                    delay: 1000 * 12
+                                }
+                            );
+                            processEvents(response, myRoom);
+                        }
+                    }
+                }
+            }
+
+        }
+        catch (ex) {
+            console.log("interval exception ", ex);
+
+            await bullQueue.add(job, {
+                delay: 1000 * 12
             });
         }
-    });
 
+    }
+
+    async function checkGameCompletion(job) {
+
+        let { start, myRoom } = job.data.payload;
+        let gameTime = await checkGameExpireTime(myRoom);   
+        if (gameTime) {
+            //console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
+            io.to(start.room).emit('gameTime', { status: 1, status_code: 200, data: { time: gameTime.time, current_turn: -1 } });
+            if (gameTime.time == 0) {
+                console.log('gameTimerEnd...........................');
+                // sent event to socket Client for equal ture.                                            
+                let equalTurnPlayerData = await _TableInstance.determineTotalTurn(start.room);
+                io.to(start.room).emit('final_turn_initiated', equalTurnPlayerData);
+                console.log('final_turn_initiated');
+                return;
+            } else {
+                await bullQueue.add(job.data, {
+                    delay: 1000
+                });
+            }
+        }
+    }
 };
