@@ -491,6 +491,8 @@ module.exports = function (io, bullQueue) {
                 await redisCache.addToRedis(myRoom.room, myRoom);
                 await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
                 // console.log('GAME-PLAY-DATA-4', JSON.stringify(gamePlayData));
+                callback(response.callback);
+                if (response.callback.status == 1) processEvents(response, myRoom, socket);
                 await bullQueue.add(
                     {
                         name: "playerTurnQueue",
@@ -501,8 +503,8 @@ module.exports = function (io, bullQueue) {
                     }
                 );
 
-                callback(response.callback);
-                if (response.callback.status == 1) processEvents(response, myRoom, socket);
+                // callback(response.callback);
+                // if (response.callback.status == 1) processEvents(response, myRoom, socket);
             }
             catch (err) {
                 console.error("tournament_move_made", err);
