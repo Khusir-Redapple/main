@@ -460,13 +460,11 @@ module.exports = function (io, bullQueue) {
                 if (response.callback.status == 1) processEvents(response, myRoom, socket);
             }
             catch (error) {
-                console.log('dice_roll_error', error);
-               // logDNA.log('dice_roll_error', { level: 'error', meta: { 'error': error } });
                 let logData = {
                     level: 'error',
                     meta: { 'env' : `${process.env.NODE_ENV}`,'error': error, 'params': params, stackTrace : error.stack}
                 };
-                logDNA.error('tournamnt_dice_rolled :: Event :: Error', logData);
+                logDNA.error('tournamnt_dice_rolled', logData);
                 return callback();
                 
             } finally {

@@ -9,6 +9,7 @@ const requestTemplate = require('../../api/service/request-template');
 const {_Tables}     = require('../utils/_tables');
 const _tab          = new _Tables();
 const redisCache    = require('../../api/service/redis-cache');
+const logDNA = require('../socket/api/service/logDNA');
 module.exports = {
     //Roll dice for tournament
     tournamntDiceRolled: async function (socket, params, id, myRoom, gamePlayData)
@@ -931,7 +932,11 @@ module.exports = {
             return resObj;
         } catch (err)
         {
-            console.log('ERROR', err);
+            let logData = {
+                level: 'error',
+                meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, 'params': params, stackTrace : err.stack}
+            };
+            logDNA.error('tournament_move_made', logData);
         }
     },
     checkwinnerOfTournament: async function (room,myRoom)
