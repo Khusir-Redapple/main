@@ -9,7 +9,7 @@ const requestTemplate = require('../../api/service/request-template');
 const {_Tables}     = require('../utils/_tables');
 const _tab          = new _Tables();
 const redisCache    = require('../../api/service/redis-cache');
-const logDNA = require('../socket/api/service/logDNA');
+const logDNA        = require('../../api/service/logDNA');
 module.exports = {
     //Roll dice for tournament
     tournamntDiceRolled: async function (socket, params, id, myRoom, gamePlayData)
