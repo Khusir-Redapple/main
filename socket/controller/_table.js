@@ -366,11 +366,18 @@ module.exports = {
                 room: params.room,
             };
             var checkTabel = await this.istableExists(params_data,myRoom); // added to solve backword token movement 
-            if (checkTabel.current_turn != myPos)
+            // if (checkTabel.current_turn != myPos)
+            // {
+            //     console.log("IN moveTourney IF - ", checkTabel, myPos); //to handle token revert issue - NO1-I44
+            //     return;
+            // }
+
+            if (true)
             {
                 console.log("IN moveTourney IF - ", checkTabel, myPos); //to handle token revert issue - NO1-I44
                 return;
             }
+
             let diceVales = [];
             diceVales.push(params.dice_value)
             // const allEqual = diceVales => diceVales.every(v => v === 6);
