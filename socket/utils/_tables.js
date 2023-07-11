@@ -647,7 +647,7 @@ class _Tables
                 console.log('updateCurrentTurn >>>:: ', myRoom.users[pos]);
                if(pos<0)
                   return;
-                if (prev != -1 && move == 1)
+                if (prev != -1 && move == 0)
                 {
                     myRoom.users[prev].dices_rolled = [];
                     myRoom.users[prev].six_counts = 0;
