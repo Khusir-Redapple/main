@@ -366,13 +366,7 @@ module.exports = {
                 room: params.room,
             };
             var checkTabel = await this.istableExists(params_data,myRoom); // added to solve backword token movement 
-            // if (checkTabel.current_turn != myPos)
-            // {
-            //     console.log("IN moveTourney IF - ", checkTabel, myPos); //to handle token revert issue - NO1-I44
-            //     return;
-            // }
-
-            if (true)
+            if (checkTabel.current_turn != myPos)
             {
                 console.log("IN moveTourney IF - ", checkTabel, myPos); //to handle token revert issue - NO1-I44
                 return;
