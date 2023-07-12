@@ -1768,14 +1768,20 @@ module.exports = {
             // start.timeToCompleteGame = seconds;
             start.timeToCompleteGame = config.gameTime * 60;
         }
+        let returnStart = false;
         if(start && start.table && start.table.users && start.table.users.length > 0)
         {
-            start.table.users.forEach(element => {
-                // element.diceValue=[];
+            // start.table.users.forEach(element => {
+            //     element.diceValue=[];
+            // });
+
+            returnStart = JSON.parse(JSON.stringify(start));
+            returnStart.table.users.forEach(element => {
                 delete element.diceValue;
             });
+
         }
-        return start;
+        return returnStart;
     },
 
 
