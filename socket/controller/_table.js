@@ -778,10 +778,10 @@ module.exports = {
                         }
                         // Else [!canIKill]
                         // try - comment the below code just for testing.
-                        else
-                        {
-                            moveBonusCheck = true;
-                        }
+                        // else
+                        // {
+                        //     moveBonusCheck = true;
+                        // }
                     } catch (error)
                     {
                         console.lof("CATCH ERROR _ ", error)
