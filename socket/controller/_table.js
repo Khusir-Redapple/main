@@ -776,8 +776,10 @@ module.exports = {
                             // try
                             moveBonusCheck = true;
                         }
+                        
                         // Else [!canIKill]
                         // try - comment the below code just for testing.
+                        moveBonusCheck = true;
                         // else
                         // {
                         //     moveBonusCheck = true;
