@@ -375,7 +375,10 @@ module.exports = {
             let diceVales = [];
             diceVales.push(params.dice_value)
             // const allEqual = diceVales => diceVales.every(v => v === 6);
-            if (params.dice_value == 6)
+            // try
+            let dicesValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
+
+            if (params.dice_value == 6 && dicesValue == 6)
             {
                 await _tab.addBonus(params.room, id, 1, 'six', myRoom, gamePlayData); //remove this for not giving 2nd turn on 6
                 await _tab.addSix(params.room, id, myRoom);
@@ -401,6 +404,8 @@ module.exports = {
                 // if move not possible.
                 if (params.dice_value == 6)
                 {
+                    // try
+                    _tab.useBonus(params.room, id, myRoom);
                     //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
                     await _tab.scrapTurn(params.room, myPos, myRoom);
                     // DICE_ROLL TO NEXT
@@ -679,10 +684,14 @@ module.exports = {
                         }
                     }
                     // Else [!allHome]
-                    else
-                    {
-                        moveBonusCheck = true;
-                    }
+                    // try - comment the below code just for testing.
+
+                    // else
+                    // {
+                    //     moveBonusCheck = true;
+                    // }
+
+                    moveBonusCheck = true;
                 }
                 // Else [!56]
                 else
@@ -747,8 +756,8 @@ module.exports = {
                                         }
                                     });
                                 }
-
-                                moveBonusCheck = true;
+                                // try 
+                                //moveBonusCheck = true;
                                 killed = true;
                                 await _tab.addBonus(params.room, id, 0, "Kill", myRoom, gamePlayData);
                                 await _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus', myRoom, gamePlayData)
@@ -765,15 +774,19 @@ module.exports = {
                                 // _tab.addBonus(params.room, id, canIKill.length, "Kill");                            
                                 await _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus',myRoom, gamePlayData)
                                 console.log('after cut ------>', myRoom);
-                                moveBonusCheck = true;
+                                // try
+                                // moveBonusCheck = true;
                                 killed = true;
                             }
-                        }
-                        // Else [!canIKill]
-                        else
-                        {
+                            // try
                             moveBonusCheck = true;
                         }
+                        // Else [!canIKill]
+                        // try - comment the below code just for testing.
+                        // else
+                        // {
+                        //     moveBonusCheck = true;
+                        // }
                     } catch (error)
                     {
                         console.lof("CATCH ERROR _ ", error)
