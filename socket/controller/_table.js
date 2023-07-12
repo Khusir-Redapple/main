@@ -375,10 +375,10 @@ module.exports = {
             let diceVales = [];
             diceVales.push(params.dice_value)
             // const allEqual = diceVales => diceVales.every(v => v === 6);
-            // // try
-            // let dicesValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
+            // try
+             let dicesValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
 
-            if (params.dice_value == 6)
+            if (params.dice_value == 6 && dicesValue == params.dice_value)
             {
                 await _tab.addBonus(params.room, id, 1, 'six', myRoom, gamePlayData); //remove this for not giving 2nd turn on 6
                 await _tab.addSix(params.room, id, myRoom);
@@ -775,7 +775,7 @@ module.exports = {
                                 await _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus',myRoom, gamePlayData)
                                 console.log('after cut ------>', myRoom);
                                 // try
-                                // moveBonusCheck = true;
+                                moveBonusCheck = true;
                                 killed = true;
                             }
                             // try
