@@ -686,12 +686,10 @@ module.exports = {
                     // Else [!allHome]
                     // try - comment the below code just for testing.
 
-                    // else
-                    // {
-                    //     moveBonusCheck = true;
-                    // }
-
-                    moveBonusCheck = true;
+                    else
+                    {
+                        moveBonusCheck = true;
+                    }
                 }
                 // Else [!56]
                 else
@@ -783,10 +781,10 @@ module.exports = {
                         }
                         // Else [!canIKill]
                         // try - comment the below code just for testing.
-                        // else
-                        // {
-                        //     moveBonusCheck = true;
-                        // }
+                        else
+                        {
+                            moveBonusCheck = true;
+                        }
                     } catch (error)
                     {
                         console.lof("CATCH ERROR _ ", error)
