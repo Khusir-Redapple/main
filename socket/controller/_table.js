@@ -376,8 +376,7 @@ module.exports = {
             diceVales.push(params.dice_value)
             // const allEqual = diceVales => diceVales.every(v => v === 6);
             // try
-             let dicesValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
-
+            let dicesValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
             if (params.dice_value == 6 && dicesValue == params.dice_value)
             {
                 await _tab.addBonus(params.room, id, 1, 'six', myRoom, gamePlayData); //remove this for not giving 2nd turn on 6
@@ -686,10 +685,10 @@ module.exports = {
                     // Else [!allHome]
                     // try - comment the below code just for testing.
 
-                    else
-                    {
-                        moveBonusCheck = true;
-                    }
+                    // else
+                    // {
+                    //     moveBonusCheck = true;
+                    // }
                 }
                 // Else [!56]
                 else
