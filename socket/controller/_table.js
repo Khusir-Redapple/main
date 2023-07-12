@@ -683,12 +683,10 @@ module.exports = {
                         }
                     }
                     // Else [!allHome]
-                    // try - comment the below code just for testing.
-
-                    // else
-                    // {
-                    //     moveBonusCheck = true;
-                    // }
+                    else
+                    {
+                        moveBonusCheck = true;
+                    }
                 }
                 // Else [!56]
                 else
@@ -772,7 +770,7 @@ module.exports = {
                                 await _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus',myRoom, gamePlayData)
                                 console.log('after cut ------>', myRoom);
                                 // try
-                                moveBonusCheck = true;
+                               // moveBonusCheck = true;
                                 killed = true;
                             }
                             // try
