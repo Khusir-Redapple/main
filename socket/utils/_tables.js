@@ -211,13 +211,6 @@ class _Tables
 
     alreadyPlayingTable(id, myRoom)
     {
-        // for logDNA logger
-        logger = {
-            level: 'debugg',
-            meta: this.tables
-        };
-        logDNA.log('If already playing This.tables', logger);
-
             for (var pl = 0; pl < myRoom.users.length; pl++)
             {
                 if (myRoom.users[pl].id)
@@ -250,7 +243,8 @@ class _Tables
                         return rez;
                     }
                 }
-            }
+        }
+        console.log('reconnecting_player_not_exists');
         var rez = {
             status: 0,
             message: "An error was encountered. Please join a new game."
