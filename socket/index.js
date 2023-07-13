@@ -71,6 +71,7 @@ module.exports = function (io, bullQueue) {
                
                 const startTime = Date.now();
                 let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+                myRoom.players_done = myRoom.no_of_players;
                 myRoom.server_time = new Date();
                 const endTime = (Date.now() - startTime);
                 let logData = {
