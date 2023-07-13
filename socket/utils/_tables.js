@@ -615,7 +615,7 @@ class _Tables
     {   
         console.log('getMyDiceError', JSON.stringify(gamePlayData));
         if (!myRoom) return -1;
-        const me = myRoom.users.find((elem) => elem.id == id);
+        const me = myRoom.users.find((elem) => elem.id.toString() == id.toString());
         if(!gamePlayData.data.roll)
          gamePlayData.data.roll=[];
         gamePlayData.data.roll.push(me ? me.dices_rolled[me.dices_rolled.length - 1] : -1);
