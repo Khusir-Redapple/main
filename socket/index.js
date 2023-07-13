@@ -419,10 +419,7 @@ module.exports = function (io, bullQueue) {
                 }
                if(!params.room)
                    return callback();
-
-                if (tableD != null && tableD.isGameCompleted) {
-                    return callback({ 'isGameCompleted': true, 'room': params.room });
-                }
+                
                 //console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
                 let myId = await Socketz.getId(socket.id);
                 await Socketz.userGone(socket.id, params.token);
