@@ -1874,7 +1874,7 @@ module.exports = {
                 if(table){
                     table = table.players.find((ele) => ele.id.toString() == id.toString());
                 }
-                if (!tab)
+                if (!table)
                 {
                     // FIX_2407 : ALREADY PLAYING
                     console.log('DESTROY', alreadyPlaying.table.room);
