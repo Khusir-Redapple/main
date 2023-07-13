@@ -618,8 +618,8 @@ class _Tables
         const me = myRoom.users.find((elem) => elem.id.toString() == id.toString());
         if(!gamePlayData.data.roll)
          gamePlayData.data.roll=[];
-        gamePlayData.data.roll.push(me ? me.dices_rolled[me.dices_rolled.length - 1] : -1);
         let a = me ? me.dices_rolled[me.dices_rolled.length - 1] : -1;
+        gamePlayData.data.roll.push(a);
         return a;
     }
 
