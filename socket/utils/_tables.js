@@ -303,6 +303,10 @@ class _Tables
     //Leave Room
     async leave(room, id, myRoom)
     {   
+        // if(!myRoom)
+        //     return {
+        //         res: false,
+        //     };
         console.log('Leave Room Started', id);
         
                 console.log('myRoom - ', myRoom);
@@ -599,7 +603,8 @@ class _Tables
     }
     scrapTurn(room, pos, myRoom)
     {
-        myRoom.users[pos].dices_rolled = [];     
+        if(myRoom.users[pos])
+            myRoom.users[pos].dices_rolled = [];     
     }
 
     getMyPosition(room, id, myRoom)
@@ -617,6 +622,8 @@ class _Tables
         console.log('getMyDiceError', JSON.stringify(gamePlayData));
         if (!myRoom) return -1;
         const me = myRoom.users.find((elem) => elem.id == id);
+        if(!gamePlayData.data.roll)
+         gamePlayData.data.roll=[];
         gamePlayData.data.roll.push(me ? me.dices_rolled[me.dices_rolled.length - 1] : -1);
         let a = me ? me.dices_rolled[me.dices_rolled.length - 1] : -1;
         return a;
@@ -1684,8 +1691,12 @@ class _Tables
                 'table' : table,
             }
 
-        } catch(exception) {
-            logDNA.log('dice roll error', {level: 'debugg', meta: {room: room, userId: user_id}});
+        } catch(err) {
+            let logData = {
+                level: 'error',
+                meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, stackTrace : err.stack}
+            };
+            logDNA.error('rollDice', logData);
         }
     }
 

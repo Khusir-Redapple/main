@@ -14,8 +14,12 @@ class RedisCache
         if(typeof data == 'object')
             data=JSON.stringify(data);
         await redis.set(id, data, 'EX', config.socketUserExpireTime);
-        } catch(exception) { 
-            logDNA.log('add_user_socketData_to_redis', {level: 'error', meta: exception});
+        } catch(err) { 
+            let logData = {
+                level: 'error',
+                meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, stackTrace : err.stack}
+            };
+            logDNA.error('addToRedis', logData);
             return false;
         }
         return true;
@@ -25,16 +29,21 @@ class RedisCache
         const value = await redis.get(id);
         try {
             
-            // if(typeof value == 'object')
+            // if(value !== null && typeof value == 'object')
             //    value=JSON.parse(value);
             if(value) {
                 return JSON.parse(value);
-
             } 
             return false;          
-        } catch(exception) {
-            // log error to logDNA
-         //   logDNA.log('add_user_socketData_to_redis', {level: 'error', meta: exception});
+        } catch(err) {
+            if(!value)
+            {
+                let logData = {
+                    level: 'error',
+                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, stackTrace : err.stack,'value':value,'key':id }
+                };
+                logDNA.error('getRecordsByKeyRedis', logData);
+           }
             return value;
         }
     }

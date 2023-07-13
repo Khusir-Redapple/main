@@ -13,16 +13,10 @@ module.exports = {
 
     validateObjectId: function (id)
     {
-        // if (ObjectId.isValid(id))
-        // {
-        //     var obj = new ObjectId(id);
-        //     if (obj == id)
-        //     {
-        //         return true;
-        //     }
-        // }
-        // return false;
-        return true;
+      if(!id || id =='false')
+         return false;
+      else
+         return true;
     },
 
     randomNumber: async function (length)

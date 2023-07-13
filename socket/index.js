@@ -80,8 +80,12 @@ module.exports = function (io, bullQueue) {
                 logDNA.warn(`fetchGameData`, logData);
                 return callback(myRoom);
             }
-            catch (ex) {
-                console.log("fetchGameData", ex);
+            catch (err) {
+                let logData = {
+                    level: 'error',
+                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, 'params': params, stackTrace : err.stack}
+                };
+                logDNA.error('fetchGameData', logData);
             }
         });
 
@@ -125,13 +129,26 @@ module.exports = function (io, bullQueue) {
                         message: 'No Token provided',
                     });
                 }
-                responseObj = {
-                    status: 1,
-                    message: 'Socket registered successfully',
-                    server_time: new Date().getTime().toString(),
-                    joined: 0
-                };
-                return callback(responseObj);
+                let playerExists = await redisCache.getRecordsByKeyRedis(socket.id);
+                if(playerExists) {
+                    //Check if user already playing
+                    var rez = await _TableInstance.reconnectIfPlaying(playerExists);
+                    responseObj = {
+                        status: 1,
+                        message: 'Socket registered successfully',
+                        server_time: new Date().getTime().toString(),
+                        joined : rez.status,
+                    };
+                    return callback(responseObj);
+                } else {
+                    responseObj = {
+                        status: 1,
+                        message: 'Socket registered successfully',
+                        server_time: new Date().getTime().toString(),
+                        joined: 0
+                    };
+                    return callback(responseObj);
+                }
             } catch (err)
             {
                 console.log("join",err);   
@@ -393,12 +410,25 @@ module.exports = function (io, bullQueue) {
             }
 
             try {
+                if(!params.room)
+                {
+                    let myId = await Socketz.getId(socket.id);
+                    let roomId = await redisCache.getRecordsByKeyRedis('user_id'+myId.toString());
+                    if(roomId)
+                        params.room=roomId;
+                }
+               if(!params.room)
+                   return callback();
+
+                if (tableD != null && tableD.isGameCompleted) {
+                    return callback({ 'isGameCompleted': true, 'room': params.room });
+                }
                 //console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
                 let myId = await Socketz.getId(socket.id);
                 await Socketz.userGone(socket.id, params.token);
                 params.isRefund = false;
-                let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params.room);
+                myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+                gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params.room);
                 let response = await _TableInstance.leaveTable(params, myId, socket, myRoom, gamePlayData);
                 await redisCache.addToRedis(myRoom.room, myRoom);
                 const userData = [];
@@ -419,15 +449,16 @@ module.exports = function (io, bullQueue) {
                 callback(response.callback);
                 // To remove a particular socket ID from a room
                 let socketIdToRemove = socket.id;
+                if(io.sockets.sockets[socketIdToRemove]){
                 io.sockets.sockets[socketIdToRemove].leave(myRoom.room);
+                }
                 if (response.callback && response.callback.status == 1) processEvents(response, myRoom, socket);
-
             }
             catch (ex) {
                 //console.log("leaveTable", ex);
                 let logData = {
                     level: 'error',
-                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': ex, 'params': params, stackTrace : ex.stack}
+                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': ex, 'params': params, stackTrace : ex.stack, "gamePlayData": gamePlayData,"myRoom":myRoom}
                 };
                 logDNA.error('leaveTable :: Event :: Error', logData);              
                 return callback();
@@ -456,15 +487,37 @@ module.exports = function (io, bullQueue) {
                 await redisCache.addToRedis(myRoom.room, myRoom);
                 await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
                 // console.log('GAME-PLAY-DATA-3', JSON.stringify(gamePlayData));
+
+                if(response && response.events)
+                {
+                    for (const d of response.events)
+                    {
+                        if(d.name == 'make_diceroll' && d.data.skip_dice==true)
+                        {
+                            await bullQueue.add(
+                                {
+                                    name: "playerTurnQueue",
+                                    payload: { room: params.room },
+                                },
+                                {
+                                    delay: 1000 * 12
+                                }
+                            );
+                            break;
+                        }
+                    }
+                }
                 callback(response.callback);
                 if (response.callback.status == 1) processEvents(response, myRoom, socket);
             }
             catch (error) {
+                console.log('dice_roll_error', error);
+               // logDNA.log('dice_roll_error', { level: 'error', meta: { 'error': error } });
                 let logData = {
                     level: 'error',
                     meta: { 'env' : `${process.env.NODE_ENV}`,'error': error, 'params': params, stackTrace : error.stack}
                 };
-                logDNA.error('tournamnt_dice_rolled', logData);
+                logDNA.error('tournamnt_dice_rolled :: Event :: Error', logData);
                 return callback();
                 
             } finally {
@@ -479,36 +532,42 @@ module.exports = function (io, bullQueue) {
 
         socket.on('tournament_move_made', async (params, callback) => {
             const startTime = Date.now();
+
+            let myId = await Socketz.getId(socket.id);
+            let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
             try {
                 console.log("Tournament_move_made ::", JSON.stringify(params));
                 console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
-
-                let myId = await Socketz.getId(socket.id);
-                let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
                 let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params.room);
                 let response = await _TableInstance.moveTourney(params, myId, gamePlayData, myRoom);
                 console.log('Tournament_move_made callback', response);
                 await redisCache.addToRedis(myRoom.room, myRoom);
                 await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
                 // console.log('GAME-PLAY-DATA-4', JSON.stringify(gamePlayData));
-                await bullQueue.add(
-                    {
-                        name: "playerTurnQueue",
-                        payload: { room: params.room },
-                    },
-                    {
-                        delay: 1000 * 12
-                    }
-                );
+                if(response)
+                {
+                    let timer =12000;
+                    if(response.callback && response.callback.isKillable)
+                        timer=14500;
 
+                    await bullQueue.add(
+                        {
+                            name: "playerTurnQueue",
+                            payload: { room: params.room },
+                        },
+                        {
+                            delay: timer
+                        }
+                    );
                 callback(response.callback);
                 if (response.callback.status == 1) processEvents(response, myRoom, socket);
+            }
             }
             catch (err) {
                 console.error("tournament_move_made", err);
                 let logData = {
                     level: 'error',
-                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, 'params': params, stackTrace : err.stack}
+                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, 'params': params, 'room' : myRoom, stackTrace : err.stack,'id':myId}
                 };
                 logDNA.error('tournament_move_made :: Event :: Error', logData);
                 return callback();
@@ -752,9 +811,13 @@ module.exports = function (io, bullQueue) {
                 return false;
             }
 
-        } catch (Execption) {
+        } catch (err) {
             // To log error
-            logDNA.log('checkGameExpireTime', { level: 'error', meta: { 'error': Execption } });
+            let logData = {
+                level: 'error',
+                meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, stackTrace : err.stack}
+            };
+            logDNA.error('checkGameExpireTime', logData);
         }
     }
 
@@ -788,7 +851,7 @@ module.exports = function (io, bullQueue) {
         //     }
         // }
         else {
-            console.error('Error:: Invalid job name', job.data.name);
+           // console.error('Error:: Invalid job name', job.data.name);
         }
     }
 
@@ -837,12 +900,24 @@ module.exports = function (io, bullQueue) {
             }
 
         }
-        catch (ex) {
-            console.log("interval exception ", ex);
-
-            await bullQueue.add(job, {
-                delay: 1000 * 12
-            });
+        catch (err) {
+            if(params_data && params_data.room)
+            {
+            await bullQueue.add(
+                {
+                    name: "playerTurnQueue",
+                    payload: { room: params_data.room },
+                },
+                {
+                    delay: 1000 * 12
+                }
+            );
+            }
+            let logData = {
+                level: 'error',
+                meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, stackTrace : err.stack,'job':JSON.stringify(job)}
+            };
+            logDNA.error('playerTurn', logData);       
         }
 
     }

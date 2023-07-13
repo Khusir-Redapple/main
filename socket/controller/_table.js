@@ -9,7 +9,8 @@ const requestTemplate = require('../../api/service/request-template');
 const {_Tables}     = require('../utils/_tables');
 const _tab          = new _Tables();
 const redisCache    = require('../../api/service/redis-cache');
-const logDNA        = require('../../api/service/logDNA');
+const logDNA = require('../../api/service/logDNA');
+
 module.exports = {
     //Roll dice for tournament
     tournamntDiceRolled: async function (socket, params, id, myRoom, gamePlayData)
@@ -337,7 +338,11 @@ module.exports = {
         {
             // To capture pawn tap time
             let pawnTime = await _tab.setPawnMoveTime(myRoom);
-            gamePlayData.data.pawn_move_time.push(pawnTime);
+            if(gamePlayData && gamePlayData.data)
+            {
+                gamePlayData.data.pawn_move_time.push(pawnTime);
+            }
+            
 
             // VALIDATION
             if (!params)
@@ -371,13 +376,13 @@ module.exports = {
                 console.log("IN moveTourney IF - ", checkTabel, myPos); //to handle token revert issue - NO1-I44
                 return;
             }
-
             let diceVales = [];
             diceVales.push(params.dice_value)
             // const allEqual = diceVales => diceVales.every(v => v === 6);
-            // try
-            let dicesValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
-            if (params.dice_value == 6 && dicesValue == params.dice_value)
+
+            // to validate player have passed same value that have in backend.
+            let diceValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
+            if (params.dice_value == 6 && params.dice_value == diceValue)
             {
                 await _tab.addBonus(params.room, id, 1, 'six', myRoom, gamePlayData); //remove this for not giving 2nd turn on 6
                 await _tab.addSix(params.room, id, myRoom);
@@ -403,7 +408,7 @@ module.exports = {
                 // if move not possible.
                 if (params.dice_value == 6)
                 {
-                    // try
+                    // remove the bonus dice.
                     _tab.useBonus(params.room, id, myRoom);
                     //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
                     await _tab.scrapTurn(params.room, myPos, myRoom);
@@ -751,8 +756,8 @@ module.exports = {
                                         }
                                     });
                                 }
-                                // try 
-                                //moveBonusCheck = true;
+
+                               // moveBonusCheck = true;
                                 killed = true;
                                 await _tab.addBonus(params.room, id, 0, "Kill", myRoom, gamePlayData);
                                 await _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus', myRoom, gamePlayData)
@@ -769,24 +774,24 @@ module.exports = {
                                 // _tab.addBonus(params.room, id, canIKill.length, "Kill");                            
                                 await _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus',myRoom, gamePlayData)
                                 console.log('after cut ------>', myRoom);
-                                // try
-                               // moveBonusCheck = true;
+                                // moveBonusCheck = true;
                                 killed = true;
                             }
-                            // try
                             moveBonusCheck = true;
                         }
-                        
                         // Else [!canIKill]
-                        // try - comment the below code just for testing.
-                        moveBonusCheck = true;
                         // else
                         // {
                         //     moveBonusCheck = true;
                         // }
-                    } catch (error)
+                        moveBonusCheck = true;
+                    } catch (err)
                     {
-                        console.lof("CATCH ERROR _ ", error)
+                        let logData = {
+                            level: 'error',
+                            meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, 'params': params,'room': myRoom, stackTrace : err.stack}
+                        };
+                        logDNA.error('moveTourney 2', logData);
                     }
 
                 }
@@ -943,11 +948,12 @@ module.exports = {
             return resObj;
         } catch (err)
         {
+            console.log('ERROR', err);
             let logData = {
                 level: 'error',
-                meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, 'params': params, stackTrace : err.stack}
+                meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, 'params': params, 'room': myRoom, stackTrace : err.stack}
             };
-            logDNA.error('tournament_move_made', logData);
+            logDNA.error('moveTourney 3', logData);
         }
     },
     checkwinnerOfTournament: async function (room,myRoom)
@@ -1018,7 +1024,10 @@ module.exports = {
     leaveTable: async function (params, id, socket, myRoom, gamePlayData)
     {
         // To set game time in leave table 
-        gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
+        if(gamePlayData && gamePlayData.data)
+         {
+             gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
+         }
         let refund = '';
         if (!Service.validateObjectId(id))
             return {
@@ -1768,6 +1777,7 @@ module.exports = {
             // start.timeToCompleteGame = seconds;
             start.timeToCompleteGame = config.gameTime * 60;
         }
+
         let returnStart = false;
         if(start && start.table && start.table.users && start.table.users.length > 0)
         {
@@ -1779,7 +1789,6 @@ module.exports = {
             returnStart.table.users.forEach(element => {
                 delete element.diceValue;
             });
-
         }
         return returnStart;
     },

@@ -39,13 +39,11 @@ async function call(path, method, body, headers = {})
 
     } catch (err)
     {
-        console.log(err);
-        // for logDNA 
         let logData = {
-            level: 'debugg',
-            meta: err
+            level: 'error',
+            meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, stackTrace : err.stack}
         };
-        logDNA.log('verifyUserError', logData);
+        logDNA.error('call', logData);
         return {isSuccess: false};
 
     }

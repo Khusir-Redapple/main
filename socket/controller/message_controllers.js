@@ -29,14 +29,14 @@ class MessageController
             logDNA.log('SQS sendMessage Success', logData);
 
             return result;
-        } catch (error)
+        } catch (err)
         {
             // for SQS Success
-            let logData = {
+             let logData = {
                 level: 'error',
-                meta: {'message' : error.message}
+                meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, 'req': req, stackTrace : err.stack}
             };
-            logDNA.log('SQS sendMessage ERROR', logData);
+            logDNA.error('sendMessage', logData);
             return false;
         }
     }
