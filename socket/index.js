@@ -32,17 +32,17 @@ module.exports = function (io, bullQueue) {
     }
 
     bullQueue.process(async (job) => {
-        console.log("EVENT  ===>", job.data.name);
+       // console.log("EVENT  ===>", job.data.name);
         return processBullEvent(job);
     });
 
     bullQueue.on('completed', (job, result) => {
-        console.log(`Job completed with result`, job.data);
+       // console.log(`Job completed with result`, job.data);
         job.remove();
     });
 
     bullQueue.on('failed', (job, result) => {
-        console.log(`Job failed with result ${job.data}`);
+        //console.log(`Job failed with result ${job.data}`);
         job.remove();
     });
 
@@ -686,7 +686,7 @@ module.exports = function (io, bullQueue) {
     }
     async function processEvents(rez, myRoom, socket) {
         if (_.isArray(rez.events)) {
-            console.log('Process Events ::: ', JSON.stringify(rez.events));
+            //console.log('Process Events ::: ', JSON.stringify(rez.events));
             if (rez.events.length > 0) {
                 for (const d of rez.events) {
                     let logData = {
