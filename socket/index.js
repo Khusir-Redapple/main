@@ -783,6 +783,19 @@ module.exports = function (io, bullQueue) {
                                             myRoom = data.table;
                                             processEvents(data, myRoom, socket);
                                         } else if (d.name == 'end_game') {
+                                            let compressedResponse = [];
+                                            d.data.game_data.map((cur) => {
+                                                compressedResponse.push({
+                                                    "player_index":cur.player_index,
+                                                    "id":cur.id,
+                                                    "name":cur.name,
+                                                    "rank":cur.rank,
+                                                    "amount":cur.amount,
+                                                    "is_left":cur.is_left,
+                                                    "score":cur.score,
+                                                });
+                                            });
+                                            d.data.game_data = compressedResponse;
                                             io.to(d.room).emit(d.name, d.data);
                                         } else if (d.name == 'make_move') {
                                             io.to(d.room).emit(d.name, d.data);
