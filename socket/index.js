@@ -642,7 +642,7 @@ module.exports = function (io, bullQueue) {
         //turn_timestamp, turn_time, timeToCompleteGame
 
         let tableData = {};
-        tableD.room = start.table.room;
+        tableData.room = start.table.room;
         tableData.current_turn_type = start.table.current_turn_type;
         tableData.totalWinning = start.table.totalWinning;
         tableData.no_of_players = start.table.no_of_players;
