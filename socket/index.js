@@ -1025,7 +1025,7 @@ module.exports = function (io, bullQueue) {
         let gameTime = await checkGameExpireTime(myRoom);   
         if (gameTime) {
             //console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
-            io.to(start.room).emit('gameTime', { status: 1, data: { time: gameTime.time } });
+            io.to(start.room).emit('gameTime', { status: 1, data: { time: gameTime.time, current_turn: -1} });
             if (gameTime.time == 0) {
                 console.log('gameTimerEnd...........................');
                 // sent event to socket Client for equal ture.                                            
