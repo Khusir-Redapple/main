@@ -642,6 +642,7 @@ module.exports = function (io, bullQueue) {
         //turn_timestamp, turn_time, timeToCompleteGame
 
         let tableData = {};
+        tableD.room = start.table.room;
         tableData.current_turn_type = start.table.current_turn_type;
         tableData.totalWinning = start.table.totalWinning;
         tableData.no_of_players = start.table.no_of_players;
@@ -676,9 +677,6 @@ module.exports = function (io, bullQueue) {
         start.table.users = usersData;
 
         io.to(start.room).emit('startGame', start);
-        process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
-        //console.log("AFter startGame fire - ", new Date());
-
         await bullQueue.add(
             {
                 name: "playerTurnQueue",
