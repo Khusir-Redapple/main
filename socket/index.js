@@ -32,17 +32,17 @@ module.exports = function (io, bullQueue) {
     }
 
     bullQueue.process(async (job) => {
-        console.log("EVENT  ===>", job.data.name);
+       // console.log("EVENT  ===>", job.data.name);
         return processBullEvent(job);
     });
 
     bullQueue.on('completed', (job, result) => {
-        console.log(`Job completed with result`, job.data);
+        //console.log(`Job completed with result`, job.data);
         job.remove();
     });
 
     bullQueue.on('failed', (job, result) => {
-        console.log(`Job failed with result ${job.data}`);
+       // console.log(`Job failed with result ${job.data}`);
         job.remove();
     });
 
@@ -725,7 +725,7 @@ module.exports = function (io, bullQueue) {
     }
     async function processEvents(rez, myRoom, socket) {
         if (_.isArray(rez.events)) {
-            console.log('Process Events ::: ', JSON.stringify(rez.events));
+           // console.log('Process Events ::: ', JSON.stringify(rez.events));
             if (rez.events.length > 0) {
                 for (const d of rez.events) {
                     let logData = {
@@ -745,7 +745,7 @@ module.exports = function (io, bullQueue) {
                                     return;
                                 }
                             }
-                            console.log(d.name + ' firing after delay of ' + d.delay, d.name, d, new Date());
+                            //console.log(d.name + ' firing after delay of ' + d.delay, d.name, d, new Date());
                             if (d.type == 'users_including_me') {
                                 for (const g of d.users) {
                                     var id = await Socketz.getSocket(g);
@@ -931,10 +931,10 @@ module.exports = function (io, bullQueue) {
 
     async function processBullEvent(job) {
         if (job.data.name.indexOf('playerTurnQueue') > -1) {
-            console.log("playerTurn event fired", job.data.payload)
+           // console.log("playerTurn event fired", job.data.payload)
             return playerTurn(job.data);
         } else if (job.data.name.indexOf('gameCompletionQueue') > -1) {
-            console.log("checkGameCompletion event fired", job.data.payload)
+            //console.log("checkGameCompletion event fired", job.data.payload)
             return checkGameCompletion(job);
         }
         // else if (job.data.name.indexOf('gameTimer') > -1) {
