@@ -783,9 +783,8 @@ module.exports = function (io, bullQueue) {
                                             myRoom = data.table;
                                             processEvents(data, myRoom, socket);
                                         } else if (d.name == 'end_game') {
-                                            let compressedResponse = [];
-                                            d.data.game_data.map((cur) => {
-                                                compressedResponse.push({
+                                            let compressedResponse = d.data.game_data.map((cur) => {
+                                                return {
                                                     "player_index":cur.player_index,
                                                     "id":cur.id,
                                                     "name":cur.name,
@@ -793,7 +792,7 @@ module.exports = function (io, bullQueue) {
                                                     "amount":cur.amount,
                                                     "is_left":cur.is_left,
                                                     "score":cur.score,
-                                                });
+                                                };
                                             });
                                             d.data.game_data = compressedResponse;
                                             io.to(d.room).emit(d.name, d.data);
@@ -805,10 +804,9 @@ module.exports = function (io, bullQueue) {
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
-                                        if(d.name == 'playerLeft'){
-                                            let compressedResponse = [];
-                                            d.data.game_data.map((cur) => {
-                                                compressedResponse.push({
+                                        if(d.name == 'playerLeft') {
+                                            let compressedData = d.data.game_data.map((cur) => {
+                                                return {
                                                     //player_index, name, rank, amount, id, score, is_left
                                                     "player_index":cur.player_index,
                                                     "id":cur.id,
@@ -817,11 +815,11 @@ module.exports = function (io, bullQueue) {
                                                     "amount":cur.amount,
                                                     "is_left":cur.is_left,
                                                     "score":cur.score,
-                                                });
+                                                };
                                             });
                                             // final compressed response to emmit.
-                                            let compressed_data = d.data.game_data = compressedResponse;
-                                            io.to(d.room).emit(d.name, compressed_data);
+                                            d.data.game_data = compressedData;
+                                            io.to(d.room).emit(d.name, d.data);
                                         } else if(d.name == 'make_diceroll') {
                                             delete d.data.turn_timestamp;
                                             delete d.data.server_time;
@@ -834,9 +832,8 @@ module.exports = function (io, bullQueue) {
                                             io.to(d.room).emit(d.name, d.data);
                                         } else if(d.name == 'end_game') {
                                             // re-arrange the obj before send to unity :player_index, name, rank, amount, id, score, is_left
-                                            let compressedResponse = [];
-                                            d.data.game_data.map((cur) => {
-                                                compressedResponse.push({
+                                            let compressedData = d.data.game_data.map((cur) => {
+                                                return {
                                                     "player_index":cur.player_index,
                                                     "id":cur.id,
                                                     "name":cur.name,
@@ -844,9 +841,10 @@ module.exports = function (io, bullQueue) {
                                                     "amount":cur.amount,
                                                     "is_left":cur.is_left,
                                                     "score":cur.score,
-                                                });
+                                                };
                                             });
-                                            d.data.game_data = compressedResponse;
+                                            d.data.game_data = compressedData;
+                                            io.to(d.room).emit(d.name, d.data);
                                         }
                                         else {
                                             io.to(d.room).emit(d.name, d.data);
