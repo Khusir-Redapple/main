@@ -637,7 +637,7 @@ module.exports = function (io, bullQueue) {
         start.turn_timestamp = new Date();
         myRoom.turn_timestamp = new Date();
         // Compressed response befor send to unity
-        //current_turn_type, totalWinning, no_of_players, entryFee, users,
+        //room current_turn_type, totalWinning, no_of_players, entryFee, users,
         //current_turn, players_done, players_won, server_time,
         //turn_timestamp, turn_time, timeToCompleteGame
 
@@ -804,7 +804,33 @@ module.exports = function (io, bullQueue) {
                                             // final compressed response to emmit.
                                             let compressed_data = d.data.game_data = compressedResponse;
                                             io.to(d.room).emit(d.name, compressed_data);
-                                        } else {
+                                        } else if(d.name == 'make_diceroll') {
+                                            delete d.data.turn_timestamp;
+                                            delete d.data.server_time;
+
+                                            io.to(d.room).emit(d.name, d.data);
+                                        } else if(d.name == 'make_move'){
+                                            delete d.data.turn_timestamp;
+                                            delete d.data.server_time;
+
+                                            io.to(d.room).emit(d.name, d.data);
+                                        } else if(d.name == 'end_game') {
+                                            // re-arrange the obj before send to unity :player_index, name, rank, amount, id, score, is_left
+                                            let compressedResponse = [];
+                                            d.data.game_data.map((cur) => {
+                                                compressedResponse.push({
+                                                    "player_index":cur.player_index,
+                                                    "id":cur.id,
+                                                    "name":cur.name,
+                                                    "rank":cur.rank,
+                                                    "amount":cur.amount,
+                                                    "is_left":cur.is_left,
+                                                    "score":cur.score,
+                                                });
+                                            });
+                                            d.data.game_data = compressedResponse;
+                                        }
+                                        else {
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                        
@@ -813,8 +839,18 @@ module.exports = function (io, bullQueue) {
                                     io.to(d.room).emit(d.name, d.data);
                                 }
                             } else if (d.type == 'room_excluding_me') {
-                                console.log("room_excluding_me", d.data);
-                                socket.to(d.room).emit(d.name, d.data);
+                                if(d.name == 'dice_rolled') {
+                                    delete d.data.dices_rolled;
+                                    delete d.data.skip_dice;
+                                    socket.to(d.room).emit(d.name, d.data);
+                                } else if(d.name == 'move_made') {
+                                    delete d.data.dices_rolled;
+                                    socket.to(d.room).emit(d.name, d.data);  
+                                }
+                                else {
+                                    socket.to(d.room).emit(d.name, d.data);
+                                }
+                                
                             }
 
                             if (d.name == 'newTableCreated') {
