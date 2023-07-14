@@ -753,6 +753,12 @@ module.exports = function (io, bullQueue) {
                                     console.log("socket", id);
                                     io.to(id).emit(d.name, d.data);
                                 }
+                                if(d.name == 'leaveTable'){
+                                    delete d.data.room;
+                                    delete d.data.header;
+                                    delete d.data.refund;
+                                    io.to(id).emit(d.name, d.data);
+                                }
                             } else if (d.type == 'users_excluding_me') {
                                 for (const g of d.users) {
                                     var id = await Socketz.getSocket(g);
@@ -1020,7 +1026,7 @@ module.exports = function (io, bullQueue) {
         let gameTime = await checkGameExpireTime(myRoom);   
         if (gameTime) {
             //console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
-            io.to(start.room).emit('gameTime', { status: 1, status_code: 200, data: { time: gameTime.time, current_turn: -1 } });
+            io.to(start.room).emit('gameTime', { status: 1, data: { time: gameTime.time } });
             if (gameTime.time == 0) {
                 console.log('gameTimerEnd...........................');
                 // sent event to socket Client for equal ture.                                            
