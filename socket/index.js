@@ -755,8 +755,7 @@ module.exports = function (io, bullQueue) {
                                 }
                                 if(d.name == 'leaveTable'){
                                     delete d.data.room;
-                                    delete d.data.header;
-                                    delete d.data.refund;
+                                    // delete d.data.refund;
                                     io.to(id).emit(d.name, d.data);
                                 }
                             } else if (d.type == 'users_excluding_me') {
