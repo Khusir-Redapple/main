@@ -1856,9 +1856,12 @@ module.exports = {
 
     reconnectIfPlaying: async function (id) 
     {
-        console.log('reconnecting', id);
+        console.log('User Playing On Table');
+        //if (!Service.validateObjectId(id)) false;
+        // let us = await User.findById(id);
+
+        // console.log('USERS DETAILS BY ID', us);
         let roomId = await redisCache.getRecordsByKeyRedis('user_id'+id.toString());
-        console.log('reconnecting_room', roomId);
         let myRoom;
         if(roomId) {
             myRoom = await redisCache.getRecordsByKeyRedis(roomId);
