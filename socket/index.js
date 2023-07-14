@@ -725,7 +725,7 @@ module.exports = function (io, bullQueue) {
     }
     async function processEvents(rez, myRoom, socket) {
         if (_.isArray(rez.events)) {
-           // console.log('Process Events ::: ', JSON.stringify(rez.events));
+           console.log('Process Events ::: ', JSON.stringify(rez.events));
             if (rez.events.length > 0) {
                 for (const d of rez.events) {
                     let logData = {
@@ -838,7 +838,6 @@ module.exports = function (io, bullQueue) {
                                         else {
                                             io.to(d.room).emit(d.name, d.data);
                                         }
-                                       
                                     }
                                 } else {
                                     io.to(d.room).emit(d.name, d.data);
