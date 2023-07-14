@@ -636,6 +636,45 @@ module.exports = function (io, bullQueue) {
         start.server_time = new Date();
         start.turn_timestamp = new Date();
         myRoom.turn_timestamp = new Date();
+        // Compressed response befor send to unity
+        //current_turn_type, totalWinning, no_of_players, entryFee, users,
+        //current_turn, players_done, players_won, server_time,
+        //turn_timestamp, turn_time, timeToCompleteGame
+
+        let tableData = {};
+        tableData.current_turn_type = start.table.current_turn_type;
+        tableData.totalWinning = start.table.totalWinning;
+        tableData.no_of_players = start.table.no_of_players;
+        tableData.entryFee = start.table.entryFee;
+        tableData.current_turn = start.table.current_turn;
+        tableData.players_done = start.table.players_done;
+        tableData.players_won = start.table.players_won;
+        tableData.server_time = start.table.server_time;
+        tableData.turn_timestamp = start.table.turn_timestamp;
+        tableData.turn_time = start.table.turn_time;
+        tableData.timeToCompleteGame = start.table.timeToCompleteGame;
+
+        //name, id, profile_pic, position, is_active, is_done, is_left,
+        //rank, tokens, life, token_colour
+        let usersData = [];
+        start.table.users.map((ele) => {
+            usersData.push({
+                'name' : ele.name,
+                'id' : ele.id,
+                'profile_pic' : ele.profile_pic,
+                'position' : ele.position,
+                'is_active' : ele.is_active,
+                'is_done' : ele.is_done,
+                'is_left' : ele.is_left,
+                'rank' : ele.rank,
+                'tokens' : ele.tokens,
+                'life' : ele.life,
+                'token_colour' : ele.token_colour,
+            });
+        })
+        start.table = tableData;
+        start.table.users = usersData;
+
         io.to(start.room).emit('startGame', start);
         process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
         //console.log("AFter startGame fire - ", new Date());
@@ -750,7 +789,27 @@ module.exports = function (io, bullQueue) {
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
-                                        io.to(d.room).emit(d.name, d.data);
+                                        if(d.name == 'playerLeft'){
+                                            let compressedResponse = [];
+                                            d.data.game_data.map((cur) => {
+                                                compressedResponse.push({
+                                                    //player_index, name, rank, amount, id, score, is_left
+                                                    "player_index":cur.player_index,
+                                                    "id":cur.id,
+                                                    "name":cur.name,
+                                                    "rank":cur.rank,
+                                                    "amount":cur.amount,
+                                                    "is_left":cur.is_left,
+                                                    "score":cur.score,
+                                                });
+                                            });
+                                            // final compressed response to emmit.
+                                            let compressed_data = d.data.game_data = compressedResponse;
+                                            io.to(d.room).emit(d.name, compressed_data);
+                                        } else {
+                                            io.to(d.room).emit(d.name, d.data);
+                                        }
+                                       
                                     }
                                 } else {
                                     io.to(d.room).emit(d.name, d.data);
