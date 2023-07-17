@@ -33,7 +33,8 @@ module.exports = function (io, bullQueue) {
 
     bullQueue.process(async (job) => {
        // console.log("EVENT  ===>", job.data.name);
-        return processBullEvent(job);
+        // return processBullEvent(job); 
+        return true;
     });
 
     bullQueue.on('completed', (job, result) => {
@@ -328,12 +329,46 @@ module.exports = function (io, bullQueue) {
                     message: 'An error was encountered. Please join a new game.',
                 });
             }
-           
-            //var rez = await _TableInstance.joinTournament(params, myId, socket);
-            //let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-            //let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
             var rez = await _TableInstance.joinTournamentV2(params, params.entryFee, myId, us,0);
-            callback(rez.callback);
+            let compressedMyRoom = rez.callback.table.users.map((element) => {
+                return {
+                    "name" : element.name,
+                    "id" : element.id,
+                    "profile_pic" : element.profile_pic,
+                    "position" : element.position,
+                    "is_active" : element.is_active,
+                    "is_done" :  element.hasOwnProperty('is_done') ? element.is_done : false,
+                    "is_left" : element.hasOwnProperty('is_left') ? element.is_left : false,
+                    "rank" : element.rank,
+                    "tokens" : element.tokens,
+                    "life" : element.life,
+                    "token_colour" : element.token_colour,
+                };
+            });
+            let compressedTable = {
+                    "room": rez.callback.table.room,
+                    "totalWinning": rez.callback.table.totalWinning,
+                    "players_done": rez.callback.table.players_done,
+                    "players_won": rez.callback.table.players_won,
+                    "current_turn": rez.callback.table.current_turn,
+                    "current_turn_type": rez.callback.table.current_turn_type,
+                    "no_of_players": rez.callback.table.no_of_players,
+                    "users" : compressedMyRoom,
+                    "entryFee": rez.callback.table.entryFee,
+                    "turn_time": rez.callback.table.turn_time,
+                    "timeToCompleteGame": rez.callback.table.timeToCompleteGame,
+                    "server_time" : new Date(),
+                    "turn_timestamp" : new Date(),
+                }            
+
+            let compressedObj = {
+                "status": rez.callback.status,
+                "table" : compressedTable,
+                "position": rez.callback.position,
+                "timerStart": rez.callback.timerStart,
+                "default_diceroll_timer": rez.callback.default_diceroll_timer,
+            }
+            callback(compressedObj);
             if (rez.callback.status == 1)
             {  
                 let myRoom=rez.myRoom;
@@ -459,7 +494,6 @@ module.exports = function (io, bullQueue) {
                 myRoom.users.map((cur) => {
                     userData.push({
                         "player_index": cur.position,
-                        "numeric_id": cur.numeric_id,
                         "id": cur.id,
                         "name": cur.name,
                         "rank": 0,
