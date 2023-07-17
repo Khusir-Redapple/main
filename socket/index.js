@@ -224,9 +224,48 @@ module.exports = function (io, bullQueue) {
                 }
                 // If no room to join the game.
                 rez.table.room ? socket.join(rez.table.room) : socket.join();
-                rez.server_time = new Date();
-                rez.table.server_time = new Date();
-                return callback(rez);
+                // rez.server_time = new Date();
+                // rez.table.server_time = new Date();
+                // return callback(rez);
+               
+                let compressedMyRoom = rez.table.users.map((element) => {
+                    return {
+                        "name" : element.name,
+                        "id" : element.id,
+                        "profile_pic" : element.profile_pic,
+                        "position" : element.position,
+                        "is_active" : element.is_active,
+                        "is_done" :  element.hasOwnProperty('is_done') ? element.is_done : false,
+                        "is_left" : element.hasOwnProperty('is_left') ? element.is_left : false,
+                        "rank" : element.rank,
+                        "tokens" : element.tokens,
+                        "life" : element.life,
+                        "token_colour" : element.token_colour,
+                    };
+                });
+                let compressedTable = {
+                        "room": rez.table.room,
+                        "totalWinning": rez.table.totalWinning,
+                        "players_done": rez.table.players_done,
+                        "players_won": rez.table.players_won,
+                        "current_turn": rez.table.current_turn,
+                        "current_turn_type": rez.table.current_turn_type,
+                        "no_of_players": rez.table.no_of_players,
+                        "users" : compressedMyRoom,
+                        "entryFee": rez.table.entryFee,
+                        "turn_time": rez.table.turn_time,
+                        "timeToCompleteGame": rez.table.timeToCompleteGame,
+                        "server_time" : rez.table.server_time,
+                        "turn_timestamp" : rez.table.turn_timestamp,
+                    }            
+                    
+                let compressedObj = {
+                    "status": rez.status,
+                    "table" : compressedTable,
+                    "current_turn_type": rez.current_turn_type,
+                    "dices_rolled": rez.dices_rolled,
+                }
+               return callback(compressedObj); 
 
             } catch (ex) {
                 console.log("join_previous", ex);
