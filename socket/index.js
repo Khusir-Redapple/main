@@ -68,19 +68,44 @@ module.exports = function (io, bullQueue) {
          */
         socket.on('fetchGameData', async function (params, callback) {
             try {
-               
                 const startTime = Date.now();
                 let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-                myRoom.players_done = myRoom.no_of_players;
-                myRoom.no_of_players = parseInt(myRoom.no_of_players);
-                myRoom.server_time = new Date();
+                let compressedUsersRes = myRoom.users.map((element) => {
+                    return {
+                        "name" : element.name,
+                        "id" : element.id,
+                        "profile_pic" : element.profile_pic,
+                        "position" : element.position,
+                        "is_active" : element.is_active,
+                        "is_done" : element.is_done,
+                        "is_left" : element.is_left,
+                        "rank" : element.rank,
+                        "tokens" : element.tokens,
+                        "life" : element.life,
+                        "token_colour" : element.token_colour,
+                    };
+                });
+                let myRoomCompressed = {
+                    "totalWinning": myRoom.totalWinning,
+                    "players_done": myRoom.no_of_players,
+                    "players_won": myRoom.players_won,
+                    "current_turn": myRoom.current_turn,
+                    "current_turn_type": myRoom.current_turn_type,
+                    "no_of_players": parseInt(myRoom.no_of_players),
+                    "users" : compressedUsersRes,
+                    "entryFee": myRoom.entryFee,
+                    "turn_time": myRoom.turn_time,
+                    "timeToCompleteGame": myRoom.timeToCompleteGame,
+                    "server_time": new Date(),
+                    "turn_timestamp": myRoom.turn_timestamp,
+                }
                 const endTime = (Date.now() - startTime);
                 let logData = {
                     level: 'warning',
                     meta: { p: 'fetchGameData',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
                 };
                 logDNA.warn(`fetchGameData`, logData);
-                return callback(myRoom);
+                return callback(myRoomCompressed);
             }
             catch (err) {
                 let logData = {
@@ -137,16 +162,16 @@ module.exports = function (io, bullQueue) {
                     var rez = await _TableInstance.reconnectIfPlaying(playerExists);
                     responseObj = {
                         status: 1,
-                        message: 'Socket registered successfully',
-                        server_time: new Date().getTime().toString(),
+                        // message: 'Socket registered successfully',
+                        // server_time: new Date().getTime().toString(),
                         joined : rez.status,
                     };
                     return callback(responseObj);
                 } else {
                     responseObj = {
                         status: 1,
-                        message: 'Socket registered successfully',
-                        server_time: new Date().getTime().toString(),
+                        // message: 'Socket registered successfully',
+                        // server_time: new Date().getTime().toString(),
                         joined: 0
                     };
                     return callback(responseObj);
