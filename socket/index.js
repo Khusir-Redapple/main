@@ -33,8 +33,7 @@ module.exports = function (io, bullQueue) {
 
     bullQueue.process(async (job) => {
        // console.log("EVENT  ===>", job.data.name);
-        // return processBullEvent(job); 
-        return true;
+        return processBullEvent(job);
     });
 
     bullQueue.on('completed', (job, result) => {
