@@ -1,7 +1,7 @@
 'use strict';
 
 const {sqsSendMessage}  = require('../../api/operations/sqs_operations');
-const {User}            = require('../../api/models/user');
+// const {User}            = require('../../api/models/user');
 const logDNA            = require('../../api/service/logDNA');
 class MessageController
 {
@@ -24,7 +24,7 @@ class MessageController
             // for SQS Success
             let logData = {
                 level: 'debugg',
-                meta: {'result' : result.message}
+                meta: {'result' : result}
             };
             logDNA.log('SQS sendMessage Success', logData);
 

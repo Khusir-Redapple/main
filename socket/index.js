@@ -1,13 +1,13 @@
-const _ = require('lodash');
-const { Sockets } = require('./helper/sockets');
-const _TableInstance = require('./controller/_table');
-const Table = require('./../api/models/table');
-const { User } = require('./../api/models/user');
-const localization = require('./../api/service/localization');
-const Socketz = new Sockets();
+const _               = require('lodash');
+const {Sockets}       = require('./helper/sockets');
+const _TableInstance  = require('./controller/_table');
+// const Table           = require('./../api/models/table');
+// const {User}          = require('./../api/models/user');
+const localization    = require('./../api/service/localization');
+const Socketz         = new Sockets();
 const requestTemplate = require('../api/service/request-template');
 const config = require('../config');
-const ObjectId = require('mongoose').Types.ObjectId;
+// const ObjectId = require('mongoose').Types.ObjectId;
 const logDNA = require('../api/service/logDNA');
 const redisCache = require('../api/service/redis-cache');
 const { CostExplorer } = require('aws-sdk');
@@ -27,26 +27,22 @@ module.exports = function (io, bullQueue) {
         // for logDNA 
         logDNA.log('Global error', {
             level: 'error',
-            meta: {
-                error:error,
-                stackTrace:error.stack
-            }
-            
+            meta: {'message': error.message, 'stack' : error.stack}
         });
     }
 
     bullQueue.process(async (job) => {
-        console.log("EVENT  ===>", job.data.name);
+       // console.log("EVENT  ===>", job.data.name);
         return processBullEvent(job);
     });
 
     bullQueue.on('completed', (job, result) => {
-        console.log(`Job completed with result`, job.data);
+        //console.log(`Job completed with result`, job.data);
         job.remove();
     });
 
     bullQueue.on('failed', (job, result) => {
-        console.log(`Job failed with result ${job.data}`);
+       // console.log(`Job failed with result ${job.data}`);
         job.remove();
     });
 
@@ -72,23 +68,44 @@ module.exports = function (io, bullQueue) {
          */
         socket.on('fetchGameData', async function (params, callback) {
             try {
-               
                 const startTime = Date.now();
                 let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-                // let response = await _TableInstance.getDataByRoom(params.room, myRoom);
-                // if(response) {
-                //     myRoom = response.table;
-                // }
-                myRoom.players_done = myRoom.no_of_players;
-                myRoom.no_of_players = parseInt(myRoom.no_of_players);
-                myRoom.server_time = new Date();
+                let compressedUsersRes = myRoom.users.map((element) => {
+                    return {
+                        "name" : element.name,
+                        "id" : element.id,
+                        "profile_pic" : element.profile_pic,
+                        "position" : element.position,
+                        "is_active" : element.is_active,
+                        "is_done" : element.is_done,
+                        "is_left" : element.is_left,
+                        "rank" : element.rank,
+                        "tokens" : element.tokens,
+                        "life" : element.life,
+                        "token_colour" : element.token_colour,
+                    };
+                });
+                let myRoomCompressed = {
+                    "totalWinning": myRoom.totalWinning,
+                    "players_done": myRoom.no_of_players,
+                    "players_won": myRoom.players_won,
+                    "current_turn": myRoom.current_turn,
+                    "current_turn_type": myRoom.current_turn_type,
+                    "no_of_players": parseInt(myRoom.no_of_players),
+                    "users" : compressedUsersRes,
+                    "entryFee": myRoom.entryFee,
+                    "turn_time": myRoom.turn_time,
+                    "timeToCompleteGame": myRoom.timeToCompleteGame,
+                    "server_time": new Date(),
+                    "turn_timestamp": myRoom.turn_timestamp,
+                }
                 const endTime = (Date.now() - startTime);
                 let logData = {
                     level: 'warning',
                     meta: { p: 'fetchGameData',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
                 };
                 logDNA.warn(`fetchGameData`, logData);
-                return callback(myRoom);
+                return callback(myRoomCompressed);
             }
             catch (err) {
                 let logData = {
@@ -118,7 +135,10 @@ module.exports = function (io, bullQueue) {
             
         });
         // New connection to Socket with Auth
-        socket.on('join', async (params, callback) => {
+        socket.on('join', async (params, callback) =>
+        {
+            // Start the timer
+            const startTime = Date.now();
             let responseObj = {};
             const start = Date.now();
 
@@ -136,54 +156,29 @@ module.exports = function (io, bullQueue) {
                         message: 'No Token provided',
                     });
                 }
-                let us = await User.findOne({
-                    'token': params.token,
-                });
-                if (!us) {
+                let playerExists = await redisCache.getRecordsByKeyRedis(socket.id);
+                if(playerExists) {
+                    //Check if user already playing
+                    var rez = await _TableInstance.reconnectIfPlaying(playerExists);
                     responseObj = {
                         status: 1,
-                        message: 'Socket registered successfully',
-                        server_time: new Date().getTime().toString(),
+                        // message: 'Socket registered successfully',
+                        // server_time: new Date().getTime().toString(),
+                        joined : rez.status,
+                    };
+                    return callback(responseObj);
+                } else {
+                    responseObj = {
+                        status: 1,
+                        // message: 'Socket registered successfully',
+                        // server_time: new Date().getTime().toString(),
                         joined: 0
                     };
                     return callback(responseObj);
                 }
-                
-                if(us && us._id)
-                {
-                await User.findOneAndUpdate(
-                    {
-                        _id: ObjectId(us._id),
-                    },
-                    {
-                        $set: {
-                            'token': params.token,
-                            'joinedAt': new Date().getTime()
-                        },
-                    }
-                );
-                socket.data_id = us._id.toString();
-                socket.data_name = us.name;
-                socket.join(socket.data_id);
-                await Socketz.updateSocket(us._id, socket);
-                //startTime = new Date();
-                us.save();
-                await redisCache.addToRedis(params.token, us._id.toString());
-                //Check if user already playing
-                var rez = await _TableInstance.reconnectIfPlaying(us._id);
-
-                responseObj = {
-                    status: 1,
-                    message: 'Socket registered successfully',
-                    server_time: new Date().getTime().toString(),
-                };
-                responseObj.joined = rez.status;
-                return callback(responseObj);
-             }
-                // To delete boject
-                // deleteObjectProperty(rez);
-            } catch (err) {
-                console.log("join", err);
+            } catch (err)
+            {
+                console.log("join",err);   
                 // for logDNA 
                 let logData = {
                     level: 'error',
@@ -199,15 +194,13 @@ module.exports = function (io, bullQueue) {
 
                 console.log("join", err);
                 return callback();
-            }
-            finally{
-          
-            const endTime = (Date.now() - start);
-            let logData = {
-                level: 'warning',
-                meta: { p: 'join',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
-            };
-            logDNA.warn(`join`, logData);
+            } finally {
+                const endTime = (Date.now() - start);
+                let logData = {
+                    level: 'warning',
+                    meta: { p: 'join',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                };
+                logDNA.warn(`join`, logData);
             }
         });
 
@@ -231,10 +224,48 @@ module.exports = function (io, bullQueue) {
                 }
                 // If no room to join the game.
                 rez.table.room ? socket.join(rez.table.room) : socket.join();
-                process.env.CURRENT_TURN_POSITION = rez.current_turn;
-                rez.server_time = new Date();
-                rez.table.server_time = new Date();
-                return callback(rez);
+                // rez.server_time = new Date();
+                // rez.table.server_time = new Date();
+                // return callback(rez);
+               
+                let compressedMyRoom = rez.table.users.map((element) => {
+                    return {
+                        "name" : element.name,
+                        "id" : element.id,
+                        "profile_pic" : element.profile_pic,
+                        "position" : element.position,
+                        "is_active" : element.is_active,
+                        "is_done" :  element.hasOwnProperty('is_done') ? element.is_done : false,
+                        "is_left" : element.hasOwnProperty('is_left') ? element.is_left : false,
+                        "rank" : element.rank,
+                        "tokens" : element.tokens,
+                        "life" : element.life,
+                        "token_colour" : element.token_colour,
+                    };
+                });
+                let compressedTable = {
+                        "room": rez.table.room,
+                        "totalWinning": rez.table.totalWinning,
+                        "players_done": rez.table.players_done,
+                        "players_won": rez.table.players_won,
+                        "current_turn": rez.table.current_turn,
+                        "current_turn_type": rez.table.current_turn_type,
+                        "no_of_players": rez.table.no_of_players,
+                        "users" : compressedMyRoom,
+                        "entryFee": rez.table.entryFee,
+                        "turn_time": rez.table.turn_time,
+                        "timeToCompleteGame": rez.table.timeToCompleteGame,
+                        "server_time" : rez.table.server_time,
+                        "turn_timestamp" : rez.table.turn_timestamp,
+                    }            
+                    
+                let compressedObj = {
+                    "status": rez.status,
+                    "table" : compressedTable,
+                    "current_turn_type": rez.current_turn_type,
+                    "dices_rolled": rez.dices_rolled,
+                }
+               return callback(compressedObj); 
 
             } catch (ex) {
                 console.log("join_previous", ex);
@@ -247,17 +278,16 @@ module.exports = function (io, bullQueue) {
                     status: 0,
                     message: 'An error was encountered. Please join a new game.',
                 });
-            }
-            finally{
-          
+            } finally {          
                 const endTime = (Date.now() - startTime);
                 let logData = {
                     level: 'warning',
                     meta: { p: 'join_previous',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
                 };
                 logDNA.warn(`join_previous`, logData);
-                }
+            }
         });
+
         socket.on('go_in_background', async () => {
             // for logDNA 
             let logData = {
@@ -269,121 +299,127 @@ module.exports = function (io, bullQueue) {
             
         });
 
-        socket.on('joinTournament', async (data, callback) => {
+        socket.on('joinTournament', async (data, callback) =>
+        {
+            // Start the timer
             const startTime = Date.now();
-            try {
-                if (!data || !data.token) {
-                    return callback({
-                        status: 0,
-                        message: localization.missingTokenError,
-                    });
-                }
-                let verifyUser = await requestTemplate.post(`verifyuser`, { token: data.token });
-                if (!verifyUser.isSuccess) {
-                    return callback({
-                        status: 0,
-                        message: verifyUser.error || localization.apiError,
-                    });
-                }
-                let params = verifyUser.data;
-                params.room_fee = verifyUser.amount.toString();
-                params.no_of_players = verifyUser.participants.toString();
-                let payout = await calculateWinAmount(verifyUser.amount, verifyUser.payoutConfig);
-                console.log("payout -- ", payout);
-                params.winningAmount = payout.payoutConfig;
-                params.totalWinning = payout.totalWinning;
-                params.lobbyId = verifyUser.lobbyId;
-                params.entryFee = 0;
-                if ('entryFee' in verifyUser) { params.entryFee = verifyUser.entryFee };
-                logData = {
-                    level: 'debugg',
-                    meta: payout
-                };
-                logDNA.log('Calculate win ammount', logData);
-                // To delete object
-                // deleteObjectProperty(payout);
-                console.log("params >>>>>", params);
-                if (!params || !params.user_id) {
-                    return callback({
-                        status: 0,
-                        message: localization.missingParamError,
-                    });
-                }
-
-                let us = await User.findOne({
-                    'numeric_id': params.user_id,
+            try{
+            if (!data || !data.token)
+            {
+                return callback({
+                    status: 0,
+                    message: localization.missingTokenError,
                 });
-                console.log("us >>", us)
-                if (us) {
-                    socket.data_id = us._id.toString();
-                    socket.data_name = us.name;
-                    socket.join(socket.data_id);
-                    await Socketz.updateSocket(us._id, socket);
-                    us = await User.findOneAndUpdate(
-                        {
-                            _id: ObjectId(us._id),
-                        },
-                        {
-                            $set: {
-                                'name': params.user_name,
-                                'token': data.token,
-                                'lobbyId': verifyUser.lobbyId,
-                                'joinedAt': new Date().getTime(),
-                                'updatedAt': new Date().getTime()
-                            },
-                        },
-                        {
-                            new: true,
-                        }
-                    );
-                }
-                else {
-                    var newUser = new User({
-                        name: params.user_name,
-                        numeric_id: params.user_id.toString(),
-                        lobbyId: verifyUser.lobbyId,
-                        profilepic: params.profile_pic,
-                        token: params.token,
-                        joinedAt: new Date().getTime()
-                    });
-                    console.log("newUser > ", newUser)
-                    us = await newUser.save();
-                    console.log("us > ", us)
-                    socket.data_id = us._id.toString();
-                    socket.data_name = us.name;
-                    socket.join(socket.data_id);
-                    await Socketz.updateSocket(us._id, socket);
-                    // To delete object
-                    // deleteObjectProperty(newUser);
-                }
-                await redisCache.addToRedis(data.token, us._id.toString());
-                var myId = await Socketz.getId(socket.id);
-                if (!myId) {
-                    return callback({
-                        status: 0,
-                        message: 'An error was encountered. Please join a new game.',
-                    });
-                }
+            }
+            let verifyUser = await requestTemplate.post(`verifyuser`, {token: data.token});
+            if (!verifyUser.isSuccess)
+            {
+                return callback({
+                    status: 0,
+                    message: verifyUser.error || localization.apiError,
+                });
+            }
+            let params = verifyUser.data;
+            params.room_fee = verifyUser.amount.toString();
+            params.no_of_players = verifyUser.participants.toString();
+            let payout = await calculateWinAmount(verifyUser.amount, verifyUser.payoutConfig);
+            console.log("payout -- ", payout);
+            params.winningAmount = payout.payoutConfig;
+            params.totalWinning = payout.totalWinning;
+            params.lobbyId = verifyUser.lobbyId;
+            params.entryFee = 0;
+            if('entryFee' in verifyUser) { params.entryFee = verifyUser.entryFee };
+            logData = {
+                level: 'debugg',
+                meta: payout
+            };
+            logDNA.log('Calculate win ammount',logData);
+            // To delete object
+            // deleteObjectProperty(payout);
+            console.log("params >>>>>", params);
+            if (!params || !params.user_id)
+            {
+                return callback({
+                    status: 0,
+                    message: localization.missingParamError,
+                });
+            }
+            var us = {
+                'id' : params.user_id.toString(),
+                'name': params.user_name,
+                'numeric_id': params.user_id.toString(),
+                'lobbyId': verifyUser.lobbyId,
+                'profilepic': params.profile_pic,
+                'token': params.token,
+                'joinedAt' : new Date().getTime()
+            };
+            socket.data_id = params.user_id.toString();
+            socket.data_name = params.user_name;
+            socket.join(socket.data_id);
+            await Socketz.updateSocket(params.user_id, socket);
 
-                //var rez = await _TableInstance.joinTournament(params, myId, socket);
-                //let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-                //let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
-                var rez = await _TableInstance.joinTournamentV2(params, params.entryFee, myId, us, 0);
-                callback(rez.callback);
-                if (rez.callback.status == 1) {
-                    let myRoom = rez.myRoom;
-                    let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + myRoom.room);
-                    await redisCache.addToRedis(myRoom.room, myRoom);
-                    await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
-                    // console.log('GAME-PLAY-DATA-1', JSON.stringify(gamePlayData));
-                    socket.join(rez.callback.table.room);
-                    processEvents(rez, myRoom, socket);
-                    var params_data = {
-                        room: rez.callback.table.room,
-                    };
+            await redisCache.addToRedis(data.token, params.user_id.toString());
+            var myId = await Socketz.getId(socket.id);
+            if (!myId)
+            {
+                return callback({
+                    status: 0,
+                    message: 'An error was encountered. Please join a new game.',
+                });
+            }
+            var rez = await _TableInstance.joinTournamentV2(params, params.entryFee, myId, us,0);
+            let compressedMyRoom = rez.callback.table.users.map((element) => {
+                return {
+                    "name" : element.name,
+                    "id" : element.id,
+                    "profile_pic" : element.profile_pic,
+                    "position" : element.position,
+                    "is_active" : element.is_active,
+                    "is_done" :  element.hasOwnProperty('is_done') ? element.is_done : false,
+                    "is_left" : element.hasOwnProperty('is_left') ? element.is_left : false,
+                    "rank" : element.rank,
+                    "tokens" : element.tokens,
+                    "life" : element.life,
+                    "token_colour" : element.token_colour,
+                };
+            });
+            let compressedTable = {
+                    "room": rez.callback.table.room,
+                    "totalWinning": rez.callback.table.totalWinning,
+                    "players_done": rez.callback.table.players_done,
+                    "players_won": rez.callback.table.players_won,
+                    "current_turn": rez.callback.table.current_turn,
+                    "current_turn_type": rez.callback.table.current_turn_type,
+                    "no_of_players": rez.callback.table.no_of_players,
+                    "users" : compressedMyRoom,
+                    "entryFee": rez.callback.table.entryFee,
+                    "turn_time": rez.callback.table.turn_time,
+                    "timeToCompleteGame": rez.callback.table.timeToCompleteGame,
+                    "server_time" : new Date(),
+                    "turn_timestamp" : new Date(),
+                }            
 
+            let compressedObj = {
+                "status": rez.callback.status,
+                "table" : compressedTable,
+                "position": rez.callback.position,
+                "timerStart": rez.callback.timerStart,
+                "default_diceroll_timer": rez.callback.default_diceroll_timer,
+            }
+            callback(compressedObj);
+            if (rez.callback.status == 1)
+            {  
+                let myRoom=rez.myRoom;
+                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+myRoom.room);
+                await redisCache.addToRedis(myRoom.room,myRoom);
+                await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
+                // console.log('GAME-PLAY-DATA-1', JSON.stringify(gamePlayData));
+                socket.join(rez.callback.table.room);
+                processEvents(rez,myRoom, socket);
+                var params_data = {
+                    room: rez.callback.table.room,
+                }
                     var start = await _TableInstance.startIfPossibleTournament(params_data, myRoom, gamePlayData);
-
                     console.log("Start", start);
                     if (start) {
                         let reqData = await _TableInstance.getGameUsersData(start);
@@ -429,9 +465,7 @@ module.exports = function (io, bullQueue) {
                         await Socketz.sleep(40000);
                         myRoom = await redisCache.getRecordsByKeyRedis(myRoom.room);
                         gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + myRoom.room);
-                        let tableD = await Table.findOne({
-                            room: params_data.room
-                        });
+                        let tableD = await redisCache.getRecordsByKeyRedis(`table_${params_data.room}`);
                         if (tableD && tableD.players.length < tableD.no_of_players) {
                             for (let i = 0; i < 4; i++) {
                                 if (tableD.players[i] && tableD.players[i].id) {
@@ -448,7 +482,7 @@ module.exports = function (io, bullQueue) {
                         }
                     }
                 }
-            }
+            }           
             catch (ex) {
                 console.log("joinTournament ", ex);
                 let logData = {
@@ -457,22 +491,24 @@ module.exports = function (io, bullQueue) {
                 };
                 logDNA.error('joinTournament :: Event :: Error', logData);
                 return callback();
-            }
-            finally{
+            } finally {
                 const endTime = (Date.now() - startTime);
                 let logData = {
                     level: 'warning',
                     meta: { p: 'joinTournament',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
                 };
                 logDNA.warn(`joinTournament`,logData);
-                }
+            }
         });
 
         // Leave Table / Quit Game
         socket.on('leaveTable', async (params, callback) => {
             const startTime = Date.now();
-            let gamePlayData;
-            let myRoom;
+            let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
+            if (tableD != null && tableD.isGameCompleted) {
+                return callback({ 'isGameCompleted': true, 'room': params.room });
+            }
+
             try {
                 if(!params.room)
                 {
@@ -483,14 +519,7 @@ module.exports = function (io, bullQueue) {
                 }
                if(!params.room)
                    return callback();
-
-                let tableD = await Table.findOne({
-                    room: params.room
-                });
-    
-                if (tableD != null && tableD.isGameCompleted) {
-                    return callback({ 'isGameCompleted': true, 'room': params.room });
-                }
+                   
                 //console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
                 let myId = await Socketz.getId(socket.id);
                 await Socketz.userGone(socket.id, params.token);
@@ -499,17 +528,10 @@ module.exports = function (io, bullQueue) {
                 gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params.room);
                 let response = await _TableInstance.leaveTable(params, myId, socket, myRoom, gamePlayData);
                 await redisCache.addToRedis(myRoom.room, myRoom);
-                //console.log("leaveTable end response: " + JSON.stringify(response) );
-                //await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
-
-                //To add left user details with callback events.
-                // let playerPosition = response.events[0].data.position;
-                // let leftPlayerData = myRoom.users.filter((ele) => ele.position == playerPosition);
                 const userData = [];
                 myRoom.users.map((cur) => {
                     userData.push({
                         "player_index": cur.position,
-                        "numeric_id": cur.numeric_id,
                         "id": cur.id,
                         "name": cur.name,
                         "rank": 0,
@@ -534,18 +556,16 @@ module.exports = function (io, bullQueue) {
                     level: 'error',
                     meta: { 'env' : `${process.env.NODE_ENV}`,'error': ex, 'params': params, stackTrace : ex.stack, "gamePlayData": gamePlayData,"myRoom":myRoom}
                 };
-                logDNA.error('leaveTable :: Event :: Error', logData);
-              
+                logDNA.error('leaveTable :: Event :: Error', logData);              
                 return callback();
-            }
-            finally{
+            } finally {
                 const endTime = (Date.now() - startTime);
                 let logData = {
                     level: 'warning',
                     meta: { p: 'leaveTable',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
                 };
                 logDNA.warn(`leaveTable`,logData);
-                }
+            }
 
         });
 
@@ -596,15 +616,14 @@ module.exports = function (io, bullQueue) {
                 logDNA.error('tournamnt_dice_rolled :: Event :: Error', logData);
                 return callback();
                 
-            }
-            finally{
+            } finally {
                 const endTime = (Date.now() - startTime);
                 let logData = {
                     level: 'warning',
                     meta: { p: 'tournamnt_dice_rolled',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
                 };
                 logDNA.warn(`tournamnt_dice_rolled`,logData);
-                }
+            }
         });
 
         socket.on('tournament_move_made', async (params, callback) => {
@@ -637,17 +656,8 @@ module.exports = function (io, bullQueue) {
                         }
                     );
                 callback(response.callback);
-                if(response.events  && response.events.length>0)
-                {
-                    if (response.callback.status == 1) processEvents(response, myRoom, socket);
-                    // to update current turn for player if player miss the events.
-                    // if (response.events[1].data.position != null) {
-                    //     process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
-                    // } else if (response.events[1].data.player_index != null) {
-                    //     process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
-                    // }
-                }
-             }
+                if (response.callback.status == 1) processEvents(response, myRoom, socket);
+            }
             }
             catch (err) {
                 console.error("tournament_move_made", err);
@@ -657,47 +667,39 @@ module.exports = function (io, bullQueue) {
                 };
                 logDNA.error('tournament_move_made :: Event :: Error', logData);
                 return callback();
-            }
-            finally{
+            } finally {
                 const endTime = (Date.now() - startTime);
                 let logData = {
                     level: 'warning',
                     meta: { p: 'tournament_move_made',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
                 };
                 logDNA.warn(`tournament_move_made`, logData);
-                }
+            }
         });
         //Skip Turn
-        socket.on('skip_turn', async (params, callback) => {
+        socket.on('skip_turn', async (params, callback) =>
+        {
+            // Start the timer
             const startTime = Date.now();
-            let tableD = await Table.findOne({
-                room: params.room
-            });
-            if (tableD != null && tableD.isGameCompleted) {
-                return callback({ 'isGameCompleted': true, 'room': params.room });
+            let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
+            if(tableD!= null && tableD.isGameCompleted) {
+                return callback({'isGameCompleted': true, 'room': params.room});
             }
 
-            try {
-                console.log('TS1 ::', 'skip_turn', socket.id, JSON.stringify(params));
-                let myId = await Socketz.getId(socket.id);
-                let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
-                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params.room);
-                let response = await _TableInstance.skipTurn(params, myId, myRoom, gamePlayData);
-                console.log("SKIP TURN RES", response);
-                myRoom = response.table;
-                gamePlayData = response.gameData;
-                await redisCache.addToRedis(myRoom.room, myRoom);
-                await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
-                // console.log('GAME-PLAY-DATA-5', JSON.stringify(gamePlayData));
-                callback(response.callback);
-                processEvents(response, myRoom, socket);
-
-                // to update current turn for player if player miss the events.
-                if (response.events[1].data.position != null) {
-                    process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
-                } else if (response.events[1].data.player_index != null) {
-                    process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
-                }
+            try{
+            console.log('TS1 ::', 'skip_turn', socket.id, JSON.stringify(params));
+            let myId = await Socketz.getId(socket.id);
+            let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+            let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
+            let response = await _TableInstance.skipTurn(params, myId, myRoom, gamePlayData);
+            console.log("SKIP TURN RES", response);
+            myRoom = response.table;
+            gamePlayData = response.gameData;
+            await redisCache.addToRedis(myRoom.room,myRoom);
+            await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
+            // console.log('GAME-PLAY-DATA-5', JSON.stringify(gamePlayData));
+            callback(response.callback);
+            processEvents(response, myRoom, socket);
             }
             catch (ex) {
                 console.log("skip_turn", ex);
@@ -707,15 +709,14 @@ module.exports = function (io, bullQueue) {
                 };
                 logDNA.error('skip_turn :: Event :: Error', logData);
                 return callback();
-            }
-            finally{
+            } finally {
                 const endTime = (Date.now() - startTime);
                 let logData = {
                     level: 'warning',
                     meta: { p: 'skip_turn',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
                 };
                 logDNA.warn(`skip_turn`, logData);
-                }
+            }
         });
         // This event for Socket Disconnect.
         socket.on('disconnect', async () => {
@@ -727,18 +728,52 @@ module.exports = function (io, bullQueue) {
     });
 
     async function startTournament(start, socket, myRoom, gamePlayData) {
-        var params_data = {
-            room: start.room,
-        };
+
         //call api to deduct money 
         start.server_time = new Date();
         start.turn_timestamp = new Date();
         myRoom.turn_timestamp = new Date();
+        // Compressed response befor send to unity
+        //room current_turn_type, totalWinning, no_of_players, entryFee, users,
+        //current_turn, players_done, players_won, server_time,
+        //turn_timestamp, turn_time, timeToCompleteGame
+
+        let tableData = {};
+        tableData.room = start.table.room;
+        tableData.current_turn_type = start.table.current_turn_type;
+        tableData.totalWinning = start.table.totalWinning;
+        tableData.no_of_players = start.table.no_of_players;
+        tableData.entryFee = start.table.entryFee;
+        tableData.current_turn = start.table.current_turn;
+        tableData.players_done = start.table.players_done;
+        tableData.players_won = start.table.players_won;
+        tableData.server_time = start.table.server_time;
+        tableData.turn_timestamp = start.table.turn_timestamp;
+        tableData.turn_time = start.table.turn_time;
+        tableData.timeToCompleteGame = start.table.timeToCompleteGame;
+
+        //name, id, profile_pic, position, is_active, is_done, is_left,
+        //rank, tokens, life, token_colour
+        let usersData = [];
+        start.table.users.map((ele) => {
+            usersData.push({
+                'name' : ele.name,
+                'id' : ele.id,
+                'profile_pic' : ele.profile_pic,
+                'position' : ele.position,
+                'is_active' : ele.is_active,
+                'is_done' : ele.is_done,
+                'is_left' : ele.is_left,
+                'rank' : ele.rank,
+                'tokens' : ele.tokens,
+                'life' : ele.life,
+                'token_colour' : ele.token_colour,
+            });
+        })
+        start.table = tableData;
+        start.table.users = usersData;
 
         io.to(start.room).emit('startGame', start);
-        process.env.CURRENT_TURN_POSITION = myRoom.current_turn;
-        //console.log("AFter startGame fire - ", new Date());
-
         await bullQueue.add(
             {
                 name: "playerTurnQueue",
@@ -748,20 +783,8 @@ module.exports = function (io, bullQueue) {
                 delay: 12 * 1000
             }
         );
-
-        // await bullQueue.add(
-        //     {
-        //         name: "gameTimer",
-        //         payload: { room: start.room, roomData: myRoom },
-        //     },
-        //     {
-        //         repeat: {
-        //             every: 1000, // Run the job every 1000 milliseconds (1 second)
-        //         },
-        //     }
-        // );
-
     }
+
     async function calculateWinAmount(amount, payoutConfig) {
         let room_fee = amount;
         let payConfig = payoutConfig;
@@ -799,7 +822,7 @@ module.exports = function (io, bullQueue) {
     }
     async function processEvents(rez, myRoom, socket) {
         if (_.isArray(rez.events)) {
-            console.log('Process Events ::: ', JSON.stringify(rez.events));
+           console.log('Process Events ::: ', JSON.stringify(rez.events));
             if (rez.events.length > 0) {
                 for (const d of rez.events) {
                     let logData = {
@@ -819,12 +842,17 @@ module.exports = function (io, bullQueue) {
                                     return;
                                 }
                             }
-                            console.log(d.name + ' firing after delay of ' + d.delay, d.name, d, new Date());
+                            //console.log(d.name + ' firing after delay of ' + d.delay, d.name, d, new Date());
                             if (d.type == 'users_including_me') {
                                 for (const g of d.users) {
                                     var id = await Socketz.getSocket(g);
                                     console.log("user", g);
                                     console.log("socket", id);
+                                    io.to(id).emit(d.name, d.data);
+                                }
+                                if(d.name == 'leaveTable'){
+                                    delete d.data.room;
+                                    delete d.data.refund;
                                     io.to(id).emit(d.name, d.data);
                                 }
                             } else if (d.type == 'users_excluding_me') {
@@ -852,6 +880,18 @@ module.exports = function (io, bullQueue) {
                                             myRoom = data.table;
                                             processEvents(data, myRoom, socket);
                                         } else if (d.name == 'end_game') {
+                                            let compressedResponse = d.data.game_data.map((cur) => {
+                                                return {
+                                                    "player_index":cur.player_index,
+                                                    "id":cur.id,
+                                                    "name":cur.name,
+                                                    "rank":cur.rank,
+                                                    "amount":cur.amount,
+                                                    "is_left":cur.is_left,
+                                                    "score":cur.score,
+                                                };
+                                            });
+                                            d.data.game_data = compressedResponse;
                                             io.to(d.room).emit(d.name, d.data);
                                         } else if (d.name == 'make_move') {
                                             io.to(d.room).emit(d.name, d.data);
@@ -861,14 +901,68 @@ module.exports = function (io, bullQueue) {
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
-                                        io.to(d.room).emit(d.name, d.data);
+                                        if(d.name == 'playerLeft') {
+                                            let compressedData = d.data.game_data.map((cur) => {
+                                                return {
+                                                    //player_index, name, rank, amount, id, score, is_left
+                                                    "player_index":cur.player_index,
+                                                    "id":cur.id,
+                                                    "name":cur.name,
+                                                    "rank":cur.rank,
+                                                    "amount":cur.amount,
+                                                    "is_left":cur.is_left,
+                                                    "score":cur.score,
+                                                };
+                                            });
+                                            // final compressed response to emmit.
+                                            d.data.game_data = compressedData;
+                                            io.to(d.room).emit(d.name, d.data);
+                                        } else if(d.name == 'make_diceroll') {
+                                            delete d.data.turn_timestamp;
+                                            delete d.data.server_time;
+
+                                            io.to(d.room).emit(d.name, d.data);
+                                        } else if(d.name == 'make_move'){
+                                            delete d.data.turn_timestamp;
+                                            delete d.data.server_time;
+
+                                            io.to(d.room).emit(d.name, d.data);
+                                        } else if(d.name == 'end_game') {
+                                            // re-arrange the obj before send to unity :player_index, name, rank, amount, id, score, is_left
+                                            let compressedData = d.data.game_data.map((cur) => {
+                                                return {
+                                                    "player_index":cur.player_index,
+                                                    "id":cur.id,
+                                                    "name":cur.name,
+                                                    "rank":cur.rank,
+                                                    "amount":cur.amount,
+                                                    "is_left":cur.is_left,
+                                                    "score":cur.score,
+                                                };
+                                            });
+                                            d.data.game_data = compressedData;
+                                            io.to(d.room).emit(d.name, d.data);
+                                        }
+                                        else {
+                                            io.to(d.room).emit(d.name, d.data);
+                                        }
                                     }
                                 } else {
                                     io.to(d.room).emit(d.name, d.data);
                                 }
                             } else if (d.type == 'room_excluding_me') {
-                                console.log("room_excluding_me", d.data);
-                                socket.to(d.room).emit(d.name, d.data);
+                                if(d.name == 'dice_rolled') {
+                                    delete d.data.dices_rolled;
+                                    delete d.data.skip_dice;
+                                    socket.to(d.room).emit(d.name, d.data);
+                                } else if(d.name == 'move_made') {
+                                    delete d.data.dices_rolled;
+                                    socket.to(d.room).emit(d.name, d.data);  
+                                }
+                                else {
+                                    socket.to(d.room).emit(d.name, d.data);
+                                }
+                                
                             }
 
                             if (d.name == 'newTableCreated') {
@@ -883,11 +977,6 @@ module.exports = function (io, bullQueue) {
                         },
                         d.delay ? d.delay : 0
                     );
-                    // if(rez.events[0].data.position != null) {
-                    //     process.env.CURRENT_TURN_POSITION = rez.events[0].data.position;
-                    // } else if(rez.events[0].data.player_index != null) {
-                    //     process.env.CURRENT_TURN_POSITION = rez.events[0].data.player_index;
-                    // }
                 }
             }
         }
@@ -949,10 +1038,10 @@ module.exports = function (io, bullQueue) {
 
     async function processBullEvent(job) {
         if (job.data.name.indexOf('playerTurnQueue') > -1) {
-            console.log("playerTurn event fired", job.data.payload)
+           // console.log("playerTurn event fired", job.data.payload)
             return playerTurn(job.data);
         } else if (job.data.name.indexOf('gameCompletionQueue') > -1) {
-            console.log("checkGameCompletion event fired", job.data.payload)
+            //console.log("checkGameCompletion event fired", job.data.payload)
             return checkGameCompletion(job);
         }
         // else if (job.data.name.indexOf('gameTimer') > -1) {
@@ -1040,24 +1129,10 @@ module.exports = function (io, bullQueue) {
     async function checkGameCompletion(job) {
 
         let { start, myRoom } = job.data.payload;
-        let data = {
-            room: start.room
-        }
-        // checkTabel = await _TableInstance.istableExists(data, myRoom);
-        // let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
-
-        // if (latestRoomData != null && latestRoomData.isGameCompleted == true) {
-        //     console.log('Game already completed');
-        //     return;
-        // } else if (latestRoomData.isGameCompleted == 'undefined') {
-        //     console.log('Game already completed');
-        //     return;
-        // }
-
         let gameTime = await checkGameExpireTime(myRoom);   
         if (gameTime) {
             //console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
-            io.to(start.room).emit('gameTime', { status: 1, status_code: 200, data: { time: gameTime.time, current_turn: -1 } });
+            io.to(start.room).emit('gameTime', { status: 1, data: { time: gameTime.time, current_turn: -1} });
             if (gameTime.time == 0) {
                 console.log('gameTimerEnd...........................');
                 // sent event to socket Client for equal ture.                                            
@@ -1066,22 +1141,10 @@ module.exports = function (io, bullQueue) {
                 console.log('final_turn_initiated');
                 return;
             } else {
-                // let latestRoomData = await redisCache.getRecordsByKeyRedis(start.room);
-                // if (latestRoomData != null && (latestRoomData.isGameCompleted == true ||latestRoomData.isGameCompleted == 'undefined')) {
-                //      console.log('Game already completed');
-                //      return;
-                //  } 
-                // else{
                 await bullQueue.add(job.data, {
                     delay: 1000
                 });
-            //  }
             }
-        } 
-        // else {
-        //     // await bullQueue.add(job, {
-        //     //     delay: 1000
-        //     // });
-        // }
+        }
     }
 };
