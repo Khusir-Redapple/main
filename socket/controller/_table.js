@@ -1756,7 +1756,7 @@ module.exports = {
             returnStart = JSON.parse(JSON.stringify(start));
             returnStart.table.users.forEach(element => {
                 delete element.diceValue;
-                delete element.user_token;
+                //delete element.user_token;
             });
         }
         return returnStart;
@@ -1990,9 +1990,9 @@ module.exports = {
             }
             tableX = params;
             room_code = await _tab.createTableforTourney(tableX, entry_Fee);
-            await redisCache.addToRedis('room_' + room_code, 0);
+            await redisCache.addToRedis('room_'+room_code, 0);
             console.log('room_' + room_code + ' 0');
-            await redisCache.addToRedis('lobbyId_' + params.lobbyId, room_code);
+            await redisCache.addToRedis('lobbyId_'+params.lobbyId, room_code);
 
             if (!room_code) {
                 return {
@@ -2019,7 +2019,7 @@ module.exports = {
             }
         }
 
-        let valueOfRoom = await redisCache.incrFromRedis('room_' + room_code);
+        let valueOfRoom = await redisCache.incrFromRedis('room_'+room_code);
         console.log('room_' + room_code + ' ' + valueOfRoom);
         if (valueOfRoom > parseInt(params.no_of_players)) {
             // redisCache.getRecordsByKeyRedis(room_code);
@@ -2032,7 +2032,7 @@ module.exports = {
         var seatOnTable = await _tab.seatOnTableforTourney(room_code, user, optional, myRoom);
         myRoom = seatOnTable.table;
         if (seatOnTable) {
-            await redisCache.addToRedis('user_id' + myId, room_code);
+            await redisCache.addToRedis('user_id'+myId, room_code);
             var callbackRes = {
                 status: 1,
                 message: 'Done',
