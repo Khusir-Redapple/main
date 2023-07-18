@@ -656,8 +656,17 @@ module.exports = function (io, bullQueue) {
                         }
                     );
                 callback(response.callback);
-                if (response.callback.status == 1) processEvents(response, myRoom, socket);
-            }
+                if(response.events  && response.events.length>0)
+                {
+                    if (response.callback.status == 1) processEvents(response, myRoom, socket);
+                    // to update current turn for player if player miss the events.
+                    // if (response.events[1].data.position != null) {
+                    //     process.env.CURRENT_TURN_POSITION = response.events[1].data.position;
+                    // } else if (response.events[1].data.player_index != null) {
+                    //     process.env.CURRENT_TURN_POSITION = response.events[1].data.player_index;
+                    // }
+                }
+             }
             }
             catch (err) {
                 console.error("tournament_move_made", err);
@@ -737,7 +746,7 @@ module.exports = function (io, bullQueue) {
         //room current_turn_type, totalWinning, no_of_players, entryFee, users,
         //current_turn, players_done, players_won, server_time,
         //turn_timestamp, turn_time, timeToCompleteGame
-
+        
         let tableData = {};
         tableData.room = start.table.room;
         tableData.current_turn_type = start.table.current_turn_type;
@@ -751,6 +760,7 @@ module.exports = function (io, bullQueue) {
         tableData.turn_timestamp = start.table.turn_timestamp;
         tableData.turn_time = start.table.turn_time;
         tableData.timeToCompleteGame = start.table.timeToCompleteGame;
+
 
         //name, id, profile_pic, position, is_active, is_done, is_left,
         //rank, tokens, life, token_colour
