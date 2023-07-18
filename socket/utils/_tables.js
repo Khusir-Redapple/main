@@ -4,7 +4,7 @@ const {sendMessage} = require('../../socket/controller/message_controllers');
 const logDNA        = require('../../api/service/logDNA');
 const timeLib       = require('../helper/timeLib');
 const redisCache    = require('../../api/service/redis-cache');
-// const Table         = require('./../../api/models/table');
+const Table         = require('./../../api/models/table');
 let logger          = {};
 class _Tables
 {
@@ -96,6 +96,29 @@ class _Tables
         });
     }
 
+    // Check Seat Available
+    // checkSeatAvailable(room)
+    // {
+    //     let count = 0;
+    //     let noPlayers = 0;
+    //     // New modification
+    //     this.tables.reduce((accumulator, current) =>
+    //     {
+    //         if (current.room == room)
+    //         {
+    //             noPlayers = current.no_of_players;
+    //             count = current.users.filter(users => users.is_active === true).length;
+    //         }
+    //         accumulator.push(current);
+    //         return accumulator;
+    //     }, []);
+
+    //     let current_time = new Date().getTime();
+    //     let time_diff = (current_time - (this.tables[i] ? this.tables[i].created_at : 0)) / 1000;
+
+    //     return {flag: count < noPlayers, timerStart: 240 - time_diff};
+    // }
+
     checkTournamentTable(room_fee, no_of_players)
     {
         // new modification equivalent to above code.
@@ -117,6 +140,20 @@ class _Tables
     }    
 
     checkTournamentTableV2(lobbyId,myRoom) {
+        // new modification equivalent to above code.
+        // let count, noPlayers, room = 0;
+        // this.tables.reduce(function (accumulator, currentValue) {
+        //     if (currentValue.lobbyId == lobbyId) {
+        //         noPlayers = currentValue.no_of_players;
+        //         count = currentValue.users.filter(users => users.is_active === true).length;
+        //         room = currentValue.room;
+        //     }
+        //     accumulator.push(currentValue);
+        //     return accumulator;
+        // }, []);
+        // if (count < noPlayers) return { room: room, timerStart: 60 };
+
+        // return false;
         let count, noPlayers, room = 0;
         if(!myRoom) return false;
         if (myRoom.lobbyId == lobbyId) {
@@ -131,6 +168,23 @@ class _Tables
     //Check Table Exists
     checkTableExists(room, myRoom)
     {
+        // for (var i = 0; i < this.tables.length; i++)
+        // {
+        //     if (this.tables[i].room == room)
+        //     {
+        //         let res = {
+        //             status: true,
+        //             start_at: parseInt(this.tables[i].turn_start_at),
+        //             current_turn: this.tables[i].current_turn,
+        //         };
+        //         return res;
+        //     }
+        // }
+        // let res = {
+        //     status: false,
+        // };
+        // return res;
+
         if(myRoom) {
             let res = {
                     status: true,
@@ -140,6 +194,8 @@ class _Tables
                 return res;
         }
         return false;
+
+
     }
 
     //Seat on tournament table
@@ -177,7 +233,7 @@ class _Tables
             if (pos == -1) return false;
             let readDiceValue = filteredTable.users[pos].diceValue;
             filteredTable.users[pos] = {
-                id: user.id,
+                id: user._id,
                 numeric_id: user.numeric_id,
                 name: user.name,
                 user_token : user.token,
@@ -208,7 +264,60 @@ class _Tables
         }
         return false;
     }
+    // setTableData(room, user)
+    // {
+    //     console.log("setTableData :: >>>", room, user.name, this.tables);
+    //     // New modification
+    //     this.table = this.tables.reduce(function (accumulator, currentValue)
+    //     {
+    //         if (currentValue.room == room)
+    //         {
+    //             let idx = currentValue.users.findIndex(element => element.id == user._id.toString());
+    //             currentValue.users[idx].is_joined = true;
+    //         }
+    //         accumulator.push(currentValue);
+    //         return accumulator;
+    //     }, []);
+    // }
 
+    // tableInfo()
+    // {
+    //     console.log('AlreadyPlaying Started >>', this.tables.length);
+    //     for (let i = 0; i < this.tables.length; i++)
+    //     {
+    //         console.log('totaltables', this.tables[i]);
+    //     }
+    // }
+
+    //To check user already playing in another room / table
+    // alreadyPlaying(id)
+    // {
+    //     for (let i = 0; i < this.tables.length; i++)
+    //     {
+    //         for (let pl = 0; pl < this.tables[i].users.length; pl++)
+    //         {
+    //             if (this.tables[i].users[pl].id)
+    //             {
+    //                 if (this.tables[i].users[pl].id.toString() == id.toString() && !this.tables[i].users[pl].is_left)
+    //                 {
+    //                     return true;
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     return false;
+
+    // //     let data =  this.tables.reduce(function(acc,cur) {
+    // //         let index = cur.users.findIndex(userDara => userDara.id.toString() == id.toString() && !userDara.is_left);
+    // //         if(index == -1) {
+    // //              return false;
+    // //         }
+    // //         return true;
+    // //    },[]);
+    // //    return false;
+    
+    // }
     alreadyPlayingTable(id, myRoom)
     {
         // for logDNA logger
@@ -218,6 +327,9 @@ class _Tables
         };
         logDNA.log('If already playing This.tables', logger);
 
+        // console.log('THIS.TABLES DATA :: ', this.tables[0].users);
+        // for (var i = 0; i < this.tables.length; i++)
+        // {
             for (var pl = 0; pl < myRoom.users.length; pl++)
             {
                 if (myRoom.users[pl].id)
@@ -251,6 +363,7 @@ class _Tables
                     }
                 }
             }
+        // }
         var rez = {
             status: 0,
             message: "An error was encountered. Please join a new game."
@@ -260,7 +373,12 @@ class _Tables
 
     getTokRoom(room, id, myRoom)
     {
+        // console.log('getTokRoom Started >>', id);
         let table = myRoom;
+        // for (var i = 0; i < this.tables.length; i++)
+        // {
+            // if (this.tables[i].room == room)
+            // {
                 for (var pl = 0; pl < table.users.length; pl++)
                 {
                     if (table.users[pl].id)
@@ -284,11 +402,33 @@ class _Tables
                         }
                     }
                 }
+            // }
+        // }
         var rez = {
             status: 0,
         };
         return rez;
     }
+
+    // leaveIfPlaying(id)
+    // {
+    //     // console.log('AlreadyPlaying Started >>', id);
+    //     for (var i = 0; i < this.tables.length; i++)
+    //     {
+    //         for (var pl = 0; pl < this.tables[i].users.length; pl++)
+    //         {
+    //             if (this.tables[i].users[pl].id)
+    //             {
+    //                 if (this.tables[i].users[pl].id.toString() == id.toString())
+    //                 {
+    //                     // console.log('You are playing on this table', this.tables[i]);
+    //                     return this.tables[i].room;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return false;
+    // }
 
     isRankOccupied(room, rank, myRoom)
     {
@@ -356,7 +496,7 @@ class _Tables
                             myRoom.users[pl].is_done = true;
                             myRoom.users[pl].left_time = await this.checkGameExpireTime(myRoom);
 
-                          let rank = myRoom.no_of_players;
+                            let rank = myRoom.no_of_players;
 
                             while (this.isRankOccupied(room, rank, myRoom))
                             {
@@ -396,7 +536,6 @@ class _Tables
                 };
     }
 
-
     async checkGameExpireTime(myRoom) {
         if(myRoom.game_started_at) {     
             let gameStartTime = myRoom.game_started_at;
@@ -416,6 +555,11 @@ class _Tables
     //Start Game
     async tournamentStartGame(room, myRoom, gamePlayData)
     {
+        // let table = myRoom;
+        // for (var i = 0; i < this.tables.length; i++)
+        // {
+        //     if (this.tables[i].room === room)
+        //     {
                 var canStart = await this.canStartGame(myRoom);
                 if (!canStart) return false;
                 var dt = new Date();
@@ -462,20 +606,23 @@ class _Tables
                     }
                 }
 
+            // }
+        // }
+
         return false;
     }
 
     //Abort Game
     async abortGame(room)
     {
-        // for (var i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room == room)
-        //     {
-        //         this.tables.splice(i, 1);
-        //         console.log('SPLICED', this.tables);
-        //     }
-        // }
+        for (var i = 0; i < this.tables.length; i++)
+        {
+            if (this.tables[i].room == room)
+            {
+                this.tables.splice(i, 1);
+                console.log('SPLICED', this.tables);
+            }
+        }
 
         return true;
     }
@@ -495,12 +642,18 @@ class _Tables
 
     diceRolled(room, pos, DICE_ROLLED, myRoom)
     {
+        //var index = this.tables.findIndex((x) => x.room == room);
+        // if (index >= 0)
+        // {
         if(pos > -1)
         {
-            if (myRoom.users[pos].dices_rolled.length > 0) 
+            if (myRoom.users[pos].dices_rolled.length > 0)
                 myRoom.users[pos].dices_rolled = [];
+
             myRoom.users[pos].dices_rolled.push(DICE_ROLLED);
-        }
+    }
+
+        // }
     }
 
     getBonus(room, id, myRoom)
@@ -561,11 +714,10 @@ class _Tables
                 }
             }
         }
-
         gamePlayData.data[type] += bonusPoint;
         if (type == 'home_base_bonus')
         {
-            gamePlayData.data.home_base += 1;
+            gamePlayData.data.home_base = 1;
         }
     }
 
@@ -614,6 +766,7 @@ class _Tables
         if (!myRoom) return -1;
 
         const me = myRoom.users.find((elem) => elem.id == id);
+
         return me ? myRoom.users.indexOf(me) : -1;
     }
 
@@ -751,6 +904,11 @@ class _Tables
         let table = myRoom;
         console.log("getNextPosition Room : " + JSON.stringify(myRoom));
         console.log("getNextPosition pos: " + pos);
+        // let i = this.tables.findIndex(element => element.room == room);
+        // if (i == -1)
+        // {
+        //     return -1;
+        // }
         for (let j = pos + 1; j < table.users.length; j++)
         {
             if (table.users[j].is_active && !table.users[j].is_done)
@@ -947,26 +1105,47 @@ class _Tables
 
     isMovePossible(room, id, myRoom)
     {
+
+        // const table = this.tables.find((elem) => elem.room == room);
         const table = myRoom;
+        // if (!table) return false;
         const me = table.users.find((elem) => elem.id == id);
         if (!me) return false;
+
         for (let k = 0; k < me.tokens.length; k++)
         {
             for (const dice_value of me.dices_rolled)
-            {
+            {  // new implemention for pawn should't get chance to another move, If there is no enough index.
                 if (me.tokens[k] + dice_value <= 56)
                 {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
-    
+    // To get user dice rolled value
+    // getDiceValue(room, id)
+    // {
+    //     const table = this.tables.find((elem) => elem.room == room);
+    //     if (!table) return 0;
+    //     const me = table.users.find((elem) => elem.id == id);
+    //     if (!me) return 0;
+    //     for (let k = 0; k < me.tokens.length; k++)
+    //     {
+    //         for (const dice_value of me.dices_rolled)
+    //         {
+    //             return dice_value;
+    //         }
+    //     }
+    // }
+
     isMovePossibleExact(dice_value, room, id, token_index, myRoom)
     {
-        const table = myRoom;        
+        const table = myRoom;
+        // const table = this.tables.find((elem) => elem.room == room);        
         if (!table) return false;
         const me = table.users.find((elem) => elem.id == id);        
         if (!me) return false;
@@ -1014,6 +1193,20 @@ class _Tables
 
     async setPawnMoveTime(myRoom)
     {
+        //let gameStartTime = myRoom.game_started_at;
+        // let tableD = await Table.findOne({
+        //     room: myRoom.room,
+        // });             
+        // let gameStartTime = tableD.game_started_at;
+        // // To convert New Date() getTime to Second.
+        // let time = ((new Date().getTime() / 1000) - (gameStartTime / 1000));
+        // let minutes = 0.0;
+        // if(time > 0) {
+        //     let gameTime = config.gameTime * 60 - time;
+        //     minutes = (gameTime / 60);
+        // } 
+        // return minutes.toFixed(2);
+
         let turnStarted = new Date(myRoom.turn_timestamp).getTime();
         let currentTime = new Date().getTime();
         let timeDiff = currentTime - turnStarted;
