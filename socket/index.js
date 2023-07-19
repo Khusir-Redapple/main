@@ -86,6 +86,7 @@ module.exports = function (io, bullQueue) {
                     };
                 });
                 let myRoomCompressed = {
+                    "room" : myRoom.room,
                     "totalWinning": myRoom.totalWinning,
                     "players_done": myRoom.no_of_players,
                     "players_won": myRoom.players_won,
