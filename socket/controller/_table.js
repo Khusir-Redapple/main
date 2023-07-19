@@ -1747,19 +1747,16 @@ module.exports = {
             start.timeToCompleteGame = config.gameTime * 60;
         }
 
-        let returnStart = false;
-        if (start && start.table && start.table.users && start.table.users.length > 0) {
-            // start.table.users.forEach(element => {
-            //     element.diceValue=[];
-            // });
-
-            returnStart = JSON.parse(JSON.stringify(start));
-            returnStart.table.users.forEach(element => {
-                delete element.diceValue;
-                //delete element.user_token;
-            });
-        }
-        return returnStart;
+        return start;
+        // let returnStart = false;
+        // if (start && start.table && start.table.users && start.table.users.length > 0) {
+        //     returnStart = JSON.parse(JSON.stringify(start));
+        //     returnStart.table.users.forEach(element => {
+        //         delete element.diceValue;
+        //         delete element.user_token;
+        //     });
+        // }
+        // return returnStart;
     },
 
     abortGame: async function (table)

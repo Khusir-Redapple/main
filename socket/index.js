@@ -739,14 +739,10 @@ module.exports = function (io, bullQueue) {
     async function startTournament(start, socket, myRoom, gamePlayData) {
 
         //call api to deduct money 
-        start.server_time = new Date();
-        start.turn_timestamp = new Date();
+        //start.server_time = new Date();
+       // start.turn_timestamp = new Date();
         myRoom.turn_timestamp = new Date();
-        // Compressed response befor send to unity
-        //room current_turn_type, totalWinning, no_of_players, entryFee, users,
-        //current_turn, players_done, players_won, server_time,
-        //turn_timestamp, turn_time, timeToCompleteGame
-        
+        if (start && start.table && start.table.users && start.table.users.length > 0) {        
         let tableData = {};
         tableData.room = start.table.room;
         tableData.current_turn_type = start.table.current_turn_type;
@@ -782,7 +778,7 @@ module.exports = function (io, bullQueue) {
         })
         start.table = tableData;
         start.table.users = usersData;
-
+        }
         io.to(start.room).emit('startGame', start);
         await bullQueue.add(
             {
