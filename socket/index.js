@@ -758,7 +758,7 @@ module.exports = function (io, bullQueue) {
             tableData.turn_timestamp = start.table.turn_timestamp;
             tableData.turn_time = start.table.turn_time;
             tableData.timeToCompleteGame = start.table.timeToCompleteGame;
-            
+
             let usersData = [];
             start.table.users.map((ele) => {
                 usersData.push({
