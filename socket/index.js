@@ -738,46 +738,40 @@ module.exports = function (io, bullQueue) {
 
     async function startTournament(start, socket, myRoom, gamePlayData) {
 
-        //call api to deduct money 
-        //start.server_time = new Date();
-       // start.turn_timestamp = new Date();
         myRoom.turn_timestamp = new Date();
-        if (start && start.table && start.table.users && start.table.users.length > 0) {        
-        let tableData = {};
-        tableData.room = start.table.room;
-        tableData.current_turn_type = start.table.current_turn_type;
-        tableData.totalWinning = start.table.totalWinning;
-        tableData.no_of_players = start.table.no_of_players;
-        tableData.entryFee = start.table.entryFee;
-        tableData.current_turn = start.table.current_turn;
-        tableData.players_done = start.table.players_done;
-        tableData.players_won = start.table.players_won;
-        tableData.server_time = start.table.server_time;
-        tableData.turn_timestamp = start.table.turn_timestamp;
-        tableData.turn_time = start.table.turn_time;
-        tableData.timeToCompleteGame = start.table.timeToCompleteGame;
-
-
-        //name, id, profile_pic, position, is_active, is_done, is_left,
-        //rank, tokens, life, token_colour
-        let usersData = [];
-        start.table.users.map((ele) => {
-            usersData.push({
-                'name' : ele.name,
-                'id' : ele.id,
-                'profile_pic' : ele.profile_pic,
-                'position' : ele.position,
-                'is_active' : ele.is_active,
-                'is_done' : ele.is_done,
-                'is_left' : ele.is_left,
-                'rank' : ele.rank,
-                'tokens' : ele.tokens,
-                'life' : ele.life,
-                'token_colour' : ele.token_colour,
-            });
-        })
-        start.table = tableData;
-        start.table.users = usersData;
+        if(start && start.table && start.table.users && start.table.users.length > 0) {        
+            let tableData = {};
+            tableData.room = start.table.room;
+            tableData.current_turn_type = start.table.current_turn_type;
+            tableData.totalWinning = start.table.totalWinning;
+            tableData.no_of_players = start.table.no_of_players;
+            tableData.entryFee = start.table.entryFee;
+            tableData.current_turn = start.table.current_turn;
+            tableData.players_done = start.table.players_done;
+            tableData.players_won = start.table.players_won;
+            tableData.server_time = start.table.server_time;
+            tableData.turn_timestamp = start.table.turn_timestamp;
+            tableData.turn_time = start.table.turn_time;
+            tableData.timeToCompleteGame = start.table.timeToCompleteGame;
+            
+            let usersData = [];
+            start.table.users.map((ele) => {
+                usersData.push({
+                    'name' : ele.name,
+                    'id' : ele.id,
+                    'profile_pic' : ele.profile_pic,
+                    'position' : ele.position,
+                    'is_active' : ele.is_active,
+                    'is_done' : ele.is_done,
+                    'is_left' : ele.is_left,
+                    'rank' : ele.rank,
+                    'tokens' : ele.tokens,
+                    'life' : ele.life,
+                    'token_colour' : ele.token_colour,
+                });
+            })
+            start.table = tableData;
+            start.table.users = usersData;
         }
         io.to(start.room).emit('startGame', start);
         await bullQueue.add(

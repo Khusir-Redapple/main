@@ -1746,7 +1746,6 @@ module.exports = {
             // start.timeToCompleteGame = seconds;
             start.timeToCompleteGame = config.gameTime * 60;
         }
-
         return start;
         // let returnStart = false;
         // if (start && start.table && start.table.users && start.table.users.length > 0) {
