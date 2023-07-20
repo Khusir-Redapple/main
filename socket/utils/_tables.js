@@ -449,7 +449,7 @@ class _Tables
                         var resObj = {
                             status: 1,
                             message: 'Done',
-                            room: "'" + myRoom.room + "'",
+                            room: myRoom.room,
                             table: myRoom,
                             dice: DICE_ROLLED,
                             turn_start_at: config.turnTimer,

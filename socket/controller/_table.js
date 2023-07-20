@@ -1960,7 +1960,7 @@ module.exports = {
                await redisCache.addToRedisWithoutTtl('DEFAULT_ROOM', DEFAULT_ROOM);
             }
 
-            let room  = res > DEFAULT_ROOM ? res : DEFAULT_ROOM;
+            let room  = res > DEFAULT_ROOM ? res.toString() : DEFAULT_ROOM.toString();
 
             // let room = await Service.randomNumber(6);
             // let data;
