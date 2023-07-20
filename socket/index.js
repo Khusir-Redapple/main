@@ -746,7 +746,7 @@ module.exports = function (io, bullQueue) {
         myRoom.turn_timestamp = new Date();
         if(start && start.table && start.table.users && start.table.users.length > 0) {        
             let tableData = {};
-            tableData.room = ""+start.table.room.toString();
+            tableData.room = "'" + start.table.room + "'";
             tableData.current_turn_type = start.table.current_turn_type;
             tableData.totalWinning = start.table.totalWinning;
             tableData.no_of_players = start.table.no_of_players;
