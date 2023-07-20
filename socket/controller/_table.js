@@ -1900,7 +1900,7 @@ module.exports = {
 
         let lobbyAlreadyReceived = await redisCache.incrFromRedis('lobbyIdAtom_'+params.lobbyId);
         if(lobbyAlreadyReceived > 1) {
-            this.sleep(50000*lobbyAlreadyReceived); // 1500
+            this.sleep(1500*lobbyAlreadyReceived);
         }
         let roomId = await redisCache.getRecordsByKeyRedis('lobbyId_'+params.lobbyId);
         let myRoom;
