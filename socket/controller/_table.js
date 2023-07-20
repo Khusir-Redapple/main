@@ -1899,6 +1899,9 @@ module.exports = {
         }
 
         let lobbyAlreadyReceived = await redisCache.incrFromRedis('lobbyIdAtom_'+params.lobbyId);
+        if(lobbyAlreadyReceived > 1) {
+            this.sleep(50000*lobbyAlreadyReceived); // 1500
+        }
         let roomId = await redisCache.getRecordsByKeyRedis('lobbyId_'+params.lobbyId);
         let myRoom;
         let tableD;
@@ -1951,6 +1954,14 @@ module.exports = {
         let tableX;
         let room_code;
         if (!isAnyTableEmpty) {
+            const DEFAULT_ROOM = 1000000;
+            let res = await redisCache.incrFromRedisWithoutTtl('DEFAULT_ROOM');
+            if(res <= DEFAULT_ROOM) {
+               await redisCache.addToRedisWithoutTtl('DEFAULT_ROOM', DEFAULT_ROOM);
+            }
+
+            let room  = res > DEFAULT_ROOM ? res : DEFAULT_ROOM;
+
             // let room = await Service.randomNumber(6);
             // let data;
             // while (true) {
@@ -1970,12 +1981,12 @@ module.exports = {
                 params.win_amount = params.winningAmount;
                 params.totalWinning = params.totalWinning;
             }
-            params.room = params.lobbyId;
+            params.room = room;
             params.created_at = new Date().getTime();
             params.players = [];
             // let table = new Table(params);
             // tableX = await table.save();
-            tableX = await redisCache.addToRedis(`table_${params.lobbyId}`, params);
+            tableX = await redisCache.addToRedis(`table_${room}`, params);
             if (!tableX) {
                 return {
                     callback: {
@@ -1986,7 +1997,7 @@ module.exports = {
             }
             tableX = params;
             room_code = await _tab.createTableforTourney(tableX, entry_Fee);
-            await redisCache.addToRedis('room_'+room_code, 0);
+            await redisCache.addToRedis('room_'+room, 0);
             console.log('room_' + room_code + ' 0');
             await redisCache.addToRedis('lobbyId_'+params.lobbyId, room_code);
 
@@ -2003,7 +2014,7 @@ module.exports = {
             // tableX = await Table.findOne({
             //     room: room_code,
             // });
-            tableX = await redisCache.getRecordsByKeyRedis(`table_${params.lobbyId}`);
+            tableX = await redisCache.getRecordsByKeyRedis(`table_${room_code}`);
             
             if (!tableX) {
                 return {
@@ -2061,7 +2072,7 @@ module.exports = {
             tableX.created_at = new Date().getTime();
             //await tableX.save();
            // await redisCache.addToRedis(room_code,myRoom);
-            await redisCache.addToRedis(`table_${params.lobbyId}`, tableX);
+            await redisCache.addToRedis(`table_${room_code}`, tableX);
             return {
                 callback: callbackRes,
                 events: [

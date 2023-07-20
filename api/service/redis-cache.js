@@ -25,6 +25,23 @@ class RedisCache
         return true;
     }
 
+    async addToRedisWithoutTtl(id, data)
+    {   
+       try {
+        if(typeof data == 'object')
+            data=JSON.stringify(data);
+        await redis.set(id, data);
+        } catch(err) { 
+            let logData = {
+                level: 'error',
+                meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, stackTrace : err.stack}
+            };
+            logDNA.error('addToRedis', logData);
+            return false;
+        }
+        return true;
+    }
+
     async getRecordsByKeyRedis(id) {
         const value = await redis.get(id);
         try {
@@ -55,6 +72,10 @@ class RedisCache
     async incrFromRedis(id) {
         const res= await redis.incr(id)
         await redis.expire(id,config.socketUserExpireTime);
+        return res;
+    }
+    async incrFromRedisWithoutTtl(id) {
+        const res= await redis.incr(id)
         return res;
     }
 }
