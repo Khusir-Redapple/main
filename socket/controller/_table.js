@@ -415,8 +415,8 @@ module.exports = {
             }
 
             if (params.dice_value == 6) {
-               // await _tab.addBonus(params.room, id, 1, 'six', myRoom, gamePlayData); //remove this for not giving 2nd turn on 6
-               // await _tab.addSix(params.room, id, myRoom);
+                await _tab.addBonus(params.room, id, 1, 'six', myRoom, gamePlayData); //remove this for not giving 2nd turn on 6
+                await _tab.addSix(params.room, id, myRoom);
             } else {
                 await _tab.setSix(params.room, id, myRoom);
             }
@@ -526,7 +526,7 @@ module.exports = {
 
             } else {
                 console.log('[MOVE POSSIBLE EXACT]');
-                let moveBonusCheck = false;
+                let moveBonusCheck = true;
                 // Make move, Remove dicevalue & get CURRENT_POSITION of token
                 var resp = await _tab.makeMoveForTournament(params.dice_value, params.room, id, params.token_index, myRoom, gamePlayData);
                 myRoom = resp.table;
