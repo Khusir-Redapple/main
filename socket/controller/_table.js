@@ -14,6 +14,12 @@ const logDNA = require('../../api/service/logDNA');
 module.exports = {
     //Roll dice for tournament
     tournamntDiceRolled: async function (socket, params, id, myRoom, gamePlayData) {
+        // To capture dice tap time.
+        if (gamePlayData && gamePlayData.data) {
+            let diceTapTime = await _tab.setPawnMoveTime(myRoom);
+            gamePlayData.data.dice_tap_time.push(diceTapTime);
+        }
+
         let isJackpot = false;
         let resObj = { callback: { status: 1, message: localization.success }, events: [] };
         let threeSix = false;
@@ -329,6 +335,17 @@ module.exports = {
             let pawnTime = await _tab.setPawnMoveTime(myRoom);
             if (gamePlayData && gamePlayData.data) {
                 gamePlayData.data.pawn_move_time.push(pawnTime);
+
+                let pawn_move_time = gamePlayData.data.pawn_move_time;
+                let dice_tap_time = gamePlayData.data.dice_tap_time;
+                let differences = dice_tap_time.map((time, index) => {
+                    let timeInSeconds = parseFloat(time);
+                    if(pawn_move_time[index] != undefined) {
+                      let pawnTime = parseFloat(pawn_move_time[index] || 0);
+                       return (timeInSeconds - pawnTime).toFixed(2);
+                    }
+                  }).filter((ele) => ele!= undefined);                
+                gamePlayData.data.time_between_tap_and_move.push(differences);
             }
 
 

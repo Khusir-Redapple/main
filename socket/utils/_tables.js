@@ -725,6 +725,8 @@ class _Tables
         gamePlayData.data.kill_player_data = [],
         gamePlayData.data.pawnSafe_status = user.pawnSafe_status,
         gamePlayData.data.pawn_move_time = [],
+        gamePlayData.data.dice_tap_time = [],
+        gamePlayData.data.time_between_tap_and_move = [],
         gamePlayData.data.checkpoint = user.checkpoint,
         gamePlayData.data.player_score = user.points + user.bonusPoints,
         gamePlayData.data.points = 0,
