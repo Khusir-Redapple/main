@@ -772,6 +772,30 @@ class _Tables
         return -1;
     }
 
+    killCheckOnDiceValue(id, dice_value, myRoom)
+    {
+        let userIndex = myRoom.users.findIndex(user => user.id == id);
+        let userPawns = users[userIndex].tokens;
+        // calculate target user pawn index.
+        let targetIndexes = userPawns.map(pawn => (pawn + dice_value));
+        // Check if any other users pawn index matches the target index.
+        let safeZone = [1, 14, 27, 40, 22, 35, 9, 48, 56];
+        let canCutOthers = false;
+        myRoom.users.forEach((user, index) => {
+            if (index !== userIndex) {
+                for (let i = 0; i < user.tokens.length; i++) {
+                    if(!safeZone.includes(user.tokens[i])) {
+                        if (user.tokens[i] == targetIndexes[0] || user.tokens[i] == targetIndexes[1] || user.tokens[i] == targetIndexes[2] || user.tokens[i] == targetIndexes[3]) {
+                            canCutOthers = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+        return canCutOthers;
+    }
+
     CanIKill(room, id, token_index, myPos, myRoom, gamePlayData)
     {   
         let table = myRoom;
