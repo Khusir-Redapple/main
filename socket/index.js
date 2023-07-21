@@ -775,6 +775,7 @@ module.exports = function (io, bullQueue) {
                     'token_colour' : ele.token_colour,
                 });
             })
+            start.skip_dice = false;
             start.table = tableData;
             start.table.users = usersData;
         }
