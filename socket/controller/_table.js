@@ -345,7 +345,7 @@ module.exports = {
                        return (timeInSeconds - pawnTime).toFixed(2);
                     }
                   }).filter((ele) => ele!= undefined);                
-                gamePlayData.data.time_between_tap_and_move.push(differences);
+                gamePlayData.data.time_between_tap_and_move.push(differences[0]);
             }
 
 
