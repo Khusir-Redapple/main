@@ -102,7 +102,7 @@ module.exports = {
             console.log("1_" + params.room + "_" + myPos + "_" + myRoom)
             let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
             console.log('update turn 1');
-            await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos, 0, myRoom);
+            await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
             let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
             let DICE_ROLLED;
             if (DICE_ROLLED_RES) {
@@ -191,7 +191,7 @@ module.exports = {
                 let timer = 1500;
                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                 console.log('update turn 4');
-                await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos, 0, myRoom);
+                await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
                 let DICE_ROLLED;
@@ -242,7 +242,7 @@ module.exports = {
                 let timer = 1500;
                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                 console.log('update turn 5');
-                await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos, 0, myRoom);
+                await _tab.updateCurrentTurn(params.room, nextPos, 'ture', myPos, 0, myRoom);
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
                 let DICE_ROLLED;
@@ -285,7 +285,7 @@ module.exports = {
                 var myPos = await _tab.getMyPosition(params.room, id, myRoom);
                 await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                 console.log('update turn 6');
-                await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0, myRoom);
+                await _tab.updateCurrentTurn(params.room, myPos, 'ture', -1, 0, myRoom);
                 let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
                 // console.log('[DICE ROLLED SIX]', dices_rolled);
 
@@ -384,7 +384,7 @@ module.exports = {
             if (params.dice_value != diceValue) {
                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                 //await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0,myRoom);
-                await _tab.updateCurrentTurn(params.room, nextPos, 'roll', -1, 0, myRoom);
+                await _tab.updateCurrentTurn(params.room, nextPos, 'ture', -1, 0, myRoom);
 
                 // let DICE_ROLLED = _tab.rollDice(params.room, id);
                 // let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
@@ -463,7 +463,7 @@ module.exports = {
                     let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                     await _tab.scrapTurn(params.room, nextPos, myRoom);
                     console.log('update turn 7');
-                    await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos, 0, myRoom);
+                    await _tab.updateCurrentTurn(params.room, nextPos, 'ture', myPos, 0, myRoom);
                     let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                     let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
                     let DICE_ROLLED;
@@ -496,7 +496,7 @@ module.exports = {
                     console.log('update turn 8');
                     let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                     //await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0,myRoom);
-                    await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos, 0, myRoom);
+                    await _tab.updateCurrentTurn(params.room, nextPos, 'ture', myPos, 0, myRoom);
 
                     // let DICE_ROLLED = _tab.rollDice(params.room, id);
                     // let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
@@ -700,7 +700,7 @@ module.exports = {
                             // DICE_ROLL TO NEXT
                             let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                             console.log('update turn 9');
-                            await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos, 0, myRoom);
+                            await _tab.updateCurrentTurn(params.room, nextPos, 'ture', myPos, 0, myRoom);
                             let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                             let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
                             let DICE_ROLLED;
@@ -885,7 +885,7 @@ module.exports = {
                             await _tab.useBonus(params.room, id, myRoom);
                             // Send 'roll' to same player
                             console.log('update turn 11');
-                            await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0, myRoom);
+                            await _tab.updateCurrentTurn(params.room, myPos, 'ture', -1, 0, myRoom);
                             setTimeout(function () {
                                 _tab.updateCurrentTime(params.room, myRoom); /// to solve early leave deduction on token kill
                             }, timer)
@@ -921,7 +921,7 @@ module.exports = {
                             await _tab.scrapTurn(params.room, myPos, myRoom);
                             let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                             console.log('update turn 12');
-                            await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos, 0, myRoom);
+                            await _tab.updateCurrentTurn(params.room, nextPos, 'ture', myPos, 0, myRoom);
                             let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                             // let DICE_ROLLED = await _tab.rollDice(params.room, id);
                             let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
@@ -1251,7 +1251,7 @@ module.exports = {
                     // DICE_ROLL TO NEXT
                     let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                     console.log('update turn 13');
-                    await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos, 0, myRoom);
+                    await _tab.updateCurrentTurn(params.room, nextPos, 'ture', myPos, 0, myRoom);
                     let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                     // let DICE_ROLLED = await _tab.rollDice(params.room, id);
                     let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
@@ -1300,7 +1300,7 @@ module.exports = {
                         console.log('update turn 14');
                         console.log('SCRAP CURRENT DICES ROOM2: ' + JSON.stringify(myRoom));
 
-                        await _tab.updateCurrentTurn(params.room, nextPos, 'roll', mypos, 0, myRoom);
+                        await _tab.updateCurrentTurn(params.room, nextPos, 'ture', mypos, 0, myRoom);
                         console.log('11111');
                         let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                         // let DICE_ROLLED = await _tab.rollDice(params.room, id);
@@ -1527,7 +1527,7 @@ module.exports = {
                                 // DICE_ROLL TO NEXT
                                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                                 console.log('update turn 15');
-                                await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos, 0, myRoom);
+                                await _tab.updateCurrentTurn(params.room, nextPos, 'ture', myPos, 0, myRoom);
                                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                                 // let DICE_ROLLED = await _tab.rollDice(params.room, id);
                                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
@@ -1572,7 +1572,7 @@ module.exports = {
                                     // nextPosition find & add event dice_roll
                                     let nextPos = await _tab.getNextPosition(params.room, mypos, myRoom);
                                     console.log('update turn 16');
-                                    await _tab.updateCurrentTurn(params.room, nextPos, 'roll', mypos, 0, myRoom);
+                                    await _tab.updateCurrentTurn(params.room, nextPos, 'ture', mypos, 0, myRoom);
                                     let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                                     // let DICE_ROLLED = await _tab.rollDice(params.room, id);
                                     let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
@@ -1644,7 +1644,7 @@ module.exports = {
                         await _tab.useBonus(params.room, id, myRoom);
                         // Send 'roll' to same player
                         console.log('update turn 17');
-                        await _tab.updateCurrentTurn(params.room, mypos, 'roll', -1, 0, myRoom);
+                        await _tab.updateCurrentTurn(params.room, mypos, 'ture', -1, 0, myRoom);
                         let dices_rolled = await _tab.gePlayerDices(params.room, mypos, myRoom, gamePlayData);
                         // let DICE_ROLLED = _tab.rollDice(params.room, id);
                         let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
@@ -1676,7 +1676,7 @@ module.exports = {
                         // nextPosition find & add event dice_roll
                         let nextPos = await _tab.getNextPosition(params.room, mypos, myRoom);
                         console.log('update turn 18');
-                        await _tab.updateCurrentTurn(params.room, nextPos, 'roll', mypos, 0, myRoom);
+                        await _tab.updateCurrentTurn(params.room, nextPos, 'ture', mypos, 0, myRoom);
                         console.log("gamePlayData before 1: " + JSON.stringify(gamePlayData));
                         let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                         // let DICE_ROLLED = await _tab.rollDice(params.room, id);
