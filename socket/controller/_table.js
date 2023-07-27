@@ -891,8 +891,7 @@ module.exports = {
                             }, timer)
                             let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
                             // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                            //let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
-                            let DICE_ROLLED = 6;
+                            let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
                             await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                             // SEND EVENT
                             let event = {

@@ -1734,8 +1734,7 @@ class _Tables
     randomNumberGenerator(number) {
         let array = [];
         while(number > 0){
-            // array.push(Math.floor(Math.random() * 6) + 1);
-            array.push(6);
+            array.push(Math.floor(Math.random() * 6) + 1);
             number --;
         }
         return array;
