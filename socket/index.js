@@ -899,16 +899,6 @@ module.exports = function (io, bullQueue) {
                                             });
                                             d.data.game_data = compressedResponse;
                                             io.to(d.room).emit(d.name, d.data);
-
-                                            // To remove all players from the specified room
-                                            const roomSockets = io.sockets.adapter.rooms.get(d.room);
-                                            if (roomSockets) {
-                                                roomSockets.forEach((socketId) => {
-                                                    io.sockets.sockets.get(socketId).leave(d.room);
-                                                    delete players[socketId];
-                                                });
-                                            }
-
                                         } else if (d.name == 'make_move') {
                                             io.to(d.room).emit(d.name, d.data);
                                         } else if (d.name == 'life_deduct') {
@@ -958,15 +948,6 @@ module.exports = function (io, bullQueue) {
                                             });
                                             d.data.game_data = compressedData;
                                             io.to(d.room).emit(d.name, d.data);
-
-                                            // To remove all players from the specified room
-                                            const roomSockets = io.sockets.adapter.rooms.get(d.room);
-                                            if (roomSockets) {
-                                                roomSockets.forEach((socketId) => {
-                                                    io.sockets.sockets.get(socketId).leave(d.room);
-                                                    delete players[socketId];
-                                                });
-                                            }
                                         }
                                         else {
                                             io.to(d.room).emit(d.name, d.data);
