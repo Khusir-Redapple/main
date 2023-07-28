@@ -120,6 +120,7 @@ module.exports = {
             resObj.callback.skip_dice = true;
             threeSix = true;
             // SEND EVENT
+            let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
             let event = {
                 type: 'room_including_me',
                 room: params.room,
@@ -133,7 +134,7 @@ module.exports = {
                     dices_rolled: dices_rolled,
                     turn_start_at: config.turnTimer,
                     extra_move_animation: false,
-                    skip_dice: true,
+                    skip_dice: skipDice,
                     turn_timestamp: myRoom.turn_timestamp,
                     server_time: new Date(),
                 },
@@ -207,6 +208,7 @@ module.exports = {
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = true;
 
+                let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                 let event = {
                     type: 'room_including_me',
                     room: params.room,
@@ -220,7 +222,7 @@ module.exports = {
                         dices_rolled: dices_rolled,
                         turn_start_at: config.turnTimer,
                         extra_move_animation: false,
-                        skip_dice: true,
+                        skip_dice: skipDice,
                         turn_timestamp: myRoom.turn_timestamp,
                         server_time: new Date(),
                     },
@@ -256,6 +258,8 @@ module.exports = {
                 await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = true;
+
+                let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                 let event = {
                     type: 'room_including_me',
                     room: params.room,
@@ -269,7 +273,7 @@ module.exports = {
                         dices_rolled: dices_rolled,
                         turn_start_at: config.turnTimer,
                         extra_move_animation: false,
-                        skip_dice: true,
+                        skip_dice: skipDice,
                         turn_timestamp: myRoom.turn_timestamp,
                         server_time: new Date(),
                     },
@@ -281,7 +285,8 @@ module.exports = {
                 // await _tab.addBonus(params.room, id, 1);
                 // Send 'roll' to same player
                 //let DICE_ROLLED = _tab.rollDice(params.room, id);
-                let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
+                // let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
+                let DICE_ROLLED = 6;
                 var myPos = await _tab.getMyPosition(params.room, id, myRoom);
                 await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                 console.log('update turn 6');
@@ -291,6 +296,8 @@ module.exports = {
 
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = false;
+
+                let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
                 let event = {
                     type: 'room_including_me',
                     room: params.room,
@@ -304,7 +311,7 @@ module.exports = {
                         dices_rolled: dices_rolled,
                         turn_start_at: config.turnTimer,
                         extra_move_animation: true,
-                        skip_dice: false,
+                        skip_dice: skipDice,
                         turn_timestamp: myRoom.turn_timestamp,
                         server_time: new Date(),
                     },
@@ -899,9 +906,11 @@ module.exports = {
                             }, timer)
                             let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
                             // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                            let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
+                            // let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
+                            let DICE_ROLLED = 6;
                             await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                             // SEND EVENT
+                            let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
                             let event = {
                                 type: 'room_including_me',
                                 room: params.room,
@@ -915,7 +924,7 @@ module.exports = {
                                     dices_rolled: dices_rolled,
                                     turn_start_at: config.turnTimer,
                                     extra_move_animation: true,
-                                    skip_dice: false,
+                                    skip_dice: skipDice,
                                     turn_timestamp: myRoom.turn_timestamp,
                                     server_time: new Date(),
                                 },
@@ -950,6 +959,7 @@ module.exports = {
                             await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
 
                             // SEND EVENT
+                            let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                             let event = {
                                 type: 'room_including_me',
                                 room: params.room,
@@ -963,7 +973,7 @@ module.exports = {
                                     dices_rolled: dices_rolled,
                                     turn_start_at: config.turnTimer,
                                     extra_move_animation: false,
-                                    skip_dice: false,
+                                    skip_dice: skipDice,
                                     turn_timestamp: myRoom.turn_timestamp,
                                     server_time: new Date(),
                                 },
@@ -1272,6 +1282,7 @@ module.exports = {
 
                     await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                     // SEND EVENT
+                    let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                     let event = {
                         type: 'room_including_me',
                         room: params.room,
@@ -1285,7 +1296,7 @@ module.exports = {
                             dice: DICE_ROLLED,
                             turn_start_at: config.turnTimer,
                             extra_move_animation: false,
-                            skip_dice: false,
+                            skip_dice: skipDice,
                             turn_timestamp: myRoom.turn_timestamp,
                             server_time: new Date(),
                         },
@@ -1327,6 +1338,7 @@ module.exports = {
 
 
                         console.log('66666');
+                        let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                         let event = {
                             type: 'room_including_me',
                             room: params.room,
@@ -1340,7 +1352,7 @@ module.exports = {
                                 dices_rolled: dices_rolled,
                                 turn_start_at: config.turnTimer,
                                 extra_move_animation: false,
-                                skip_dice: false,
+                                skip_dice: skipDice,
                                 turn_timestamp: myRoom.turn_timestamp,
                                 server_time: new Date(),
                             },
@@ -1548,6 +1560,7 @@ module.exports = {
                                 await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
 
                                 // SEND EVENT
+                                let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                                 let event = {
                                     type: 'room_including_me',
                                     room: params.room,
@@ -1561,7 +1574,7 @@ module.exports = {
                                         dices_rolled: dices_rolled,
                                         turn_start_at: config.turnTimer,
                                         extra_move_animation: false,
-                                        skip_dice: false,
+                                        skip_dice: skipDice,
                                         turn_timestamp: myRoom.turn_timestamp,
                                         server_time: new Date(),
                                     },
@@ -1591,7 +1604,7 @@ module.exports = {
                                     }
                                     await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
                                     await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, mypos);
-
+                                    let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                                     let event = {
                                         type: 'room_including_me',
                                         room: params.room,
@@ -1605,7 +1618,7 @@ module.exports = {
                                             dices_rolled: dices_rolled,
                                             turn_start_at: config.turnTimer,
                                             extra_move_animation: false,
-                                            skip_dice: true,
+                                            skip_dice: skipDice,
                                             turn_timestamp: myRoom.turn_timestamp,
                                             server_time: new Date(),
                                         },
@@ -1655,9 +1668,11 @@ module.exports = {
                         await _tab.updateCurrentTurn(params.room, mypos, 'turn', -1, 0, myRoom);
                         let dices_rolled = await _tab.gePlayerDices(params.room, mypos, myRoom, gamePlayData);
                         // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                        let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
+                        // let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
+                        let DICE_ROLLED = 6;
                         await _tab.diceRolled(params.room, mypos, DICE_ROLLED, myRoom, gamePlayData);
                         // SEND EVENT
+                        let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, mypos);
                         let event = {
                             type: 'room_including_me',
                             room: params.room,
@@ -1671,7 +1686,7 @@ module.exports = {
                                 dices_rolled: dices_rolled,
                                 turn_start_at: config.turnTimer,
                                 extra_move_animation: true,
-                                skip_dice: false,
+                                skip_dice: skipDice,
                                 turn_timestamp: myRoom.turn_timestamp,
                                 server_time: new Date(),
                             },
@@ -1700,6 +1715,8 @@ module.exports = {
                        // console.log("gamePlayData before 3: " + JSON.stringify(gamePlayData));
                         await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, mypos);
                         //console.log("gamePlayData before 4: " + JSON.stringify(gamePlayData));
+
+                        let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                         let event = {
                             type: 'room_including_me',
                             room: params.room,
@@ -1713,7 +1730,7 @@ module.exports = {
                                 dices_rolled: dices_rolled,
                                 turn_start_at: config.turnTimer,
                                 extra_move_animation: false,
-                                skip_dice: false,
+                                skip_dice: skipDice,
                                 turn_timestamp: myRoom.turn_timestamp,
                                 server_time: new Date(),
                             },
