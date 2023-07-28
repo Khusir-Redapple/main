@@ -703,7 +703,7 @@ module.exports = {
                             gamePlayData.data.player_score += user_points;
                             gamePlayData.data.points += user_points;
                             await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
-                            return;
+                            return resObj;
                         }
                         // Else [!endGame]
                         else {
