@@ -594,6 +594,30 @@ class _Tables
         }
     }
 
+    isSkippable(myRoom, dice_value, position) 
+    {
+        if(myRoom) {
+            const me = myRoom.users.find((elem) => elem.position == position);
+            let sixCount = this.getSix(myRoom.room, me.id, myRoom);
+            // to check three six.
+            if(sixCount == 2 && dice_value == 6){
+                return true;
+            }
+            // to check move not possible.           
+            let userPawns = users[me.position].tokens;
+            // calculate target user pawn index.
+            let pawnIndexes = userPawns.map(pawn => (pawn + dice_value));
+            if(pawnIndexes[0] <= 56 || pawnIndexes[1] <= 56 || pawnIndexes[2] <= 56 || pawnIndexes[3] <= 56){
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+        
+    }
+
     getSix(room, id, myRoom)
     {
         if (!myRoom) return 0;
