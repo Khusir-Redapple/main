@@ -533,6 +533,8 @@ module.exports = {
 
                     resObj.events.push(event);
                 }
+
+                console.log("MOVE NOT POSSIBLE =========>", JSON.stringify(resObj));
                 // SEND EVENT
                 // update the gamePlay data at the time of skip happen for non moveble event.
                 gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
