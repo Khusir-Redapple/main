@@ -285,8 +285,7 @@ module.exports = {
                 // await _tab.addBonus(params.room, id, 1);
                 // Send 'roll' to same player
                 //let DICE_ROLLED = _tab.rollDice(params.room, id);
-                // let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
-                let DICE_ROLLED = 6;
+                let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
                 var myPos = await _tab.getMyPosition(params.room, id, myRoom);
                 await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                 console.log('update turn 6');
@@ -906,8 +905,7 @@ module.exports = {
                             }, timer)
                             let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
                             // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                            // let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
-                            let DICE_ROLLED = 6;
+                            let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
                             await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                             // SEND EVENT
                             let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
@@ -1668,8 +1666,7 @@ module.exports = {
                         await _tab.updateCurrentTurn(params.room, mypos, 'turn', -1, 0, myRoom);
                         let dices_rolled = await _tab.gePlayerDices(params.room, mypos, myRoom, gamePlayData);
                         // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                        // let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
-                        let DICE_ROLLED = 6;
+                        let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
                         await _tab.diceRolled(params.room, mypos, DICE_ROLLED, myRoom, gamePlayData);
                         // SEND EVENT
                         let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, mypos);
