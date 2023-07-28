@@ -524,7 +524,7 @@ module.exports = {
                             dice: DICE_ROLLED,
                             dices_rolled: dices_rolled,
                             turn_start_at: config.turnTimer,
-                            extra_move_animation: true,
+                            extra_move_animation: false,
                             skip_dice: true,
                             turn_timestamp: myRoom.turn_timestamp,
                             server_time: new Date(),
