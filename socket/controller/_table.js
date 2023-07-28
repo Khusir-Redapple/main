@@ -1679,11 +1679,11 @@ module.exports = {
                         let nextPos = await _tab.getNextPosition(params.room, mypos, myRoom);
                         console.log('update turn 18');
                         await _tab.updateCurrentTurn(params.room, nextPos, 'turn', mypos, 0, myRoom);
-                        console.log("gamePlayData before 1: " + JSON.stringify(gamePlayData));
+                        //console.log("gamePlayData before 1: " + JSON.stringify(gamePlayData));
                         let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                         // let DICE_ROLLED = await _tab.rollDice(params.room, id);
 
-                        console.log("gamePlayData before 2: " + JSON.stringify(gamePlayData));
+                        //console.log("gamePlayData before 2: " + JSON.stringify(gamePlayData));
                         let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
                         let DICE_ROLLED;
                         if (DICE_ROLLED_RES) {
@@ -1691,9 +1691,9 @@ module.exports = {
                             DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                         }
                         await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-                        console.log("gamePlayData before 3: " + JSON.stringify(gamePlayData));
+                       // console.log("gamePlayData before 3: " + JSON.stringify(gamePlayData));
                         await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, mypos);
-                        console.log("gamePlayData before 4: " + JSON.stringify(gamePlayData));
+                        //console.log("gamePlayData before 4: " + JSON.stringify(gamePlayData));
                         let event = {
                             type: 'room_including_me',
                             room: params.room,

@@ -645,13 +645,13 @@ class _Tables
 
     updateCurrentTurn(room, pos, type, prev, move, myRoom)
     {
-      console.log('updateCurrentTurn input ' + room + "_"+ pos+ "_"+ type+ "_"+prev+ "_"+move+ "_"+JSON.stringify(myRoom))
+      //console.log('updateCurrentTurn input ' + room + "_"+ pos+ "_"+ type+ "_"+prev+ "_"+move+ "_"+JSON.stringify(myRoom))
         // for (let i = 0; i < this.tables.length; i++)
         // {
         //     if (this.tables[i].room == room)
         //     {
                 //for debugging.....
-                console.log('updateCurrentTurn >>>:: ', myRoom.users[pos]);
+                //console.log('updateCurrentTurn >>>:: ', myRoom.users[pos]);
                if(pos<0)
                   return;
                 if (prev != -1 && move == 0)
@@ -673,7 +673,7 @@ class _Tables
                     //console.log("Line 701 turn set : ", new Date().getTime(), new Date());
                     myRoom.current_turn_type = type;
                 }
-                console.log('updateCurrentTurn res ' + JSON.stringify(myRoom))
+                //console.log('updateCurrentTurn res ' + JSON.stringify(myRoom))
             // }
         // }
 
@@ -751,8 +751,8 @@ class _Tables
     {
         // New modification
         let table = myRoom;
-        console.log("getNextPosition Room : " + JSON.stringify(myRoom));
-        console.log("getNextPosition pos: " + pos);
+        //console.log("getNextPosition Room : " + JSON.stringify(myRoom));
+       // console.log("getNextPosition pos: " + pos);
         for (let j = pos + 1; j < table.users.length; j++)
         {
             if (table.users[j].is_active && !table.users[j].is_done)
