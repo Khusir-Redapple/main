@@ -88,7 +88,7 @@ module.exports = function (io, bullQueue) {
                 let myRoomCompressed = {
                     "room" : myRoom.room,
                     "totalWinning": myRoom.totalWinning,
-                    "players_done": myRoom.no_of_players,
+                    "players_done": parseInt(myRoom.no_of_players),
                     "players_won": myRoom.players_won,
                     "current_turn": myRoom.current_turn,
                     "current_turn_type": myRoom.current_turn_type,
@@ -247,7 +247,7 @@ module.exports = function (io, bullQueue) {
                 let compressedTable = {
                         "room": rez.table.room,
                         "totalWinning": rez.table.totalWinning,
-                        "players_done": rez.table.players_done,
+                        "players_done": parseInt(rez.table.players_done),
                         "players_won": rez.table.players_won,
                         "current_turn": rez.table.current_turn,
                         "current_turn_type": rez.table.current_turn_type,
@@ -388,7 +388,7 @@ module.exports = function (io, bullQueue) {
                 let compressedTable = {
                         "room": rez.callback.table.room,
                         "totalWinning": rez.callback.table.totalWinning,
-                        "players_done": rez.callback.table.players_done,
+                        "players_done": parseInt(rez.callback.table.players_done),
                         "players_won": rez.callback.table.players_won,
                         "current_turn": rez.callback.table.current_turn,
                         "current_turn_type": rez.callback.table.current_turn_type,
@@ -752,7 +752,7 @@ module.exports = function (io, bullQueue) {
             tableData.no_of_players = start.table.no_of_players;
             tableData.entryFee = start.table.entryFee;
             tableData.current_turn = start.table.current_turn;
-            tableData.players_done = start.table.players_done;
+            tableData.players_done = parseInt(start.table.players_done);
             tableData.players_won = start.table.players_won;
             tableData.server_time = start.table.server_time;
             tableData.turn_timestamp = start.table.turn_timestamp;
