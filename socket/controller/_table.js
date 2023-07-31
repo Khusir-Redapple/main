@@ -426,7 +426,11 @@ module.exports = {
                 gamePlayData.data.points = user_points + (+gamePlayData.data.total_move);
                 gamePlayData.data.player_score = myRoom.users[myPos].points + myRoom.users[myPos].bonusPoints;
                 await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
-
+                let logData = {
+                    level: 'error',
+                    meta: { 'env': `${process.env.NODE_ENV}`, 'params': params,"diceValue":diceValue ,"position":myPos}
+                };
+                logDNA.error('moveTourney attempt to do fraud', logData);
                 return resObj;
             }
 
