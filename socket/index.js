@@ -737,6 +737,9 @@ module.exports = function (io, bullQueue) {
             logDNA.log('DEVICE :: Disconnected', logData);
             // var myId = Socketz.getId(socket.id);
             //Socketz.userGone(socket.id);
+
+            // To track disconnect events.
+            console.log(`${socket.id} disconnect`);
         });
 
     });
