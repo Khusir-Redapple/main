@@ -618,6 +618,10 @@ class _Tables
         
     }
 
+    getRandomDiceValue(){
+        return Math.floor(Math.random() * 6) + 1;
+    }
+
     getSix(room, id, myRoom)
     {
         if (!myRoom) return 0;

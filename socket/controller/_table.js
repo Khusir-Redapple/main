@@ -282,17 +282,12 @@ module.exports = {
             }
 
             else {
-                // await _tab.addBonus(params.room, id, 1);
-                // Send 'roll' to same player
-                //let DICE_ROLLED = _tab.rollDice(params.room, id);
-                let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
+                let DICE_ROLLED = _tab.getRandomDiceValue();
                 var myPos = await _tab.getMyPosition(params.room, id, myRoom);
                 await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                 console.log('update turn 6');
                 await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
                 let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
-                // console.log('[DICE ROLLED SIX]', dices_rolled);
-
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = false;
 
@@ -389,11 +384,7 @@ module.exports = {
             let diceValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
             if (params.dice_value != diceValue) {
                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
-                //await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0,myRoom);
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', -1, 0, myRoom);
-
-                // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                // let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
                 let DICE_ROLLED;
                 if (DICE_ROLLED_RES) {
@@ -506,9 +497,6 @@ module.exports = {
                     let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                     //await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0,myRoom);
                     await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
-
-                    // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                    // let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
                     let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
                     let DICE_ROLLED;
                     if (DICE_ROLLED_RES) {
@@ -906,7 +894,7 @@ module.exports = {
                             }, timer)
                             let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
                             // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                            let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
+                            let DICE_ROLLED = _tab.getRandomDiceValue();
                             await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                             // SEND EVENT
                             let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
@@ -1667,7 +1655,7 @@ module.exports = {
                         await _tab.updateCurrentTurn(params.room, mypos, 'turn', -1, 0, myRoom);
                         let dices_rolled = await _tab.gePlayerDices(params.room, mypos, myRoom, gamePlayData);
                         // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                        let DICE_ROLLED = Math.floor(Math.random() * 6) + 1;
+                        let DICE_ROLLED = _tab.getRandomDiceValue();
                         await _tab.diceRolled(params.room, mypos, DICE_ROLLED, myRoom, gamePlayData);
                         // SEND EVENT
                         let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, mypos);
