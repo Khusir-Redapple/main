@@ -2236,4 +2236,12 @@ module.exports = {
         }
         return { 'totalTurn': maxTurn, 'finalTurn': playersFinalTurn };
     },
+    getMyRoomData : async function(myRoom) {
+        let dice_rolled = _tab.gePlayerDices(myRoom.room, myRoom.current_turn, myRoom, 'gamePlayData');
+        let skippable = _tab.isSkippable(myRoom, dice_rolled[0], myRoom.current_turn);
+        return {
+            'dice' : dice_rolled[0],
+            'skip_dice' : skippable
+        }
+    }
 };

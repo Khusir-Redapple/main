@@ -70,6 +70,7 @@ module.exports = function (io, bullQueue) {
             try {
                 const startTime = Date.now();
                 let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+                let getDiceValue = await _TableInstance.getMyRoomData(myRoom);
                 let compressedUsersRes = myRoom.users.map((element) => {
                     return {
                         "name" : element.name,
@@ -99,6 +100,8 @@ module.exports = function (io, bullQueue) {
                     "timeToCompleteGame": myRoom.timeToCompleteGame,
                     "server_time": new Date(),
                     "turn_timestamp": myRoom.turn_timestamp,
+                    "skip_dice" : getDiceValue.skip_dice,
+                    "dice" : getDiceValue.dice
                 }
                 const endTime = (Date.now() - startTime);
                 let logData = {
