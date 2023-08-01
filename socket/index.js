@@ -231,7 +231,13 @@ module.exports = function (io, bullQueue) {
                 // rez.server_time = new Date();
                 // rez.table.server_time = new Date();
                 // return callback(rez);
-               
+                let getDiceValue;
+                if(rez.status == 1) {
+                    let myRoom = await redisCache.getRecordsByKeyRedis(rez.table.room);
+                    getDiceValue = await _TableInstance.getMyRoomData(myRoom);
+                }
+                
+
                 let compressedMyRoom = rez.table.users.map((element) => {
                     return {
                         "name" : element.name,
@@ -261,6 +267,8 @@ module.exports = function (io, bullQueue) {
                         "timeToCompleteGame": rez.table.timeToCompleteGame,
                         "server_time" : new Date(),
                         "turn_timestamp" : rez.table.turn_timestamp,
+                        "skip_dice" : getDiceValue.skip_dice,
+                        "dice" : getDiceValue.dice
                     }            
                     
                 let compressedObj = {
