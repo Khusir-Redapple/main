@@ -259,7 +259,7 @@ module.exports = function (io, bullQueue) {
                         "entryFee": rez.table.entryFee,
                         "turn_time": rez.table.turn_time,
                         "timeToCompleteGame": rez.table.timeToCompleteGame,
-                        "server_time" : rez.table.server_time,
+                        "server_time" : new Date(),
                         "turn_timestamp" : rez.table.turn_timestamp,
                     }            
                     
