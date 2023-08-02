@@ -776,9 +776,15 @@ module.exports = function (io, bullQueue) {
                 socket.leave(key);
             }
             // Clear the rooms object
-            io.sockets.adapter.rooms = {};
+            // io.sockets.adapter.rooms = {};
             // Clear the sids object
-            io.sockets.adapter.sids = {};
+            // io.sockets.adapter.sids = {};
+
+            if (global.gc) {
+                global.gc();
+            } else {
+                console.log('Garbage collection unavailable');
+            }
         
         } catch(error) {
             console.log(error);
