@@ -751,10 +751,39 @@ module.exports = function (io, bullQueue) {
 
             // To track disconnect events.
             console.log(`${socket.id} disconnect`);
+            removeListeners(socket);
+            await findAndRemoveFromRoomBySocketId(socket);
         });
 
     });
 
+     function removeListeners(socket) {
+        // Remove the event listeners you previously added
+        try {
+            // const eventsList = ['fetchGameData','ping','join','join_previous','go_in_background','joinTournament','leaveTable','tournamnt_dice_rolled','tournament_move_made','skip_turn'];
+            socket.removeAllListeners();
+            // socket.offAny(); type Error : not a function.
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+   async function findAndRemoveFromRoomBySocketId(socket){
+        try 
+        {
+            const rooms = io.sockets.adapter.rooms;
+            for (const key in rooms) {
+                socket.leave(key);
+            }
+            // Clear the rooms object
+            io.sockets.adapter.rooms = {};
+            // Clear the sids object
+            io.sockets.adapter.sids = {};
+        
+        } catch(error) {
+            console.log(error);
+        }
+    }
     async function startTournament(start, socket, myRoom, gamePlayData) {
 
         myRoom.turn_timestamp = new Date();
