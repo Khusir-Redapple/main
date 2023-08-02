@@ -780,11 +780,7 @@ module.exports = function (io, bullQueue) {
             // Clear the sids object
             // io.sockets.adapter.sids = {};
 
-            if (global.gc) {
-                global.gc();
-            } else {
-                console.log('Garbage collection unavailable');
-            }
+            socket = null;
         
         } catch(error) {
             console.log(error);
