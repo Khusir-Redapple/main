@@ -751,24 +751,22 @@ module.exports = function (io, bullQueue) {
 
             // To track disconnect events.
             console.log(`${socket.id} disconnect`);
-            removeListeners(socket);
-            await findAndRemoveFromRoomBySocketId(socket);
+            //removeListeners(socket);
+            //findAndRemoveFromRoomBySocketId(socket);
         });
 
     });
 
-     function removeListeners(socket) {
+    function removeListeners(socket) {
         // Remove the event listeners you previously added
         try {
             // const eventsList = ['fetchGameData','ping','join','join_previous','go_in_background','joinTournament','leaveTable','tournamnt_dice_rolled','tournament_move_made','skip_turn'];
             socket.removeAllListeners();
-            // socket.offAny(); type Error : not a function.
         } catch (error) {
             console.log(error);
         }
     }
-
-   async function findAndRemoveFromRoomBySocketId(socket){
+    function findAndRemoveFromRoomBySocketId(socket){
         try 
         {
             const rooms = io.sockets.adapter.rooms;
@@ -779,6 +777,8 @@ module.exports = function (io, bullQueue) {
             // io.sockets.adapter.rooms = {};
             // Clear the sids object
             // io.sockets.adapter.sids = {};
+            // 1. Event Listeners Removal
+            // 2. Nullify References i.e : socket = null;
 
             socket = null;
         
@@ -786,6 +786,7 @@ module.exports = function (io, bullQueue) {
             console.log(error);
         }
     }
+
     async function startTournament(start, socket, myRoom, gamePlayData) {
 
         myRoom.turn_timestamp = new Date();
@@ -1180,8 +1181,9 @@ module.exports = function (io, bullQueue) {
     async function checkGameCompletion(job) {
 
         let { start, myRoom } = job.data.payload;
-        let gameTime = await checkGameExpireTime(myRoom);   
-        if (gameTime) {
+        let gameTime = await checkGameExpireTime(myRoom);
+        let latestMyRoom = await redisCache.getRecordsByKeyRedis(myRoom.room);
+        if (gameTime && !latestMyRoom.isGameCompleted) {
             //console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
             io.to(start.room).emit('gameTime', { status: 1, data: { time: gameTime.time, current_turn: -1} });
             if (gameTime.time == 0) {
