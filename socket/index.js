@@ -757,9 +757,8 @@ module.exports = function (io, bullQueue) {
             } else {
                 console.warn('Garbage collection unavailable. Add --expose-gc when launching Node.js.');
             }
-
-            //removeListeners(socket);
-            //findAndRemoveFromRoomBySocketId(socket);
+            removeListeners(socket);
+            findAndRemoveFromRoomBySocketId(socket);
         });
 
     });
