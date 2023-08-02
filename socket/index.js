@@ -751,6 +751,13 @@ module.exports = function (io, bullQueue) {
 
             // To track disconnect events.
             console.log(`${socket.id} disconnect`);
+            // Trigger garbage collection
+            if (global.gc) {
+                global.gc();
+            } else {
+                console.warn('Garbage collection unavailable. Add --expose-gc when launching Node.js.');
+            }
+
             //removeListeners(socket);
             //findAndRemoveFromRoomBySocketId(socket);
         });
