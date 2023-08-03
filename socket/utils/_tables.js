@@ -303,97 +303,95 @@ class _Tables
     //Leave Room
     async leave(room, id, myRoom)
     {   
-        // if(!myRoom)
-        //     return {
-        //         res: false,
-        //     };
-        console.log('Leave Room Started', id);
-        
-                console.log('myRoom - ', myRoom);
-                for (var pl = 0; pl < myRoom.users.length; pl++)
+        if(!myRoom) {
+            return {
+            res: false,
+        };
+        }
+        for (var pl = 0; pl < myRoom.users.length; pl++)
+        {
+            if (myRoom.users[pl].id.toString() == id.toString())
+            {
+                console.log('USER FOUND');
+                if (myRoom.turn_start_at == 0)
                 {
-                    if (myRoom.users[pl].id.toString() == id.toString())
+                    myRoom.users[pl] = {
+                        id: '',
+                        numeric_id: '',
+                        name: '',
+                        profile_pic: '',
+                        position: pl,
+                        is_active: false,
+                        is_done: false,
+                        is_left: false,
+                        rank: 0,
+                        life: 0,
+                        dices_rolled: [],
+                        bonus_dice: 0,
+                        six_counts: 0,
+                        tokens: [0, 0, 0, 0],
+                    };
+
+                    var count = 0;
+                    for (var k = 0; k < 4; k++)
                     {
-                        console.log('USER FOUND');
-                        if (myRoom.turn_start_at == 0)
+                        if (myRoom.users[k] && myRoom.users[k].is_active)
                         {
-                            myRoom.users[pl] = {
-                                id: '',
-                                numeric_id: '',
-                                name: '',
-                                profile_pic: '',
-                                position: pl,
-                                is_active: false,
-                                is_done: false,
-                                is_left: false,
-                                rank: 0,
-                                life: 0,
-                                dices_rolled: [],
-                                bonus_dice: 0,
-                                six_counts: 0,
-                                tokens: [0, 0, 0, 0],
-                            };
-
-                            var count = 0;
-                            for (var k = 0; k < 4; k++)
-                            {
-                                if (myRoom.users[k] && myRoom.users[k].is_active)
-                                {
-                                    count++;
-                                }
-                            }
-
-                            return {
-                                res: false,
-                                flag: 1,
-                                remove: count == 0,
-                            };
-                        }
-                        myRoom.users[pl].life = 0;
-                        if (!myRoom.users[pl].is_done)
-                        {
-                            myRoom.users[pl].is_left = true;
-                            myRoom.users[pl].is_done = true;
-                            myRoom.users[pl].left_time = await this.checkGameExpireTime(myRoom);
-
-                          let rank = myRoom.no_of_players;
-
-                            while (this.isRankOccupied(room, rank, myRoom))
-                            {
-                                rank--;
-                                if (rank == 1) break;
-                            }
-
-                            myRoom.users[pl].rank = rank;
-
-                            if(myRoom.players_done)
-                            {
-                                myRoom.players_done += 1;
-                            }
-                            else
-                             myRoom.players_done=1;
-
-                            console.log('Players done: '+ myRoom.players_done);
-                            return {
-                                res: true,
-                                position: pl,
-                                rank: rank,
-                            };
-                        } else
-                        {
-                            myRoom.users[pl].is_left = true;
-                            myRoom.users[pl].left_time = await this.checkGameExpireTime(myRoom);
-                            return {
-                                res: true,
-                                position: pl,
-                                rank: myRoom.users[pl].rank,
-                            };
+                            count++;
                         }
                     }
+
+                    return {
+                        res: false,
+                        flag: 1,
+                        remove: count == 0,
+                    };
                 }
-                return {
-                    res: false,
-                };
+                myRoom.users[pl].life = 0;
+                if (!myRoom.users[pl].is_done)
+                {
+                    myRoom.users[pl].is_left = true;
+                    myRoom.users[pl].is_done = true;
+                    myRoom.users[pl].left_time = await this.checkGameExpireTime(myRoom);
+
+                    let rank = myRoom.no_of_players;
+
+                    while (this.isRankOccupied(room, rank, myRoom))
+                    {
+                        rank--;
+                        if (rank == 1) break;
+                    }
+
+                    myRoom.users[pl].rank = rank;
+
+                    if(myRoom.players_done)
+                    {
+                        myRoom.players_done += 1;
+                    }
+                    else
+                        myRoom.players_done=1;
+
+                    console.log('Players done: '+ myRoom.players_done);
+                    return {
+                        res: true,
+                        position: pl,
+                        rank: rank,
+                    };
+                } else
+                {
+                    myRoom.users[pl].is_left = true;
+                    myRoom.users[pl].left_time = await this.checkGameExpireTime(myRoom);
+                    return {
+                        res: true,
+                        position: pl,
+                        rank: myRoom.users[pl].rank,
+                    };
+                }
+            }
+        }
+        return {
+            res: false,
+        };
     }
 
 
@@ -598,24 +596,27 @@ class _Tables
     {
         if(myRoom) {
             const me = myRoom.users.find((elem) => elem.position == position);
-            let sixCount = this.getSix(myRoom.room, me.id, myRoom);
-            // to check three six.
-            if(sixCount == 2 && dice_value == 6){
-                return true;
-            }
-            // to check move not possible.           
-            let userPawns = myRoom.users[me.position].tokens;
-            // calculate target user pawn index.
-            let pawnIndexes = userPawns.map(pawn => (pawn + dice_value));
-            if(pawnIndexes[0] <= 56 || pawnIndexes[1] <= 56 || pawnIndexes[2] <= 56 || pawnIndexes[3] <= 56){
-                return false;
+            if(me) {
+                let sixCount = this.getSix(myRoom.room, me.id, myRoom);
+                // to check three six.
+                if(sixCount == 2 && dice_value == 6){
+                    return true;
+                }
+                // to check move not possible.           
+                let userPawns = myRoom.users[me.position].tokens;
+                // calculate target user pawn index.
+                let pawnIndexes = userPawns.map(pawn => (pawn + dice_value));
+                if(pawnIndexes[0] <= 56 || pawnIndexes[1] <= 56 || pawnIndexes[2] <= 56 || pawnIndexes[3] <= 56){
+                    return false;
+                } else {
+                    return true;
+                }
             } else {
-                return true;
+                return false;
             }
         } else {
             return false;
         }
-        
     }
 
     getRandomDiceValue(){

@@ -71,45 +71,49 @@ module.exports = function (io, bullQueue) {
                 const startTime = Date.now();
                 let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
                 let getDiceValue = await _TableInstance.getMyRoomData(myRoom);
-                let compressedUsersRes = myRoom.users.map((element) => {
-                    return {
-                        "name" : element.name,
-                        "id" : element.id,
-                        "profile_pic" : element.profile_pic,
-                        "position" : element.position,
-                        "is_active" : element.is_active,
-                        "is_done" : element.is_done,
-                        "is_left" : element.is_left,
-                        "rank" : element.rank,
-                        "tokens" : element.tokens,
-                        "life" : element.life,
-                        "token_colour" : element.token_colour,
+                if(myRoom) {
+                    let compressedUsersRes = myRoom.users.map((element) => {
+                        return {
+                            "name" : element.name,
+                            "id" : element.id,
+                            "profile_pic" : element.profile_pic,
+                            "position" : element.position,
+                            "is_active" : element.is_active,
+                            "is_done" : element.is_done,
+                            "is_left" : element.is_left,
+                            "rank" : element.rank,
+                            "tokens" : element.tokens,
+                            "life" : element.life,
+                            "token_colour" : element.token_colour,
+                        };
+                    });
+                    let myRoomCompressed = {
+                        "room" : myRoom.room,
+                        "totalWinning": myRoom.totalWinning,
+                        "players_done": parseInt(myRoom.no_of_players),
+                        "players_won": myRoom.players_won,
+                        "current_turn": myRoom.current_turn,
+                        "current_turn_type": myRoom.current_turn_type,
+                        "no_of_players": parseInt(myRoom.no_of_players),
+                        "users" : compressedUsersRes,
+                        "entryFee": myRoom.entryFee,
+                        "turn_time": myRoom.turn_time,
+                        "timeToCompleteGame": myRoom.timeToCompleteGame,
+                        "server_time": new Date(),
+                        "turn_timestamp": myRoom.turn_timestamp,
+                        "skip_dice" : getDiceValue.skip_dice,
+                        "dice" : getDiceValue.dice
+                    }
+                    const endTime = (Date.now() - startTime);
+                    let logData = {
+                        level: 'warning',
+                        meta: { p: 'fetchGameData',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
                     };
-                });
-                let myRoomCompressed = {
-                    "room" : myRoom.room,
-                    "totalWinning": myRoom.totalWinning,
-                    "players_done": parseInt(myRoom.no_of_players),
-                    "players_won": myRoom.players_won,
-                    "current_turn": myRoom.current_turn,
-                    "current_turn_type": myRoom.current_turn_type,
-                    "no_of_players": parseInt(myRoom.no_of_players),
-                    "users" : compressedUsersRes,
-                    "entryFee": myRoom.entryFee,
-                    "turn_time": myRoom.turn_time,
-                    "timeToCompleteGame": myRoom.timeToCompleteGame,
-                    "server_time": new Date(),
-                    "turn_timestamp": myRoom.turn_timestamp,
-                    "skip_dice" : getDiceValue.skip_dice,
-                    "dice" : getDiceValue.dice
+                    logDNA.warn(`fetchGameData`, logData);
+                    return callback(myRoomCompressed);
+                } else {
+                    return callback();
                 }
-                const endTime = (Date.now() - startTime);
-                let logData = {
-                    level: 'warning',
-                    meta: { p: 'fetchGameData',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
-                };
-                logDNA.warn(`fetchGameData`, logData);
-                return callback(myRoomCompressed);
             }
             catch (err) {
                 let logData = {
