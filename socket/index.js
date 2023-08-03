@@ -769,7 +769,11 @@ module.exports = function (io, bullQueue) {
             // const eventsList = ['fetchGameData','ping','join','join_previous','go_in_background','joinTournament','leaveTable','tournamnt_dice_rolled','tournament_move_made','skip_turn'];
             socket.removeAllListeners();
         } catch (error) {
-            console.log(error);
+            let logData = {
+                level: 'error',
+                meta: { 'env' : `${process.env.NODE_ENV}`,'error': error, 'params': params, stackTrace : error.stack}
+            };
+            logDNA.error('remove_listeners', logData);
         }
     }
     function findAndRemoveFromRoomBySocketId(socket){
@@ -783,13 +787,13 @@ module.exports = function (io, bullQueue) {
             // io.sockets.adapter.rooms = {};
             // Clear the sids object
             // io.sockets.adapter.sids = {};
-            // 1. Event Listeners Removal
-            // 2. Nullify References i.e : socket = null;
-
-            socket = null;
-        
+            socket = null;        
         } catch(error) {
-            console.log(error);
+            let logData = {
+                level: 'error',
+                meta: { 'env' : `${process.env.NODE_ENV}`,'error': error, 'params': params, stackTrace : error.stack}
+            };
+            logDNA.error('socket_room_remove', logData);
         }
     }
 
