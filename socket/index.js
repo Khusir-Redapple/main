@@ -854,7 +854,7 @@ module.exports = function (io, bullQueue) {
     async function calculateWinAmount(amount, payoutConfig) {
         let room_fee = amount;
         let payConfig = payoutConfig;
-        console.log(" >>>", room_fee, payConfig)
+        // console.log(" >>>", room_fee, payConfig)
         let winnerConfig = {};
         let totalWinning = 0;
         for (let i = 0; i < 4; i++) {
