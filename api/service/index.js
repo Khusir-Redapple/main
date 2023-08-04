@@ -28,7 +28,7 @@ module.exports = {
     
     issueToken: function (data)
     {
-        console.log(typeof (data))
+        // console.log(typeof (data))
         if (typeof (data) != 'object') data = JSON.parse(data);
         //Reading JWT secret key from process.env.API_SECRET_KEY in SSM
         return jwt.sign(data, process.env.API_SECRET_KEY, {expiresIn: 604800});

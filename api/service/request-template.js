@@ -9,7 +9,7 @@ async function call(path, method, body, headers = {})
     {
         const url = process.env.VERIFY_USER_URL + path;
         let token = await Service.issueToken(body);
-        console.log("PAth ::", path, url, body, 'Bearer ' + token, new Date())
+        // console.log("PAth ::", path, url, body, 'Bearer ' + token, new Date());
         // for logDNA 
         var logData = {
             level: 'debugg',
@@ -29,7 +29,7 @@ async function call(path, method, body, headers = {})
             },
         });
         let data = apiResponce.data;
-        console.log(path, " Data resp. is > ", data)
+        // console.log(path, " Data resp. is > ", data);
         if (data.isSuccess == true)
         {
             return data;

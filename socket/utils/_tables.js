@@ -232,7 +232,7 @@ class _Tables
                         var diffT = (curr_ - myRoom.game_started_at) / 1000;
                         let timeToAdd = config.gameTime * 60;
                         // let gamecompleteTime = timeToAdd.getTime() - curr_ ;
-                        console.log('[alreadyPlayingTable]- ', curr_, myRoom.turn_start_at, 30 - diff, timeToAdd, diffT, timeToAdd - diffT);
+                        // console.log('[alreadyPlayingTable]- ', curr_, myRoom.turn_start_at, 30 - diff, timeToAdd, diffT, timeToAdd - diffT);
                         var rez = {
                             status: 1,
                             table: myRoom,
@@ -312,7 +312,7 @@ class _Tables
         {
             if (myRoom.users[pl].id.toString() == id.toString())
             {
-                console.log('USER FOUND');
+                // console.log('USER FOUND');
                 if (myRoom.turn_start_at == 0)
                 {
                     myRoom.users[pl] = {
@@ -371,7 +371,7 @@ class _Tables
                     else
                         myRoom.players_done=1;
 
-                    console.log('Players done: '+ myRoom.players_done);
+                    // console.log('Players done: '+ myRoom.players_done);
                     return {
                         res: true,
                         position: pl,
@@ -575,7 +575,7 @@ class _Tables
             if (myRoom.users[j].id == id)
             {
                 myRoom.users[j].six_counts += 1;
-                console.log('Six updated', myRoom.users[j].six_counts);
+                // console.log('Six updated', myRoom.users[j].six_counts);
             }
         }
     }
@@ -587,7 +587,7 @@ class _Tables
             if (myRoom.users[j].id == id)
             {
                 myRoom.users[j].six_counts = 0;
-                console.log('Six updated', myRoom.users[j].six_counts);
+                // console.log('Six updated', myRoom.users[j].six_counts);
             }
         }
     }
@@ -648,7 +648,7 @@ class _Tables
 
     getMyDice(room, id, myRoom, gamePlayData)
     {   
-        console.log('getMyDiceError', JSON.stringify(gamePlayData));
+        // console.log('getMyDiceError', JSON.stringify(gamePlayData));
         if (!myRoom) return -1;
         const me = myRoom.users.find((elem) => elem.id.toString() == id.toString());
         if(!gamePlayData.data.roll)
@@ -786,7 +786,7 @@ class _Tables
         {
             if (table.users[j].is_active && !table.users[j].is_done)
             {
-                console.log("getNextPosition j: " + j);
+                // console.log("getNextPosition j: " + j);
                 return j;
             }
         }
@@ -794,7 +794,7 @@ class _Tables
         {
             if (table.users[j].is_active && !table.users[j].is_done)
             {
-                console.log("getNextPosition j1: " + j);
+                // console.log("getNextPosition j1: " + j);
                 return j;
             }
         }
@@ -838,14 +838,6 @@ class _Tables
         // }
 
         const actual_token_position = config.MOVE_PATH[myPos][table.users[myPos].tokens[token_index]];
-        console.log(
-            'MAIN USER',
-            myPos,
-            'TOKEN',
-            actual_token_position, // according to table calculated index
-            'POSITION',
-            table.users[myPos].tokens[token_index] // acual index
-        );
         if (actual_token_position == -1) 
         {
             let responseObj = {
@@ -876,19 +868,6 @@ class _Tables
                     if (table.users[j].tokens[k] != -1 && !table.users[j].is_left)
                     {
                         let other_token_position = config.MOVE_PATH[j][table.users[j].tokens[k]];
-                        console.log(
-                            'KILLER',
-                            'USER',
-                            j,
-                            'TOKEN',
-                            table.users[j].tokens[k],
-                            'POSITION',
-                            other_token_position,
-                            'safeZone',
-                            table.users[j].tokens[k],
-                            table.users[j].tokens[k] != config.starPosition[0]
-
-                        );
                         if (other_token_position == actual_token_position && table.users[j].tokens[k] != config.starPosition[0])
                         {
                             dead_possible.push({
@@ -906,19 +885,11 @@ class _Tables
 
         for (let i = 0; i < dead_possible.length; i++)
         {
-            //console.log("dead_possible.length : ", dead_possible.length)
-            //console.log("us : ", us, i)
-           // console.log("dead_possible[i].user : ", dead_possible[i].user)
             if (us.indexOf(dead_possible[i].user) > -1)
             {
-                // dead_possible = dead_possible.filter((e) => e.user != dead_possible[i].user);
                 safe_user.push(dead_possible[i].user)
-                console.log("dead_possible : ", dead_possible, "safe_user >>", safe_user)
-                // i = 0;
-                // continue; 
             } else
             {
-                //console.log("else dead_possible[i].user : ", dead_possible[i].user)
                 us.push(dead_possible[i].user);
             }
             // i++;
@@ -1085,15 +1056,11 @@ class _Tables
     async makeMoveForTournament(dice_value, room, id, token_index, myRoom, gamePlayData)
     {
        const table = myRoom;
-        // for (let i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room == room)
-        //     {
                 for (let j = 0; j < table.users.length; j++)
                 {
                     if (table.users[j].id == id)
                     {
-                        console.log('PENDING DICES BEFORE', table.users[j].dices_rolled, table.users[j].points, dice_value);
+                        // console.log('PENDING DICES BEFORE', table.users[j].dices_rolled, table.users[j].points, dice_value);
                         let user_points = 0;
                         gamePlayData.data.points_per_diceRoll.map(function(ele) {
                             user_points += ele;
@@ -1108,7 +1075,7 @@ class _Tables
                                 table.users[j].dices_rolled.indexOf(dice_value),
                                 1
                             );
-                            console.log('PENDING DICES AFTER', table.users[j].dices_rolled, table.users[j].points);
+                            // console.log('PENDING DICES AFTER', table.users[j].dices_rolled, table.users[j].points);
 
                             // var gamePlayDataIndex = this.gamePlayData.findIndex((x) => x.room == room);
                             gamePlayData.data.pawn = token_index + 1;
@@ -1203,7 +1170,7 @@ class _Tables
                             gamePlayData.data.checkpoint = pawnCheckpointArray;
                             table.users[j].checkpoint = pawnCheckpointArray;
 
-                            console.log('PENDING DICES AFTER', table.users[j].dices_rolled, table.users[j].points);
+                            // console.log('PENDING DICES AFTER', table.users[j].dices_rolled, table.users[j].points);
                             return {
                                 'token_position': table.users[j].tokens[token_index], 
                                 'points': table.users[j].points, 
@@ -1254,7 +1221,7 @@ class _Tables
                 nonActiveUserPointArray.push(totalScore);
             }
         }
-        console.log({activeUserPointArray} , {activeUserMap}, {inactiveUserMap});
+        // console.log({activeUserPointArray} , {activeUserMap}, {inactiveUserMap});
         //var maxPoints = (Math.max(...pointArray));
         activeUserPointArray.sort((a, b) => b - a);
         nonActiveUserPointArray.sort((a, b) => b - a);
@@ -1335,38 +1302,38 @@ class _Tables
             } 
         }
 
-        console.log('UserRankWiseAmount', UserRankWiseAmount, UserRankArray);
+        // console.log('UserRankWiseAmount', UserRankWiseAmount, UserRankArray);
 
         for (let k = 0; k < table.users.length; k++)
         {   
             table.users[k].rank = UserRankArray.get(k);
             otherRank = table.users[k].rank;
-            console.log('Rank ------------------->', otherRank, UserRankWiseAmount.get(1));
+            // console.log('Rank ------------------->', otherRank, UserRankWiseAmount.get(1));
             let winAmount = 0;
             if (typeof amount != 'undefined' && otherRank == 1 
                 && UserRankWiseAmount.get(1) && !table.users[k].hasOwnProperty("is_left"))
             {
-                console.log('Rank 1 ------------------->', UserRankWiseAmount.get(1));
+                // console.log('Rank 1 ------------------->', UserRankWiseAmount.get(1));
                 winAmount = otherRank == 1 ? Math.floor(UserRankWiseAmount.get(1)/(oneRankCounter == 0 ? 1 : oneRankCounter)) : 0;
                                             
             } else if (typeof amount != 'undefined' && otherRank == 2 
                 && UserRankWiseAmount.get(2) && !table.users[k].hasOwnProperty("is_left"))
             {
-                console.log('Rank 2 ------------------->', UserRankWiseAmount.get(2));
+                // console.log('Rank 2 ------------------->', UserRankWiseAmount.get(2));
                 winAmount = otherRank == 2 ? Math.floor(UserRankWiseAmount.get(2)/(twoRankCounter == 0 ? 1 : twoRankCounter)) : 0;            
                 
             } else if (typeof amount != 'undefined' && otherRank == 3 
                 && UserRankWiseAmount.get(3) && !table.users[k].hasOwnProperty("is_left"))
             {
-                console.log('Rank 3 ------------------->', UserRankWiseAmount.get(3));
+                // console.log('Rank 3 ------------------->', UserRankWiseAmount.get(3));
                 winAmount = otherRank == 3 ? Math.floor(UserRankWiseAmount.get(3)/(threeRankCounter == 0 ? 1 : threeRankCounter)) : 0;
             } else if (typeof amount != 'undefined' && otherRank == 4
                 && UserRankWiseAmount.get(4) && !table.users[k].hasOwnProperty("is_left"))
             {
-                console.log('Rank 4 ------------------->', UserRankWiseAmount.get(4));
+                // console.log('Rank 4 ------------------->', UserRankWiseAmount.get(4));
                 winAmount = otherRank == 4 ? Math.floor(UserRankWiseAmount.get(4)/(fourRankCounter == 0 ? 1 : fourRankCounter)) : 0;
             }
-            console.log('Rank Wise Amount ------------------->', winAmount);
+            // console.log('Rank Wise Amount ------------------->', winAmount);
 
             table.players_won += 1;
             table.players_done += 1;
@@ -1426,9 +1393,9 @@ class _Tables
         {
             pointArray.push(table.users[j].points + table.users[j].bonusPoints);
         }
-        console.log("calculateUserRank pointArray >>>", pointArray)
+        // console.log("calculateUserRank pointArray >>>", pointArray)
         var maxPoints = (Math.max(...pointArray));
-        console.log("calculateUserRank maxPoints >>>", maxPoints)
+        // console.log("calculateUserRank maxPoints >>>", maxPoints)
         let point = pointArray;
         point.sort((a, b) => b - a);
 
@@ -1436,7 +1403,7 @@ class _Tables
         {
             for (let j = 0; j < point.length; j++)
             {
-                console.log("calculateUserRank HERE - ", point[j], table.users[k].points + table.users[k].bonusPoints)
+                // console.log("calculateUserRank HERE - ", point[j], table.users[k].points + table.users[k].bonusPoints)
                 if (point[j] == table.users[k].points + table.users[k].bonusPoints && userData.id == table.users[k].id) 
                 {
                     table.users[k].rank = j + 1;
@@ -1450,7 +1417,7 @@ class _Tables
     //TODO: Revamp winnings logic
     isThisTheEnd(room, win_amount, myRoom)
     {
-        console.log("isThisTheEnd>> ", room, win_amount,myRoom)
+        // console.log("isThisTheEnd>> ", room, win_amount,myRoom)
         let table = myRoom;
 
         let rank = [];
@@ -1473,7 +1440,7 @@ class _Tables
             {
                 amount = table.users[j].rank == 3 ? win_amount[3] : 0;
             }
-            console.log("for score >>>>", table.users[j])
+            // console.log("for score >>>>", table.users[j])
             rank.push({
                 player_index: table.users[j].position,
                 name: table.users[j].name,
@@ -1486,7 +1453,7 @@ class _Tables
                 score: table.users[j].points + table.users[j].bonusPoints
             });
         }
-        console.log("isThisTheEnd>> rank", room, JSON.stringify(rank));
+        // console.log("isThisTheEnd>> rank", room, JSON.stringify(rank));
         if (table.no_of_players == 2 || table.no_of_players == 3)
         {
             if (table.players_won == 1 || table.players_done>=1)
@@ -1570,7 +1537,7 @@ class _Tables
 
     calculateGameEndData(room, win_amount, myRoom)
     {
-        console.log("isThisTheEnd>> ", room, win_amount,myRoom)
+        // console.log("isThisTheEnd>> ", room, win_amount,myRoom)
         let endData = this.EndOfTournamentV2(room, win_amount, myRoom);
         return {
             'rank' : endData.winner,
@@ -1582,14 +1549,14 @@ class _Tables
     {
         // console.log('CHECKING PLAYERS LEFT');
         let table = myRoom;
-        console.log("checkOnlyPlayerLeft : Step 1: ")
+        // console.log("checkOnlyPlayerLeft : Step 1: ")
         if (table.no_of_players - table.players_done == 1)
         {
-            console.log("checkOnlyPlayerLeft : Step 2: ")
+            // console.log("checkOnlyPlayerLeft : Step 2: ")
             for (let j = 0; j < table.users.length; j++)
             {
                 // console.log('USER', this.tables[i].users[j]);
-                console.log("checkOnlyPlayerLeft : Step 3: ", table.users[j].is_active, !table.users[j].is_done, !table.users[j].is_left)
+                // console.log("checkOnlyPlayerLeft : Step 3: ", table.users[j].is_active, !table.users[j].is_done, !table.users[j].is_left)
                 if (
                     table.users[j].is_active &&
                     !table.users[j].is_done &&
@@ -1602,22 +1569,22 @@ class _Tables
                     //TO DO: 
                     
                     let rank = table.users[j].rank;
-                    console.log('Rank received: ', rank);
+                    // console.log('Rank received: ', rank);
                     if(!rank || rank<1)
                     {
                         rank=table.no_of_players;
-                        console.log('Inside rank calc');
+                        // console.log('Inside rank calc');
                         
                         while (this.isRankOccupied(room, rank, myRoom))
                         {
                             
-                            console.log('Inside rank deduc');
+                            // console.log('Inside rank deduc');
                             rank--;
                             if (rank == 1) break;
                         }
                     }
                     table.users[j].rank=rank;
-                    console.log('Rank alotted: ' +rank+  JSON.stringify(table.users[j]));
+                    // console.log('Rank alotted: ' +rank+  JSON.stringify(table.users[j]));
                     //table.users[j].rank = table.players_won;
                     return {
                         'response': true,
@@ -1815,7 +1782,6 @@ class _Tables
     }
     checkPointActive(room, myPos , myRoom, gamePlayData)
     {
-        console.log("checkPointActive -- ")
         let tab_pos = 0;
         let checkPointActivated = false;
         let table = myRoom;
@@ -1829,19 +1795,19 @@ class _Tables
         // console.log("checkPointActive 1 - ", tab_pos, myPos)
         for (let k = 0; k < table.users[myPos].tokens.length; k++)
         {
-            console.log("this.tables[tab_pos].users[myPos].tokens[k] - ", table.users[myPos].tokens[k])
+            // console.log("this.tables[tab_pos].users[myPos].tokens[k] - ", table.users[myPos].tokens[k])
             if (table.users[myPos].tokens[k] != -1)
             {
 
                 let token_position = table.users[myPos].tokens[k];
-                console.log("token position - ", token_position, config.starPosition[0])
+                // console.log("token position - ", token_position, config.starPosition[0])
                 if (token_position >= config.starPosition[0]) checkPointActivated = true;
-                console.log(
-                    'checkPointActivated',
-                    checkPointActivated,
-                    'token_position',
-                    token_position,
-                );
+                // console.log(
+                //     'checkPointActivated',
+                //     checkPointActivated,
+                //     'token_position',
+                //     token_position,
+                // );
 
             }
         }

@@ -186,7 +186,7 @@ module.exports = function (io, bullQueue) {
                 }
             } catch (err)
             {
-                console.log("join",err);   
+                // console.log("join",err);   
                 // for logDNA 
                 let logData = {
                     level: 'error',
@@ -200,7 +200,7 @@ module.exports = function (io, bullQueue) {
                         message: 'An error was encountered. Please join a new game.',
                     });
 
-                console.log("join", err);
+                // console.log("join", err);
                 return callback();
             } finally {
                 const endTime = (Date.now() - start);
@@ -214,7 +214,7 @@ module.exports = function (io, bullQueue) {
 
         socket.on('join_previous', async (params, callback) => {
             const startTime = Date.now();
-            console.log('TS1 ::', 'join_previous', socket.id, JSON.stringify(params));
+            // console.log('TS1 ::', 'join_previous', socket.id, JSON.stringify(params));
             var myId = await Socketz.getId(socket.id);
             try {
                 if (!myId) {
@@ -284,7 +284,7 @@ module.exports = function (io, bullQueue) {
                return callback(compressedObj); 
 
             } catch (ex) {
-                console.log("join_previous", ex);
+                // console.log("join_previous", ex);
                 let logData = {
                     level: 'error',
                     meta: { 'env' : `${process.env.NODE_ENV}`,'error': ex, 'params': params, stackTrace : ex.stack}
@@ -339,7 +339,7 @@ module.exports = function (io, bullQueue) {
             params.room_fee = verifyUser.amount.toString();
             params.no_of_players = verifyUser.participants.toString();
             let payout = await calculateWinAmount(verifyUser.amount, verifyUser.payoutConfig);
-            console.log("payout -- ", payout);
+            // console.log("payout -- ", payout);
             params.winningAmount = payout.payoutConfig;
             params.totalWinning = payout.totalWinning;
             params.lobbyId = verifyUser.lobbyId;
@@ -352,7 +352,7 @@ module.exports = function (io, bullQueue) {
             logDNA.log('Calculate win ammount',logData);
             // To delete object
             // deleteObjectProperty(payout);
-            console.log("params >>>>>", params);
+            // console.log("params >>>>>", params);
             if (!params || !params.user_id)
             {
                 return callback({
@@ -440,7 +440,7 @@ module.exports = function (io, bullQueue) {
                     room: rez.callback.table.room,
                 }
                     var start = await _TableInstance.startIfPossibleTournament(params_data, myRoom, gamePlayData);
-                    console.log("Start", start);
+                    // console.log("Start", start);
                     if (start) {
                         let reqData = await _TableInstance.getGameUsersData(start);
                         let startGame = await requestTemplate.post(`startgame`, reqData)
@@ -450,7 +450,7 @@ module.exports = function (io, bullQueue) {
                             leaveUser(i, start);
                             async function leaveUser(i, start) {
                                 if (i < 4) {
-                                    console.log("start game error > ", start.table)
+                                    // console.log("start game error > ", start.table)
                                     if (start.table.users[i] && start.table.users[i].id) {
                                         let data = {
                                             room: params_data.room,
@@ -495,7 +495,7 @@ module.exports = function (io, bullQueue) {
                                         isRefund: true
                                     }
                                     let rez = await _TableInstance.leaveTable(data, tableD.players[i].id, socket, myRoom, gamePlayData);
-                                    console.log("rez--", rez);
+                                    // console.log("rez--", rez);
                                     processEvents(rez, myRoom, socket);
                                 }
                             }
@@ -504,7 +504,7 @@ module.exports = function (io, bullQueue) {
                 }
             }           
             catch (ex) {
-                console.log("joinTournament ", ex);
+                // console.log("joinTournament ", ex);
                 let logData = {
                     level: 'error',
                     meta: { 'env' : `${process.env.NODE_ENV}`,'error': ex, 'params': data, stackTrace : ex.stack}
@@ -627,7 +627,7 @@ module.exports = function (io, bullQueue) {
                 if (response.callback.status == 1) processEvents(response, myRoom, socket);
             }
             catch (error) {
-                console.log('dice_roll_error', error);
+                // console.log('dice_roll_error', error);
                // logDNA.log('dice_roll_error', { level: 'error', meta: { 'error': error } });
                 let logData = {
                     level: 'error',
@@ -652,11 +652,11 @@ module.exports = function (io, bullQueue) {
             let myId = await Socketz.getId(socket.id);
             let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
             try {
-                console.log("Tournament_move_made ::", JSON.stringify(params));
-                console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
+                // console.log("Tournament_move_made ::", JSON.stringify(params));
+                // console.log(socket.data_name, ' Moved token of tournament ', params.token_index, ' By ', params.dice_value, ' places');
                 let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params.room);
                 let response = await _TableInstance.moveTourney(params, myId, gamePlayData, myRoom);
-                console.log('Tournament_move_made callback', response);
+                // console.log('Tournament_move_made callback', response);
                 await redisCache.addToRedis(myRoom.room, myRoom);
                 await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
                 // console.log('GAME-PLAY-DATA-4', JSON.stringify(gamePlayData));
@@ -716,12 +716,12 @@ module.exports = function (io, bullQueue) {
             }
 
             try{
-            console.log('TS1 ::', 'skip_turn', socket.id, JSON.stringify(params));
+            // console.log('TS1 ::', 'skip_turn', socket.id, JSON.stringify(params));
             let myId = await Socketz.getId(socket.id);
             let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
             let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_'+params.room);
             let response = await _TableInstance.skipTurn(params, myId, myRoom, gamePlayData);
-            console.log("SKIP TURN RES", response);
+            // console.log("SKIP TURN RES", response);
             myRoom = response.table;
             gamePlayData = response.gameData;
             await redisCache.addToRedis(myRoom.room,myRoom);
@@ -731,7 +731,7 @@ module.exports = function (io, bullQueue) {
             processEvents(response, myRoom, socket);
             }
             catch (ex) {
-                console.log("skip_turn", ex);
+                // console.log("skip_turn", ex);
                 let logData = {
                     level: 'error',
                     meta: { 'env' : `${process.env.NODE_ENV}`,'error': ex, 'params': params, stackTrace : ex.stack}
@@ -859,14 +859,14 @@ module.exports = function (io, bullQueue) {
         let totalWinning = 0;
         for (let i = 0; i < 4; i++) {
             if (payConfig && payConfig[i]) {
-                console.log("payConfig[i] * room_fee  >>>", payConfig[i] * room_fee)
+                // console.log("payConfig[i] * room_fee  >>>", payConfig[i] * room_fee)
                 winnerConfig[i] = Math.floor(payConfig[i] * room_fee);
-                console.log("totalWinning , winnerConfig[i] >>>", totalWinning, winnerConfig[i])
+                // console.log("totalWinning , winnerConfig[i] >>>", totalWinning, winnerConfig[i])
 
                 totalWinning = totalWinning + winnerConfig[i]
             }
         }
-        console.log("calculateWinAmount -- ", winnerConfig, totalWinning)
+        // console.log("calculateWinAmount -- ", winnerConfig, totalWinning)
         return {
             payoutConfig: winnerConfig,
             totalWinning: totalWinning
@@ -874,21 +874,21 @@ module.exports = function (io, bullQueue) {
     }
     async function removePlayer(tableD) {
         const users = [];
-        console.log("tableD >>>", tableD)
+        // console.log("tableD >>>", tableD)
         if (tableD && tableD.players.length < tableD.no_of_players) {
             for (let i = 0; i < 4; i++) {
                 if (tableD.players[i] && tableD.players[i].id) {
-                    console.log("Here>>", i, tableD.players[i])
+                    // console.log("Here>>", i, tableD.players[i])
                     users.push(tableD.players[i])
                 }
             }
-            console.log(">>USERS>>", users)
+            // console.log(">>USERS>>", users)
             return users;
         }
     }
     async function processEvents(rez, myRoom, socket) {
         if (_.isArray(rez.events)) {
-           console.log('Process Events ::: ', JSON.stringify(rez.events));
+        //    console.log('Process Events ::: ', JSON.stringify(rez.events));
             if (rez.events.length > 0) {
                 for (const d of rez.events) {
                     let logData = {
@@ -912,8 +912,8 @@ module.exports = function (io, bullQueue) {
                             if (d.type == 'users_including_me') {
                                 for (const g of d.users) {
                                     var id = await Socketz.getSocket(g);
-                                    console.log("user", g);
-                                    console.log("socket", id);
+                                    // console.log("user", g);
+                                    // console.log("socket", id);
                                     io.to(id).emit(d.name, d.data);
                                 }
                                 if(d.name == 'leaveTable'){
@@ -924,8 +924,8 @@ module.exports = function (io, bullQueue) {
                             } else if (d.type == 'users_excluding_me') {
                                 for (const g of d.users) {
                                     var id = await Socketz.getSocket(g);
-                                    console.log("user", g);
-                                    console.log("socket", id);
+                                    // console.log("user", g);
+                                    // console.log("socket", id);
                                     socket.to(id).emit(d.name, d.data);
                                 }
                             } else if (d.type == 'room_including_me') {
@@ -1201,11 +1201,11 @@ module.exports = function (io, bullQueue) {
             //console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
             io.to(start.room).emit('gameTime', { status: 1, data: { time: gameTime.time, current_turn: -1} });
             if (gameTime.time == 0) {
-                console.log('gameTimerEnd...........................');
+                // console.log('gameTimerEnd...........................');
                 // sent event to socket Client for equal ture.                                            
                 let equalTurnPlayerData = await _TableInstance.determineTotalTurn(start.room);
                 io.to(start.room).emit('final_turn_initiated', equalTurnPlayerData);
-                console.log('final_turn_initiated');
+                // console.log('final_turn_initiated');
                 return;
             } else {
                 await bullQueue.add(job.data, {
