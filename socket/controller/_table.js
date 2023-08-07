@@ -161,7 +161,6 @@ module.exports = {
                 await _tab.updateCurrentTurn(params.room, myPos, 'move', -1, 1, myRoom);
             };
             let dices_roll = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
-            console.log('three six false', dices_roll);
             // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
             resObj.callback.skip_dice = threeSix;
 
@@ -383,6 +382,7 @@ module.exports = {
 
             // to validate player have passed same value that have in backend.
             let diceValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
+            console.log(`do fraud debugging backend value => ${diceValue} from params => ${params.dice_value}`);
             if (diceValue.length !== 0 && params.dice_value != diceValue) {
                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', -1, 0, myRoom);
