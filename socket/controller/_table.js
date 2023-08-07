@@ -158,7 +158,14 @@ module.exports = {
             }
             else {
                 // console.log('update turn 3');
-                await _tab.updateCurrentTurn(params.room, myPos, 'move', -1, 1, myRoom)
+                await _tab.updateCurrentTurn(params.room, myPos, 'move', -1, 1, myRoom);
+                let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                let DICE_ROLLED;
+                if (DICE_ROLLED_RES) {
+                    myRoom = DICE_ROLLED_RES.table;
+                    DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
+                }
+                _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
             };
             let dices_roll = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
             // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
@@ -382,7 +389,7 @@ module.exports = {
 
             // to validate player have passed same value that have in backend.
             let diceValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
-            if (params.dice_value != diceValue) {
+            if (diceValue.length !== 0 && params.dice_value != diceValue) {
                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', -1, 0, myRoom);
                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
