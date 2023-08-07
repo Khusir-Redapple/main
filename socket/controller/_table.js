@@ -119,6 +119,7 @@ module.exports = {
             // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
             resObj.callback.skip_dice = true;
             threeSix = true;
+            console.log(`dice_value=> 1 ${dices_rolled} ${DICE_ROLLED}`);
             // SEND EVENT
             let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
             let event = {
@@ -207,7 +208,7 @@ module.exports = {
                 await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = true;
-
+                console.log(`dice_value=> 2 ${dices_rolled} ${DICE_ROLLED}`);
                 let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                 let event = {
                     type: 'room_including_me',
@@ -258,7 +259,7 @@ module.exports = {
                 await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = true;
-
+                console.log(`dice_value=> 3 ${dices_rolled} ${DICE_ROLLED}`);
                 let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                 let event = {
                     type: 'room_including_me',
@@ -290,7 +291,7 @@ module.exports = {
                 let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = false;
-
+                console.log(`dice_value=> 4 ${dices_rolled} ${DICE_ROLLED}`);
                 let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
                 let event = {
                     type: 'room_including_me',
@@ -382,7 +383,6 @@ module.exports = {
 
             // to validate player have passed same value that have in backend.
             let diceValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
-            console.log(`do fraud debugging backend value => ${diceValue} from params => ${params.dice_value}`);
             if (diceValue.length !== 0 && params.dice_value != diceValue) {
                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', -1, 0, myRoom);
@@ -397,6 +397,7 @@ module.exports = {
               //  await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                 // console.log('[DICE VALUE SIX]', dices_rolled, myPos);
+                console.log(`dice_value=> 5 ${dices_rolled} ${DICE_ROLLED}`);
                 // SEND EVENT
                 let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                 let event = {
@@ -475,7 +476,7 @@ module.exports = {
                         DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                     }
                     await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-                    
+                    console.log(`dice_value=> 6 ${dices_rolled} ${DICE_ROLLED}`);
                     let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                     let event = {
                         type: 'room_including_me',
@@ -513,7 +514,7 @@ module.exports = {
                     await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
                     let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                     // console.log('[DICE VALUE SIX]', dices_rolled, myPos);
-
+                    console.log(`dice_value=> 7 ${dices_rolled} ${DICE_ROLLED}`);
                     let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                     // SEND EVENT
                     let event = {
@@ -717,7 +718,7 @@ module.exports = {
                             }
                             await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
                             await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
-
+                            console.log(`dice_value=> 8 ${dices_rolled} ${DICE_ROLLED}`);
                             let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                             // SEND EVENT
                             let event = {
@@ -902,6 +903,7 @@ module.exports = {
                             let DICE_ROLLED = _tab.getRandomDiceValue();
                             await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                             // SEND EVENT
+                            console.log(`dice_value=> 9 ${dices_rolled} ${DICE_ROLLED}`);
                             let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
                             let event = {
                                 type: 'room_including_me',
@@ -949,7 +951,7 @@ module.exports = {
                             gamePlayData.data.points = user_points + (+gamePlayData.data.total_move);
                             gamePlayData.data.player_score = myRoom.users[myPos].points + myRoom.users[myPos].bonusPoints;
                             await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
-
+                            console.log(`dice_value=> 10 ${dices_rolled} ${DICE_ROLLED}`);
                             // SEND EVENT
                             let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                             let event = {
@@ -1271,7 +1273,7 @@ module.exports = {
                         DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                     }
                     await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-
+                    console.log(`dice_value=> 11 ${dices_rolled} ${DICE_ROLLED}`);
                     await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
                     // SEND EVENT
                     let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
@@ -1328,7 +1330,7 @@ module.exports = {
                         // console.log('55555');
                         await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, mypos);
 
-
+                        console.log(`dice_value=> 12 ${dices_rolled} ${DICE_ROLLED}`);
                         // console.log('66666');
                         let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                         let event = {
@@ -1550,7 +1552,7 @@ module.exports = {
                                 }
                                 await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
                                 await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
-
+                                console.log(`dice_value=> 13 ${dices_rolled} ${DICE_ROLLED}`);
                                 // SEND EVENT
                                 let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                                 let event = {
@@ -1597,6 +1599,7 @@ module.exports = {
                                     await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
                                     await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, mypos);
                                     let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
+                                    console.log(`dice_value=> 14 ${dices_rolled} ${DICE_ROLLED}`);
                                     let event = {
                                         type: 'room_including_me',
                                         room: params.room,
@@ -1663,6 +1666,7 @@ module.exports = {
                         let DICE_ROLLED = _tab.getRandomDiceValue();
                         await _tab.diceRolled(params.room, mypos, DICE_ROLLED, myRoom, gamePlayData);
                         // SEND EVENT
+                        console.log(`dice_value=> 15 ${dices_rolled} ${DICE_ROLLED}`);
                         let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, mypos);
                         let event = {
                             type: 'room_including_me',
@@ -1706,7 +1710,7 @@ module.exports = {
                        // console.log("gamePlayData before 3: " + JSON.stringify(gamePlayData));
                         await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, mypos);
                         //console.log("gamePlayData before 4: " + JSON.stringify(gamePlayData));
-
+                        console.log(`dice_value=> 16 ${dices_rolled} ${DICE_ROLLED}`);
                         let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                         let event = {
                             type: 'room_including_me',
