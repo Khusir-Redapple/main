@@ -15,7 +15,7 @@ module.exports = {
     //Roll dice for tournament
     tournamntDiceRolled: async function (socket, params, id, myRoom, gamePlayData) {
         // To capture dice tap time.
-        if (gamePlayData && gamePlayData.data) {
+        if (gamePlayData && gamePlayData.data && gamePlayData.data.dice_tap_time) {
             let diceTapTime = await _tab.setPawnMoveTime(myRoom);
             gamePlayData.data.dice_tap_time.push(diceTapTime);
         }
@@ -1106,7 +1106,7 @@ module.exports = {
         let myUser = myTable.players.find((ele) => ele.id == id.toString());
         let reqData = {
             room: params.room,
-            amount: myRoom.room_fee.toString(),
+            amount: myRoom.room_fee ? myRoom.room_fee.toString():'0',
             users: [{
                 "user_id": myUser.id,
                 "token": myUser.token,
@@ -1462,7 +1462,7 @@ module.exports = {
                         let reqData = {
                             room: params.room,
                             //amount: tableD.room_fee.toString(),
-                            amount: myRoom.room_fee.toString(),
+                            amount:myRoom.room_fee ? myRoom.room_fee.toString():'0',
                             users: [{
                                 "user_id": us.numeric_id,
                                 "token": us.user_token,
@@ -2175,7 +2175,7 @@ module.exports = {
         let userData = data.game_data;
         let reqData = {
             room: data.room,
-            amount: room_fee.toString(),
+            amount:room_fee ? room_fee.toString():'0',
             users: []
         }
         for (let i = 0; i < userData.length; i++) {

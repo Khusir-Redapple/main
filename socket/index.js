@@ -608,7 +608,7 @@ module.exports = function (io, bullQueue) {
                 {
                     for (const d of response.events)
                     {
-                        if(d.name == 'make_diceroll' && d.data.skip_dice==true)
+                        if(d.name == 'make_diceroll' && response.callback.skip_dice == true)
                         {
                             await bullQueue.add(
                                 {
