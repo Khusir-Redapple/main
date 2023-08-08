@@ -264,7 +264,7 @@ module.exports = function (io, bullQueue) {
                         "players_won": rez.table.players_won,
                         "current_turn": rez.table.current_turn,
                         "current_turn_type": rez.table.current_turn_type,
-                        "no_of_players": rez.table.no_of_players,
+                        "no_of_players": parseInt(rez.table.no_of_players),
                         "users" : compressedMyRoom,
                         "entryFee": rez.table.entryFee,
                         "turn_time": rez.table.turn_time,
