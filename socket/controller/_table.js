@@ -104,6 +104,7 @@ module.exports = {
             // console.log('update turn 1');
             await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
             let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+            console.log('roll count 1');
             let DICE_ROLLED;
             if (DICE_ROLLED_RES) {
                 myRoom = DICE_ROLLED_RES.table;
@@ -195,6 +196,7 @@ module.exports = {
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                console.log('roll count 2');
                 let DICE_ROLLED;
                 if (DICE_ROLLED_RES) {
                     myRoom = DICE_ROLLED_RES.table;
@@ -246,6 +248,7 @@ module.exports = {
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                console.log('roll count 3');
                 let DICE_ROLLED;
                 if (DICE_ROLLED_RES) {
                     myRoom = DICE_ROLLED_RES.table;
@@ -383,6 +386,7 @@ module.exports = {
                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', -1, 0, myRoom);
                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                console.log('roll count 4');
                 let DICE_ROLLED;
                 if (DICE_ROLLED_RES) {
                     myRoom = DICE_ROLLED_RES.table;
@@ -465,6 +469,7 @@ module.exports = {
                     await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                     let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                     let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                    console.log('roll count 5');
                     let DICE_ROLLED;
                     if (DICE_ROLLED_RES) {
                         myRoom = DICE_ROLLED_RES.table;
@@ -498,6 +503,7 @@ module.exports = {
                     //await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0,myRoom);
                     await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                     let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                    console.log('roll count 6');
                     let DICE_ROLLED;
                     if (DICE_ROLLED_RES) {
                         myRoom = DICE_ROLLED_RES.table;
@@ -704,6 +710,7 @@ module.exports = {
                             await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                             let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                             let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                            console.log('roll count 7');
                             let DICE_ROLLED;
                             if (DICE_ROLLED_RES) {
                                 myRoom = DICE_ROLLED_RES.table;
@@ -927,6 +934,7 @@ module.exports = {
                             let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                             // let DICE_ROLLED = await _tab.rollDice(params.room, id);
                             let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                            console.log('roll count 9');
                             let DICE_ROLLED;
                             if (DICE_ROLLED_RES) {
                                 myRoom = DICE_ROLLED_RES.table;
@@ -1257,6 +1265,7 @@ module.exports = {
                     let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                     // let DICE_ROLLED = await _tab.rollDice(params.room, id);
                     let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                    console.log('roll count 11');
                     let DICE_ROLLED;
                     if (DICE_ROLLED_RES) {
                         myRoom = DICE_ROLLED_RES.table;
@@ -1308,6 +1317,7 @@ module.exports = {
                         // let DICE_ROLLED = await _tab.rollDice(params.room, id);
                         // console.log('22222');
                         let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                        console.log('roll count 13');
                         // console.log('33333');
                         let DICE_ROLLED;
                         if (DICE_ROLLED_RES) {
@@ -1532,6 +1542,7 @@ module.exports = {
                                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                                 // let DICE_ROLLED = await _tab.rollDice(params.room, id);
                                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                                console.log('roll count 14');
                                 let DICE_ROLLED;
                                 if (DICE_ROLLED_RES) {
                                     myRoom = DICE_ROLLED_RES.table;
@@ -1577,6 +1588,7 @@ module.exports = {
                                     let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                                     // let DICE_ROLLED = await _tab.rollDice(params.room, id);
                                     let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                                    console.log('roll count 15');
                                     let DICE_ROLLED;
                                     if (DICE_ROLLED_RES) {
                                         myRoom = DICE_ROLLED_RES.table;
@@ -1685,6 +1697,7 @@ module.exports = {
 
                         //console.log("gamePlayData before 2: " + JSON.stringify(gamePlayData));
                         let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                        console.log('roll count 18');
                         let DICE_ROLLED;
                         if (DICE_ROLLED_RES) {
                             myRoom = DICE_ROLLED_RES.table;

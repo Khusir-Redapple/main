@@ -438,6 +438,7 @@ class _Tables
                         myRoom.game_started_at = time;
                         myRoom.server_time = new Date();
                         let DICE_ROLLED_RES = this.rollDice(room, myRoom.users[pl].id, myRoom);
+                        console.log('roll count 20');
                         //console.log('DICE_ROLLED_RES >>', JSON.stringify(DICE_ROLLED_RES));
                         let DICE_ROLLED;
                         if(DICE_ROLLED_RES) {
