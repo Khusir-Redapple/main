@@ -1734,7 +1734,7 @@ class _Tables
             }
              // pop from top of array and update the property value.
             returnDiceValue = table.users[idx].diceValue.shift();
-            console.log(`dice for user ${table.users[idx].id} is ${returnDiceValue}`);
+            console.log(`dice for user ${table.users[idx].id} is ${returnDiceValue} id- ${idx}`);
             return {
                 'returnDiceValue' : returnDiceValue,
                 'table' : table,
@@ -1756,8 +1756,8 @@ class _Tables
      */
     getCustomizedValue(dice_range) {
         // const dice_range = 21;
-        const percent_1_to_5 = 0.85; // 0.95%
-        const percent_6 = 0.25;      // 0.055%
+        const percent_1_to_5 = 0.95; // 0.95%
+        const percent_6 = 0.05;      // 0.05%
 
         // Calculate the number of times to generate each value
         const count_1_to_5 = Math.floor(dice_range * percent_1_to_5);
