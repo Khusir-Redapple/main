@@ -1793,7 +1793,7 @@ class _Tables
     const shuffled = [...array];
     let isUnique = false;    
     while (!isUnique) {
-        shuffleArray(shuffled);
+        this.shuffleArray(shuffled);
         const serializedSequence = JSON.stringify(shuffled);    
         if (!previousSequences.has(serializedSequence)) {
             previousSequences.add(serializedSequence);
