@@ -49,6 +49,10 @@ class _Tables
             let randomRumber;
             let shuffleNumberForOtherPlayer;
 
+            let dice_range;
+            (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (32 - 28)) + 17) : (dice_range = Math.floor(Math.random() * (22 - 18)) + 13);
+            const original_dice_value = this.getCustomizedValue(dice_range);
+            const previousSequences = new Set();
             for (var pl = 0; pl < 4; pl++)
             {
                 let random_number = Math.floor(Math.random() * colour.length);
@@ -58,9 +62,9 @@ class _Tables
                 const random = Math.floor(Math.random() * (20 - 10)) + 10;
                 // To setup random number to 0 position index user.
                 if(pl == 0) {
-                    randomRumber = this.randomNumberGenerator(random);
+                    randomRumber = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 } else {
-                    shuffleNumberForOtherPlayer = this.fisherShuffleGenerator(randomRumber);
+                    shuffleNumberForOtherPlayer = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 }                
                 table_i.users[pl] = {
                     id: '',
@@ -1694,17 +1698,38 @@ class _Tables
             // To check if predefined dice value is empty then create set of dice value first.           
             if(table.users[idx].diceValue.length == 0) {
                 // To generate random dice value range between 10 - 20
-                const random = Math.floor(Math.random() * (20 - 10)) + 10;
-                // To generate dice value between 10 to 20 range.
-                randomNumber = this.randomNumberGenerator(random);
-                // randomNumber = this.randomNumberGenerator(config.diceGenerateRange);
-                table.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
-                let player_1 = this.fisherShuffleGenerator(randomNumber);
+                //const random = Math.floor(Math.random() * (20 - 10)) + 10;
+
+                // random number range for two and four player game.
+                // const twoPlayerRange = Math.floor(Math.random() * (32 - 28)) + 17;
+                // const fourPlayerRange = Math.floor(Math.random() * (22 - 18)) + 13;
+                let dice_range;
+                (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (32 - 28)) + 17) : (dice_range = Math.floor(Math.random() * (22 - 18)) + 13);
+                // 80 percentage of number will generate 1 to 5 and 20 percentage generate 6.
+                const original_dice_value = this.getCustomizedValue(dice_range);
+                const previousSequences = new Set();
+                let player_0 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                // storing number for player One
+                table.users[0].diceValue = JSON.parse(JSON.stringify(player_0));
+                // storing number for player Two
+                let player_1 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
-                let player_2 = this.fisherShuffleGenerator(randomNumber);
+                // storing number for player Three
+                let player_2 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
-                let player_3 = this.fisherShuffleGenerator(randomNumber);
+                // storing number for player four
+                let player_3 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
+                
+                // To generate dice value between 10 to 20 range.
+                // randomNumber = this.randomNumberGenerator(random);
+                // table.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
+                // let player_1 = this.fisherShuffleGenerator(randomNumber);
+                // table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
+                // let player_2 = this.fisherShuffleGenerator(randomNumber);
+                // table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
+                // let player_3 = this.fisherShuffleGenerator(randomNumber);
+                // table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
             }
              // pop from top of array and update the property value.
             returnDiceValue = table.users[idx].diceValue.shift();
@@ -1720,6 +1745,62 @@ class _Tables
             };
             logDNA.error('rollDice', logData);
         }
+    }
+
+    /**
+     * The function used to generate custom random number as per given data.
+     * @param {number} dice_range means how many numbers want to generate.
+     * @returns {combinedArray} array
+     */
+    getCustomizedValue(dice_range) {
+        // const dice_range = 21;
+        const percent_1_to_5 = 0.95; // 95%
+        const percent_6 = 0.05;      // 5%
+
+        // Calculate the number of times to generate each value
+        const count_1_to_5 = Math.floor(dice_range * percent_1_to_5);
+        const count_6 = Math.floor(dice_range * percent_6);
+
+        // Generate arrays with values
+        const array_1_to_5 = Array.from({ length: count_1_to_5 }, () => Math.floor(Math.random() * 5) + 1);
+        const array_6 = Array.from({ length: count_6 }, () => 6);
+
+        // Combine the arrays and shuffle them
+        const combinedArray = array_1_to_5.concat(array_6);
+        for (let i = combinedArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [combinedArray[i], combinedArray[j]] = [combinedArray[j], combinedArray[i]];
+        }
+        return combinedArray;
+    }
+    /**
+     * The functioned used to shuffle Array
+     * @param {*} array 
+     */
+    shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    /**
+     * The function used to generate unique shuffled series.
+     * @param {array} 
+     * @param {previousSequences} 
+     * @returns {shuffled} 
+     */
+    generateUniqueShuffledSequence(array, previousSequences) {
+    const shuffled = [...array];
+    let isUnique = false;    
+    while (!isUnique) {
+        shuffleArray(shuffled);
+        const serializedSequence = JSON.stringify(shuffled);    
+        if (!previousSequences.has(serializedSequence)) {
+            previousSequences.add(serializedSequence);
+            isUnique = true;
+        }
+    }
+    return shuffled;
     }
 
     /**

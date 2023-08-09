@@ -754,15 +754,15 @@ module.exports = function (io, bullQueue) {
             //Socketz.userGone(socket.id);
 
             // To track disconnect events.
-            console.log(`${socket.id} disconnect`);
+            // console.log(`${socket.id} disconnect`);
             // Trigger garbage collection
-            if (global.gc) {
-                global.gc();
-            } else {
-                console.warn('Garbage collection unavailable. Add --expose-gc when launching Node.js.');
-            }
-            removeListeners(socket);
-            findAndRemoveFromRoomBySocketId(socket);
+            // if (global.gc) {
+            //     global.gc();
+            // } else {
+            //     console.warn('Garbage collection unavailable. Add --expose-gc when launching Node.js.');
+            // }
+            // removeListeners(socket);
+            // findAndRemoveFromRoomBySocketId(socket);
         });
 
     });
