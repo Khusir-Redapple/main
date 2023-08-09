@@ -1734,7 +1734,7 @@ class _Tables
             }
              // pop from top of array and update the property value.
             returnDiceValue = table.users[idx].diceValue.shift();
-            console.log(`dice for user ${table.users[idx].id} is ${returnDiceValue} id- ${idx}`);
+            //console.log(`dice for user ${table.users[idx].id} is ${returnDiceValue} id- ${idx}`);
             return {
                 'returnDiceValue' : returnDiceValue,
                 'table' : table,
