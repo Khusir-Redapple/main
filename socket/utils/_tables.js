@@ -94,7 +94,6 @@ class _Tables
                     diceValue : pl == 0 ? JSON.parse((JSON.stringify(randomRumber))) : JSON.parse((JSON.stringify(shuffleNumberForOtherPlayer)))
                 };
             }
-            console.log(JSON.stringify(table_i));
             await redisCache.addToRedis(table.room, table_i);
             //this.tables.push(table_i);
             resolve(table_i.room);
@@ -206,6 +205,7 @@ class _Tables
                 token_colour: filteredTable.users[pos].token_colour,
                 diceValue : readDiceValue
             };
+            console.log(filteredTable);
             return {
                 table: filteredTable,
                 pos: pos,
