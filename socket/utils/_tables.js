@@ -1756,8 +1756,8 @@ class _Tables
      */
     getCustomizedValue(dice_range) {
         // const dice_range = 21;
-        const percent_1_to_5 = 0.95; // 95%
-        const percent_6 = 0.05;      // 5%
+        const percent_1_to_5 = 0.85; // 0.95%
+        const percent_6 = 0.25;      // 0.055%
 
         // Calculate the number of times to generate each value
         const count_1_to_5 = Math.floor(dice_range * percent_1_to_5);
