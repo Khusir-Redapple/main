@@ -1760,9 +1760,11 @@ class _Tables
 
         //calculate Six's between 20-40% of dice_range.
         const random_percent_for_six = Math.random() * (40 - 20) + 20;
-        const percent_6 = Math.round((random_percent_for_six / 100) * dice_range);
-        const percent_1_to_5 = (100 - percent_6);
+        let percent_6 = Math.round((random_percent_for_six / 100) * dice_range);
+        let percent_1_to_5 = (100 - percent_6);
         console.log(`percentage of six and non siz ${percent_6} ${percent_1_to_5}`);
+        percent_6 = percent_6/100; // to convert 0.00 format
+        percent_1_to_5 = percent_1_to_5/100; //to convert 0.00 format
 
         // Calculate the number of times to generate each value
         const count_1_to_5 = Math.floor(dice_range * percent_1_to_5);
