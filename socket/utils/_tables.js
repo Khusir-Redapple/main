@@ -205,6 +205,7 @@ class _Tables
                 token_colour: filteredTable.users[pos].token_colour,
                 diceValue : readDiceValue
             };
+            console.log('Random dice value', JSON.stringify(filteredTable));
             return {
                 table: filteredTable,
                 pos: pos,
