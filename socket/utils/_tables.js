@@ -624,7 +624,7 @@ class _Tables
     }
 
     getRandomDiceValue(){
-        return Math.floor(Math.random() * 6) + 1;
+        return Math.floor(Math.random() * 5) + 1;
     }
 
     getSix(room, id, myRoom)
@@ -1755,8 +1755,14 @@ class _Tables
      */
     getCustomizedValue(dice_range) {
         // const dice_range = 21;
-        const percent_1_to_5 = 0.95; // 0.95%
-        const percent_6 = 0.05;      // 0.05%
+        // const percent_1_to_5 = 0.95; // 0.95%
+        // const percent_6 = 0.05;      // 0.05% 
+
+        //calculate Six's between 20-40% of dice_range.
+        const random_percent_for_six = Math.floor(Math.random() * (40 - 20));
+        const percent_6 = Math.round((random_percent_for_six / 100) * dice_range);
+        const percent_1_to_5 = (100 - percent_6);
+        console.log(`percentage of six and non siz ${percent_6} ${percent_1_to_5}`);
 
         // Calculate the number of times to generate each value
         const count_1_to_5 = Math.floor(dice_range * percent_1_to_5);
