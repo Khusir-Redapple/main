@@ -447,14 +447,10 @@ class _Tables
                         myRoom.users[pl].turn = 1;
 
                         // if (myRoom.users[pl].dices_rolled.length == 0)
-                        // myRoom.users[pl].dices_rolled.push(DICE_ROLLED);
-                       
-                        if (myRoom.users[pl].dices_rolled.length > 0) {
-                            myRoom.users[pl].dices_rolled = [];
-                            myRoom.users[pl].dices_rolled.push(DICE_ROLLED);
-                        }
-                            
-
+                        // myRoom.users[pl].dices_rolled.push(DICE_ROLLED);                      
+                        
+                        myRoom.users[pl].dices_rolled = [];
+                        myRoom.users[pl].dices_rolled.push(DICE_ROLLED);
 
                         var resObj = {
                             status: 1,
