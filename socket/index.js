@@ -107,7 +107,7 @@ module.exports = function (io, bullQueue) {
                     const endTime = (Date.now() - startTime);
                     let logData = {
                         level: 'warning',
-                        meta: { p: 'fetchGameData',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                        meta: { p: 'fetchGameData',responseTime: endTime,'env' : `${process.env.NODE_ENV}`, 'params' : params}
                     };
                     logDNA.warn(`fetchGameData`, logData);
                     return callback(myRoomCompressed);
@@ -136,7 +136,7 @@ module.exports = function (io, bullQueue) {
             const endTime = (Date.now() - startTime);
             let logData = {
                 level: 'warning',
-                meta: { p: 'ping',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                meta: { p: 'ping',responseTime: endTime,'env' : `${process.env.NODE_ENV}`, 'params' : params}
             };
             logDNA.warn(`ping`,logData);
             return callback(params);
@@ -206,7 +206,7 @@ module.exports = function (io, bullQueue) {
                 const endTime = (Date.now() - start);
                 let logData = {
                     level: 'warning',
-                    meta: { p: 'join',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                    meta: { p: 'join',responseTime: endTime,'env' : `${process.env.NODE_ENV}`, 'params' : params}
                 };
                 logDNA.warn(`join`, logData);
             }
@@ -218,6 +218,12 @@ module.exports = function (io, bullQueue) {
             var myId = await Socketz.getId(socket.id);
             try {
                 if (!myId) {
+                    let myLog = {
+                        level: 'warning',
+                        meta: { p: 'join_previous', 'env' : `${process.env.NODE_ENV}`, 'socketId' : socket.id}
+                    };
+                    logDNA.warn(`user_id not found at join_previous`, myLog);
+
                     return callback({
                         status: 0,
                         message: 'An error was encountered. Please join a new game.',
@@ -298,7 +304,7 @@ module.exports = function (io, bullQueue) {
                 const endTime = (Date.now() - startTime);
                 let logData = {
                     level: 'warning',
-                    meta: { p: 'join_previous',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                    meta: { p: 'join_previous',responseTime: endTime,'env' : `${process.env.NODE_ENV}`, 'params' : params, 'myId' : myId}
                 };
                 logDNA.warn(`join_previous`, logData);
             }
@@ -754,15 +760,15 @@ module.exports = function (io, bullQueue) {
             //Socketz.userGone(socket.id);
 
             // To track disconnect events.
-            console.log(`${socket.id} disconnect`);
+            // console.log(`${socket.id} disconnect`);
             // Trigger garbage collection
-            if (global.gc) {
-                global.gc();
-            } else {
-                console.warn('Garbage collection unavailable. Add --expose-gc when launching Node.js.');
-            }
-            removeListeners(socket);
-            findAndRemoveFromRoomBySocketId(socket);
+            // if (global.gc) {
+            //     global.gc();
+            // } else {
+            //     console.warn('Garbage collection unavailable. Add --expose-gc when launching Node.js.');
+            // }
+            // removeListeners(socket);
+            // findAndRemoveFromRoomBySocketId(socket);
         });
 
     });

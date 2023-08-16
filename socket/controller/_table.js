@@ -1852,7 +1852,19 @@ module.exports = {
             myRoom = await redisCache.getRecordsByKeyRedis(roomId);
         }
         if(myRoom) {
+            let logData = {
+                level: 'warning',
+                meta: { p: 'join_previous', 'user_id' : id, 'room' : myRoom}
+            };
+            logDNA.warn(`room found at join_previous`, logData);
+
             let us = myRoom.users.find((ele) => ele.id == id.toString());
+            logData = {
+                level: 'warning',
+                meta: { p: 'join_previous', 'user_id' : id, 'room' : myRoom}
+            };
+            logDNA.warn(`user found at join_previous`, logData);
+
             let alreadyPlaying = _tab.alreadyPlayingTable(us.id,myRoom);
             if (alreadyPlaying.status == 1)
             {
@@ -1877,9 +1889,21 @@ module.exports = {
                 }
             }
             else {
+                logData = {
+                    level: 'warning',
+                    meta: { p: 'join_previous', 'user_id' : id, 'room' : myRoom}
+                };
+                logDNA.warn(`user_id mismatch with myRoom users id`, logData);
                 return alreadyPlaying;
             }
         } else {
+
+            let logData = {
+                level: 'warning',
+                meta: { p: 'join_previous', 'user_id' : id}
+            };
+            logDNA.warn(`room not found at join_previous`, logData);
+
             return {
                 status: 0,
                 message: "An error was encountered. Please join a new game."
