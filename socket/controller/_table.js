@@ -1852,8 +1852,10 @@ module.exports = {
             myRoom = await redisCache.getRecordsByKeyRedis(roomId);
         }
         if(myRoom) {
+            console.log('join_previous myRoom- ', myRoom);
             let us = myRoom.users.find((ele) => ele.id == id.toString());
             let alreadyPlaying = _tab.alreadyPlayingTable(us.id,myRoom);
+            console.log('join_previous alreadyPlaying- ', JSON.stringify(alreadyPlaying));
             if (alreadyPlaying.status == 1)
             {
                 // var tab = await Table.findOne({room: alreadyPlaying.table.room, 'players.id': id});
