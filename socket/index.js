@@ -555,17 +555,19 @@ module.exports = function (io, bullQueue) {
                 let response = await _TableInstance.leaveTable(params, myId, socket, myRoom, gamePlayData);
                 await redisCache.addToRedis(myRoom.room, myRoom);
                 const userData = [];
-                myRoom.users.map((cur) => {
-                    userData.push({
-                        "player_index": cur.position,
-                        "id": cur.id,
-                        "name": cur.name,
-                        "rank": 0,
-                        "amount": 0,
-                        "is_left": cur.hasOwnProperty('is_left') ? cur.is_left : false,
-                        "score": 0
-                    });
-                }, [])
+                if(myRoom.users) {
+                    myRoom.users.map((cur) => {
+                        userData.push({
+                            "player_index": cur.position,
+                            "id": cur.id,
+                            "name": cur.name,
+                            "rank": 0,
+                            "amount": 0,
+                            "is_left": cur.hasOwnProperty('is_left') ? cur.is_left : false,
+                            "score": 0
+                        });
+                    }, []);
+                }
                 response.callback.room = myRoom.room;
                 response.callback.game_data = userData;
                 callback(response.callback);

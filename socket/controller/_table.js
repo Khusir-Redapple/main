@@ -1097,14 +1097,27 @@ module.exports = {
         // let myUser = myRoom.users.find((element) => element.id == id.toString());
         let myTable = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
         let myUser = myTable.players.find((ele) => ele.id == id.toString());
-        let reqData = {
-            room: params.room,
-            amount: myRoom.room_fee ? myRoom.room_fee.toString():'0',
-            users: [{
-                "user_id": myUser.id,
-                "token": myUser.token,
-                "isRefund": params.isRefund ? params.isRefund : false
-            }]
+        let reqData
+        if(myUser) {
+            reqData = {
+                room: params.room,
+                amount: myRoom.room_fee ? myRoom.room_fee.toString():'0',
+                users: [{
+                    "user_id": myUser.id,
+                    "token": myUser.token,
+                    "isRefund": params.isRefund ? params.isRefund : false
+                }]
+            }
+        } else {
+            reqData = {
+                room: params.room,
+                amount: myRoom.room_fee ? myRoom.room_fee.toString():'0',
+                users: [{
+                    "user_id": 'null',
+                    "token": 'null',
+                    "isRefund": params.isRefund ? params.isRefund : false
+                }]
+            }
         }
         if (!rez.res && rez.flag == 1)
         {
@@ -1117,7 +1130,10 @@ module.exports = {
         } else {
             // update status false to player
             let idx = myTable.players.findIndex(x => x.id == id.toString());
-            myTable.players[idx].is_active = false;
+            if(idx){
+                myTable.players[idx].is_active = false;
+            }
+            
         }
         await redisCache.addToRedis(`table_${params.room}`, myTable);
 
