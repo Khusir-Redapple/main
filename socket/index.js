@@ -90,7 +90,7 @@ module.exports = function (io, bullQueue) {
                     let myRoomCompressed = {
                         "room" : myRoom.room,
                         "totalWinning": myRoom.totalWinning,
-                        "players_done": parseInt(myRoom.no_of_players),
+                        "players_done": parseInt(myRoom.players_done),
                         "players_won": myRoom.players_won,
                         "current_turn": myRoom.current_turn,
                         "current_turn_type": myRoom.current_turn_type,
@@ -546,7 +546,7 @@ module.exports = function (io, bullQueue) {
                if(!params.room)
                    return callback();
                    
-                //console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
+                console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
                 let myId = await Socketz.getId(socket.id);
                 await Socketz.userGone(socket.id, params.token);
                 params.isRefund = false;
