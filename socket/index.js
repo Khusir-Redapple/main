@@ -848,6 +848,23 @@ module.exports = function (io, bullQueue) {
             start.table.users = usersData;
         }
         io.to(start.room).emit('startGame', start);
+        // To emmit score_updated with default value.
+        let user_points = start.table.users.map((user) =>
+        {
+            return {
+                user_id: user.id,
+                score: 0,
+                points: 0,
+                bonusPoints: 0,
+                life : 3,
+                pawnScore : user.tokens
+            };
+        });
+        io.to(start.room).emit('score_updated', {
+            room: start.room,
+            score_data: user_points,
+        });
+        
         await bullQueue.add(
             {
                 name: "playerTurnQueue",
