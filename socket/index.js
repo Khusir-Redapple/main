@@ -971,7 +971,23 @@ module.exports = function (io, bullQueue) {
                                             io.to(d.room).emit(d.name, d.data);
                                         } else if (d.name == 'life_deduct') {
                                             io.to(d.room).emit(d.name, d.data);
-                                        } else {
+                                        } else if (d.name == 'score_updated') {
+                                            let getmyRoom = await redisCache.getRecordsByKeyRedis(d.room);
+                                            let user_score = getmyRoom.users.map((user) =>
+                                            {
+                                                return {
+                                                    user_id: user.id,
+                                                    score: user.points + user.bonusPoints,
+                                                    points: user.points,
+                                                    bonusPoints: user.bonusPoints,
+                                                    life : user.life,
+                                                    pawnScore : user.tokens
+                                                };
+                                            });
+                                            d.data.score_data = user_score;
+                                            io.to(d.room).emit(d.name, d.data);
+                                        }  
+                                        else {
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
@@ -1016,13 +1032,45 @@ module.exports = function (io, bullQueue) {
                                             });
                                             d.data.game_data = compressedData;
                                             io.to(d.room).emit(d.name, d.data);
+                                        } else if (d.name == 'score_updated') {
+                                            let getmyRoom = await redisCache.getRecordsByKeyRedis(d.room);
+                                            let user_score = getmyRoom.users.map((user) =>
+                                            {
+                                                return {
+                                                    user_id: user.id,
+                                                    score: user.points + user.bonusPoints,
+                                                    points: user.points,
+                                                    bonusPoints: user.bonusPoints,
+                                                    life : user.life,
+                                                    pawnScore : user.tokens
+                                                };
+                                            });
+                                            d.data.score_data = user_score;
+                                            io.to(d.room).emit(d.name, d.data);
                                         }
                                         else {
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     }
                                 } else {
-                                    io.to(d.room).emit(d.name, d.data);
+                                    if(d.name == 'score_updated') {
+                                        let getmyRoom = await redisCache.getRecordsByKeyRedis(d.room);
+                                        let user_score = getmyRoom.users.map((user) =>
+                                        {
+                                            return {
+                                                user_id: user.id,
+                                                score: user.points + user.bonusPoints,
+                                                points: user.points,
+                                                bonusPoints: user.bonusPoints,
+                                                life : user.life,
+                                                pawnScore : user.tokens
+                                            };
+                                        });
+                                        d.data.score_data = user_score;
+                                        io.to(d.room).emit(d.name, d.data);
+                                    } else {
+                                        io.to(d.room).emit(d.name, d.data);
+                                    }
                                 }
                             } else if (d.type == 'room_excluding_me') {
                                 if(d.name == 'dice_rolled') {
