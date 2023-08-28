@@ -67,6 +67,7 @@ module.exports = function (io, bullQueue) {
          * @return array of object. 
          */
         socket.on('fetchGameData', async function (params, callback) {
+            console.log('fetchGameData - ', params);
             try {
                 const startTime = Date.now();
                 let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
@@ -131,7 +132,7 @@ module.exports = function (io, bullQueue) {
          * @output return params data as output.
          */
         socket.on('ping', function (params, callback) {
-
+            console.log('ping - ', params);
             const startTime = Date.now();
             const endTime = (Date.now() - startTime);
             let logData = {
@@ -145,6 +146,7 @@ module.exports = function (io, bullQueue) {
         // New connection to Socket with Auth
         socket.on('join', async (params, callback) =>
         {
+            console.log('join - ', params);
             // Start the timer
             const startTime = Date.now();
             let responseObj = {};
@@ -213,9 +215,11 @@ module.exports = function (io, bullQueue) {
         });
 
         socket.on('join_previous', async (params, callback) => {
+            console.log('join_previous start- ', params);
             const startTime = Date.now();
             // console.log('TS1 ::', 'join_previous', socket.id, JSON.stringify(params));
             var myId = await Socketz.getId(socket.id);
+            console.log('join_previous myId- ', myId);
             try {
                 if (!myId) {
                     let myLog = {
@@ -287,6 +291,7 @@ module.exports = function (io, bullQueue) {
                     "current_turn_type": rez.current_turn_type,
                     "dices_rolled": rez.dices_rolled,
                 }
+                console.log('join_previous end- ', JSON.stringify(rez));
                return callback(compressedObj); 
 
             } catch (ex) {
@@ -323,6 +328,7 @@ module.exports = function (io, bullQueue) {
 
         socket.on('joinTournament', async (data, callback) =>
         {
+            console.log('joinTournament - ', data);
             // Start the timer
             const startTime = Date.now();
             try{
@@ -529,6 +535,7 @@ module.exports = function (io, bullQueue) {
 
         // Leave Table / Quit Game
         socket.on('leaveTable', async (params, callback) => {
+            console.log('leaveTable - ', params);
             const startTime = Date.now();
             let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
             if (tableD != null && tableD.isGameCompleted) {
@@ -716,6 +723,7 @@ module.exports = function (io, bullQueue) {
         //Skip Turn
         socket.on('skip_turn', async (params, callback) =>
         {
+            console.log('skip_turn', params);
             // Start the timer
             const startTime = Date.now();
             let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);

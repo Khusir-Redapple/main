@@ -1874,6 +1874,7 @@ module.exports = {
             };
             logDNA.warn(`room found at join_previous`, logData);
 
+
             let us = myRoom.users.find((ele) => ele.id == id.toString());
             logData = {
                 level: 'warning',
@@ -1882,6 +1883,7 @@ module.exports = {
             logDNA.warn(`user found at join_previous`, logData);
 
             let alreadyPlaying = _tab.alreadyPlayingTable(us.id,myRoom);
+            console.log('join_previous alreadyPlaying- ', JSON.stringify(alreadyPlaying));
             if (alreadyPlaying.status == 1)
             {
                 // var tab = await Table.findOne({room: alreadyPlaying.table.room, 'players.id': id});
