@@ -37,7 +37,7 @@ class _Tables
                 current_turn_type: 'roll',
                 turn_start_at: 0,
                 no_of_players: table.no_of_players,
-                //validity : timeLib.calculateExpTime(config.socketUserExpireTime),
+                no_of_diceSet : 1,
                 users: [],
                 lobbyId: table.lobbyId,
                 entryFee : entry_Fee,
@@ -50,8 +50,20 @@ class _Tables
             let shuffleNumberForOtherPlayer;
 
             let dice_range;
-            (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (32 - 28)) + 17) : (dice_range = Math.floor(Math.random() * (22 - 18)) + 13);
-            const original_dice_value = this.getCustomizedValue(dice_range);
+            (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (22 - 15)) + 15);
+           
+            let min_no_of_occurance;
+            switch (table.no_of_players) {
+                case 2:
+                    min_no_of_occurance = 2;
+                    break;
+                case 4:
+                    min_no_of_occurance = 1;
+                    break;
+                default:
+                    break;
+            }
+            const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
             const previousSequences = new Set();
             for (var pl = 0; pl < 4; pl++)
             {
@@ -1704,10 +1716,23 @@ class _Tables
                 // random number range for two and four player game.
                 // const twoPlayerRange = Math.floor(Math.random() * (32 - 28)) + 17;
                 // const fourPlayerRange = Math.floor(Math.random() * (22 - 18)) + 13;
+
+                // to increase no of set dice value generated.
+                myRoom.no_of_diceSet += 1;
                 let dice_range;
-                (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (32 - 28)) + 17) : (dice_range = Math.floor(Math.random() * (22 - 18)) + 13);
+                let min_no_of_occurance;
+                if(myRoom.no_of_diceSet == 2) {
+                    (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
+                    (myRoom.no_of_players == 2) ? min_no_of_occurance = 2 : min_no_of_occurance = 1;
+                } else if(myRoom.no_of_diceSet == 3){
+                    (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (12 - 8)) + 8) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
+                    (myRoom.no_of_players == 2) ? min_no_of_occurance = 1 : min_no_of_occurance = 1;
+                } else {
+                    // do nothing for now.
+                }
+                
                 // 80 percentage of number will generate 1 to 5 and 20 percentage generate 6.
-                const original_dice_value = this.getCustomizedValue(dice_range);
+                const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
                 const previousSequences = new Set();
                 let player_0 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 // storing number for player One
@@ -1754,35 +1779,54 @@ class _Tables
      * @param {number} dice_range means how many numbers want to generate.
      * @returns {combinedArray} array
      */
-    getCustomizedValue(dice_range) {
+    getCustomizedValue(dice_range, min_no_of_occurance) {
         // const dice_range = 21;
         // const percent_1_to_5 = 0.95; // 0.95%
         // const percent_6 = 0.05;      // 0.05% 
 
         //calculate Six's between 20-40% of dice_range.
-        const random_percent_for_six = Math.random() * (40 - 20) + 20;
-        let percent_6 = Math.round((random_percent_for_six / 100) * dice_range);
-        let percent_1_to_5 = (100 - percent_6);
-        console.log(`percentage of six and non siz ${percent_6} ${percent_1_to_5}`);
-        percent_6 = percent_6/100; // to convert 0.00 format
-        percent_1_to_5 = percent_1_to_5/100; //to convert 0.00 format
+        // const random_percent_for_six = Math.random() * (40 - 20) + 20;
+        // let percent_6 = Math.round((random_percent_for_six / 100) * dice_range);
+        // let percent_1_to_5 = (100 - percent_6);
+        // console.log(`percentage of six and non siz ${percent_6} ${percent_1_to_5}`);
+        // percent_6 = percent_6/100; // to convert 0.00 format
+        // percent_1_to_5 = percent_1_to_5/100; //to convert 0.00 format
 
-        // Calculate the number of times to generate each value
-        const count_1_to_5 = Math.floor(dice_range * percent_1_to_5);
-        const count_6 = Math.floor(dice_range * percent_6);
+        // // Calculate the number of times to generate each value
+        // const count_1_to_5 = Math.floor(dice_range * percent_1_to_5);
+        // const count_6 = Math.floor(dice_range * percent_6);
 
-        // Generate arrays with values
-        const array_1_to_5 = Array.from({ length: count_1_to_5 }, () => Math.floor(Math.random() * 5) + 1);
-        const array_6 = Array.from({ length: count_6 }, () => 6);
+        // // Generate arrays with values
+        // const array_1_to_5 = Array.from({ length: count_1_to_5 }, () => Math.floor(Math.random() * 5) + 1);
+        // const array_6 = Array.from({ length: count_6 }, () => 6);
 
-        // Combine the arrays and shuffle them
-        const combinedArray = array_1_to_5.concat(array_6);
-        for (let i = combinedArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [combinedArray[i], combinedArray[j]] = [combinedArray[j], combinedArray[i]];
+        // // Combine the arrays and shuffle them
+        // const combinedArray = array_1_to_5.concat(array_6);
+        // for (let i = combinedArray.length - 1; i > 0; i--) {
+        //     const j = Math.floor(Math.random() * (i + 1));
+        //     [combinedArray[i], combinedArray[j]] = [combinedArray[j], combinedArray[i]];
+        // }
+        // return combinedArray;
+
+        const numbers = [1, 2, 3, 4, 5, 6];
+        const sequence = [];
+        // Generate initial random sequence
+        for (let i = 0; i <= dice_range; i++) {
+            const randomIndex = Math.floor(Math.random() * numbers.length);
+            sequence.push(numbers[randomIndex]);
         }
-        return combinedArray;
+        // Ensure each number appears at least twice
+        for (let num of numbers) {
+            let count = sequence.filter(n => n === num).length;
+            while (count < min_no_of_occurance) {
+            const indexToReplace = sequence.findIndex(n => n !== num);
+            sequence[indexToReplace] = num;
+            count++;
+            }
+        }
+        return sequence;
     }
+
     /**
      * The functioned used to shuffle Array
      * @param {*} array 
