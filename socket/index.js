@@ -67,7 +67,7 @@ module.exports = function (io, bullQueue) {
          * @return array of object. 
          */
         socket.on('fetchGameData', async function (params, callback) {
-            console.log('fetchGameData - ', params);
+            // console.log('fetchGameData - ', params);
             try {
                 const startTime = Date.now();
                 let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
