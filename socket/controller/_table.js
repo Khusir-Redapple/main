@@ -1766,7 +1766,7 @@ module.exports = {
         if (!params.room) return false;
 
         let start = await _tab.tournamentStartGame(params.room, myRoom, gamePlayData);
-        // console.log('AFTER START ==>');
+        console.log('AFTER START ==>', JSON.stringify(start));
 
         // let tableD = await Table.findOne({room: params.room});
         let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
