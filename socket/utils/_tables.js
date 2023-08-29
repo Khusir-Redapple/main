@@ -1708,7 +1708,7 @@ class _Tables
 
             let table = myRoom;
             let idx = table.users.findIndex(element => element.id == user_id);
-            console.log('USER IDx', idx);
+            //console.log('USER IDx', idx);
             // To check if predefined dice value is empty then create set of dice value first.           
             if(table.users[idx].diceValue.length == 0) {
                 // To generate random dice value range between 10 - 20
