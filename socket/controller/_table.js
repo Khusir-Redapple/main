@@ -1130,10 +1130,9 @@ module.exports = {
         } else {
             // update status false to player
             let idx = myTable.players.findIndex(x => x.id == id.toString());
-            if(myTable.players[idx].is_active){
+            if (typeof myTable.players[idx] !== 'undefined') {
                 myTable.players[idx].is_active = false;
             }
-            
         }
         await redisCache.addToRedis(`table_${params.room}`, myTable);
 
