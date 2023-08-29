@@ -1130,7 +1130,7 @@ module.exports = {
         } else {
             // update status false to player
             let idx = myTable.players.findIndex(x => x.id == id.toString());
-            if(idx){
+            if(myTable.players[idx].is_active){
                 myTable.players[idx].is_active = false;
             }
             
