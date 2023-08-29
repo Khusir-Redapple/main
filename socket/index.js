@@ -482,7 +482,7 @@ module.exports = function (io, bullQueue) {
                         }
                         // if tournament possible
                         await startTournament(start, socket, myRoom, gamePlayData);
-
+                        console.log('start', JSON.stringify(start));
                         await bullQueue.add(
                             { name: "gameCompletionQueue", payload: { start, myRoom } },
                             {
