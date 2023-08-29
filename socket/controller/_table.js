@@ -1786,12 +1786,16 @@ module.exports = {
                 tableD.game_started_at = new Date().getTime();
             }
             await redisCache.addToRedis(`table_${params.room}`, tableD);
-            // console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at), tableD.game_started_at)
-            let timeToAdd = new Date(new Date().getTime() + config.gameTime * 60000);
+            // console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at), tableD.game_started_at)           
+            let configGameTime = config.gameTime;
+            if('gameTime' in tableD) {
+                configGameTime = tableD.gameTime;
+            }
+            let timeToAdd = new Date(new Date().getTime() + configGameTime * 60000);
             var seconds = (timeToAdd - new Date().getTime()) / 1000;
             // console.log(timeToAdd, new Date().getTime(), seconds)
             // start.timeToCompleteGame = seconds;
-            start.timeToCompleteGame = config.gameTime * 60;
+            start.timeToCompleteGame = configGameTime * 60;
         }
         return start;
         // let returnStart = false;

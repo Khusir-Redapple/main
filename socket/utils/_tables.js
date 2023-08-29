@@ -167,8 +167,15 @@ class _Tables
             let count = 0;
             let noPlayers = filteredTable.no_of_players;
             // adding two property for gameData.
+
+            let tableData = redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            let configGameTime = config.gameTime;
+            if('gameTime' in tableData) {
+                configGameTime = tableData.gameTime;
+            }
+
             filteredTable.turn_time = config.turnTimer;
-            filteredTable.timeToCompleteGame = config.gameTime * 60;
+            filteredTable.timeToCompleteGame = configGameTime * 60;
             for (var pl = 0; pl < 4; pl++)
              if (filteredTable.users[pl] && filteredTable.users[pl].is_active) 
                  count++;
@@ -247,7 +254,14 @@ class _Tables
                         var diff = (curr_ - myRoom.turn_start_at) / 1000;
                         var diff_ = (curr_ - myRoom.created_at) / 1000;
                         var diffT = (curr_ - myRoom.game_started_at) / 1000;
-                        let timeToAdd = config.gameTime * 60;
+                        
+                        let tableData = redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                        let configGameTime = config.gameTime;
+                        if('gameTime' in tableData) {
+                            configGameTime = tableData.gameTime;
+                        }
+                        
+                        let timeToAdd = configGameTime * 60;
                         // let gamecompleteTime = timeToAdd.getTime() - curr_ ;
                         // console.log('[alreadyPlayingTable]- ', curr_, myRoom.turn_start_at, 30 - diff, timeToAdd, diffT, timeToAdd - diffT);
                         var rez = {
@@ -418,7 +432,14 @@ class _Tables
             // To convert New Date() getTime to Second.
             let timeInsecond = (new Date().getTime() / 1000) - (gameStartTime / 1000);
             if (timeInsecond < 0) timeInsecond = 0;
-            let timer = config.gameTime * 60 - timeInsecond;
+
+            let tableData = redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            let configGameTime = config.gameTime;
+            if('gameTime' in tableData) {
+                configGameTime = tableData.gameTime;
+            }
+
+            let timer = configGameTime * 60 - timeInsecond;
             if(timer < 0){
                 timer = 0.0;
             }
@@ -1042,7 +1063,12 @@ class _Tables
             let seconds = 0;
             let remainingTime = 0;
             if(time > 0) {
-                remainingTime = config.gameTime * 60 - time;
+                let tableData = redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                let configGameTime = config.gameTime;
+                if('gameTime' in tableData) {
+                    configGameTime = tableData.gameTime;
+                }
+                remainingTime = configGameTime * 60 - time;
                 minutes = Math.floor(Math.abs(remainingTime) / 60);
                 seconds = Math.abs(remainingTime) - Math.abs(minutes) * 60;
             } 

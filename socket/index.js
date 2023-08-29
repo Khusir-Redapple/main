@@ -356,6 +356,8 @@ module.exports = function (io, bullQueue) {
             params.lobbyId = verifyUser.lobbyId;
             params.entryFee = 0;
             if('entryFee' in verifyUser) { params.entryFee = verifyUser.entryFee };
+            // to setup individual game time for room
+            if('gameTime' in verifyUser) { params.gameTime = verifyUser.gameTime };
             logData = {
                 level: 'debugg',
                 meta: payout
@@ -1139,16 +1141,20 @@ module.exports = function (io, bullQueue) {
                 let gameStartTime = MyRoom.game_started_at;
                 // To convert New Date() getTime to Second.
                 let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
-
+                let tableData = redisCache.getRecordsByKeyRedis(`table_${MyRoom.room}`);
+                let configGameTime = config.gameTime;
+                if('gameTime' in tableData) {
+                    configGameTime = tableData.gameTime;
+                }
                 let flag;
-                if (timeInsecond >= config.gameTime * 60) {
+                if (timeInsecond >= configGameTime * 60) {
                     flag = true;
                 } else {
                     flag = false;
                 }
                 if (timeInsecond < 0) timeInsecond = 0;
 
-                let timer = config.gameTime * 60 - timeInsecond;
+                let timer = configGameTime * 60 - timeInsecond;
                 if (timer < 0) {
                     timer = 0
                 }
