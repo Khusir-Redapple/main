@@ -1365,7 +1365,7 @@ module.exports = {
 
     //Skip Turn
     skipTurn: async function (params, id, myRoom, gamePlayData) {
-        // console.log('Skip Turn Request', params);
+        console.log('Skip Turn Request', params);
         if (!params || !params.room) {
             return {
                 callback: {
