@@ -48,6 +48,7 @@ class _Tables
             // To setup prior dice value for users.
             let randomRumber;
             let shuffleNumberForOtherPlayer;
+            let shuffleNumberForOther;
 
             let dice_range;
             (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (22 - 15)) + 15);
@@ -76,7 +77,8 @@ class _Tables
                 if(pl == 0) {
                     randomRumber = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 } else {
-                    shuffleNumberForOtherPlayer = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                    shuffleNumberForOther = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                    shuffleNumberForOtherPlayer = this.rearrangeArrayWithoutConsecutiveRepeats(shuffleNumberForOther);
                 }                
                 table_i.users[pl] = {
                     id: '',
@@ -1710,11 +1712,11 @@ class _Tables
             let table = myRoom;
             // let idx = table.users.findIndex(element => element.id == user_id);
             let idx = table.users.findIndex(element => element.position == user_id);
-            console.log('USER IDx', idx);
+            //console.log('USER IDx', idx);
             // To check if predefined dice value is empty then create set of dice value first.           
             if(table.users[idx].diceValue.length == 0) {
-                console.log('generate new set', table.users[idx].diceValue);
-                console.log(JSON.stringify(table));
+                //console.log('generate new set', table.users[idx].diceValue);
+                //console.log(JSON.stringify(table));
                 // To generate random dice value range between 10 - 20
                 //const random = Math.floor(Math.random() * (20 - 10)) + 10;
 
@@ -1740,24 +1742,26 @@ class _Tables
                 const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
                 const previousSequences = new Set();
                 let player_0 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                let new_player_0 = this.rearrangeArrayWithoutConsecutiveRepeats(player_0);
                 // storing number for player One
                 //table.users[0].diceValue = JSON.parse(JSON.stringify(player_0));
                 console.log(typeof table.users[0].diceValue);
-                table.users[0].diceValue.push(...player_0); 
+                table.users[0].diceValue.push(...new_player_0); 
                 // storing number for player Two
                 let player_1 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 //table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
-                table.users[1].diceValue.push(...player_1);
+                let new_player_1 = this.rearrangeArrayWithoutConsecutiveRepeats(player_1);
+                table.users[1].diceValue.push(...new_player_1);
                 // storing number for player Three
                 let player_2 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 //table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
-                table.users[2].diceValue.push(...player_2);
+                let new_player_2 = this.rearrangeArrayWithoutConsecutiveRepeats(player_2);
+                table.users[2].diceValue.push(...new_player_2);
                 // storing number for player four
                 let player_3 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 //table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
-                table.users[3].diceValue.push(...player_3);
-                
-                console.log(JSON.stringify(table));
+                let new_player_3 = this.rearrangeArrayWithoutConsecutiveRepeats(player_3);
+                table.users[3].diceValue.push(...new_player_3);
                 
                 
                 // To generate dice value between 10 to 20 range.
@@ -1897,6 +1901,39 @@ class _Tables
           [arr[randIndex], arr[i]] = [arr[i], arr[randIndex]];
         }
         return arr;
+    }
+
+    /**
+     *  This function rearrangeArrayWithoutConsecutiveRepeats iterates through the diceValue array, 
+     *  checking for consecutive repeats and shuffling elements as needed to satisfy the condition.
+     */
+    rearrangeArrayWithoutConsecutiveRepeats(arr) {
+        const result = [];
+        let count = 0;
+      
+        for (let i = 0; i < arr.length; i++) {
+          if (i < 2 || arr[i] !== arr[i - 1] || arr[i] !== arr[i - 2]) {
+            // If it's one of the first two elements or not repeating more than twice
+            result.push(arr[i]);
+            count = 1;
+          } else {
+            // Repeating more than twice consecutively, find a new position
+            let newPosition;
+            do {
+              newPosition = Math.floor(Math.random() * 3) + i; // New position within the next two elements
+            } while (newPosition >= arr.length || arr[newPosition] === arr[i]);
+      
+            // Swap elements to rearrange
+            const temp = arr[i];
+            arr[i] = arr[newPosition];
+            arr[newPosition] = temp;
+      
+            result.push(arr[i]);
+            count++;
+          }
+        }
+      
+        return result;
     }
 
     /**

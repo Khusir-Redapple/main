@@ -660,7 +660,7 @@ module.exports = function (io, bullQueue) {
         });
 
         socket.on('tournament_move_made', async (params, callback) => {
-            console.log('tournament_move_made', params);
+            // console.log('tournament_move_made', params);
             const startTime = Date.now();
             let myId = await Socketz.getId(socket.id);
             let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
@@ -721,7 +721,6 @@ module.exports = function (io, bullQueue) {
         //Skip Turn
         socket.on('skip_turn', async (params, callback) =>
         {
-            console.log('skip_turn', params);
             // Start the timer
             const startTime = Date.now();
             let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
