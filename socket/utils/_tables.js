@@ -1738,16 +1738,23 @@ class _Tables
                 const previousSequences = new Set();
                 let player_0 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 // storing number for player One
-                table.users[0].diceValue.push(JSON.parse(JSON.stringify(player_0)));
+                // table.users[0].diceValue = JSON.parse(JSON.stringify(player_0));
+                table.users[0].diceValue.push(player_0);
                 // storing number for player Two
                 let player_1 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                table.users[1].diceValue.push(JSON.parse(JSON.stringify(player_1)));
+                // table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
+                table.users[1].diceValue.push(player_1);
                 // storing number for player Three
                 let player_2 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                table.users[2].diceValue.push(JSON.parse(JSON.stringify(player_2)));
+                // table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
+                table.users[2].diceValue.push(player_2);
                 // storing number for player four
                 let player_3 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                table.users[3].diceValue.push(JSON.parse(JSON.stringify(player_3)));
+                // table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
+                table.users[3].diceValue.push(player_3);
+                
+                
+                
                 
                 // To generate dice value between 10 to 20 range.
                 // randomNumber = this.randomNumberGenerator(random);
@@ -1768,7 +1775,6 @@ class _Tables
             }
 
         } catch(err) {
-            console.log('error', err);
             let logData = {
                 level: 'error',
                 meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, stackTrace : err.stack}
