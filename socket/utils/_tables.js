@@ -47,6 +47,7 @@ class _Tables
             let colour = [0, 1, 2, 3];
             // To setup prior dice value for users.
             let randomRumber;
+            let randomRumberNew;
             let shuffleNumberForOtherPlayer;
             let shuffleNumberForOther;
 
@@ -75,7 +76,8 @@ class _Tables
                 const random = Math.floor(Math.random() * (20 - 10)) + 10;
                 // To setup random number to 0 position index user.
                 if(pl == 0) {
-                    randomRumber = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                    randomRumberNew = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                    randomRumber = this.rearrangeArrayWithoutConsecutiveRepeats(randomRumberNew);
                 } else {
                     shuffleNumberForOther = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                     shuffleNumberForOtherPlayer = this.rearrangeArrayWithoutConsecutiveRepeats(shuffleNumberForOther);
