@@ -1738,20 +1738,21 @@ class _Tables
                 const previousSequences = new Set();
                 let player_0 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 // storing number for player One
-                table.users[0].diceValue = JSON.parse(JSON.stringify(player_0));
-                //table.users[0].diceValue.push(...player_0); 
+                //table.users[0].diceValue = JSON.parse(JSON.stringify(player_0));
+                console.log(typeof table.users[0].diceValue);
+                table.users[0].diceValue.push(...player_0); 
                 // storing number for player Two
                 let player_1 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
-                // table.users[1].diceValue.push(...player_1);
+                //table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
+                table.users[1].diceValue.push(...player_1);
                 // storing number for player Three
                 let player_2 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
-                // table.users[2].diceValue.push(...player_2);
+                //table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
+                table.users[2].diceValue.push(...player_2);
                 // storing number for player four
                 let player_3 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
-                // table.users[3].diceValue.push(...player_3);
+                //table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
+                table.users[3].diceValue.push(...player_3);
                 
                 
                 
