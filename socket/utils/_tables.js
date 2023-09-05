@@ -449,7 +449,8 @@ class _Tables
                         myRoom.turn_start_at = new Date().getTime(); //new Date().getTime();
                         myRoom.game_started_at = time;
                         myRoom.server_time = new Date();
-                        let DICE_ROLLED_RES = this.rollDice(room, myRoom.users[pl].id, myRoom);
+                        //let DICE_ROLLED_RES = this.rollDice(room, myRoom.users[pl].id, myRoom);
+                        let DICE_ROLLED_RES = this.rollDice(room, pl, myRoom);
                         //console.log('DICE_ROLLED_RES >>', JSON.stringify(DICE_ROLLED_RES));
                         let DICE_ROLLED;
                         if(DICE_ROLLED_RES) {
@@ -1707,7 +1708,8 @@ class _Tables
             let randomNumber    = null;
 
             let table = myRoom;
-            let idx = table.users.findIndex(element => element.id == user_id);
+            // let idx = table.users.findIndex(element => element.id == user_id);
+            let idx = table.users.findIndex(element => element.position == user_id);
             console.log('USER IDx', idx);
             // To check if predefined dice value is empty then create set of dice value first.           
             if(table.users[idx].diceValue.length == 0) {
