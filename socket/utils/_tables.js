@@ -1768,6 +1768,7 @@ class _Tables
             }
 
         } catch(err) {
+            console.log('error', err);
             let logData = {
                 level: 'error',
                 meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, stackTrace : err.stack}
