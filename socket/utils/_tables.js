@@ -1711,7 +1711,7 @@ class _Tables
             console.log('USER IDx', idx);
             // To check if predefined dice value is empty then create set of dice value first.           
             if(table.users[idx].diceValue.length == 0) {
-                console.log('generate new set');
+                console.log('generate new set', table.users[idx].diceValue);
                 console.log(JSON.stringify(table));
                 // To generate random dice value range between 10 - 20
                 //const random = Math.floor(Math.random() * (20 - 10)) + 10;
