@@ -1720,7 +1720,7 @@ class _Tables
                 // random number range for two and four player game.
                 // const twoPlayerRange = Math.floor(Math.random() * (32 - 28)) + 17;
                 // const fourPlayerRange = Math.floor(Math.random() * (22 - 18)) + 13;
-
+                console.log(table.users[0].diceValue, table.users[1].diceValue, table.users[2].diceValue, table.users[3].diceValue);
                 // to increase no of set dice value generated.
                 myRoom.no_of_diceSet += 1;
                 let dice_range;
