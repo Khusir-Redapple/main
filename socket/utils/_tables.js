@@ -1743,38 +1743,38 @@ class _Tables
                 // storing number for player One
                 //table.users[0].diceValue = JSON.parse(JSON.stringify(player_0));
                 console.log(typeof table.users[0].diceValue);
-                //table.users[0].diceValue.push(...new_player_0);
+                table.users[0].diceValue.push(...new_player_0);
                 // alter for spread operator
-                new_player_0.map((ele) => {
-                    table.users[0].diceValue.push(ele);
-                })
+                // new_player_0.map((ele) => {
+                //     table.users[0].diceValue.push(ele);
+                // })
                 // storing number for player Two
                 let player_1 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 //table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
                 let new_player_1 = this.rearrangeArrayWithoutConsecutiveRepeats(player_1);
-                // table.users[1].diceValue.push(...new_player_1);
+                 table.users[1].diceValue.push(...new_player_1);
                 // alter for spread operator
-                new_player_1.map((ele) => {
-                    table.users[1].diceValue.push(ele);
-                })
+                // new_player_1.map((ele) => {
+                //     table.users[1].diceValue.push(ele);
+                // })
                 // storing number for player Three
                 let player_2 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 //table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
                 let new_player_2 = this.rearrangeArrayWithoutConsecutiveRepeats(player_2);
-                // table.users[2].diceValue.push(...new_player_2);
+                 table.users[2].diceValue.push(...new_player_2);
                 // alter for spread operator
-                new_player_2.map((ele) => {
-                    table.users[2].diceValue.push(ele);
-                })
+                // new_player_2.map((ele) => {
+                //     table.users[2].diceValue.push(ele);
+                // })
                 // storing number for player four
                 let player_3 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 //table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
                 let new_player_3 = this.rearrangeArrayWithoutConsecutiveRepeats(player_3);
-                // table.users[3].diceValue.push(...new_player_3);
+                 table.users[3].diceValue.push(...new_player_3);
                 // alter for spread operator
-                new_player_3.map((ele) => {
-                    table.users[3].diceValue.push(ele);
-                })
+                // new_player_3.map((ele) => {
+                //     table.users[3].diceValue.push(ele);
+                // })
                 
                 
                 // To generate dice value between 10 to 20 range.
