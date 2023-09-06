@@ -1734,7 +1734,9 @@ class _Tables
                 } else {
                     // do nothing for now.
                 }
-                
+
+                console.log('dice range and no of occurance: ', dice_range, min_no_of_occurance);
+
                 // 80 percentage of number will generate 1 to 5 and 20 percentage generate 6.
                 const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
                 const previousSequences = new Set();
@@ -1837,7 +1839,7 @@ class _Tables
      * @param {previousSequences} 
      * @returns {shuffled} 
      */
-    generateUniqueShuffledSequence(array, previousSequences) {
+    old_generateUniqueShuffledSequence(array, previousSequences) {
     const shuffled = [...array];
     let isUnique = false;    
     while (!isUnique) {
@@ -1851,6 +1853,23 @@ class _Tables
     return shuffled;
     }
 
+    
+    generateUniqueShuffledSequence(array, previousSequences, maxAttempts = 5) {
+        let attempts = 0;
+        while (attempts <= maxAttempts) {
+            const shuffled = [...array];
+            this.shuffleArray(shuffled);
+            const serializedSequence = JSON.stringify(shuffled);    
+            if (!previousSequences.has(serializedSequence)) {
+                previousSequences.add(serializedSequence);
+                return shuffled;
+            }
+            attempts++;
+        }
+        return shuffled; 
+    }
+
+    
     /**
      * The function used to generate random number between 1 to 6.
      * @param {number} number means how many numbers want to generate.
