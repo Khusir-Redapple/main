@@ -37,7 +37,7 @@ class _Tables
                 current_turn_type: 'roll',
                 turn_start_at: 0,
                 no_of_players: table.no_of_players,
-                no_of_diceSet : 1,
+                no_of_diceSet : 0,
                 users: [],
                 lobbyId: table.lobbyId,
                 entryFee : entry_Fee,
@@ -1725,14 +1725,16 @@ class _Tables
                 myRoom.no_of_diceSet += 1;
                 let dice_range;
                 let min_no_of_occurance;
-                if(myRoom.no_of_diceSet == 2) {
+                if(myRoom.no_of_diceSet == 1) {
                     (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
                     (myRoom.no_of_players == 2) ? min_no_of_occurance = 2 : min_no_of_occurance = 1;
-                } else if(myRoom.no_of_diceSet == 3){
+                } else if(myRoom.no_of_diceSet == 2){
                     (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (12 - 8)) + 8) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
                     (myRoom.no_of_players == 2) ? min_no_of_occurance = 1 : min_no_of_occurance = 1;
                 } else {
                     // do nothing for now.
+                    (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (12 - 8)) + 8) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
+                    (myRoom.no_of_players == 2) ? min_no_of_occurance = 1 : min_no_of_occurance = 1;
                 }
 
                 console.log('dice range and no of occurance: ', dice_range, min_no_of_occurance);
