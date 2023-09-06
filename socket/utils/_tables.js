@@ -1916,38 +1916,37 @@ class _Tables
     rearrangeArrayWithoutConsecutiveRepeats(arr) {
         const result = [];
         let count = 0;
-        return arr;
-        // for (let i = 0; i < arr.length; i++) {
-        //   if (count < 2 || arr[i] !== arr[i - 1] || arr[i] !== arr[i - 2]) {
-        //     // If it's one of the first two elements or not repeating more than twice
-        //     result.push(arr[i]);
-        //     count = 1;
-        //   } else {
-        //     // Repeating more than twice consecutively, find a new position
-        //     let newPosition;
-        //     let attempts = 0;
+        for (let i = 0; i < arr.length; i++) {
+          if (count < 2 || arr[i] !== arr[i - 1] || arr[i] !== arr[i - 2]) {
+            // If it's one of the first two elements or not repeating more than twice
+            result.push(arr[i]);
+            count = 1;
+          } else {
+            // Repeating more than twice consecutively, find a new position
+            let newPosition;
+            let attempts = 0;
             
-        //     do {
-        //       newPosition = Math.floor(Math.random() * (arr.length - i)) + i; // New position within the remaining elements
-        //       attempts++;
+            do {
+              newPosition = Math.floor(Math.random() * (arr.length - i)) + i; // New position within the remaining elements
+              attempts++;
               
-        //       // To prevent infinite loop, check if the same element is not selected multiple times
-        //       if (attempts >= 5) {
-        //         break; // Exit the loop if too many attempts
-        //       }
-        //     } while (arr[newPosition] === arr[i]);
+              // To prevent infinite loop, check if the same element is not selected multiple times
+              if (attempts >= 5) {
+                break; // Exit the loop if too many attempts
+              }
+            } while (arr[newPosition] === arr[i]);
       
-        //     // Swap elements to rearrange
-        //     const temp = arr[i];
-        //     arr[i] = arr[newPosition];
-        //     arr[newPosition] = temp;
+            // Swap elements to rearrange
+            const temp = arr[i];
+            arr[i] = arr[newPosition];
+            arr[newPosition] = temp;
       
-        //     result.push(arr[i]);
-        //     count++;
-        //   }
-        // }
+            result.push(arr[i]);
+            count++;
+          }
+        }
       
-        // return result;
+        return result;
       }
       
     /**
