@@ -1810,50 +1810,28 @@ class _Tables
      * @returns {combinedArray} array
      */
     getCustomizedValue(dice_range, min_no_of_occurance) {
-        // const dice_range = 21;
-        // const percent_1_to_5 = 0.95; // 0.95%
-        // const percent_6 = 0.05;      // 0.05% 
-
-        //calculate Six's between 20-40% of dice_range.
-        // const random_percent_for_six = Math.random() * (40 - 20) + 20;
-        // let percent_6 = Math.round((random_percent_for_six / 100) * dice_range);
-        // let percent_1_to_5 = (100 - percent_6);
-        // console.log(`percentage of six and non siz ${percent_6} ${percent_1_to_5}`);
-        // percent_6 = percent_6/100; // to convert 0.00 format
-        // percent_1_to_5 = percent_1_to_5/100; //to convert 0.00 format
-
-        // // Calculate the number of times to generate each value
-        // const count_1_to_5 = Math.floor(dice_range * percent_1_to_5);
-        // const count_6 = Math.floor(dice_range * percent_6);
-
-        // // Generate arrays with values
-        // const array_1_to_5 = Array.from({ length: count_1_to_5 }, () => Math.floor(Math.random() * 5) + 1);
-        // const array_6 = Array.from({ length: count_6 }, () => 6);
-
-        // // Combine the arrays and shuffle them
-        // const combinedArray = array_1_to_5.concat(array_6);
-        // for (let i = combinedArray.length - 1; i > 0; i--) {
-        //     const j = Math.floor(Math.random() * (i + 1));
-        //     [combinedArray[i], combinedArray[j]] = [combinedArray[j], combinedArray[i]];
-        // }
-        // return combinedArray;
-
         const numbers = [1, 2, 3, 4, 5, 6];
         const sequence = [];
-        // Generate initial random sequence
-        for (let i = 0; i <= dice_range; i++) {
-            const randomIndex = Math.floor(Math.random() * numbers.length);
-            sequence.push(numbers[randomIndex]);
+        
+        // Generate the initial random sequence
+        for (let i = 0; i < dice_range; i++) {
+          const randomIndex = Math.floor(Math.random() * numbers.length);
+          sequence.push(numbers[randomIndex]);
         }
+      
         // Ensure each number appears at least twice
         for (let num of numbers) {
-            let count = sequence.filter(n => n === num).length;
-            while (count < min_no_of_occurance) {
-            const indexToReplace = sequence.findIndex(n => n !== num);
-            sequence[indexToReplace] = num;
-            count++;
+          let count = sequence.filter(n => n === num).length;
+          while (count < min_no_of_occurance) {
+            const indexToReplace = sequence.indexOf(num);
+            if (indexToReplace === -1) {
+              break; // Exit the loop if no more occurrences can be replaced
             }
+            sequence[indexToReplace] = numbers[Math.floor(Math.random() * numbers.length)];
+            count++;
+          }
         }
+        
         return sequence;
     }
 
