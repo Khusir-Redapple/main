@@ -1866,6 +1866,7 @@ class _Tables
             }
             attempts++;
         }
+        previousSequences.add(serializedSequence);
         return shuffled; 
     }
 
