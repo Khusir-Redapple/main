@@ -2092,7 +2092,9 @@ module.exports = {
             //     room: room_code,
             // });
             tableX = await redisCache.getRecordsByKeyRedis(`table_${room_code}`);
+            if('gameTime' in params) { tableX.gameTime = params.gameTime; };
             
+            console.log('tableX', tableX);
             if (!tableX) {
                 return {
                     callback: {
