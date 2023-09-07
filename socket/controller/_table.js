@@ -2147,8 +2147,6 @@ module.exports = {
             tableX.created_at = new Date().getTime();
             //await tableX.save();
            // await redisCache.addToRedis(room_code,myRoom);
-           console.log('params', params);
-           console.log('tableX', tableX);
             await redisCache.addToRedis(`table_${room_code}`, tableX);
             return {
                 callback: callbackRes,
