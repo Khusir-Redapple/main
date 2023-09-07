@@ -2062,7 +2062,6 @@ module.exports = {
             params.players = [];
             // let table = new Table(params);
             // tableX = await table.save();
-            console.log('table data', params);
             tableX = await redisCache.addToRedis(`table_${room}`, params);
             if (!tableX) {
                 return {
