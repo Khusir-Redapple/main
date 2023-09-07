@@ -1946,7 +1946,7 @@ module.exports = {
 
     joinTournamentV2: async function (params, entry_Fee, myId, user, retryCount = 0) {
         console.log('first params', params);
-        params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId']);
+        params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId', 'gameTime']);
         if (!params || !myId || _.isEmpty(params.no_of_players) || _.isEmpty(params.room_fee)) {
             return {
                 callback: {
