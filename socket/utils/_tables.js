@@ -1906,7 +1906,7 @@ class _Tables
      *  This function rearrangeArrayWithoutConsecutiveRepeats iterates through the diceValue array, 
      *  checking for consecutive repeats and shuffling elements as needed to satisfy the condition.
      */
-    rearrangeArrayWithoutConsecutiveRepeats(arr) {
+    old_rearrangeArrayWithoutConsecutiveRepeats(arr) {
         const result = [];
         let count = 0;
       
@@ -1935,7 +1935,7 @@ class _Tables
         return result;
     }
 
-    new_rearrangeArrayWithoutConsecutiveRepeats(arr) {
+    rearrangeArrayWithoutConsecutiveRepeats(arr) {
         const result = [];
         let count = 0;
         for (let i = 0; i < arr.length; i++) {
@@ -1953,7 +1953,7 @@ class _Tables
               attempts++;
               
               // To prevent infinite loop, check if the same element is not selected multiple times
-              if (attempts >= 5) {
+              if (attempts >= 10) {
                 break; // Exit the loop if too many attempts
               }
             } while (arr[newPosition] === arr[i]);
@@ -1969,7 +1969,7 @@ class _Tables
         }
       
         return result;
-      }
+    }
       
     /**
      *  The function used to remove room object from Global Object after given time frame.
