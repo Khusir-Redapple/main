@@ -159,7 +159,7 @@ class _Tables
     }
 
     //Seat on tournament table
-    seatOnTableforTourney(room, user, optional, myRoom)
+    async seatOnTableforTourney(room, user, optional, myRoom)
     {
         let filteredTable = myRoom;
         if (filteredTable)
@@ -168,7 +168,7 @@ class _Tables
             let noPlayers = filteredTable.no_of_players;
             // adding two property for gameData.
 
-            let tableData = redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
             let configGameTime = config.gameTime;
             if('gameTime' in tableData) {
                 configGameTime = tableData.gameTime;
@@ -233,7 +233,7 @@ class _Tables
         return false;
     }
 
-    alreadyPlayingTable(id, myRoom)
+    async alreadyPlayingTable(id, myRoom)
     {
         // for logDNA logger
         logger = {
@@ -255,7 +255,7 @@ class _Tables
                         var diff_ = (curr_ - myRoom.created_at) / 1000;
                         var diffT = (curr_ - myRoom.game_started_at) / 1000;
                         
-                        let tableData = redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
                         let configGameTime = config.gameTime;
                         if('gameTime' in tableData) {
                             configGameTime = tableData.gameTime;
@@ -433,7 +433,7 @@ class _Tables
             let timeInsecond = (new Date().getTime() / 1000) - (gameStartTime / 1000);
             if (timeInsecond < 0) timeInsecond = 0;
 
-            let tableData = redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
             let configGameTime = config.gameTime;
             if('gameTime' in tableData) {
                 configGameTime = tableData.gameTime;
@@ -1063,7 +1063,7 @@ class _Tables
             let seconds = 0;
             let remainingTime = 0;
             if(time > 0) {
-                let tableData = redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
                 let configGameTime = config.gameTime;
                 if('gameTime' in tableData) {
                     configGameTime = tableData.gameTime;
