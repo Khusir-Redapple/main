@@ -2092,9 +2092,6 @@ module.exports = {
             //     room: room_code,
             // });
             tableX = await redisCache.getRecordsByKeyRedis(`table_${room_code}`);
-            if('gameTime' in params) { tableX.gameTime = params.gameTime; };
-            
-            console.log('tableX', tableX);
             if (!tableX) {
                 return {
                     callback: {
@@ -2151,6 +2148,7 @@ module.exports = {
             tableX.created_at = new Date().getTime();
             //await tableX.save();
            // await redisCache.addToRedis(room_code,myRoom);
+           console.log('tableX', tableX);
             await redisCache.addToRedis(`table_${room_code}`, tableX);
             return {
                 callback: callbackRes,
