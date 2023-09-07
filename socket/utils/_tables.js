@@ -1906,7 +1906,7 @@ class _Tables
      *  This function rearrangeArrayWithoutConsecutiveRepeats iterates through the diceValue array, 
      *  checking for consecutive repeats and shuffling elements as needed to satisfy the condition.
      */
-    old_rearrangeArrayWithoutConsecutiveRepeats(arr) {
+    rearrangeArrayWithoutConsecutiveRepeats(arr) {
         const result = [];
         let count = 0;
       
@@ -1935,7 +1935,7 @@ class _Tables
         return result;
     }
 
-    rearrangeArrayWithoutConsecutiveRepeats(arr) {
+    new_rearrangeArrayWithoutConsecutiveRepeats(arr) {
         const result = [];
         let count = 0;
         for (let i = 0; i < arr.length; i++) {
