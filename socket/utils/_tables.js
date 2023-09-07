@@ -1934,6 +1934,33 @@ class _Tables
       
         return result;
     }
+
+    working_rearrangeArrayWithoutConsecutiveRepeats(arr) {
+        const originalCopy = arr.slice(); // Create a copy of the original array
+        const result = [];
+      
+        while (arr.length > 0) {
+          let nextIndex = -1;
+      
+          for (let i = 0; i < arr.length; i++) {
+            if (arr[i] !== result[result.length - 1]) {
+              nextIndex = i;
+              break;
+            }
+          }
+      
+          if (nextIndex === -1) {
+            // If no valid next element is found, reset the result and try again
+            result.length = 0;
+            arr = originalCopy.slice();
+          } else {
+            result.push(arr[nextIndex]);
+            arr.splice(nextIndex, 1);
+          }
+        }
+      
+        return result;
+    }
       
     /**
      *  The function used to remove room object from Global Object after given time frame.
