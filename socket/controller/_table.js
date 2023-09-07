@@ -1945,6 +1945,7 @@ module.exports = {
     sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 
     joinTournamentV2: async function (params, entry_Fee, myId, user, retryCount = 0) {
+        console.log('first params', params);
         params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId']);
         if (!params || !myId || _.isEmpty(params.no_of_players) || _.isEmpty(params.room_fee)) {
             return {
@@ -1954,7 +1955,7 @@ module.exports = {
                 },
             };
         }
-
+        console.log('second params', params);
         //check valid user and valid no of user
         if (!user || !config.noOfPlayersInTournament.includes(parseInt(params.no_of_players))) {
             return {
