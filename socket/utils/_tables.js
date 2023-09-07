@@ -1935,7 +1935,7 @@ class _Tables
         return result;
     }
 
-    working_rearrangeArrayWithoutConsecutiveRepeats(arr) {
+    rearrangeArrayWithoutConsecutiveRepeats(arr) {
         const result = [];
         let count = 0;
         for (let i = 0; i < arr.length; i++) {
@@ -1969,37 +1969,6 @@ class _Tables
         }
       
         return result;
-    }
-
-    rearrangeArrayWithoutConsecutiveRepeats(diceValue) {
-        const copy = diceValue.slice();
-        const shuffled = [];
-      
-        // Separate the unique values from the rest
-        const uniqueValues = [...new Set(copy)];
-      
-        // Shuffle the unique values
-        for (let i = uniqueValues.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [uniqueValues[i], uniqueValues[j]] = [uniqueValues[j], uniqueValues[i]];
-        }
-      
-        // Start with a random unique value
-        let currentIndex = Math.floor(Math.random() * uniqueValues.length);
-        shuffled.push(uniqueValues[currentIndex]);
-      
-        while (shuffled.length < diceValue.length) {
-          let nextIndex = Math.floor(Math.random() * uniqueValues.length);
-      
-          // Avoid placing the same number consecutively
-          while (uniqueValues[nextIndex] === shuffled[shuffled.length - 1]) {
-            nextIndex = Math.floor(Math.random() * uniqueValues.length);
-          }
-      
-          shuffled.push(uniqueValues[nextIndex]);
-        }
-      
-        return shuffled;
     }
       
     /**
