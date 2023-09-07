@@ -1717,10 +1717,6 @@ class _Tables
             //console.log('USER IDx', idx);
             // To check if predefined dice value is empty then create set of dice value first.           
             if(table.users[idx].diceValue.length == 0) {
-                // random number range for two and four player game.
-                // const twoPlayerRange = Math.floor(Math.random() * (32 - 28)) + 17;
-                // const fourPlayerRange = Math.floor(Math.random() * (22 - 18)) + 13;
-                console.log(table.users[0].diceValue, table.users[1].diceValue, table.users[2].diceValue, table.users[3].diceValue);
                 // to increase no of set dice value generated.
                 myRoom.no_of_diceSet += 1;
                 let dice_range;
@@ -1736,8 +1732,6 @@ class _Tables
                     (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (12 - 8)) + 8) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
                     (myRoom.no_of_players == 2) ? min_no_of_occurance = 1 : min_no_of_occurance = 1;
                 }
-
-                console.log('dice range and no of occurance: ', dice_range, min_no_of_occurance);
 
                 // 80 percentage of number will generate 1 to 5 and 20 percentage generate 6.
                 const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
@@ -1776,7 +1770,6 @@ class _Tables
                 // let player_3 = this.fisherShuffleGenerator(randomNumber);
                 // table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
             }
-            console.log(JSON.stringify(table.users));
              // pop from top of array and update the property value.
             returnDiceValue = table.users[idx].diceValue.shift();
             //console.log(`dice for user ${table.users[idx].id} is ${returnDiceValue} id- ${idx}`);
@@ -1906,35 +1899,6 @@ class _Tables
      *  This function rearrangeArrayWithoutConsecutiveRepeats iterates through the diceValue array, 
      *  checking for consecutive repeats and shuffling elements as needed to satisfy the condition.
      */
-    old_rearrangeArrayWithoutConsecutiveRepeats(arr) {
-        const result = [];
-        let count = 0;
-      
-        for (let i = 0; i < arr.length; i++) {
-          if (i < 2 || arr[i] !== arr[i - 1] || arr[i] !== arr[i - 2]) {
-            // If it's one of the first two elements or not repeating more than twice
-            result.push(arr[i]);
-            count = 1;
-          } else {
-            // Repeating more than twice consecutively, find a new position
-            let newPosition;
-            do {
-              newPosition = Math.floor(Math.random() * 3) + i; // New position within the next two elements
-            } while (newPosition >= arr.length || arr[newPosition] === arr[i]);
-      
-            // Swap elements to rearrange
-            const temp = arr[i];
-            arr[i] = arr[newPosition];
-            arr[newPosition] = temp;
-      
-            result.push(arr[i]);
-            count++;
-          }
-        }
-      
-        return result;
-    }
-
     rearrangeArrayWithoutConsecutiveRepeats(arr) {
         const result = [];
         let count = 0;
