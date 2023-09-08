@@ -360,7 +360,7 @@ module.exports = function (io, bullQueue) {
             if('gameTime' in verifyUser) { params.gameTime = verifyUser.gameTime };
             // to setup turnTime for room
             if('turnTime' in verifyUser) { params.turnTime = verifyUser.turnTime };
-            params.turnTime = 5;
+            
             logData = {
                 level: 'debugg',
                 meta: payout
