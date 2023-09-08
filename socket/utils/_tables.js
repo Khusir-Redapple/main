@@ -1096,12 +1096,20 @@ class _Tables
         let currentTime = new Date().getTime();
         let timeDiff = currentTime - turnStarted;
         let pawnTapTime = (timeDiff/1000).toFixed(2);
-        if(pawnTapTime > 10){
+
+        // dynamic turn time
+        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+        let configGameTime = config.gameTime;
+        if('turnTime' in tableData) {
+            configGameTime = tableData.turnTime;
+        }
+        
+        if(pawnTapTime > configGameTime){
             //return "10";
             return "0";
         } else {
            //return pawnTapTime;
-            return (10 - pawnTapTime).toFixed(2);
+            return (configGameTime - pawnTapTime).toFixed(2);
         }
     }
 
