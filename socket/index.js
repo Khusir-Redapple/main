@@ -882,7 +882,7 @@ module.exports = function (io, bullQueue) {
                 payload: { room: start.room },
             },
             {
-                delay: 12 * 1000
+                delay: 7 * 1000
             }
         );
     }
