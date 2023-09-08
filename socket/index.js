@@ -621,6 +621,11 @@ module.exports = function (io, bullQueue) {
                 await redisCache.addToRedis(myRoom.room, myRoom);
                 await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
                 // console.log('GAME-PLAY-DATA-3', JSON.stringify(gamePlayData));
+                let turnTimer = config.turnTimer;
+                let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+                turnTimer += 2;
+                turnTimer = turnTimer * 1000;
 
                 if(response && response.events)
                 {
@@ -634,7 +639,7 @@ module.exports = function (io, bullQueue) {
                                     payload: { room: params.room },
                                 },
                                 {
-                                    delay: 1000 * 12
+                                    delay: turnTimer
                                 }
                             );
                             break;
@@ -681,7 +686,7 @@ module.exports = function (io, bullQueue) {
                 if(response)
                 {
                     let timer =12000;
-                    
+
                     let turnTimer = config.turnTimer;
                     let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
                     if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
@@ -1257,13 +1262,20 @@ module.exports = function (io, bullQueue) {
 
                             await redisCache.addToRedis(params_data.room, myRoom);
                             await redisCache.addToRedis('gamePlay_' + params_data.room, gamePlayData);
+
+                            let turnTimer = config.turnTimer;
+                            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                            if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+                            turnTimer += 2;
+                            turnTimer = turnTimer * 1000;
+
                             await bullQueue.add(
                                 {
                                     name: "playerTurnQueue",
                                     payload: { room: params_data.room },
                                 },
                                 {
-                                    delay: 1000 * 12
+                                    delay: turnTimer
                                 }
                             );
                             processEvents(response, myRoom);
@@ -1276,13 +1288,19 @@ module.exports = function (io, bullQueue) {
         catch (err) {
             if(params_data && params_data.room)
             {
+            let turnTimer = config.turnTimer;
+            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+            turnTimer += 2;
+            turnTimer = turnTimer * 1000;
+
             await bullQueue.add(
                 {
                     name: "playerTurnQueue",
                     payload: { room: params_data.room },
                 },
                 {
-                    delay: 1000 * 12
+                    delay: turnTimer
                 }
             );
             }
