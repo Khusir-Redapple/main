@@ -358,6 +358,9 @@ module.exports = function (io, bullQueue) {
             if('entryFee' in verifyUser) { params.entryFee = verifyUser.entryFee };
             // to setup individual game time for room
             if('gameTime' in verifyUser) { params.gameTime = verifyUser.gameTime };
+            // to setup turnTime for room
+            if('turnTime' in verifyUser) { params.turnTime = verifyUser.turnTime };
+
             logData = {
                 level: 'debugg',
                 meta: payout
@@ -1221,8 +1224,11 @@ module.exports = function (io, bullQueue) {
                 console.log('Game already completed');
                 return;
             } else {
+                let turnTimer = config.turnTimer;
+                let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
                 var currTime = parseInt(new Date().getTime());
-                if (currTime - checkTabel.start_at > (config.turnTimer + 2) * 1000) {
+                if (currTime - checkTabel.start_at > (turnTimer + 2) * 1000) {
                     var id_of_current_turn = await _TableInstance.getMyIdByPossition(
                         params_data,
                         checkTabel.current_turn,

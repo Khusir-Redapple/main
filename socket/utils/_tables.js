@@ -173,8 +173,10 @@ class _Tables
             if('gameTime' in tableData) {
                 configGameTime = tableData.gameTime;
             }
+            let turnTimer = config.turnTimer;            
+            if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
 
-            filteredTable.turn_time = config.turnTimer;
+            filteredTable.turn_time = turnTimer;
             filteredTable.timeToCompleteGame = configGameTime * 60;
             for (var pl = 0; pl < 4; pl++)
              if (filteredTable.users[pl] && filteredTable.users[pl].is_active) 
@@ -260,14 +262,17 @@ class _Tables
                         if('gameTime' in tableData) {
                             configGameTime = tableData.gameTime;
                         }
-                        
+
+                        let turnTimer = config.turnTimer;
+                        if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
                         let timeToAdd = configGameTime * 60;
                         // let gamecompleteTime = timeToAdd.getTime() - curr_ ;
                         // console.log('[alreadyPlayingTable]- ', curr_, myRoom.turn_start_at, 30 - diff, timeToAdd, diffT, timeToAdd - diffT);
                         var rez = {
                             status: 1,
                             table: myRoom,
-                            turn_start_at: config.turnTimer - diff,//10 - diff,
+                            turn_start_at: turnTimer - diff,//10 - diff,
                             timerStart: 60 - diff_,
                             game_started: !(myRoom.turn_start_at == 0),
                             current_turn: myRoom.current_turn,
@@ -276,7 +281,7 @@ class _Tables
                             dices_rolled: myRoom.users[myRoom.current_turn].dices_rolled,
                             // timeToCompleteGame: timeToAdd + 8 - diffT,
                             timeToCompleteGame: timeToAdd,
-                            default_diceroll_timer: config.turnTimer - diff // bug_no_ 65
+                            default_diceroll_timer: turnTimer - diff // bug_no_ 65
                         };
                         return rez;
                     }
@@ -456,6 +461,10 @@ class _Tables
                 if (!canStart) return false;
                 var dt = new Date();
                 dt.setSeconds(dt.getSeconds() + 4);
+                let turnTimer = config.turnTimer;
+                let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
                 for (let pl = 0; pl < myRoom.users.length; pl++)
                 {
                     if (myRoom.users[pl].is_active)
@@ -488,10 +497,10 @@ class _Tables
                             room: myRoom.room,
                             table: myRoom,
                             dice: DICE_ROLLED,
-                            turn_start_at: config.turnTimer,
+                            turn_start_at: turnTimer,
                             turn_timestamp : new Date(),
                             possition: pl,
-                            default_diceroll_timer: config.turnTimer // bug_no_65
+                            default_diceroll_timer: turnTimer // bug_no_65
                         };
                         this.sendToSqsAndResetGamePlayData(room,myRoom,gamePlayData,pl);
                         return resObj;
