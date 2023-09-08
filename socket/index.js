@@ -358,6 +358,8 @@ module.exports = function (io, bullQueue) {
             if('entryFee' in verifyUser) { params.entryFee = verifyUser.entryFee };
             // to setup individual game time for room
             if('gameTime' in verifyUser) { params.gameTime = verifyUser.gameTime };
+            // for testing
+            params.gameTime = 3;
             logData = {
                 level: 'debugg',
                 meta: payout
