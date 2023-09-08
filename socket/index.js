@@ -681,6 +681,13 @@ module.exports = function (io, bullQueue) {
                 if(response)
                 {
                     let timer =12000;
+                    
+                    let turnTimer = config.turnTimer;
+                    let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                    if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+                    turnTimer += 2;
+                    turnTimer = turnTimer * 1000;
+
                     if(response.callback && response.callback.isKillable)
                         timer=14500;
 
@@ -690,7 +697,7 @@ module.exports = function (io, bullQueue) {
                             payload: { room: params.room },
                         },
                         {
-                            delay: timer
+                            delay: turnTimer
                         }
                     );
                 callback(response.callback);
@@ -875,14 +882,19 @@ module.exports = function (io, bullQueue) {
             room: start.room,
             score_data: user_points,
         });
-        
+
+        let turnTimer = config.turnTimer;
+        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+        if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+        // to take 2 second buffer time to life lost
+        turnTimer += 2;
         await bullQueue.add(
             {
                 name: "playerTurnQueue",
                 payload: { room: start.room },
             },
             {
-                delay: 7 * 1000
+                delay: turnTimer * 1000
             }
         );
     }
