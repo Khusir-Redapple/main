@@ -1928,24 +1928,39 @@ class _Tables
      *  checking for consecutive repeats and shuffling elements as needed to satisfy the condition.
      */
     rearrangeArrayWithoutConsecutiveRepeats(diceValue) {
-        const sortedDiceValue = [...diceValue];
-        function rearrangeRecursive(currentValue) {
-            const nextValueIndex = sortedDiceValue.findIndex(value => value !== currentValue);
+        const originalSum = diceValue.reduce((acc, val) => acc + val, 0);
+        let shuffledDiceValue = [...diceValue];
+        this.shuffleArray(shuffledDiceValue);
 
-            if (nextValueIndex === -1) {
-            // If no valid value is found, return an empty array
-            return [];
+        while (true) {
+          let consecutiveCount = 1;
+          let lastValue = shuffledDiceValue[0];
+      
+          for (let i = 1; i < shuffledDiceValue.length; i++) {
+            if (shuffledDiceValue[i] === lastValue) {
+              consecutiveCount++;
+            } else {
+              consecutiveCount = 1;
+              lastValue = shuffledDiceValue[i];
             }
-
-            const nextValue = sortedDiceValue[nextValueIndex];
-            sortedDiceValue.splice(nextValueIndex, 1); // Remove the used value from the sortedDiceValue array
-
-            const remainingValues = rearrangeRecursive(nextValue);
-            return [nextValue, ...remainingValues];
+      
+            if (consecutiveCount > 2) {
+              // Too many consecutive repetitions, shuffle and retry
+              this.shuffleArray(shuffledDiceValue);
+              break;
+            }
+          }
+      
+          if (shuffledDiceValue.reduce((acc, val) => acc + val, 0) === originalSum) {
+            // The sum is correct, and there are no more than two consecutive repetitions
+            break;
+          }
+      
+          // Shuffle again and retry
+          this.shuffleArray(shuffledDiceValue);
         }
-
-        const result = rearrangeRecursive(null);
-        return result;
+        
+        return shuffledDiceValue;
     }
      
     /**
