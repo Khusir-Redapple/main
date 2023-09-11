@@ -1949,7 +1949,7 @@ class _Tables
 
             if (!found) {
                 // If no different value can be found, start over
-                return rearrangeArrayWithoutConsecutiveRepeats(diceValue);
+                return this.rearrangeArrayWithoutConsecutiveRepeats(diceValue);
             }
             }
 
