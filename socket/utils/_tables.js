@@ -65,7 +65,7 @@ class _Tables
                 default:
                     break;
             }
-            const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
+            var original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
             const previousSequences = new Set();
             for (var pl = 0; pl < 4; pl++)
             {
@@ -79,10 +79,10 @@ class _Tables
                     //randomRumberNew = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                     randomRumber = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                 } else {
-                    console.log('input else part', randomRumber);
+                    console.log('input else part', original_dice_value);
                     //shuffleNumberForOther = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                    shuffleNumberForOtherPlayer = this.rearrangeArrayWithoutConsecutiveRepeats(randomRumber);
-                    console.log('output else part', randomRumber);
+                    shuffleNumberForOtherPlayer = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
+                    console.log('output else part', shuffleNumberForOtherPlayer);
                 }                
                 table_i.users[pl] = {
                     id: '',
@@ -1960,7 +1960,6 @@ class _Tables
     }
 
     rearrangeArrayWithoutConsecutiveRepeats(arr) {
-        console.log('input params', arr);
         const originalCopy = arr.slice(); // Create a copy of the original array
         const result = [];
       
@@ -1983,7 +1982,6 @@ class _Tables
             arr.splice(nextIndex, 1);
           }
         }
-        console.log('output params', result);
         return result;
     }
       
