@@ -1797,32 +1797,6 @@ class _Tables
      * @param {number} dice_range means how many numbers want to generate.
      * @returns {combinedArray} array
      */
-    old_getCustomizedValue(dice_range, min_no_of_occurance) {
-        const numbers = [1, 2, 3, 4, 5, 6];
-        const sequence = [];
-        
-        // Generate the initial random sequence
-        for (let i = 0; i < dice_range; i++) {
-          const randomIndex = Math.floor(Math.random() * numbers.length);
-          sequence.push(numbers[randomIndex]);
-        }
-      
-        // Ensure each number appears at least twice
-        for (let num of numbers) {
-          let count = sequence.filter(n => n === num).length;
-          while (count < min_no_of_occurance) {
-            const indexToReplace = sequence.indexOf(num);
-            if (indexToReplace === -1) {
-              break; // Exit the loop if no more occurrences can be replaced
-            }
-            sequence[indexToReplace] = numbers[Math.floor(Math.random() * numbers.length)];
-            count++;
-          }
-        }
-
-        return sequence;
-    }
-
     getCustomizedValue(dice_range, no_of_occurance) {
         // Create an array to store the result
         const result = [];
@@ -1856,6 +1830,7 @@ class _Tables
             [array[i], array[j]] = [array[j], array[i]];
         }
     }
+
     /**
      * The function used to generate unique shuffled series.
      * @param {array} 
@@ -1875,24 +1850,6 @@ class _Tables
     }
     return shuffled;
     }
-
-    
-    working_generateUniqueShuffledSequence(array, previousSequences, maxAttempts = 5) {
-        let attempts = 0;
-        while (attempts <= maxAttempts) {
-            const shuffled = [...array];
-            this.shuffleArray(shuffled);
-            const serializedSequence = JSON.stringify(shuffled);    
-            if (!previousSequences.has(serializedSequence)) {
-                previousSequences.add(serializedSequence);
-                return shuffled;
-            }
-            attempts++;
-        }
-        previousSequences.add(serializedSequence);
-        return shuffled; 
-    }
-
     
     /**
      * The function used to generate random number between 1 to 6.
@@ -1928,6 +1885,7 @@ class _Tables
      *  checking for consecutive repeats and shuffling elements as needed to satisfy the condition.
      */
     rearrangeArrayWithoutConsecutiveRepeats(diceValue) {
+        
         const originalDiceValue = [...diceValue];
         const result = [];
 
