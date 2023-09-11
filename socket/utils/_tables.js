@@ -55,16 +55,22 @@ class _Tables
             (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (22 - 15)) + 15);
            
             let min_no_of_occurance;
-            switch (table.no_of_players) {
-                case 2:
-                    min_no_of_occurance = 2;
-                    break;
-                case 4:
-                    min_no_of_occurance = 1;
-                    break;
-                default:
-                    break;
+
+            if(table.no_of_players == 2) {
+                min_no_of_occurance = 2;
+            } else {
+                min_no_of_occurance = 1;
             }
+            // switch (table.no_of_players) {
+            //     case '2':
+            //         min_no_of_occurance = 2;
+            //         break;
+            //     case '4':
+            //         min_no_of_occurance = 1;
+            //         break;
+            //     default:
+            //         break;
+            // }
             const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
             const previousSequences = new Set();
             for (var pl = 0; pl < 4; pl++)
