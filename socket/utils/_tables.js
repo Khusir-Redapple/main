@@ -56,21 +56,16 @@ class _Tables
            
             let min_no_of_occurance;
 
-            if(table.no_of_players == 2) {
-                min_no_of_occurance = 2;
-            } else {
-                min_no_of_occurance = 1;
+            switch (table.no_of_players) {
+                case '2':
+                    min_no_of_occurance = 2;
+                    break;
+                case '4':
+                    min_no_of_occurance = 1;
+                    break;
+                default:
+                    break;
             }
-            // switch (table.no_of_players) {
-            //     case '2':
-            //         min_no_of_occurance = 2;
-            //         break;
-            //     case '4':
-            //         min_no_of_occurance = 1;
-            //         break;
-            //     default:
-            //         break;
-            // }
             const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
             const previousSequences = new Set();
             for (var pl = 0; pl < 4; pl++)
@@ -1800,7 +1795,7 @@ class _Tables
      * @param {number} dice_range means how many numbers want to generate.
      * @returns {combinedArray} array
      */
-    old_getCustomizedValue(dice_range, min_no_of_occurance) {
+    getCustomizedValue(dice_range, min_no_of_occurance) {
         const numbers = [1, 2, 3, 4, 5, 6];
         const sequence = [];
         
@@ -1826,7 +1821,7 @@ class _Tables
         return sequence;
     }
 
-    getCustomizedValue(dice_range, no_of_occurance) {
+    nww_getCustomizedValue(dice_range, no_of_occurance) {
         // Create an array to store the result
         const result = [];
         // Generate numbers 1 to 6 at least twice
@@ -1844,7 +1839,7 @@ class _Tables
           result.push(randomNumber);
         }
         // Shuffle the array to randomize the order
-        //this.shuffleArray(result);
+        this.shuffleArray(result);
         return result;
 
     }
