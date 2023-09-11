@@ -1836,7 +1836,7 @@ class _Tables
           result.push(randomNumber);
         }
         // Shuffle the array to randomize the order
-        shuffleArray(result);
+        this.shuffleArray(result);
         return result;
     }
 
