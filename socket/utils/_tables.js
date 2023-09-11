@@ -1856,7 +1856,7 @@ class _Tables
      * @param {previousSequences} 
      * @returns {shuffled} 
      */
-    old_generateUniqueShuffledSequence(array, previousSequences) {
+    generateUniqueShuffledSequence(array, previousSequences) {
     const shuffled = [...array];
     let isUnique = false;    
     while (!isUnique) {
@@ -1871,7 +1871,7 @@ class _Tables
     }
 
     
-    generateUniqueShuffledSequence(array, previousSequences, maxAttempts = 5) {
+    working_generateUniqueShuffledSequence(array, previousSequences, maxAttempts = 5) {
         let attempts = 0;
         while (attempts <= maxAttempts) {
             const shuffled = [...array];
