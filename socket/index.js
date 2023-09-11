@@ -327,7 +327,7 @@ module.exports = function (io, bullQueue) {
 
         socket.on('joinTournament', async (data, callback) =>
         {
-            //console.log('joinTournament - ', data);
+            console.log('joinTournament - ', data);
             // Start the timer
             const startTime = Date.now();
             try{

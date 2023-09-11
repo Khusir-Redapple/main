@@ -65,7 +65,7 @@ class _Tables
                 default:
                     break;
             }
-            var original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
+            const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
             const previousSequences = new Set();
             for (var pl = 0; pl < 4; pl++)
             {
