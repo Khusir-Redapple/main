@@ -79,10 +79,10 @@ class _Tables
                     //randomRumberNew = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                     randomRumber = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                 } else {
-                    console.log('input else part', original_dice_value);
+                    console.log('input else part', randomRumber);
                     //shuffleNumberForOther = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                    shuffleNumberForOtherPlayer = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
-                    console.log('output else part', shuffleNumberForOtherPlayer);
+                    shuffleNumberForOtherPlayer = this.rearrangeArrayWithoutConsecutiveRepeats(randomRumber);
+                    console.log('output else part', randomRumber);
                 }                
                 table_i.users[pl] = {
                     id: '',
