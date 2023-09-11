@@ -70,6 +70,7 @@ class _Tables
             const previousSequences = new Set();
             for (var pl = 0; pl < 4; pl++)
             {
+                
                 let random_number = Math.floor(Math.random() * colour.length);
                 let random_colour = colour[random_number];
                 colour.splice(random_number, 1);
@@ -77,13 +78,11 @@ class _Tables
                 const random = Math.floor(Math.random() * (20 - 10)) + 10;
                 // To setup random number to 0 position index user.
                 if(pl == 0) {
-                    //randomRumberNew = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                    //randomRumber = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                     randomRumber = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                 } else {
-                    console.log('input else part', original_dice_value);
-                    //shuffleNumberForOther = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                    //shuffleNumberForOtherPlayer = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                     shuffleNumberForOtherPlayer = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
-                    console.log('output else part', shuffleNumberForOtherPlayer);
                 }                
                 table_i.users[pl] = {
                     id: '',
@@ -1795,7 +1794,7 @@ class _Tables
      * @param {number} dice_range means how many numbers want to generate.
      * @returns {combinedArray} array
      */
-    getCustomizedValue(dice_range, min_no_of_occurance) {
+    old_getCustomizedValue(dice_range, min_no_of_occurance) {
         const numbers = [1, 2, 3, 4, 5, 6];
         const sequence = [];
         
@@ -1821,7 +1820,7 @@ class _Tables
         return sequence;
     }
 
-    nww_getCustomizedValue(dice_range, no_of_occurance) {
+    getCustomizedValue(dice_range, no_of_occurance) {
         // Create an array to store the result
         const result = [];
         // Generate numbers 1 to 6 at least twice
@@ -1925,7 +1924,7 @@ class _Tables
      *  This function rearrangeArrayWithoutConsecutiveRepeats iterates through the diceValue array, 
      *  checking for consecutive repeats and shuffling elements as needed to satisfy the condition.
      */
-    old_rearrangeArrayWithoutConsecutiveRepeats(arr) {
+    rearrangeArrayWithoutConsecutiveRepeats(arr) {
         const result = [];
         let count = 0;
         for (let i = 0; i < arr.length; i++) {
@@ -1960,33 +1959,7 @@ class _Tables
       
         return result;
     }
-
-    rearrangeArrayWithoutConsecutiveRepeats(arr) {
-        const originalCopy = arr.slice(); // Create a copy of the original array
-        const result = [];
-      
-        while (arr.length > 0) {
-          let nextIndex = -1;
-      
-          for (let i = 0; i < arr.length; i++) {
-            if (arr[i] !== result[result.length - 1]) {
-              nextIndex = i;
-              break;
-            }
-          }
-      
-          if (nextIndex === -1) {
-            // If no valid next element is found, reset the result and try again
-            result.length = 0;
-            arr = originalCopy.slice();
-          } else {
-            result.push(arr[nextIndex]);
-            arr.splice(nextIndex, 1);
-          }
-        }
-        return result;
-    }
-      
+     
     /**
      *  The function used to remove room object from Global Object after given time frame.
      *  The function invocking from corn job.
