@@ -1792,7 +1792,7 @@ class _Tables
      * @param {number} dice_range means how many numbers want to generate.
      * @returns {combinedArray} array
      */
-    getCustomizedValue(dice_range, min_no_of_occurance) {
+    old_getCustomizedValue(dice_range, min_no_of_occurance) {
         const numbers = [1, 2, 3, 4, 5, 6];
         const sequence = [];
         
@@ -1818,7 +1818,7 @@ class _Tables
         return sequence;
     }
 
-    new_getCustomizedValue(dice_range, no_of_occurance) {
+    getCustomizedValue(dice_range, no_of_occurance) {
         // Create an array to store the result
         const result = [];
         // Generate numbers 1 to 6 at least twice
