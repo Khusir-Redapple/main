@@ -1792,7 +1792,7 @@ class _Tables
      * @param {number} dice_range means how many numbers want to generate.
      * @returns {combinedArray} array
      */
-    old_getCustomizedValue(dice_range, min_no_of_occurance) {
+    getCustomizedValue(dice_range, min_no_of_occurance) {
         const numbers = [1, 2, 3, 4, 5, 6];
         const sequence = [];
         
@@ -1818,7 +1818,7 @@ class _Tables
         return sequence;
     }
 
-    getCustomizedValue(dice_range, no_of_occurance) {
+    new_getCustomizedValue(dice_range, no_of_occurance) {
         // Create an array to store the result
         const result = [];
         // Generate numbers 1 to 6 at least twice
@@ -1856,7 +1856,7 @@ class _Tables
      * @param {previousSequences} 
      * @returns {shuffled} 
      */
-    generateUniqueShuffledSequence(array, previousSequences) {
+    old_generateUniqueShuffledSequence(array, previousSequences) {
     const shuffled = [...array];
     let isUnique = false;    
     while (!isUnique) {
@@ -1871,7 +1871,7 @@ class _Tables
     }
 
     
-    working_generateUniqueShuffledSequence(array, previousSequences, maxAttempts = 5) {
+    generateUniqueShuffledSequence(array, previousSequences, maxAttempts = 5) {
         let attempts = 0;
         while (attempts <= maxAttempts) {
             const shuffled = [...array];
