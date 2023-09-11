@@ -1960,7 +1960,7 @@ module.exports = {
     sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 
     joinTournamentV2: async function (params, entry_Fee, myId, user, retryCount = 0) {
-        params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId', 'gameTime', 'turnTime']);
+        params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId', 'gameTime', 'turnTime', 'payoutConfig']);
         if (!params || !myId || _.isEmpty(params.no_of_players) || _.isEmpty(params.room_fee)) {
             return {
                 callback: {

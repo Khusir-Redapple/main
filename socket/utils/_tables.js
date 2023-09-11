@@ -31,6 +31,7 @@ class _Tables
                 room_fee: table.room_fee,
                 win_amount: table.win_amount,
                 totalWinning: table.totalWinning,
+                payoutConfig : table.payoutConfig,
                 players_done: 0,
                 players_won: 0,
                 current_turn: 0,

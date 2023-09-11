@@ -96,6 +96,7 @@ module.exports = function (io, bullQueue) {
                         "current_turn": myRoom.current_turn,
                         "current_turn_type": myRoom.current_turn_type,
                         "no_of_players": parseInt(myRoom.no_of_players),
+                        "payoutConfig" : myRoom.payoutConfig,
                         "users" : compressedUsersRes,
                         "entryFee": myRoom.entryFee,
                         "turn_time": myRoom.turn_time,
@@ -354,6 +355,7 @@ module.exports = function (io, bullQueue) {
             params.winningAmount = payout.payoutConfig;
             params.totalWinning = payout.totalWinning;
             params.lobbyId = verifyUser.lobbyId;
+            params.payoutConfig = verifyUser.payoutConfig;
             params.entryFee = 0;
             if('entryFee' in verifyUser) { params.entryFee = verifyUser.entryFee };
             // to setup individual game time for room
@@ -840,6 +842,7 @@ module.exports = function (io, bullQueue) {
             tableData.current_turn_type = start.table.current_turn_type;
             tableData.totalWinning = start.table.totalWinning;
             tableData.no_of_players = start.table.no_of_players;
+            tableData.payoutConfig = start.table.payoutConfig;
             tableData.entryFee = start.table.entryFee;
             tableData.current_turn = start.table.current_turn;
             tableData.players_done = parseInt(start.table.players_done);
