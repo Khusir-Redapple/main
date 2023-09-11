@@ -84,6 +84,10 @@ module.exports = {
          * then user should't get next chance.
          */
         // IF 3 times 6
+        let turnTimer = config.turnTimer;
+        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+        if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
         if (sixCounts == 2 && dices_rolled[0] == 6) {
             // console.log('SCRAP CURRENT DICES & PASS NEXT DICE_ROLL');
             // console.log("1_" + params.room + "_" + myPos + "_" + myRoom)
@@ -132,7 +136,7 @@ module.exports = {
                     tokens: await _tab.getTokens(params.room, myRoom),
                     dice: DICE_ROLLED,
                     dices_rolled: [DICE_ROLLED],
-                    turn_start_at: config.turnTimer,
+                    turn_start_at: turnTimer,
                     extra_move_animation: false,
                     skip_dice: skipDice,
                     turn_timestamp: myRoom.turn_timestamp,
@@ -173,7 +177,7 @@ module.exports = {
                     room: params.room,
                     position: myPos,
                     dices_rolled: dices_roll,
-                    turn_start_at: config.turnTimer,
+                    turn_start_at: turnTimer,
                     skip_dice: threeSix,
                     turn_timestamp: myRoom.turn_timestamp,
                     server_time: new Date(),
@@ -219,7 +223,7 @@ module.exports = {
                         tokens: await _tab.getTokens(params.room, myRoom),
                         dice: DICE_ROLLED,
                         dices_rolled: [DICE_ROLLED],
-                        turn_start_at: config.turnTimer,
+                        turn_start_at: turnTimer,
                         extra_move_animation: false,
                         skip_dice: skipDice,
                         turn_timestamp: myRoom.turn_timestamp,
@@ -269,7 +273,7 @@ module.exports = {
                         tokens: await _tab.getTokens(params.room, myRoom),
                         dice: DICE_ROLLED,
                         dices_rolled: [DICE_ROLLED],
-                        turn_start_at: config.turnTimer,
+                        turn_start_at: turnTimer,
                         extra_move_animation: false,
                         skip_dice: skipDice,
                         turn_timestamp: myRoom.turn_timestamp,
@@ -300,7 +304,7 @@ module.exports = {
                         tokens: await _tab.getTokens(params.room, myRoom),
                         dice: DICE_ROLLED,
                         dices_rolled: [DICE_ROLLED],
-                        turn_start_at: config.turnTimer,
+                        turn_start_at: turnTimer,
                         extra_move_animation: true,
                         skip_dice: skipDice,
                         turn_timestamp: myRoom.turn_timestamp,
@@ -377,6 +381,10 @@ module.exports = {
             diceVales.push(params.dice_value)
             // const allEqual = diceVales => diceVales.every(v => v === 6);
 
+            let turnTimer = config.turnTimer;
+            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
             // to validate player have passed same value that have in backend.
             let diceValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
             if (diceValue.length !== 0 && params.dice_value != diceValue) {
@@ -406,7 +414,7 @@ module.exports = {
                         tokens: await _tab.getTokens(params.room, myRoom),
                         dice: DICE_ROLLED,
                         dices_rolled: [DICE_ROLLED],
-                        turn_start_at: config.turnTimer,
+                        turn_start_at: turnTimer,
                         extra_move_animation: true,
                         skip_dice: skipDice,
                         turn_timestamp: myRoom.turn_timestamp,
@@ -483,7 +491,7 @@ module.exports = {
                             tokens: await _tab.getTokens(params.room, myRoom),
                             dice: DICE_ROLLED,
                             dices_rolled: [DICE_ROLLED],
-                            turn_start_at: config.turnTimer,
+                            turn_start_at: turnTimer,
                             extra_move_animation: false,
                             skip_dice: skipDice,
                             turn_timestamp: myRoom.turn_timestamp,
@@ -521,7 +529,7 @@ module.exports = {
                             tokens: await _tab.getTokens(params.room, myRoom),
                             dice: DICE_ROLLED,
                             dices_rolled: [DICE_ROLLED],
-                            turn_start_at: config.turnTimer,
+                            turn_start_at: turnTimer,
                             extra_move_animation: false,
                             skip_dice: skipDice,
                             turn_timestamp: myRoom.turn_timestamp,
@@ -724,7 +732,7 @@ module.exports = {
                                     tokens: await _tab.getTokens(params.room, myRoom),
                                     dice: DICE_ROLLED,
                                     dices_rolled: [DICE_ROLLED],
-                                    turn_start_at: config.turnTimer,
+                                    turn_start_at: turnTimer,
                                     extra_move_animation: false,
                                     skip_dice: skipDice,
                                     turn_timestamp: myRoom.turn_timestamp,
@@ -862,7 +870,7 @@ module.exports = {
                                 room: params.room,
                                 position: myPos,
                                 dices_rolled: dices_rolled,
-                                turn_start_at: config.turnTimer,
+                                turn_start_at: turnTimer,
                                 turn_timestamp: myRoom.turn_timestamp,
                                 server_time: new Date(),
                             },
@@ -907,7 +915,7 @@ module.exports = {
                                     tokens: await _tab.getTokens(params.room, myRoom),
                                     dice: DICE_ROLLED,
                                     dices_rolled: [DICE_ROLLED],
-                                    turn_start_at: config.turnTimer,
+                                    turn_start_at: turnTimer,
                                     extra_move_animation: true,
                                     skip_dice: skipDice,
                                     turn_timestamp: myRoom.turn_timestamp,
@@ -955,7 +963,7 @@ module.exports = {
                                     tokens: await _tab.getTokens(params.room, myRoom),
                                     dice: DICE_ROLLED,
                                     dices_rolled: [DICE_ROLLED],
-                                    turn_start_at: config.turnTimer,
+                                    turn_start_at: turnTimer,
                                     extra_move_animation: false,
                                     skip_dice: skipDice,
                                     turn_timestamp: myRoom.turn_timestamp,
@@ -1084,7 +1092,10 @@ module.exports = {
             };                 
         var rez = await _tab.leave(params.room, id, myRoom);
         // console.log('LEAVE RES', rez); //2|socket  | [2022-04-13T11:01:02.572] [INFO] default - LEAVE RES { res: false, flag: 1, remove: true }
- 
+        let turnTimer = config.turnTimer;
+        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+        if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
         if (params && params.gameNotStarted && params.gameNotStarted == 'true')
         {
             // this.refundMoney(tableD,id);
@@ -1292,7 +1303,7 @@ module.exports = {
                             tokens: _tab.getToken,
                             dices_rolled: [DICE_ROLLED],
                             dice: DICE_ROLLED,
-                            turn_start_at: config.turnTimer,
+                            turn_start_at: turnTimer,
                             extra_move_animation: false,
                             skip_dice: skipDice,
                             turn_timestamp: myRoom.turn_timestamp,
@@ -1346,7 +1357,7 @@ module.exports = {
                                 tokens: await _tab.getTokens(params.room, myRoom),
                                 dice: DICE_ROLLED,
                                 dices_rolled: [DICE_ROLLED],
-                                turn_start_at: config.turnTimer,
+                                turn_start_at: turnTimer,
                                 extra_move_animation: false,
                                 skip_dice: skipDice,
                                 turn_timestamp: myRoom.turn_timestamp,
@@ -1365,7 +1376,11 @@ module.exports = {
 
     //Skip Turn
     skipTurn: async function (params, id, myRoom, gamePlayData) {
-        console.log('Skip Turn Request', params);
+        
+        let turnTimer = config.turnTimer;
+        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+        if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+        
         if (!params || !params.room) {
             return {
                 callback: {
@@ -1567,7 +1582,7 @@ module.exports = {
                                         tokens: await _tab.getTokens(params.room, myRoom),
                                         dice: DICE_ROLLED,
                                         dices_rolled: [DICE_ROLLED],
-                                        turn_start_at: config.turnTimer,
+                                        turn_start_at: turnTimer,
                                         extra_move_animation: false,
                                         skip_dice: skipDice,
                                         turn_timestamp: myRoom.turn_timestamp,
@@ -1611,7 +1626,7 @@ module.exports = {
                                             tokens: await _tab.getTokens(params.room, myRoom),
                                             dice: DICE_ROLLED,
                                             dices_rolled: [DICE_ROLLED],
-                                            turn_start_at: config.turnTimer,
+                                            turn_start_at: turnTimer,
                                             extra_move_animation: false,
                                             skip_dice: skipDice,
                                             turn_timestamp: myRoom.turn_timestamp,
@@ -1678,7 +1693,7 @@ module.exports = {
                                 tokens: await _tab.getTokens(params.room, myRoom),
                                 dice: DICE_ROLLED,
                                 dices_rolled: [DICE_ROLLED],
-                                turn_start_at: config.turnTimer,
+                                turn_start_at: turnTimer,
                                 extra_move_animation: true,
                                 skip_dice: skipDice,
                                 turn_timestamp: myRoom.turn_timestamp,
@@ -1721,7 +1736,7 @@ module.exports = {
                                 tokens: await _tab.getTokens(params.room, myRoom),
                                 dice: DICE_ROLLED,
                                 dices_rolled: [DICE_ROLLED],
-                                turn_start_at: config.turnTimer,
+                                turn_start_at: turnTimer,
                                 extra_move_animation: false,
                                 skip_dice: skipDice,
                                 turn_timestamp: myRoom.turn_timestamp,
@@ -1786,12 +1801,16 @@ module.exports = {
                 tableD.game_started_at = new Date().getTime();
             }
             await redisCache.addToRedis(`table_${params.room}`, tableD);
-            // console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at), tableD.game_started_at)
-            let timeToAdd = new Date(new Date().getTime() + config.gameTime * 60000);
+            // console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at), tableD.game_started_at)           
+            let configGameTime = config.gameTime;
+            if('gameTime' in tableD) {
+                configGameTime = tableD.gameTime;
+            }
+            let timeToAdd = new Date(new Date().getTime() + configGameTime * 60000);
             var seconds = (timeToAdd - new Date().getTime()) / 1000;
             // console.log(timeToAdd, new Date().getTime(), seconds)
             // start.timeToCompleteGame = seconds;
-            start.timeToCompleteGame = config.gameTime * 60;
+            start.timeToCompleteGame = configGameTime * 60;
         }
         return start;
         // let returnStart = false;
@@ -1941,7 +1960,7 @@ module.exports = {
     sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 
     joinTournamentV2: async function (params, entry_Fee, myId, user, retryCount = 0) {
-        params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId']);
+        params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId', 'gameTime', 'turnTime']);
         if (!params || !myId || _.isEmpty(params.no_of_players) || _.isEmpty(params.room_fee)) {
             return {
                 callback: {
@@ -1950,7 +1969,6 @@ module.exports = {
                 },
             };
         }
-
         //check valid user and valid no of user
         if (!user || !config.noOfPlayersInTournament.includes(parseInt(params.no_of_players))) {
             return {
@@ -2088,7 +2106,6 @@ module.exports = {
             //     room: room_code,
             // });
             tableX = await redisCache.getRecordsByKeyRedis(`table_${room_code}`);
-            
             if (!tableX) {
                 return {
                     callback: {
@@ -2113,13 +2130,18 @@ module.exports = {
         myRoom = seatOnTable.table;
         if (seatOnTable) {
             await redisCache.addToRedis('user_id'+myId, room_code);
+
+            let turnTimer = config.turnTimer;
+            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
             var callbackRes = {
                 status: 1,
                 message: 'Done',
                 table: seatOnTable.table,
                 position: seatOnTable.pos,
                 timerStart: timerStart,
-                default_diceroll_timer: config.turnTimer // bugg_no_65
+                default_diceroll_timer: turnTimer // bugg_no_65
             };
 
             var player = {

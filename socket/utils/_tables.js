@@ -164,7 +164,7 @@ class _Tables
     }
 
     //Seat on tournament table
-    seatOnTableforTourney(room, user, optional, myRoom)
+    async seatOnTableforTourney(room, user, optional, myRoom)
     {
         let filteredTable = myRoom;
         if (filteredTable)
@@ -172,8 +172,17 @@ class _Tables
             let count = 0;
             let noPlayers = filteredTable.no_of_players;
             // adding two property for gameData.
-            filteredTable.turn_time = config.turnTimer;
-            filteredTable.timeToCompleteGame = config.gameTime * 60;
+
+            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            let configGameTime = config.gameTime;
+            if('gameTime' in tableData) {
+                configGameTime = tableData.gameTime;
+            }
+            let turnTimer = config.turnTimer;            
+            if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
+            filteredTable.turn_time = turnTimer;
+            filteredTable.timeToCompleteGame = configGameTime * 60;
             for (var pl = 0; pl < 4; pl++)
              if (filteredTable.users[pl] && filteredTable.users[pl].is_active) 
                  count++;
@@ -231,7 +240,7 @@ class _Tables
         return false;
     }
 
-    alreadyPlayingTable(id, myRoom)
+    async alreadyPlayingTable(id, myRoom)
     {
         // for logDNA logger
         logger = {
@@ -252,13 +261,23 @@ class _Tables
                         var diff = (curr_ - myRoom.turn_start_at) / 1000;
                         var diff_ = (curr_ - myRoom.created_at) / 1000;
                         var diffT = (curr_ - myRoom.game_started_at) / 1000;
-                        let timeToAdd = config.gameTime * 60;
+                        
+                        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                        let configGameTime = config.gameTime;
+                        if('gameTime' in tableData) {
+                            configGameTime = tableData.gameTime;
+                        }
+
+                        let turnTimer = config.turnTimer;
+                        if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
+                        let timeToAdd = configGameTime * 60;
                         // let gamecompleteTime = timeToAdd.getTime() - curr_ ;
                         // console.log('[alreadyPlayingTable]- ', curr_, myRoom.turn_start_at, 30 - diff, timeToAdd, diffT, timeToAdd - diffT);
                         var rez = {
                             status: 1,
                             table: myRoom,
-                            turn_start_at: config.turnTimer - diff,//10 - diff,
+                            turn_start_at: turnTimer - diff,//10 - diff,
                             timerStart: 60 - diff_,
                             game_started: !(myRoom.turn_start_at == 0),
                             current_turn: myRoom.current_turn,
@@ -267,7 +286,7 @@ class _Tables
                             dices_rolled: myRoom.users[myRoom.current_turn].dices_rolled,
                             // timeToCompleteGame: timeToAdd + 8 - diffT,
                             timeToCompleteGame: timeToAdd,
-                            default_diceroll_timer: config.turnTimer - diff // bug_no_ 65
+                            default_diceroll_timer: turnTimer - diff // bug_no_ 65
                         };
                         return rez;
                     }
@@ -423,7 +442,14 @@ class _Tables
             // To convert New Date() getTime to Second.
             let timeInsecond = (new Date().getTime() / 1000) - (gameStartTime / 1000);
             if (timeInsecond < 0) timeInsecond = 0;
-            let timer = config.gameTime * 60 - timeInsecond;
+
+            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            let configGameTime = config.gameTime;
+            if('gameTime' in tableData) {
+                configGameTime = tableData.gameTime;
+            }
+
+            let timer = configGameTime * 60 - timeInsecond;
             if(timer < 0){
                 timer = 0.0;
             }
@@ -440,6 +466,10 @@ class _Tables
                 if (!canStart) return false;
                 var dt = new Date();
                 dt.setSeconds(dt.getSeconds() + 4);
+                let turnTimer = config.turnTimer;
+                let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
                 for (let pl = 0; pl < myRoom.users.length; pl++)
                 {
                     if (myRoom.users[pl].is_active)
@@ -473,10 +503,10 @@ class _Tables
                             room: myRoom.room,
                             table: myRoom,
                             dice: DICE_ROLLED,
-                            turn_start_at: config.turnTimer,
+                            turn_start_at: turnTimer,
                             turn_timestamp : new Date(),
                             possition: pl,
-                            default_diceroll_timer: config.turnTimer // bug_no_65
+                            default_diceroll_timer: turnTimer // bug_no_65
                         };
                         this.sendToSqsAndResetGamePlayData(room,myRoom,gamePlayData,pl);
                         return resObj;
@@ -1048,7 +1078,12 @@ class _Tables
             let seconds = 0;
             let remainingTime = 0;
             if(time > 0) {
-                remainingTime = config.gameTime * 60 - time;
+                let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                let configGameTime = config.gameTime;
+                if('gameTime' in tableData) {
+                    configGameTime = tableData.gameTime;
+                }
+                remainingTime = configGameTime * 60 - time;
                 minutes = Math.floor(Math.abs(remainingTime) / 60);
                 seconds = Math.abs(remainingTime) - Math.abs(minutes) * 60;
             } 
@@ -1067,12 +1102,20 @@ class _Tables
         let currentTime = new Date().getTime();
         let timeDiff = currentTime - turnStarted;
         let pawnTapTime = (timeDiff/1000).toFixed(2);
-        if(pawnTapTime > 10){
+
+        // dynamic turn time
+        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+        let configGameTime = config.gameTime;
+        if('turnTime' in tableData) {
+            configGameTime = tableData.turnTime;
+        }
+        
+        if(pawnTapTime > configGameTime){
             //return "10";
             return "0";
         } else {
            //return pawnTapTime;
-            return (10 - pawnTapTime).toFixed(2);
+            return (configGameTime - pawnTapTime).toFixed(2);
         }
     }
 
