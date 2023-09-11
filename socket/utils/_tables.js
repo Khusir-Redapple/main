@@ -70,8 +70,6 @@ class _Tables
             const previousSequences = new Set();
             for (var pl = 0; pl < 4; pl++)
             {
-                
-                console.log('orginal dice value', original_dice_value);
                 let random_number = Math.floor(Math.random() * colour.length);
                 let random_colour = colour[random_number];
                 colour.splice(random_number, 1);
@@ -81,11 +79,9 @@ class _Tables
                 if(pl == 0) {
                     //randomRumber = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                     randomRumber = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
-                    console.log('output for p1', randomRumber);
                 } else {
                     //shuffleNumberForOtherPlayer = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                     shuffleNumberForOtherPlayer = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
-                    console.log('output for p2', shuffleNumberForOtherPlayer);
                 }                
                 table_i.users[pl] = {
                     id: '',
@@ -1885,7 +1881,7 @@ class _Tables
      *  checking for consecutive repeats and shuffling elements as needed to satisfy the condition.
      */
     rearrangeArrayWithoutConsecutiveRepeats(diceValue) {
-        
+
         const originalDiceValue = [...diceValue];
         const result = [];
 
