@@ -1958,6 +1958,7 @@ class _Tables
     }
 
     rearrangeArrayWithoutConsecutiveRepeats(arr) {
+        console.log('input params', arr);
         const originalCopy = arr.slice(); // Create a copy of the original array
         const result = [];
       
@@ -1980,7 +1981,7 @@ class _Tables
             arr.splice(nextIndex, 1);
           }
         }
-      
+        console.log('output params', result);
         return result;
     }
       
