@@ -1928,41 +1928,47 @@ class _Tables
      *  checking for consecutive repeats and shuffling elements as needed to satisfy the condition.
      */
     rearrangeArrayWithoutConsecutiveRepeats(diceValue) {
-        const originalSum = diceValue.reduce((acc, val) => acc + val, 0);
-        let shuffledDiceValue = [...diceValue];
-        this.shuffleArray(shuffledDiceValue);
+        const originalDiceValue = [...diceValue];
+        const result = [];
 
-        while (true) {
-          let consecutiveCount = 1;
-          let lastValue = shuffledDiceValue[0];
-      
-          for (let i = 1; i < shuffledDiceValue.length; i++) {
-            if (shuffledDiceValue[i] === lastValue) {
-              consecutiveCount++;
-            } else {
-              consecutiveCount = 1;
-              lastValue = shuffledDiceValue[i];
+        while (originalDiceValue.length > 0) {
+            let index = this.getRandomIndex(originalDiceValue);
+            let currentValue = originalDiceValue[index];
+
+            if (result.length >= 2 && result[result.length - 1] === currentValue && result[result.length - 2] === currentValue) {
+            // If the current value would create three consecutive repetitions, find a different value
+            let found = false;
+            for (let i = 0; i < originalDiceValue.length; i++) {
+                if (originalDiceValue[i] !== currentValue) {
+                index = i;
+                currentValue = originalDiceValue[i];
+                found = true;
+                break;
+                }
             }
-      
-            if (consecutiveCount > 2) {
-              // Too many consecutive repetitions, shuffle and retry
-              this.shuffleArray(shuffledDiceValue);
-              break;
+
+            if (!found) {
+                // If no different value can be found, start over
+                return rearrangeArrayWithoutConsecutiveRepeats(diceValue);
             }
-          }
-      
-          if (shuffledDiceValue.reduce((acc, val) => acc + val, 0) === originalSum) {
-            // The sum is correct, and there are no more than two consecutive repetitions
-            break;
-          }
-      
-          // Shuffle again and retry
-          this.shuffleArray(shuffledDiceValue);
+            }
+
+            result.push(currentValue);
+            originalDiceValue.splice(index, 1);
         }
-        
-        return shuffledDiceValue;
+
+        // Ensure that the last two values are not the same
+        if (result[result.length - 1] === result[result.length - 2]) {
+            const lastValue = result.pop();
+            result.splice(this.getRandomIndex(result) + 1, 0, lastValue);
+        }
+
+        return result;
     }
-     
+    
+    getRandomIndex(arr) {
+        return Math.floor(Math.random() * arr.length);
+    }
     /**
      *  The function used to remove room object from Global Object after given time frame.
      *  The function invocking from corn job.
