@@ -76,11 +76,11 @@ class _Tables
                 const random = Math.floor(Math.random() * (20 - 10)) + 10;
                 // To setup random number to 0 position index user.
                 if(pl == 0) {
-                    randomRumberNew = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                    randomRumber = this.rearrangeArrayWithoutConsecutiveRepeats(randomRumberNew);
+                    //randomRumberNew = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                    randomRumber = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                 } else {
-                    shuffleNumberForOther = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                    shuffleNumberForOtherPlayer = this.rearrangeArrayWithoutConsecutiveRepeats(shuffleNumberForOther);
+                    //shuffleNumberForOther = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                    shuffleNumberForOtherPlayer = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                 }                
                 table_i.users[pl] = {
                     id: '',
@@ -1736,26 +1736,26 @@ class _Tables
                 // 80 percentage of number will generate 1 to 5 and 20 percentage generate 6.
                 const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
                 const previousSequences = new Set();
-                let player_0 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                let new_player_0 = this.rearrangeArrayWithoutConsecutiveRepeats(player_0);
+                //let player_0 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                let new_player_0 = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                 // storing number for player One
                 //table.users[0].diceValue = JSON.parse(JSON.stringify(player_0));
                 console.log(typeof table.users[0].diceValue);
                 table.users[0].diceValue.push(...new_player_0);
                 // storing number for player Two
-                let player_1 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                //let player_1 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 //table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
-                let new_player_1 = this.rearrangeArrayWithoutConsecutiveRepeats(player_1);
+                let new_player_1 = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                  table.users[1].diceValue.push(...new_player_1);                
                 // storing number for player Three
-                let player_2 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                //let player_2 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 //table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
-                let new_player_2 = this.rearrangeArrayWithoutConsecutiveRepeats(player_2);
+                let new_player_2 = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                  table.users[2].diceValue.push(...new_player_2);                
                 // storing number for player four
-                let player_3 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                //let player_3 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 //table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
-                let new_player_3 = this.rearrangeArrayWithoutConsecutiveRepeats(player_3);
+                let new_player_3 = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                  table.users[3].diceValue.push(...new_player_3);
                 
                 
