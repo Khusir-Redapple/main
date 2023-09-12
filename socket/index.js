@@ -882,7 +882,7 @@ module.exports = function (io, bullQueue) {
         }
         io.to(start.room).emit('gameInitiated', start);
         // Pause execution for 3 seconds
-        await new Promise(resolve => setTimeout(resolve, 4000));
+        await new Promise(resolve => setTimeout(resolve, 1500));
         io.to(start.room).emit('startGame', start);
         // To emmit score_updated with default value.
         let user_points = start.table.users.map((user) =>

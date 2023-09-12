@@ -1790,7 +1790,7 @@ module.exports = {
             // if game start & move happend at tie time then
             let currentData = new Date();
             // currentData.setSeconds(currentData.getSeconds() - 1);
-            currentData.setSeconds(currentData.getSeconds() + 3);
+            currentData.setSeconds(currentData.getSeconds() + 2.5);
 
             let time = new Date(currentData).getTime();
             tableD.game_started_at = '-1';
