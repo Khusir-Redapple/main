@@ -880,6 +880,9 @@ module.exports = function (io, bullQueue) {
             start.table = tableData;
             start.table.users = usersData;
         }
+        io.to(start.room).emit('gameInitiated', {status: 0});
+        // Pause execution for 3 seconds
+        await new Promise(resolve => setTimeout(resolve, 3000));
         io.to(start.room).emit('startGame', start);
         // To emmit score_updated with default value.
         let user_points = start.table.users.map((user) =>
@@ -914,6 +917,9 @@ module.exports = function (io, bullQueue) {
         );
     }
 
+    async function delayStartTimebyThreeSeconds() {
+
+    }
     async function calculateWinAmount(amount, payoutConfig) {
         let room_fee = amount;
         let payConfig = payoutConfig;

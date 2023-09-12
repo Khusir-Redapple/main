@@ -1789,16 +1789,29 @@ module.exports = {
         {
             // if game start & move happend at tie time then
             let currentData = new Date();
-            currentData.setSeconds(currentData.getSeconds() - 1);
+            // currentData.setSeconds(currentData.getSeconds() - 1);
+            currentData.setSeconds(currentData.getSeconds() - 4000);
+
             let time = new Date(currentData).getTime();
             tableD.game_started_at = '-1';
-            tableD.turn_start_at = new Date().getTime();
+
+            let turnTime = new Date();
+            const newTurnTime = new Date(turnTime.getTime() - 3000);
+            tableD.turn_start_at = new Date(newTurnTime).getTime();
+
+            // tableD.turn_start_at = new Date().getTime();
             myRoom.game_started_at = time;
             // await tableD.save();
 
             // to track game started time.
             if(start) {
-                tableD.game_started_at = new Date().getTime();
+                // Get the current date and time
+                const currentDate = new Date();
+                // Subtract 3 seconds
+                const newDate = new Date(currentDate.getTime() - 3000);
+                tableD.game_started_at = new Date(newDate).getTime();
+
+                //tableD.game_started_at = new Date().getTime();
             }
             await redisCache.addToRedis(`table_${params.room}`, tableD);
             // console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at), tableD.game_started_at)           
