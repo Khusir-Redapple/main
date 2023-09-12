@@ -48,10 +48,7 @@ class _Tables
             let colour = [0, 1, 2, 3];
             // To setup prior dice value for users.
             let randomRumber;
-            let randomRumberNew;
             let shuffleNumberForOtherPlayer;
-            let shuffleNumberForOther;
-
             let dice_range;
             (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (22 - 15)) + 15);
            
@@ -1802,18 +1799,6 @@ class _Tables
                 //table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
                 let new_player_3 = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                  table.users[3].diceValue.push(...new_player_3);
-                
-                
-                
-                // To generate dice value between 10 to 20 range.
-                // randomNumber = this.randomNumberGenerator(random);
-                // table.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
-                // let player_1 = this.fisherShuffleGenerator(randomNumber);
-                // table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
-                // let player_2 = this.fisherShuffleGenerator(randomNumber);
-                // table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
-                // let player_3 = this.fisherShuffleGenerator(randomNumber);
-                // table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
             }
              // pop from top of array and update the property value.
             returnDiceValue = table.users[idx].diceValue.shift();
