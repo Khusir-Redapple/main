@@ -1790,13 +1790,13 @@ module.exports = {
             // if game start & move happend at tie time then
             let currentData = new Date();
             // currentData.setSeconds(currentData.getSeconds() - 1);
-            currentData.setSeconds(currentData.getSeconds() - 1);
+            currentData.setSeconds(currentData.getSeconds() + 4);
 
             let time = new Date(currentData).getTime();
             tableD.game_started_at = '-1';
 
             let turnTime = new Date();
-            const newTurnTime = new Date(turnTime.getTime() - 3);
+            const newTurnTime = new Date(turnTime.getTime() + 3);
             tableD.turn_start_at = new Date(newTurnTime).getTime();
 
             // tableD.turn_start_at = new Date().getTime();
@@ -1808,7 +1808,7 @@ module.exports = {
                 // Get the current date and time
                 const currentDate = new Date();
                 // Subtract 3 seconds
-                const newDate = new Date(currentDate.getTime() - 3);
+                const newDate = new Date(currentDate.getTime() + 3);
                 tableD.game_started_at = new Date(newDate).getTime();
 
                 //tableD.game_started_at = new Date().getTime();
