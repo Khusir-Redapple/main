@@ -355,8 +355,15 @@ module.exports = function (io, bullQueue) {
             params.winningAmount = payout.payoutConfig;
             params.totalWinning = payout.totalWinning;
             params.lobbyId = verifyUser.lobbyId;
-            // object to array convery for payoutConfig
-            params.payoutConfig = Object.values(verifyUser.payoutConfig);            
+            // object to array convert for payoutConfig           
+            const payoutArray = [];
+            for (const key in verifyUser.payoutConfig) {
+                if (verifyUser.payoutConfig.hasOwnProperty(key)) {
+                    const value = verifyUser.payoutConfig[key];
+                    payoutArray.push(String(value));
+                }
+            }
+            params.payoutConfig = payoutArray;
             params.entryFee = 0;
             if('entryFee' in verifyUser) { params.entryFee = verifyUser.entryFee };
             // to setup individual game time for room
