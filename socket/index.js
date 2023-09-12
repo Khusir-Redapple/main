@@ -880,7 +880,7 @@ module.exports = function (io, bullQueue) {
             start.table = tableData;
             start.table.users = usersData;
         }
-        io.to(start.room).emit('gameInitiated', {status: 0});
+        io.to(start.room).emit('gameInitiated', start);
         // Pause execution for 3 seconds
         await new Promise(resolve => setTimeout(resolve, 3000));
         io.to(start.room).emit('startGame', start);
