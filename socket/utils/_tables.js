@@ -5,6 +5,10 @@ const logDNA        = require('../../api/service/logDNA');
 const timeLib       = require('../helper/timeLib');
 const redisCache    = require('../../api/service/redis-cache');
 // const Table         = require('./../../api/models/table');
+const fortuna       = require('../../api/service/fortuna');
+fortuna.initialized = false;
+fortuna.init({ timeBasedEntropy: true, accumulateTimeout: 10 });
+
 let logger          = {};
 class _Tables
 {
@@ -671,7 +675,8 @@ class _Tables
     }
 
     getRandomDiceValue(){
-        return Math.floor(Math.random() * 5) + 1;
+        // return Math.floor(Math.random() * 5) + 1;
+        return fortuna.diceRoll();
     }
 
     getSix(room, id, myRoom)
@@ -1836,7 +1841,8 @@ class _Tables
         }
         // Generate additional random numbers to reach a total of dice_range
         while (result.length < dice_range) {
-          const randomNumber = Math.floor(Math.random() * 6) + 1; // Generates a random number between 1 and 6 (inclusive)
+          // const randomNumber = Math.floor(Math.random() * 6) + 1; // Generates a random number between 1 and 6 (inclusive)
+          const randomNumber = fortuna.diceRoll();
           result.push(randomNumber);
         }
         // Shuffle the array to randomize the order
