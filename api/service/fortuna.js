@@ -10,7 +10,7 @@ const nodeCryptoJS = require('node-cryptojs-aes');
 const crypto = require('crypto').webcrypto;
 const CryptoJS = nodeCryptoJS.CryptoJS;
 
-// const fortuna = exports;
+const fortuna = exports;
 fortuna.initialized = false;
 
 fortuna.init = (options = {}) => {
