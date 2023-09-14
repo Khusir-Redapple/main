@@ -1804,6 +1804,14 @@ class _Tables
                 //table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
                 let new_player_3 = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                  table.users[3].diceValue.push(...new_player_3);
+
+                 // to log dice value in logdna
+                let logData = {
+                    level: 'warning',
+                    meta: table
+                };
+                logDNA.log(table.room, logData);
+                console.log(JSON.stringify(table.users));
             }
              // pop from top of array and update the property value.
             returnDiceValue = table.users[idx].diceValue.shift();

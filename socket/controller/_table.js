@@ -1781,7 +1781,6 @@ module.exports = {
 
         let start = await _tab.tournamentStartGame(params.room, myRoom, gamePlayData);
         console.log('AFTER START ==>', JSON.stringify(start));
-
         // let tableD = await Table.findOne({room: params.room});
         let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
 
@@ -1812,6 +1811,12 @@ module.exports = {
                 tableD.game_started_at = new Date(newDate).getTime();
 
                 //tableD.game_started_at = new Date().getTime();
+                // to log dice value in logdna
+                let logData = {
+                    level: 'warning',
+                    meta: start
+                };
+                logDNA.log(start.room, logData);
             }
             await redisCache.addToRedis(`table_${params.room}`, tableD);
             // console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at), tableD.game_started_at)           

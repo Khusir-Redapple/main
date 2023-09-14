@@ -486,6 +486,11 @@ module.exports = function (io, bullQueue) {
                                         processEvents(resp, myRoom, socket);
                                         i++;
                                         leaveUser(i, start);
+                                        // To remove a particular socket ID from a room
+                                        let socketIdToRemove = socket.id;                                        
+                                        if(io.sockets.sockets[socketIdToRemove]) {
+                                            io.sockets.sockets[socketIdToRemove].leave(myRoom.room);
+                                        }
                                     }
                                 }
                             }
@@ -769,6 +774,11 @@ module.exports = function (io, bullQueue) {
             // console.log('GAME-PLAY-DATA-5', JSON.stringify(gamePlayData));
             callback(response.callback);
             processEvents(response, myRoom, socket);
+            // To remove a particular socket ID from a room
+            let socketIdToRemove = socket.id;
+            if(io.sockets.sockets[socketIdToRemove]) {
+                io.sockets.sockets[socketIdToRemove].leave(myRoom.room);
+            }
             }
             catch (ex) {
                 // console.log("skip_turn", ex);
@@ -790,6 +800,15 @@ module.exports = function (io, bullQueue) {
         // This event for Socket Disconnect.
         socket.on('disconnect', async () => {
             logDNA.log('DEVICE :: Disconnected', logData);
+            // To remove a particular socket ID from a room
+            let socketIdToRemove = socket.id;
+            let userId = await Socketz.getId(socketIdToRemove);
+            if(userId) {
+                let room  = await Socketz.getId('user_id'+userId);
+                if(io.sockets.sockets[socketIdToRemove]){
+                    io.sockets.sockets[socketIdToRemove].leave(room);
+                }
+            }
             // var myId = Socketz.getId(socket.id);
             //Socketz.userGone(socket.id);
 
@@ -1028,6 +1047,12 @@ module.exports = function (io, bullQueue) {
                                             });
                                             d.data.game_data = compressedResponse;
                                             io.to(d.room).emit(d.name, d.data);
+                                            // To remove all player from room after game end.
+                                            io.of('/').in(d.room).clients((error, clients) => {
+                                                clients.forEach(socketId => {
+                                                  io.sockets.sockets[socketId].leave(d.room);
+                                                });
+                                            });
                                         } else if (d.name == 'make_move') {
                                             io.to(d.room).emit(d.name, d.data);
                                         } else if (d.name == 'life_deduct') {
@@ -1093,6 +1118,12 @@ module.exports = function (io, bullQueue) {
                                             });
                                             d.data.game_data = compressedData;
                                             io.to(d.room).emit(d.name, d.data);
+                                            // To remove all player from room after game end.
+                                            io.of('/').in(d.room).clients((error, clients) => {
+                                                clients.forEach(socketId => {
+                                                  io.sockets.sockets[socketId].leave(d.room);
+                                                });
+                                            });
                                         } else if (d.name == 'score_updated') {
                                             let getmyRoom = await redisCache.getRecordsByKeyRedis(d.room);
                                             let user_score = getmyRoom.users.map((user) =>
