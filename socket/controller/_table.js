@@ -1814,9 +1814,9 @@ module.exports = {
                 // to log dice value in logdna
                 let logData = {
                     level: 'warning',
-                    meta: start
+                    meta: start.table.users
                 };
-                logDNA.log(start.room, logData);
+                logDNA.log(`${start.room}_set_0`, logData);
             }
             await redisCache.addToRedis(`table_${params.room}`, tableD);
             // console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at), tableD.game_started_at)           

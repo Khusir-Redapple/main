@@ -1808,9 +1808,9 @@ class _Tables
                  // to log dice value in logdna
                 let logData = {
                     level: 'warning',
-                    meta: table
+                    meta: table.users
                 };
-                logDNA.log(table.room, logData);
+                logDNA.log(`${table.room}_set_${myRoom.no_of_diceSet}`, logData);
                 console.log(JSON.stringify(table.users));
             }
              // pop from top of array and update the property value.
