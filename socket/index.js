@@ -1050,7 +1050,11 @@ module.exports = function (io, bullQueue) {
                                             // To remove all player from room after game end.
                                             io.of('/').in(d.room).clients((error, clients) => {
                                                 clients.forEach(socketId => {
-                                                  io.sockets.sockets[socketId].leave(d.room);
+                                                //   io.sockets.sockets[socketId].leave(d.room);
+                                                const socket = io.sockets.sockets[socketId];
+                                                if (socket) {
+                                                    socket.leave(d.room);
+                                                }
                                                 });
                                             });
                                         } else if (d.name == 'make_move') {
@@ -1121,7 +1125,11 @@ module.exports = function (io, bullQueue) {
                                             // To remove all player from room after game end.
                                             io.of('/').in(d.room).clients((error, clients) => {
                                                 clients.forEach(socketId => {
-                                                  io.sockets.sockets[socketId].leave(d.room);
+                                                //   io.sockets.sockets[socketId].leave(d.room);
+                                                const socket = io.sockets.sockets[socketId];
+                                                if (socket) {
+                                                    socket.leave(d.room);
+                                                }
                                                 });
                                             });
                                         } else if (d.name == 'score_updated') {
