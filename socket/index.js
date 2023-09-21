@@ -1298,7 +1298,7 @@ module.exports = function (io, bullQueue) {
             } else {
                 let turnTimer = config.turnTimer;
                 let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
-                if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+                if(tableData && 'turnTime' in tableData) { turnTimer = tableData.turnTime; }
                 var currTime = parseInt(new Date().getTime());
                 if (currTime - checkTabel.start_at > (turnTimer + 2) * 1000) {
                     var id_of_current_turn = await _TableInstance.getMyIdByPossition(
