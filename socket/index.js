@@ -638,7 +638,7 @@ module.exports = function (io, bullQueue) {
                 // console.log('GAME-PLAY-DATA-3', JSON.stringify(gamePlayData));
                 let turnTimer = config.turnTimer;
                 let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
-                if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+                if(tableData && 'turnTime' in tableData) { turnTimer = tableData.turnTime; }
                 turnTimer += 2;
                 turnTimer = turnTimer * 1000;
 

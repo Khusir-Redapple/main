@@ -1094,7 +1094,7 @@ module.exports = {
         // console.log('LEAVE RES', rez); //2|socket  | [2022-04-13T11:01:02.572] [INFO] default - LEAVE RES { res: false, flag: 1, remove: true }
         let turnTimer = config.turnTimer;
         let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
-        if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+        if(tableData && 'turnTime' in tableData) { turnTimer = tableData.turnTime; }
 
         if (params && params.gameNotStarted && params.gameNotStarted == 'true')
         {
