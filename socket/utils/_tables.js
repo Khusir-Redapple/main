@@ -5,6 +5,10 @@ const logDNA        = require('../../api/service/logDNA');
 const timeLib       = require('../helper/timeLib');
 const redisCache    = require('../../api/service/redis-cache');
 // const Table         = require('./../../api/models/table');
+const fortuna       = require('../../api/service/fortuna');
+fortuna.initialized = false;
+fortuna.init({ timeBasedEntropy: true, accumulateTimeout: 10 });
+
 let logger          = {};
 class _Tables
 {
@@ -31,13 +35,14 @@ class _Tables
                 room_fee: table.room_fee,
                 win_amount: table.win_amount,
                 totalWinning: table.totalWinning,
+                payoutConfig : table.payoutConfig,
                 players_done: 0,
                 players_won: 0,
                 current_turn: 0,
                 current_turn_type: 'roll',
                 turn_start_at: 0,
                 no_of_players: table.no_of_players,
-                //validity : timeLib.calculateExpTime(config.socketUserExpireTime),
+                no_of_diceSet : 0,
                 users: [],
                 lobbyId: table.lobbyId,
                 entryFee : entry_Fee,
@@ -48,10 +53,22 @@ class _Tables
             // To setup prior dice value for users.
             let randomRumber;
             let shuffleNumberForOtherPlayer;
-
             let dice_range;
-            (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (32 - 28)) + 17) : (dice_range = Math.floor(Math.random() * (22 - 18)) + 13);
-            const original_dice_value = this.getCustomizedValue(dice_range);
+            (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (22 - 15)) + 15);
+           
+            let min_no_of_occurance;
+
+            switch (table.no_of_players) {
+                case '2':
+                    min_no_of_occurance = 2;
+                    break;
+                case '4':
+                    min_no_of_occurance = 1;
+                    break;
+                default:
+                    break;
+            }
+            const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
             const previousSequences = new Set();
             for (var pl = 0; pl < 4; pl++)
             {
@@ -62,9 +79,11 @@ class _Tables
                 const random = Math.floor(Math.random() * (20 - 10)) + 10;
                 // To setup random number to 0 position index user.
                 if(pl == 0) {
-                    randomRumber = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                    //randomRumber = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                    randomRumber = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                 } else {
-                    shuffleNumberForOtherPlayer = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                    //shuffleNumberForOtherPlayer = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                    shuffleNumberForOtherPlayer = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                 }                
                 table_i.users[pl] = {
                     id: '',
@@ -147,7 +166,7 @@ class _Tables
     }
 
     //Seat on tournament table
-    seatOnTableforTourney(room, user, optional, myRoom)
+    async seatOnTableforTourney(room, user, optional, myRoom)
     {
         let filteredTable = myRoom;
         if (filteredTable)
@@ -155,8 +174,17 @@ class _Tables
             let count = 0;
             let noPlayers = filteredTable.no_of_players;
             // adding two property for gameData.
-            filteredTable.turn_time = config.turnTimer;
-            filteredTable.timeToCompleteGame = config.gameTime * 60;
+
+            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            let configGameTime = config.gameTime;
+            if('gameTime' in tableData) {
+                configGameTime = tableData.gameTime;
+            }
+            let turnTimer = config.turnTimer;            
+            if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
+            filteredTable.turn_time = turnTimer;
+            filteredTable.timeToCompleteGame = configGameTime * 60;
             for (var pl = 0; pl < 4; pl++)
              if (filteredTable.users[pl] && filteredTable.users[pl].is_active) 
                  count++;
@@ -214,7 +242,7 @@ class _Tables
         return false;
     }
 
-    alreadyPlayingTable(id, myRoom)
+    async alreadyPlayingTable(id, myRoom)
     {
         // for logDNA logger
         logger = {
@@ -235,13 +263,23 @@ class _Tables
                         var diff = (curr_ - myRoom.turn_start_at) / 1000;
                         var diff_ = (curr_ - myRoom.created_at) / 1000;
                         var diffT = (curr_ - myRoom.game_started_at) / 1000;
-                        let timeToAdd = config.gameTime * 60;
+                        
+                        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                        let configGameTime = config.gameTime;
+                        if('gameTime' in tableData) {
+                            configGameTime = tableData.gameTime;
+                        }
+
+                        let turnTimer = config.turnTimer;
+                        if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
+                        let timeToAdd = configGameTime * 60;
                         // let gamecompleteTime = timeToAdd.getTime() - curr_ ;
                         // console.log('[alreadyPlayingTable]- ', curr_, myRoom.turn_start_at, 30 - diff, timeToAdd, diffT, timeToAdd - diffT);
                         var rez = {
                             status: 1,
                             table: myRoom,
-                            turn_start_at: config.turnTimer - diff,//10 - diff,
+                            turn_start_at: turnTimer - diff,//10 - diff,
                             timerStart: 60 - diff_,
                             game_started: !(myRoom.turn_start_at == 0),
                             current_turn: myRoom.current_turn,
@@ -250,7 +288,7 @@ class _Tables
                             dices_rolled: myRoom.users[myRoom.current_turn].dices_rolled,
                             // timeToCompleteGame: timeToAdd + 8 - diffT,
                             timeToCompleteGame: timeToAdd,
-                            default_diceroll_timer: config.turnTimer - diff // bug_no_ 65
+                            default_diceroll_timer: turnTimer - diff // bug_no_ 65
                         };
                         return rez;
                     }
@@ -406,7 +444,14 @@ class _Tables
             // To convert New Date() getTime to Second.
             let timeInsecond = (new Date().getTime() / 1000) - (gameStartTime / 1000);
             if (timeInsecond < 0) timeInsecond = 0;
-            let timer = config.gameTime * 60 - timeInsecond;
+
+            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            let configGameTime = config.gameTime;
+            if('gameTime' in tableData) {
+                configGameTime = tableData.gameTime;
+            }
+
+            let timer = configGameTime * 60 - timeInsecond;
             if(timer < 0){
                 timer = 0.0;
             }
@@ -423,6 +468,10 @@ class _Tables
                 if (!canStart) return false;
                 var dt = new Date();
                 dt.setSeconds(dt.getSeconds() + 4);
+                let turnTimer = config.turnTimer;
+                let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
                 for (let pl = 0; pl < myRoom.users.length; pl++)
                 {
                     if (myRoom.users[pl].is_active)
@@ -437,17 +486,15 @@ class _Tables
                         myRoom.turn_start_at = new Date().getTime(); //new Date().getTime();
                         myRoom.game_started_at = time;
                         myRoom.server_time = new Date();
-                        let DICE_ROLLED_RES = this.rollDice(room, myRoom.users[pl].id, myRoom);
+                        //let DICE_ROLLED_RES = this.rollDice(room, myRoom.users[pl].id, myRoom);
+                        let DICE_ROLLED_RES = this.rollDice(room, pl, myRoom);
                         //console.log('DICE_ROLLED_RES >>', JSON.stringify(DICE_ROLLED_RES));
                         let DICE_ROLLED;
                         if(DICE_ROLLED_RES) {
                             myRoom = DICE_ROLLED_RES.table;
                             DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                         }
-                        myRoom.users[pl].turn = 1;
-
-                        // if (myRoom.users[pl].dices_rolled.length == 0)
-                        // myRoom.users[pl].dices_rolled.push(DICE_ROLLED);                      
+                        myRoom.users[pl].turn = 1;         
                         
                         myRoom.users[pl].dices_rolled = [];
                         myRoom.users[pl].dices_rolled.push(DICE_ROLLED);
@@ -458,10 +505,10 @@ class _Tables
                             room: myRoom.room,
                             table: myRoom,
                             dice: DICE_ROLLED,
-                            turn_start_at: config.turnTimer,
+                            turn_start_at: turnTimer,
                             turn_timestamp : new Date(),
                             possition: pl,
-                            default_diceroll_timer: config.turnTimer // bug_no_65
+                            default_diceroll_timer: turnTimer // bug_no_65
                         };
                         this.sendToSqsAndResetGamePlayData(room,myRoom,gamePlayData,pl);
                         return resObj;
@@ -628,7 +675,8 @@ class _Tables
     }
 
     getRandomDiceValue(){
-        return Math.floor(Math.random() * 5) + 1;
+        // return Math.floor(Math.random() * 5) + 1;
+        return fortuna.diceRoll();
     }
 
     getSix(room, id, myRoom)
@@ -1033,7 +1081,12 @@ class _Tables
             let seconds = 0;
             let remainingTime = 0;
             if(time > 0) {
-                remainingTime = config.gameTime * 60 - time;
+                let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                let configGameTime = config.gameTime;
+                if('gameTime' in tableData) {
+                    configGameTime = tableData.gameTime;
+                }
+                remainingTime = configGameTime * 60 - time;
                 minutes = Math.floor(Math.abs(remainingTime) / 60);
                 seconds = Math.abs(remainingTime) - Math.abs(minutes) * 60;
             } 
@@ -1052,12 +1105,20 @@ class _Tables
         let currentTime = new Date().getTime();
         let timeDiff = currentTime - turnStarted;
         let pawnTapTime = (timeDiff/1000).toFixed(2);
-        if(pawnTapTime > 10){
+
+        // dynamic turn time
+        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+        let configGameTime = config.gameTime;
+        if('turnTime' in tableData) {
+            configGameTime = tableData.turnTime;
+        }
+        
+        if(pawnTapTime > configGameTime){
             //return "10";
             return "0";
         } else {
            //return pawnTapTime;
-            return (10 - pawnTapTime).toFixed(2);
+            return (configGameTime - pawnTapTime).toFixed(2);
         }
     }
 
@@ -1698,42 +1759,59 @@ class _Tables
             let randomNumber    = null;
 
             let table = myRoom;
-            let idx = table.users.findIndex(element => element.id == user_id);
+            // let idx = table.users.findIndex(element => element.id == user_id);
+            let idx = table.users.findIndex(element => element.position == user_id);
+            //console.log('USER IDx', idx);
             // To check if predefined dice value is empty then create set of dice value first.           
-            if(table.users[idx].diceValue.length == 0) {
-                // To generate random dice value range between 10 - 20
-                //const random = Math.floor(Math.random() * (20 - 10)) + 10;
-
-                // random number range for two and four player game.
-                // const twoPlayerRange = Math.floor(Math.random() * (32 - 28)) + 17;
-                // const fourPlayerRange = Math.floor(Math.random() * (22 - 18)) + 13;
+            if(table.users[idx] && table.users[idx].diceValue.length == 0) {
+                // to increase no of set dice value generated.
+                myRoom.no_of_diceSet += 1;
                 let dice_range;
-                (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (32 - 28)) + 17) : (dice_range = Math.floor(Math.random() * (22 - 18)) + 13);
+                let min_no_of_occurance;
+                if(myRoom.no_of_diceSet == 1) {
+                    (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
+                    (myRoom.no_of_players == 2) ? min_no_of_occurance = 2 : min_no_of_occurance = 1;
+                } else if(myRoom.no_of_diceSet == 2){
+                    (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (12 - 8)) + 8) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
+                    (myRoom.no_of_players == 2) ? min_no_of_occurance = 1 : min_no_of_occurance = 1;
+                } else {
+                    // do nothing for now.
+                    (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (12 - 8)) + 8) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
+                    (myRoom.no_of_players == 2) ? min_no_of_occurance = 1 : min_no_of_occurance = 1;
+                }
+
                 // 80 percentage of number will generate 1 to 5 and 20 percentage generate 6.
-                const original_dice_value = this.getCustomizedValue(dice_range);
+                const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
                 const previousSequences = new Set();
-                let player_0 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                //let player_0 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                let new_player_0 = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
                 // storing number for player One
-                table.users[0].diceValue = JSON.parse(JSON.stringify(player_0));
+                //table.users[0].diceValue = JSON.parse(JSON.stringify(player_0));
+                console.log(typeof table.users[0].diceValue);
+                table.users[0].diceValue.push(...new_player_0);
                 // storing number for player Two
-                let player_1 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
+                //let player_1 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                //table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
+                let new_player_1 = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
+                 table.users[1].diceValue.push(...new_player_1);                
                 // storing number for player Three
-                let player_2 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
+                //let player_2 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                //table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
+                let new_player_2 = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
+                 table.users[2].diceValue.push(...new_player_2);                
                 // storing number for player four
-                let player_3 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
-                table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
-                
-                // To generate dice value between 10 to 20 range.
-                // randomNumber = this.randomNumberGenerator(random);
-                // table.users[0].diceValue = JSON.parse(JSON.stringify(randomNumber));
-                // let player_1 = this.fisherShuffleGenerator(randomNumber);
-                // table.users[1].diceValue = JSON.parse(JSON.stringify(player_1));
-                // let player_2 = this.fisherShuffleGenerator(randomNumber);
-                // table.users[2].diceValue = JSON.parse(JSON.stringify(player_2));
-                // let player_3 = this.fisherShuffleGenerator(randomNumber);
-                // table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
+                //let player_3 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
+                //table.users[3].diceValue = JSON.parse(JSON.stringify(player_3));
+                let new_player_3 = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
+                 table.users[3].diceValue.push(...new_player_3);
+
+                 // to log dice value in logdna
+                let logData = {
+                    level: 'warning',
+                    meta: table.users
+                };
+                logDNA.log(`${table.room}_set_${myRoom.no_of_diceSet}`, logData);
+                console.log(JSON.stringify(table.users));
             }
              // pop from top of array and update the property value.
             returnDiceValue = table.users[idx].diceValue.shift();
@@ -1757,35 +1835,30 @@ class _Tables
      * @param {number} dice_range means how many numbers want to generate.
      * @returns {combinedArray} array
      */
-    getCustomizedValue(dice_range) {
-        // const dice_range = 21;
-        // const percent_1_to_5 = 0.95; // 0.95%
-        // const percent_6 = 0.05;      // 0.05% 
-
-        //calculate Six's between 20-40% of dice_range.
-        const random_percent_for_six = Math.random() * (40 - 20) + 20;
-        let percent_6 = Math.round((random_percent_for_six / 100) * dice_range);
-        let percent_1_to_5 = (100 - percent_6);
-        console.log(`percentage of six and non siz ${percent_6} ${percent_1_to_5}`);
-        percent_6 = percent_6/100; // to convert 0.00 format
-        percent_1_to_5 = percent_1_to_5/100; //to convert 0.00 format
-
-        // Calculate the number of times to generate each value
-        const count_1_to_5 = Math.floor(dice_range * percent_1_to_5);
-        const count_6 = Math.floor(dice_range * percent_6);
-
-        // Generate arrays with values
-        const array_1_to_5 = Array.from({ length: count_1_to_5 }, () => Math.floor(Math.random() * 5) + 1);
-        const array_6 = Array.from({ length: count_6 }, () => 6);
-
-        // Combine the arrays and shuffle them
-        const combinedArray = array_1_to_5.concat(array_6);
-        for (let i = combinedArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [combinedArray[i], combinedArray[j]] = [combinedArray[j], combinedArray[i]];
+    getCustomizedValue(dice_range, no_of_occurance) {
+        // Create an array to store the result
+        const result = [];
+        // Generate numbers 1 to 6 at least twice
+        for (let i = 1; i <= 6; i++) {
+          if(no_of_occurance == 1) {
+            result.push(i);
+          } else {
+            result.push(i);
+            result.push(i);
+          }
         }
-        return combinedArray;
+        // Generate additional random numbers to reach a total of dice_range
+        while (result.length < dice_range) {
+          // const randomNumber = Math.floor(Math.random() * 6) + 1; // Generates a random number between 1 and 6 (inclusive)
+          const randomNumber = fortuna.diceRoll();
+          result.push(randomNumber);
+        }
+        // Shuffle the array to randomize the order
+        this.shuffleArray(result);
+        return result;
+
     }
+
     /**
      * The functioned used to shuffle Array
      * @param {*} array 
@@ -1796,6 +1869,7 @@ class _Tables
             [array[i], array[j]] = [array[j], array[i]];
         }
     }
+
     /**
      * The function used to generate unique shuffled series.
      * @param {array} 
@@ -1815,7 +1889,7 @@ class _Tables
     }
     return shuffled;
     }
-
+    
     /**
      * The function used to generate random number between 1 to 6.
      * @param {number} number means how many numbers want to generate.
@@ -1845,6 +1919,53 @@ class _Tables
         return arr;
     }
 
+    /**
+     *  This function rearrangeArrayWithoutConsecutiveRepeats iterates through the diceValue array, 
+     *  checking for consecutive repeats and shuffling elements as needed to satisfy the condition.
+     */
+    rearrangeArrayWithoutConsecutiveRepeats(diceValue) {
+
+        const originalDiceValue = [...diceValue];
+        const result = [];
+
+        while (originalDiceValue.length > 0) {
+            let index = this.getRandomIndex(originalDiceValue);
+            let currentValue = originalDiceValue[index];
+
+            if (result.length >= 2 && result[result.length - 1] === currentValue && result[result.length - 2] === currentValue) {
+            // If the current value would create three consecutive repetitions, find a different value
+            let found = false;
+            for (let i = 0; i < originalDiceValue.length; i++) {
+                if (originalDiceValue[i] !== currentValue) {
+                index = i;
+                currentValue = originalDiceValue[i];
+                found = true;
+                break;
+                }
+            }
+
+            if (!found) {
+                // If no different value can be found, start over
+                return this.rearrangeArrayWithoutConsecutiveRepeats(diceValue);
+            }
+            }
+
+            result.push(currentValue);
+            originalDiceValue.splice(index, 1);
+        }
+
+        // Ensure that the last two values are not the same
+        if (result[result.length - 1] === result[result.length - 2]) {
+            const lastValue = result.pop();
+            result.splice(this.getRandomIndex(result) + 1, 0, lastValue);
+        }
+
+        return result;
+    }
+    
+    getRandomIndex(arr) {
+        return Math.floor(Math.random() * arr.length);
+    }
     /**
      *  The function used to remove room object from Global Object after given time frame.
      *  The function invocking from corn job.

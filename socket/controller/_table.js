@@ -84,6 +84,10 @@ module.exports = {
          * then user should't get next chance.
          */
         // IF 3 times 6
+        let turnTimer = config.turnTimer;
+        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+        if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
         if (sixCounts == 2 && dices_rolled[0] == 6) {
             // console.log('SCRAP CURRENT DICES & PASS NEXT DICE_ROLL');
             // console.log("1_" + params.room + "_" + myPos + "_" + myRoom)
@@ -103,7 +107,7 @@ module.exports = {
             let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
             // console.log('update turn 1');
             await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
-            let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+            let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
             let DICE_ROLLED;
             if (DICE_ROLLED_RES) {
                 myRoom = DICE_ROLLED_RES.table;
@@ -132,7 +136,7 @@ module.exports = {
                     tokens: await _tab.getTokens(params.room, myRoom),
                     dice: DICE_ROLLED,
                     dices_rolled: [DICE_ROLLED],
-                    turn_start_at: config.turnTimer,
+                    turn_start_at: turnTimer,
                     extra_move_animation: false,
                     skip_dice: skipDice,
                     turn_timestamp: myRoom.turn_timestamp,
@@ -173,7 +177,7 @@ module.exports = {
                     room: params.room,
                     position: myPos,
                     dices_rolled: dices_roll,
-                    turn_start_at: config.turnTimer,
+                    turn_start_at: turnTimer,
                     skip_dice: threeSix,
                     turn_timestamp: myRoom.turn_timestamp,
                     server_time: new Date(),
@@ -194,7 +198,7 @@ module.exports = {
                 // console.log('update turn 4');
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
-                let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                 let DICE_ROLLED;
                 if (DICE_ROLLED_RES) {
                     myRoom = DICE_ROLLED_RES.table;
@@ -219,7 +223,7 @@ module.exports = {
                         tokens: await _tab.getTokens(params.room, myRoom),
                         dice: DICE_ROLLED,
                         dices_rolled: [DICE_ROLLED],
-                        turn_start_at: config.turnTimer,
+                        turn_start_at: turnTimer,
                         extra_move_animation: false,
                         skip_dice: skipDice,
                         turn_timestamp: myRoom.turn_timestamp,
@@ -245,7 +249,7 @@ module.exports = {
                 // console.log('update turn 5');
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
-                let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                 let DICE_ROLLED;
                 if (DICE_ROLLED_RES) {
                     myRoom = DICE_ROLLED_RES.table;
@@ -269,7 +273,7 @@ module.exports = {
                         tokens: await _tab.getTokens(params.room, myRoom),
                         dice: DICE_ROLLED,
                         dices_rolled: [DICE_ROLLED],
-                        turn_start_at: config.turnTimer,
+                        turn_start_at: turnTimer,
                         extra_move_animation: false,
                         skip_dice: skipDice,
                         turn_timestamp: myRoom.turn_timestamp,
@@ -300,7 +304,7 @@ module.exports = {
                         tokens: await _tab.getTokens(params.room, myRoom),
                         dice: DICE_ROLLED,
                         dices_rolled: [DICE_ROLLED],
-                        turn_start_at: config.turnTimer,
+                        turn_start_at: turnTimer,
                         extra_move_animation: true,
                         skip_dice: skipDice,
                         turn_timestamp: myRoom.turn_timestamp,
@@ -377,12 +381,16 @@ module.exports = {
             diceVales.push(params.dice_value)
             // const allEqual = diceVales => diceVales.every(v => v === 6);
 
+            let turnTimer = config.turnTimer;
+            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
             // to validate player have passed same value that have in backend.
             let diceValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
             if (diceValue.length !== 0 && params.dice_value != diceValue) {
                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', -1, 0, myRoom);
-                let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                 let DICE_ROLLED;
                 if (DICE_ROLLED_RES) {
                     myRoom = DICE_ROLLED_RES.table;
@@ -406,7 +414,7 @@ module.exports = {
                         tokens: await _tab.getTokens(params.room, myRoom),
                         dice: DICE_ROLLED,
                         dices_rolled: [DICE_ROLLED],
-                        turn_start_at: config.turnTimer,
+                        turn_start_at: turnTimer,
                         extra_move_animation: true,
                         skip_dice: skipDice,
                         turn_timestamp: myRoom.turn_timestamp,
@@ -464,7 +472,7 @@ module.exports = {
                     // console.log('update turn 7');
                     await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                     let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
-                    let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                    let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                     let DICE_ROLLED;
                     if (DICE_ROLLED_RES) {
                         myRoom = DICE_ROLLED_RES.table;
@@ -483,7 +491,7 @@ module.exports = {
                             tokens: await _tab.getTokens(params.room, myRoom),
                             dice: DICE_ROLLED,
                             dices_rolled: [DICE_ROLLED],
-                            turn_start_at: config.turnTimer,
+                            turn_start_at: turnTimer,
                             extra_move_animation: false,
                             skip_dice: skipDice,
                             turn_timestamp: myRoom.turn_timestamp,
@@ -497,7 +505,7 @@ module.exports = {
                     let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                     //await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0,myRoom);
                     await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
-                    let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                    let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                     let DICE_ROLLED;
                     if (DICE_ROLLED_RES) {
                         myRoom = DICE_ROLLED_RES.table;
@@ -521,7 +529,7 @@ module.exports = {
                             tokens: await _tab.getTokens(params.room, myRoom),
                             dice: DICE_ROLLED,
                             dices_rolled: [DICE_ROLLED],
-                            turn_start_at: config.turnTimer,
+                            turn_start_at: turnTimer,
                             extra_move_animation: false,
                             skip_dice: skipDice,
                             turn_timestamp: myRoom.turn_timestamp,
@@ -703,7 +711,7 @@ module.exports = {
                             // console.log('update turn 9');
                             await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                             let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
-                            let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                            let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                             let DICE_ROLLED;
                             if (DICE_ROLLED_RES) {
                                 myRoom = DICE_ROLLED_RES.table;
@@ -724,7 +732,7 @@ module.exports = {
                                     tokens: await _tab.getTokens(params.room, myRoom),
                                     dice: DICE_ROLLED,
                                     dices_rolled: [DICE_ROLLED],
-                                    turn_start_at: config.turnTimer,
+                                    turn_start_at: turnTimer,
                                     extra_move_animation: false,
                                     skip_dice: skipDice,
                                     turn_timestamp: myRoom.turn_timestamp,
@@ -862,7 +870,7 @@ module.exports = {
                                 room: params.room,
                                 position: myPos,
                                 dices_rolled: dices_rolled,
-                                turn_start_at: config.turnTimer,
+                                turn_start_at: turnTimer,
                                 turn_timestamp: myRoom.turn_timestamp,
                                 server_time: new Date(),
                             },
@@ -907,7 +915,7 @@ module.exports = {
                                     tokens: await _tab.getTokens(params.room, myRoom),
                                     dice: DICE_ROLLED,
                                     dices_rolled: [DICE_ROLLED],
-                                    turn_start_at: config.turnTimer,
+                                    turn_start_at: turnTimer,
                                     extra_move_animation: true,
                                     skip_dice: skipDice,
                                     turn_timestamp: myRoom.turn_timestamp,
@@ -926,7 +934,7 @@ module.exports = {
                             await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                             let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                             // let DICE_ROLLED = await _tab.rollDice(params.room, id);
-                            let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                            let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                             let DICE_ROLLED;
                             if (DICE_ROLLED_RES) {
                                 myRoom = DICE_ROLLED_RES.table;
@@ -955,7 +963,7 @@ module.exports = {
                                     tokens: await _tab.getTokens(params.room, myRoom),
                                     dice: DICE_ROLLED,
                                     dices_rolled: [DICE_ROLLED],
-                                    turn_start_at: config.turnTimer,
+                                    turn_start_at: turnTimer,
                                     extra_move_animation: false,
                                     skip_dice: skipDice,
                                     turn_timestamp: myRoom.turn_timestamp,
@@ -1084,7 +1092,10 @@ module.exports = {
             };                 
         var rez = await _tab.leave(params.room, id, myRoom);
         // console.log('LEAVE RES', rez); //2|socket  | [2022-04-13T11:01:02.572] [INFO] default - LEAVE RES { res: false, flag: 1, remove: true }
- 
+        let turnTimer = config.turnTimer;
+        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+        if(tableData && 'turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
         if (params && params.gameNotStarted && params.gameNotStarted == 'true')
         {
             // this.refundMoney(tableD,id);
@@ -1097,14 +1108,27 @@ module.exports = {
         // let myUser = myRoom.users.find((element) => element.id == id.toString());
         let myTable = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
         let myUser = myTable.players.find((ele) => ele.id == id.toString());
-        let reqData = {
-            room: params.room,
-            amount: myRoom.room_fee ? myRoom.room_fee.toString():'0',
-            users: [{
-                "user_id": myUser.id,
-                "token": myUser.token,
-                "isRefund": params.isRefund ? params.isRefund : false
-            }]
+        let reqData
+        if(myUser) {
+            reqData = {
+                room: params.room,
+                amount: myRoom.room_fee ? myRoom.room_fee.toString():'0',
+                users: [{
+                    "user_id": myUser.id,
+                    "token": myUser.token,
+                    "isRefund": params.isRefund ? params.isRefund : false
+                }]
+            }
+        } else {
+            reqData = {
+                room: params.room,
+                amount: myRoom.room_fee ? myRoom.room_fee.toString():'0',
+                users: [{
+                    "user_id": 'null',
+                    "token": 'null',
+                    "isRefund": params.isRefund ? params.isRefund : false
+                }]
+            }
         }
         if (!rez.res && rez.flag == 1)
         {
@@ -1117,7 +1141,9 @@ module.exports = {
         } else {
             // update status false to player
             let idx = myTable.players.findIndex(x => x.id == id.toString());
-            myTable.players[idx].is_active = false;
+            if (typeof myTable.players[idx] !== 'undefined') {
+                myTable.players[idx].is_active = false;
+            }
         }
         await redisCache.addToRedis(`table_${params.room}`, myTable);
 
@@ -1256,7 +1282,7 @@ module.exports = {
                     await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                     let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                     // let DICE_ROLLED = await _tab.rollDice(params.room, id);
-                    let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                    let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                     let DICE_ROLLED;
                     if (DICE_ROLLED_RES) {
                         myRoom = DICE_ROLLED_RES.table;
@@ -1277,7 +1303,7 @@ module.exports = {
                             tokens: _tab.getToken,
                             dices_rolled: [DICE_ROLLED],
                             dice: DICE_ROLLED,
-                            turn_start_at: config.turnTimer,
+                            turn_start_at: turnTimer,
                             extra_move_animation: false,
                             skip_dice: skipDice,
                             turn_timestamp: myRoom.turn_timestamp,
@@ -1307,7 +1333,7 @@ module.exports = {
                         let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                         // let DICE_ROLLED = await _tab.rollDice(params.room, id);
                         // console.log('22222');
-                        let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                        let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                         // console.log('33333');
                         let DICE_ROLLED;
                         if (DICE_ROLLED_RES) {
@@ -1331,7 +1357,7 @@ module.exports = {
                                 tokens: await _tab.getTokens(params.room, myRoom),
                                 dice: DICE_ROLLED,
                                 dices_rolled: [DICE_ROLLED],
-                                turn_start_at: config.turnTimer,
+                                turn_start_at: turnTimer,
                                 extra_move_animation: false,
                                 skip_dice: skipDice,
                                 turn_timestamp: myRoom.turn_timestamp,
@@ -1350,7 +1376,11 @@ module.exports = {
 
     //Skip Turn
     skipTurn: async function (params, id, myRoom, gamePlayData) {
-        // console.log('Skip Turn Request', params);
+        
+        let turnTimer = config.turnTimer;
+        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+        if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+        
         if (!params || !params.room) {
             return {
                 callback: {
@@ -1531,7 +1561,7 @@ module.exports = {
                                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
                                 let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                                 // let DICE_ROLLED = await _tab.rollDice(params.room, id);
-                                let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                                let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                                 let DICE_ROLLED;
                                 if (DICE_ROLLED_RES) {
                                     myRoom = DICE_ROLLED_RES.table;
@@ -1552,7 +1582,7 @@ module.exports = {
                                         tokens: await _tab.getTokens(params.room, myRoom),
                                         dice: DICE_ROLLED,
                                         dices_rolled: [DICE_ROLLED],
-                                        turn_start_at: config.turnTimer,
+                                        turn_start_at: turnTimer,
                                         extra_move_animation: false,
                                         skip_dice: skipDice,
                                         turn_timestamp: myRoom.turn_timestamp,
@@ -1576,7 +1606,7 @@ module.exports = {
                                     await _tab.updateCurrentTurn(params.room, nextPos, 'turn', mypos, 0, myRoom);
                                     let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                                     // let DICE_ROLLED = await _tab.rollDice(params.room, id);
-                                    let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                                    let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                                     let DICE_ROLLED;
                                     if (DICE_ROLLED_RES) {
                                         myRoom = DICE_ROLLED_RES.table;
@@ -1596,7 +1626,7 @@ module.exports = {
                                             tokens: await _tab.getTokens(params.room, myRoom),
                                             dice: DICE_ROLLED,
                                             dices_rolled: [DICE_ROLLED],
-                                            turn_start_at: config.turnTimer,
+                                            turn_start_at: turnTimer,
                                             extra_move_animation: false,
                                             skip_dice: skipDice,
                                             turn_timestamp: myRoom.turn_timestamp,
@@ -1663,7 +1693,7 @@ module.exports = {
                                 tokens: await _tab.getTokens(params.room, myRoom),
                                 dice: DICE_ROLLED,
                                 dices_rolled: [DICE_ROLLED],
-                                turn_start_at: config.turnTimer,
+                                turn_start_at: turnTimer,
                                 extra_move_animation: true,
                                 skip_dice: skipDice,
                                 turn_timestamp: myRoom.turn_timestamp,
@@ -1684,7 +1714,7 @@ module.exports = {
                         // let DICE_ROLLED = await _tab.rollDice(params.room, id);
 
                         //console.log("gamePlayData before 2: " + JSON.stringify(gamePlayData));
-                        let DICE_ROLLED_RES = await _tab.rollDice(params.room, id, myRoom);
+                        let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                         let DICE_ROLLED;
                         if (DICE_ROLLED_RES) {
                             myRoom = DICE_ROLLED_RES.table;
@@ -1706,7 +1736,7 @@ module.exports = {
                                 tokens: await _tab.getTokens(params.room, myRoom),
                                 dice: DICE_ROLLED,
                                 dices_rolled: [DICE_ROLLED],
-                                turn_start_at: config.turnTimer,
+                                turn_start_at: turnTimer,
                                 extra_move_animation: false,
                                 skip_dice: skipDice,
                                 turn_timestamp: myRoom.turn_timestamp,
@@ -1750,8 +1780,7 @@ module.exports = {
         if (!params.room) return false;
 
         let start = await _tab.tournamentStartGame(params.room, myRoom, gamePlayData);
-        // console.log('AFTER START ==>');
-
+        console.log('AFTER START ==>', JSON.stringify(start));
         // let tableD = await Table.findOne({room: params.room});
         let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
 
@@ -1759,24 +1788,47 @@ module.exports = {
         {
             // if game start & move happend at tie time then
             let currentData = new Date();
-            currentData.setSeconds(currentData.getSeconds() - 1);
+            // currentData.setSeconds(currentData.getSeconds() - 1);
+            currentData.setSeconds(currentData.getSeconds() + 2.5);
+
             let time = new Date(currentData).getTime();
             tableD.game_started_at = '-1';
-            tableD.turn_start_at = new Date().getTime();
+
+            let turnTime = new Date();
+            const newTurnTime = new Date(turnTime.getTime() + 3);
+            tableD.turn_start_at = new Date(newTurnTime).getTime();
+
+            // tableD.turn_start_at = new Date().getTime();
             myRoom.game_started_at = time;
             // await tableD.save();
 
             // to track game started time.
             if(start) {
-                tableD.game_started_at = new Date().getTime();
+                // Get the current date and time
+                const currentDate = new Date();
+                // Subtract 3 seconds
+                const newDate = new Date(currentDate.getTime() + 3);
+                tableD.game_started_at = new Date(newDate).getTime();
+
+                //tableD.game_started_at = new Date().getTime();
+                // to log dice value in logdna
+                let logData = {
+                    level: 'warning',
+                    meta: start.table.users
+                };
+                logDNA.log(`${start.room}_set_0`, logData);
             }
             await redisCache.addToRedis(`table_${params.room}`, tableD);
-            // console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at), tableD.game_started_at)
-            let timeToAdd = new Date(new Date().getTime() + config.gameTime * 60000);
+            // console.log("startIfPossibleTournament Start Time- ", new Date(tableD.game_started_at), tableD.game_started_at)           
+            let configGameTime = config.gameTime;
+            if('gameTime' in tableD) {
+                configGameTime = tableD.gameTime;
+            }
+            let timeToAdd = new Date(new Date().getTime() + configGameTime * 60000);
             var seconds = (timeToAdd - new Date().getTime()) / 1000;
             // console.log(timeToAdd, new Date().getTime(), seconds)
             // start.timeToCompleteGame = seconds;
-            start.timeToCompleteGame = config.gameTime * 60;
+            start.timeToCompleteGame = configGameTime * 60;
         }
         return start;
         // let returnStart = false;
@@ -1852,8 +1904,20 @@ module.exports = {
             myRoom = await redisCache.getRecordsByKeyRedis(roomId);
         }
         if(myRoom) {
-            console.log('join_previous myRoom- ', myRoom);
+            let logData = {
+                level: 'warning',
+                meta: { p: 'join_previous', 'user_id' : id, 'room' : myRoom}
+            };
+            logDNA.warn(`room found at join_previous`, logData);
+
+
             let us = myRoom.users.find((ele) => ele.id == id.toString());
+            logData = {
+                level: 'warning',
+                meta: { p: 'join_previous', 'user_id' : id, 'room' : myRoom}
+            };
+            logDNA.warn(`user found at join_previous`, logData);
+
             let alreadyPlaying = _tab.alreadyPlayingTable(us.id,myRoom);
             console.log('join_previous alreadyPlaying- ', JSON.stringify(alreadyPlaying));
             if (alreadyPlaying.status == 1)
@@ -1879,9 +1943,21 @@ module.exports = {
                 }
             }
             else {
+                logData = {
+                    level: 'warning',
+                    meta: { p: 'join_previous', 'user_id' : id, 'room' : myRoom}
+                };
+                logDNA.warn(`user_id mismatch with myRoom users id`, logData);
                 return alreadyPlaying;
             }
         } else {
+
+            let logData = {
+                level: 'warning',
+                meta: { p: 'join_previous', 'user_id' : id}
+            };
+            logDNA.warn(`room not found at join_previous`, logData);
+
             return {
                 status: 0,
                 message: "An error was encountered. Please join a new game."
@@ -1902,7 +1978,7 @@ module.exports = {
     sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 
     joinTournamentV2: async function (params, entry_Fee, myId, user, retryCount = 0) {
-        params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId']);
+        params = _.pick(params, ['no_of_players', 'room_fee', 'winningAmount', 'totalWinning', 'lobbyId', 'gameTime', 'turnTime', 'payoutConfig']);
         if (!params || !myId || _.isEmpty(params.no_of_players) || _.isEmpty(params.room_fee)) {
             return {
                 callback: {
@@ -1911,7 +1987,6 @@ module.exports = {
                 },
             };
         }
-
         //check valid user and valid no of user
         if (!user || !config.noOfPlayersInTournament.includes(parseInt(params.no_of_players))) {
             return {
@@ -2049,7 +2124,6 @@ module.exports = {
             //     room: room_code,
             // });
             tableX = await redisCache.getRecordsByKeyRedis(`table_${room_code}`);
-            
             if (!tableX) {
                 return {
                     callback: {
@@ -2074,13 +2148,18 @@ module.exports = {
         myRoom = seatOnTable.table;
         if (seatOnTable) {
             await redisCache.addToRedis('user_id'+myId, room_code);
+
+            let turnTimer = config.turnTimer;
+            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+
             var callbackRes = {
                 status: 1,
                 message: 'Done',
                 table: seatOnTable.table,
                 position: seatOnTable.pos,
                 timerStart: timerStart,
-                default_diceroll_timer: config.turnTimer // bugg_no_65
+                default_diceroll_timer: turnTimer // bugg_no_65
             };
 
             var player = {

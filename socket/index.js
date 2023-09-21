@@ -67,7 +67,7 @@ module.exports = function (io, bullQueue) {
          * @return array of object. 
          */
         socket.on('fetchGameData', async function (params, callback) {
-            console.log('fetchGameData - ', params);
+            // console.log('fetchGameData - ', params);
             try {
                 const startTime = Date.now();
                 let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
@@ -96,6 +96,7 @@ module.exports = function (io, bullQueue) {
                         "current_turn": myRoom.current_turn,
                         "current_turn_type": myRoom.current_turn_type,
                         "no_of_players": parseInt(myRoom.no_of_players),
+                        "payoutConfig" : myRoom.payoutConfig,
                         "users" : compressedUsersRes,
                         "entryFee": myRoom.entryFee,
                         "turn_time": myRoom.turn_time,
@@ -108,7 +109,7 @@ module.exports = function (io, bullQueue) {
                     const endTime = (Date.now() - startTime);
                     let logData = {
                         level: 'warning',
-                        meta: { p: 'fetchGameData',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                        meta: { p: 'fetchGameData',responseTime: endTime,'env' : `${process.env.NODE_ENV}`, 'params' : params}
                     };
                     logDNA.warn(`fetchGameData`, logData);
                     return callback(myRoomCompressed);
@@ -132,12 +133,11 @@ module.exports = function (io, bullQueue) {
          * @output return params data as output.
          */
         socket.on('ping', function (params, callback) {
-            console.log('ping - ', params);
             const startTime = Date.now();
             const endTime = (Date.now() - startTime);
             let logData = {
                 level: 'warning',
-                meta: { p: 'ping',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                meta: { p: 'ping',responseTime: endTime,'env' : `${process.env.NODE_ENV}`, 'params' : params}
             };
             logDNA.warn(`ping`,logData);
             return callback(params);
@@ -146,7 +146,7 @@ module.exports = function (io, bullQueue) {
         // New connection to Socket with Auth
         socket.on('join', async (params, callback) =>
         {
-            console.log('join - ', params);
+            //console.log('join - ', params);
             // Start the timer
             const startTime = Date.now();
             let responseObj = {};
@@ -208,20 +208,26 @@ module.exports = function (io, bullQueue) {
                 const endTime = (Date.now() - start);
                 let logData = {
                     level: 'warning',
-                    meta: { p: 'join',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                    meta: { p: 'join',responseTime: endTime,'env' : `${process.env.NODE_ENV}`, 'params' : params}
                 };
                 logDNA.warn(`join`, logData);
             }
         });
 
         socket.on('join_previous', async (params, callback) => {
-            console.log('join_previous start- ', params);
+            //console.log('join_previous start- ', params);
             const startTime = Date.now();
             // console.log('TS1 ::', 'join_previous', socket.id, JSON.stringify(params));
             var myId = await Socketz.getId(socket.id);
-            console.log('join_previous myId- ', myId);
+            //console.log('join_previous myId- ', myId);
             try {
                 if (!myId) {
+                    let myLog = {
+                        level: 'warning',
+                        meta: { p: 'join_previous', 'env' : `${process.env.NODE_ENV}`, 'socketId' : socket.id}
+                    };
+                    logDNA.warn(`user_id not found at join_previous`, myLog);
+
                     return callback({
                         status: 0,
                         message: 'An error was encountered. Please join a new game.',
@@ -303,7 +309,7 @@ module.exports = function (io, bullQueue) {
                 const endTime = (Date.now() - startTime);
                 let logData = {
                     level: 'warning',
-                    meta: { p: 'join_previous',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                    meta: { p: 'join_previous',responseTime: endTime,'env' : `${process.env.NODE_ENV}`, 'params' : params, 'myId' : myId}
                 };
                 logDNA.warn(`join_previous`, logData);
             }
@@ -349,8 +355,22 @@ module.exports = function (io, bullQueue) {
             params.winningAmount = payout.payoutConfig;
             params.totalWinning = payout.totalWinning;
             params.lobbyId = verifyUser.lobbyId;
+            // object to array convert for payoutConfig           
+            const payoutArray = [];
+            for (const key in verifyUser.payoutConfig) {
+                if (verifyUser.payoutConfig.hasOwnProperty(key)) {
+                    const value = verifyUser.payoutConfig[key];
+                    payoutArray.push(String(value));
+                }
+            }
+            params.payoutConfig = payoutArray;
             params.entryFee = 0;
             if('entryFee' in verifyUser) { params.entryFee = verifyUser.entryFee };
+            // to setup individual game time for room
+            if('gameTime' in verifyUser) { params.gameTime = verifyUser.gameTime };
+            // to setup turnTime for room
+            if('turnTime' in verifyUser) { params.turnTime = verifyUser.turnTime };
+            
             logData = {
                 level: 'debugg',
                 meta: payout
@@ -466,6 +486,11 @@ module.exports = function (io, bullQueue) {
                                         processEvents(resp, myRoom, socket);
                                         i++;
                                         leaveUser(i, start);
+                                        // To remove a particular socket ID from a room
+                                        let socketIdToRemove = socket.id;                                        
+                                        if(io.sockets.sockets[socketIdToRemove]) {
+                                            io.sockets.sockets[socketIdToRemove].leave(myRoom.room);
+                                        }
                                     }
                                 }
                             }
@@ -476,7 +501,6 @@ module.exports = function (io, bullQueue) {
                         }
                         // if tournament possible
                         await startTournament(start, socket, myRoom, gamePlayData);
-
                         await bullQueue.add(
                             { name: "gameCompletionQueue", payload: { start, myRoom } },
                             {
@@ -529,7 +553,7 @@ module.exports = function (io, bullQueue) {
 
         // Leave Table / Quit Game
         socket.on('leaveTable', async (params, callback) => {
-            console.log('leaveTable - ', params);
+            //console.log('leaveTable - ', params);
             const startTime = Date.now();
             let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
             if (tableD != null && tableD.isGameCompleted) {
@@ -547,7 +571,7 @@ module.exports = function (io, bullQueue) {
                if(!params.room)
                    return callback();
                    
-                //console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
+                // console.log('TS1 ::', 'leaveTable', socket.id, JSON.stringify(params));
                 let myId = await Socketz.getId(socket.id);
                 await Socketz.userGone(socket.id, params.token);
                 params.isRefund = false;
@@ -556,17 +580,19 @@ module.exports = function (io, bullQueue) {
                 let response = await _TableInstance.leaveTable(params, myId, socket, myRoom, gamePlayData);
                 await redisCache.addToRedis(myRoom.room, myRoom);
                 const userData = [];
-                myRoom.users.map((cur) => {
-                    userData.push({
-                        "player_index": cur.position,
-                        "id": cur.id,
-                        "name": cur.name,
-                        "rank": 0,
-                        "amount": 0,
-                        "is_left": cur.hasOwnProperty('is_left') ? cur.is_left : false,
-                        "score": 0
-                    });
-                }, [])
+                if(myRoom.users) {
+                    myRoom.users.map((cur) => {
+                        userData.push({
+                            "player_index": cur.position,
+                            "id": cur.id,
+                            "name": cur.name,
+                            "rank": 0,
+                            "amount": 0,
+                            "is_left": cur.hasOwnProperty('is_left') ? cur.is_left : false,
+                            "score": 0
+                        });
+                    }, []);
+                }
                 response.callback.room = myRoom.room;
                 response.callback.game_data = userData;
                 callback(response.callback);
@@ -610,6 +636,11 @@ module.exports = function (io, bullQueue) {
                 await redisCache.addToRedis(myRoom.room, myRoom);
                 await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
                 // console.log('GAME-PLAY-DATA-3', JSON.stringify(gamePlayData));
+                let turnTimer = config.turnTimer;
+                let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                if(tableData && 'turnTime' in tableData) { turnTimer = tableData.turnTime; }
+                turnTimer += 2;
+                turnTimer = turnTimer * 1000;
 
                 if(response && response.events)
                 {
@@ -623,7 +654,7 @@ module.exports = function (io, bullQueue) {
                                     payload: { room: params.room },
                                 },
                                 {
-                                    delay: 1000 * 12
+                                    delay: turnTimer
                                 }
                             );
                             break;
@@ -654,8 +685,8 @@ module.exports = function (io, bullQueue) {
         });
 
         socket.on('tournament_move_made', async (params, callback) => {
+            // console.log('tournament_move_made', params);
             const startTime = Date.now();
-
             let myId = await Socketz.getId(socket.id);
             let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
             try {
@@ -670,6 +701,13 @@ module.exports = function (io, bullQueue) {
                 if(response)
                 {
                     let timer =12000;
+
+                    let turnTimer = config.turnTimer;
+                    let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                    if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+                    turnTimer += 2;
+                    turnTimer = turnTimer * 1000;
+
                     if(response.callback && response.callback.isKillable)
                         timer=14500;
 
@@ -679,7 +717,7 @@ module.exports = function (io, bullQueue) {
                             payload: { room: params.room },
                         },
                         {
-                            delay: timer
+                            delay: turnTimer
                         }
                     );
                 callback(response.callback);
@@ -715,7 +753,6 @@ module.exports = function (io, bullQueue) {
         //Skip Turn
         socket.on('skip_turn', async (params, callback) =>
         {
-            console.log('skip_turn', params);
             // Start the timer
             const startTime = Date.now();
             let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
@@ -737,6 +774,11 @@ module.exports = function (io, bullQueue) {
             // console.log('GAME-PLAY-DATA-5', JSON.stringify(gamePlayData));
             callback(response.callback);
             processEvents(response, myRoom, socket);
+            // To remove a particular socket ID from a room
+            let socketIdToRemove = socket.id;
+            if(io.sockets.sockets[socketIdToRemove]) {
+                io.sockets.sockets[socketIdToRemove].leave(myRoom.room);
+            }
             }
             catch (ex) {
                 // console.log("skip_turn", ex);
@@ -758,6 +800,15 @@ module.exports = function (io, bullQueue) {
         // This event for Socket Disconnect.
         socket.on('disconnect', async () => {
             logDNA.log('DEVICE :: Disconnected', logData);
+            // To remove a particular socket ID from a room
+            let socketIdToRemove = socket.id;
+            let userId = await Socketz.getId(socketIdToRemove);
+            if(userId) {
+                let room  = await Socketz.getId('user_id'+userId);
+                if(io.sockets.sockets[socketIdToRemove]){
+                    io.sockets.sockets[socketIdToRemove].leave(room);
+                }
+            }
             // var myId = Socketz.getId(socket.id);
             //Socketz.userGone(socket.id);
 
@@ -818,6 +869,7 @@ module.exports = function (io, bullQueue) {
             tableData.current_turn_type = start.table.current_turn_type;
             tableData.totalWinning = start.table.totalWinning;
             tableData.no_of_players = start.table.no_of_players;
+            tableData.payoutConfig = start.table.payoutConfig;
             tableData.entryFee = start.table.entryFee;
             tableData.current_turn = start.table.current_turn;
             tableData.players_done = parseInt(start.table.players_done);
@@ -847,18 +899,46 @@ module.exports = function (io, bullQueue) {
             start.table = tableData;
             start.table.users = usersData;
         }
+        io.to(start.room).emit('gameInitiated', start);
+        // Pause execution for 3 seconds
+        await new Promise(resolve => setTimeout(resolve, 1500));
         io.to(start.room).emit('startGame', start);
+        // To emmit score_updated with default value.
+        let user_points = start.table.users.map((user) =>
+        {
+            return {
+                user_id: user.id,
+                score: 0,
+                points: 0,
+                bonusPoints: 0,
+                life : 3,
+                pawnScore : user.tokens
+            };
+        });
+        io.to(start.room).emit('score_updated', {
+            room: start.room,
+            score_data: user_points,
+        });
+
+        let turnTimer = config.turnTimer;
+        let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+        if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+        // to take 2 second buffer time to life lost
+        turnTimer += 2;
         await bullQueue.add(
             {
                 name: "playerTurnQueue",
                 payload: { room: start.room },
             },
             {
-                delay: 12 * 1000
+                delay: turnTimer * 1000
             }
         );
     }
 
+    async function delayStartTimebyThreeSeconds() {
+
+    }
     async function calculateWinAmount(amount, payoutConfig) {
         let room_fee = amount;
         let payConfig = payoutConfig;
@@ -967,11 +1047,37 @@ module.exports = function (io, bullQueue) {
                                             });
                                             d.data.game_data = compressedResponse;
                                             io.to(d.room).emit(d.name, d.data);
+                                            // To remove all player from room after game end.
+                                            io.of('/').in(d.room).clients((error, clients) => {
+                                                clients.forEach(socketId => {
+                                                //   io.sockets.sockets[socketId].leave(d.room);
+                                                const socket = io.sockets.sockets[socketId];
+                                                if (socket) {
+                                                    socket.leave(d.room);
+                                                }
+                                                });
+                                            });
                                         } else if (d.name == 'make_move') {
                                             io.to(d.room).emit(d.name, d.data);
                                         } else if (d.name == 'life_deduct') {
                                             io.to(d.room).emit(d.name, d.data);
-                                        } else {
+                                        } else if (d.name == 'score_updated') {
+                                            let getmyRoom = await redisCache.getRecordsByKeyRedis(d.room);
+                                            let user_score = getmyRoom.users.map((user) =>
+                                            {
+                                                return {
+                                                    user_id: user.id,
+                                                    score: user.points + user.bonusPoints,
+                                                    points: user.points,
+                                                    bonusPoints: user.bonusPoints,
+                                                    life : user.life,
+                                                    pawnScore : user.tokens
+                                                };
+                                            });
+                                            d.data.score_data = user_score;
+                                            io.to(d.room).emit(d.name, d.data);
+                                        }  
+                                        else {
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     } else {
@@ -1016,13 +1122,55 @@ module.exports = function (io, bullQueue) {
                                             });
                                             d.data.game_data = compressedData;
                                             io.to(d.room).emit(d.name, d.data);
+                                            // To remove all player from room after game end.
+                                            io.of('/').in(d.room).clients((error, clients) => {
+                                                clients.forEach(socketId => {
+                                                //   io.sockets.sockets[socketId].leave(d.room);
+                                                const socket = io.sockets.sockets[socketId];
+                                                if (socket) {
+                                                    socket.leave(d.room);
+                                                }
+                                                });
+                                            });
+                                        } else if (d.name == 'score_updated') {
+                                            let getmyRoom = await redisCache.getRecordsByKeyRedis(d.room);
+                                            let user_score = getmyRoom.users.map((user) =>
+                                            {
+                                                return {
+                                                    user_id: user.id,
+                                                    score: user.points + user.bonusPoints,
+                                                    points: user.points,
+                                                    bonusPoints: user.bonusPoints,
+                                                    life : user.life,
+                                                    pawnScore : user.tokens
+                                                };
+                                            });
+                                            d.data.score_data = user_score;
+                                            io.to(d.room).emit(d.name, d.data);
                                         }
                                         else {
                                             io.to(d.room).emit(d.name, d.data);
                                         }
                                     }
                                 } else {
-                                    io.to(d.room).emit(d.name, d.data);
+                                    if(d.name == 'score_updated') {
+                                        let getmyRoom = await redisCache.getRecordsByKeyRedis(d.room);
+                                        let user_score = getmyRoom.users.map((user) =>
+                                        {
+                                            return {
+                                                user_id: user.id,
+                                                score: user.points + user.bonusPoints,
+                                                points: user.points,
+                                                bonusPoints: user.bonusPoints,
+                                                life : user.life,
+                                                pawnScore : user.tokens
+                                            };
+                                        });
+                                        d.data.score_data = user_score;
+                                        io.to(d.room).emit(d.name, d.data);
+                                    } else {
+                                        io.to(d.room).emit(d.name, d.data);
+                                    }
                                 }
                             } else if (d.type == 'room_excluding_me') {
                                 if(d.name == 'dice_rolled') {
@@ -1068,16 +1216,20 @@ module.exports = function (io, bullQueue) {
                 let gameStartTime = MyRoom.game_started_at;
                 // To convert New Date() getTime to Second.
                 let timeInsecond = (Math.round(new Date().getTime() / 1000) - Math.round(gameStartTime / 1000));
-
+                let tableData = await redisCache.getRecordsByKeyRedis(`table_${MyRoom.room}`);
+                let configGameTime = config.gameTime;
+                if('gameTime' in tableData) {
+                    configGameTime = tableData.gameTime;
+                }
                 let flag;
-                if (timeInsecond >= config.gameTime * 60) {
+                if (timeInsecond >= configGameTime * 60) {
                     flag = true;
                 } else {
                     flag = false;
                 }
                 if (timeInsecond < 0) timeInsecond = 0;
 
-                let timer = config.gameTime * 60 - timeInsecond;
+                let timer = configGameTime * 60 - timeInsecond;
                 if (timer < 0) {
                     timer = 0
                 }
@@ -1144,8 +1296,11 @@ module.exports = function (io, bullQueue) {
                 console.log('Game already completed');
                 return;
             } else {
+                let turnTimer = config.turnTimer;
+                let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                if(tableData && 'turnTime' in tableData) { turnTimer = tableData.turnTime; }
                 var currTime = parseInt(new Date().getTime());
-                if (currTime - checkTabel.start_at > (config.turnTimer + 2) * 1000) {
+                if (currTime - checkTabel.start_at > (turnTimer + 2) * 1000) {
                     var id_of_current_turn = await _TableInstance.getMyIdByPossition(
                         params_data,
                         checkTabel.current_turn,
@@ -1162,13 +1317,20 @@ module.exports = function (io, bullQueue) {
 
                             await redisCache.addToRedis(params_data.room, myRoom);
                             await redisCache.addToRedis('gamePlay_' + params_data.room, gamePlayData);
+
+                            let turnTimer = config.turnTimer;
+                            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                            if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+                            turnTimer += 2;
+                            turnTimer = turnTimer * 1000;
+
                             await bullQueue.add(
                                 {
                                     name: "playerTurnQueue",
                                     payload: { room: params_data.room },
                                 },
                                 {
-                                    delay: 1000 * 12
+                                    delay: turnTimer
                                 }
                             );
                             processEvents(response, myRoom);
@@ -1181,13 +1343,19 @@ module.exports = function (io, bullQueue) {
         catch (err) {
             if(params_data && params_data.room)
             {
+            let turnTimer = config.turnTimer;
+            let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+            if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+            turnTimer += 2;
+            turnTimer = turnTimer * 1000;
+
             await bullQueue.add(
                 {
                     name: "playerTurnQueue",
                     payload: { room: params_data.room },
                 },
                 {
-                    delay: 1000 * 12
+                    delay: turnTimer
                 }
             );
             }
