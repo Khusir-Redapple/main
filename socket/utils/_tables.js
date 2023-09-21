@@ -1763,7 +1763,7 @@ class _Tables
             let idx = table.users.findIndex(element => element.position == user_id);
             //console.log('USER IDx', idx);
             // To check if predefined dice value is empty then create set of dice value first.           
-            if(table.users[idx].diceValue.length == 0) {
+            if(table.users[idx] && table.users[idx].diceValue.length == 0) {
                 // to increase no of set dice value generated.
                 myRoom.no_of_diceSet += 1;
                 let dice_range;
