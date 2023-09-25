@@ -352,7 +352,7 @@ module.exports = function (io, bullQueue) {
             params.no_of_players = verifyUser.participants.toString();
             let payout = await calculateWinAmount(verifyUser.amount, verifyUser.payoutConfig);
             // console.log("payout -- ", payout);
-            params.winningAmount = verifyUser.payoutConfig;//payout.payoutConfig;
+            params.winningAmount = payout.payoutConfig;
             params.totalWinning = verifyUser.amount;//payout.totalWinning;
             params.lobbyId = verifyUser.lobbyId;
             // object to array convert for payoutConfig           
