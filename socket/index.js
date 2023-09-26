@@ -604,11 +604,14 @@ module.exports = function (io, bullQueue) {
                     //userData = [];
                     const newUserData = [];
                     console.log(endGameRes);
-                    endGameRes.rank.map((ele) => {
-                        newUserData.push(ele);
-                    })
+                    for(let i = 0; i< endGameRes.rank.length;i++){
+                        userData[i] = endGameRes.rank[i];
+                    }
+                    // endGameRes.rank.map((ele) => {
+                    //     newUserData.push(ele);
+                    // })
                     //userData.push(...endGameRes.rank);
-                    console.log("User Data : "+newUserData);
+                    console.log("User Data : "+userData);
                 }
 
 
