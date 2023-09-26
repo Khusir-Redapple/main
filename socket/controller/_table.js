@@ -1090,7 +1090,8 @@ module.exports = {
                     message: localization.missingParamError,
                     refund: refund
                 },
-            };                 
+            };
+        var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);        
         var rez = await _tab.leave(params.room, id, myRoom);
         // console.log('LEAVE RES', rez); //2|socket  | [2022-04-13T11:01:02.572] [INFO] default - LEAVE RES { res: false, flag: 1, remove: true }
         let turnTimer = config.turnTimer;
@@ -1226,7 +1227,7 @@ module.exports = {
                 //     room: params.room,
                 // });
                 let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
-                var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
+                // var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
                 let endGame;
                 if (endGameRes) {
                     myRoom = endGameRes.table;
