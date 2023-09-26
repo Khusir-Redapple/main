@@ -595,8 +595,8 @@ module.exports = function (io, bullQueue) {
                 }
                 // Here we need to check if there is only one player left in the game 
                 // then update the game_data response 
-                let activePlayerCount = userData.count(x => (x.is_left == false));
-                console.log("Player Active Count "+activePlayerCount);
+                const countTrueIsLeft = userData.filter(item => item.is_left === true).length;
+                console.log(countTrueIsLeft);     
 
                 response.callback.room = myRoom.room;
                 response.callback.game_data = userData;
