@@ -602,8 +602,9 @@ module.exports = function (io, bullQueue) {
                     // Update the userData
                     var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
                     userData = [];
-                    userData = userData.concat(endGameRes.rank);
-                    console.log(userData);
+                    console.log(endGameRes);
+                    userData.push(...endGameRes.rank);
+                    console.log("User Data : "+userData);
                 }
 
 
