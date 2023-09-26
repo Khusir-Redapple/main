@@ -601,9 +601,9 @@ module.exports = function (io, bullQueue) {
                 if (activePlayerLeft <= 1) {
                     // Update the userData
                     var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
-                    userData = [];
+                    //userData = [];
                     console.log(endGameRes);
-                    userData.push(...endGameRes.rank);
+                    //userData.push(...endGameRes.rank);
                     console.log("User Data : "+userData);
                 }
 
