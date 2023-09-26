@@ -601,20 +601,10 @@ module.exports = function (io, bullQueue) {
                 if (activePlayerLeft <= 1) {
                     // Update the userData
                     var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
-                    //userData = [];
-                    const newUserData = [];
-                    console.log(endGameRes);
                     for(let i = 0; i< endGameRes.rank.length;i++){
                         userData[i] = endGameRes.rank[i];
                     }
-                    // endGameRes.rank.map((ele) => {
-                    //     newUserData.push(ele);
-                    // })
-                    //userData.push(...endGameRes.rank);
-                    console.log("User Data : "+userData);
                 }
-
-
                 response.callback.room = myRoom.room;
                 response.callback.game_data = userData;
                 callback(response.callback);
