@@ -8,6 +8,8 @@ const Socketz         = new Sockets();
 const requestTemplate = require('../api/service/request-template');
 const config = require('../config');
 // const ObjectId = require('mongoose').Types.ObjectId;
+const { _Tables } = require('../utils/_tables');
+const _tab = new _Tables();
 const logDNA = require('../api/service/logDNA');
 const redisCache = require('../api/service/redis-cache');
 const { CostExplorer } = require('aws-sdk');
@@ -595,8 +597,13 @@ module.exports = function (io, bullQueue) {
                 }
                 // Here we need to check if there is only one player left in the game 
                 // then update the game_data response 
-                const countTrueIsLeft = userData.filter(item => item.is_left === true).length;
-                console.log(countTrueIsLeft);     
+                const activePlayerLeft = userData.filter(item => item.is_left === true).length;
+                if (activePlayerLeft <= 1) {
+                    // Update the userData
+                    var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
+                    console.log(endGameRes);
+                }
+
 
                 response.callback.room = myRoom.room;
                 response.callback.game_data = userData;
