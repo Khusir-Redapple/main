@@ -285,7 +285,13 @@ module.exports = {
 
             else {
                 var myPos = await _tab.getMyPosition(params.room, id, myRoom);
-                let DICE_ROLLED = _tab.getRandomDiceValue(myPos, myRoom);
+                let DICE_ROLLED_RES = _tab.getRandomDiceValue(myPos, myRoom);
+                let DICE_ROLLED;
+                if (DICE_ROLLED_RES) {
+                    myRoom = DICE_ROLLED_RES.table;
+                    DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
+                }
+
                 await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                 // console.log('update turn 6');
                 await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
@@ -901,7 +907,12 @@ module.exports = {
                             }, timer)
                             let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
                             // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                            let DICE_ROLLED = _tab.getRandomDiceValue(myPos, myRoom);
+                            let DICE_ROLLED_RES = _tab.getRandomDiceValue(myPos, myRoom);
+                            let DICE_ROLLED;
+                            if (DICE_ROLLED_RES) {
+                                myRoom = DICE_ROLLED_RES.table;
+                                DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
+                            }
                             await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                             // SEND EVENT
                             let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
@@ -1679,7 +1690,12 @@ module.exports = {
                         await _tab.updateCurrentTurn(params.room, mypos, 'turn', -1, 0, myRoom);
                         let dices_rolled = await _tab.gePlayerDices(params.room, mypos, myRoom, gamePlayData);
                         // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                        let DICE_ROLLED = _tab.getRandomDiceValue(mypos, myRoom);
+                        let DICE_ROLLED_RES = _tab.getRandomDiceValue(mypos, myRoom);
+                        let DICE_ROLLED;
+                        if (DICE_ROLLED_RES) {
+                            myRoom = DICE_ROLLED_RES.table;
+                            DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
+                        }
                         await _tab.diceRolled(params.room, mypos, DICE_ROLLED, myRoom, gamePlayData);
                         // SEND EVENT
                         let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, mypos);

@@ -720,17 +720,17 @@ class _Tables
                     // Generate random row and column indix
                     const randomRowIndex = Math.floor(Math.random() * table.users[idx].bonusSet_1.length);
                     const randomColIndex = Math.floor(Math.random() * table.users[idx].bonusSet_1[randomRowIndex].length);
-                    // Get the element using the random index
-                    DiceValue = table.users[idx].bonusSet_1[randomRowIndex][randomColIndex];            
+                    // Get and remove the element using the random indices
+                    DiceValue = table.users[idx].bonusSet_1[randomRowIndex].splice(randomColIndex, 1)[0];            
                 } else {
                     // Generate random row and column indix
                     const randomRowIndex = Math.floor(Math.random() * table.users[idx].bonusSet_2.length);
                     const randomColIndex = Math.floor(Math.random() * table.users[idx].bonusSet_2[randomRowIndex].length);
                     // Get the element using the random index
-                    DiceValue = table.users[idx].bonusSet_2[randomRowIndex][randomColIndex];
+                    DiceValue = table.users[idx].bonusSet_2[randomRowIndex].splice(randomColIndex, 1)[0];
                 }
             }
-            return DiceValue;
+            return {'DiceValue' : DiceValue, 'table' : table};
         } catch(err) {
             let logData = {
                 level: 'error',
