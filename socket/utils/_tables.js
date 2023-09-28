@@ -741,7 +741,7 @@ class _Tables
             }
             console.log('DiceValue', DiceValue);
             if(DiceValue === undefined || DiceValue === null || DiceValue == '') {
-                this.getRandomDiceValue(myPosition, myRoom);
+               return this.getRandomDiceValue(myPosition, myRoom);
             }
             return {'DiceValue' : DiceValue, 'table' : table};
         } catch(err) {
