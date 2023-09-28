@@ -915,6 +915,7 @@ module.exports = {
                                 DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
                                 // console.log(JSON.stringify(myRoom));
                             }
+                            console.log('Six skip debugging...', myPos, DICE_ROLLED);
                             await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                             // SEND EVENT
                             let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
