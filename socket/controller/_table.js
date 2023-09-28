@@ -690,6 +690,7 @@ module.exports = {
                             let reqData = await this.getEndGameData(event.data, myRoom.room_fee);
                             // console.log("END-GAME-DATA-1", reqData);
                             let startGame = await requestTemplate.post(`endgame`, reqData)
+                            console.log('endResult1', startGame);
                             // if (!startGame.isSuccess)
                             // {
                             //     return {callback: {status: 0, message: startGame.error}};
@@ -1052,6 +1053,7 @@ module.exports = {
                 let reqData = await this.getEndGameData(event.data, myRoom.room_fee);
                 // console.log("END-GAME-DATA-2", reqData);
                 let startGame = await requestTemplate.post(`endgame`, reqData);
+                console.log('endResult2', startGame);
                 // if (!startGame.isSuccess)
                 // {
                 //     return {callback: {status: 0, message: startGame.error}};
@@ -1280,6 +1282,7 @@ module.exports = {
                     let reqData = await this.getEndGameData(event.data, myRoom.room_fee);
                     // console.log("END-GAME-DATA-3", reqData);
                     let startGame = await requestTemplate.post(`endgame`, reqData)
+                    console.log('endResult3', startGame);
                     // if (!startGame.isSuccess)
                     // {
                     //     return {callback: {status: 0, message: startGame.error}};
@@ -1552,6 +1555,7 @@ module.exports = {
                                 let reqData = await this.getEndGameData(event.data, myRoom.room_fee);
                                 // console.log("END-GAME-DATA-4", reqData);
                                 let startGame = await requestTemplate.post(`endgame`, reqData)
+                                console.log('endResult4', startGame);
                                 // if (!startGame.isSuccess)
                                 // {
                                 //     return {callback: {

@@ -262,6 +262,13 @@ class _Tables
                 diceValue : readDiceValue
             };
             // console.log('Random dice value', JSON.stringify(filteredTable));
+            // log for bonusSet
+            let logData = {
+                level: 'debugg',
+                meta: {'data' : JSON.stringify(filteredTable.users)}
+            };
+            logDNA.error(`bonus_set_${filteredTable.room}`, logData);
+
             return {
                 table: filteredTable,
                 pos: pos,
@@ -716,19 +723,24 @@ class _Tables
                 // To get value from two set based on odd and even bonus count                
                 if(table.users[idx].bonus_count % 2 === 0) {
                     // DiceValue = table.users[idx].diceValue.shift();
-                    // read value from dice set 1
-                    // Generate random row and column indix
-                    const randomRowIndex = Math.floor(Math.random() * table.users[idx].bonusSet_1.length);
-                    const randomColIndex = Math.floor(Math.random() * table.users[idx].bonusSet_1[randomRowIndex].length);
-                    // Get and remove the element using the random indices
-                    DiceValue = table.users[idx].bonusSet_1[randomRowIndex].splice(randomColIndex, 1)[0];            
-                } else {
+                    // read value from dice set 2
                     // Generate random row and column indix
                     const randomRowIndex = Math.floor(Math.random() * table.users[idx].bonusSet_2.length);
                     const randomColIndex = Math.floor(Math.random() * table.users[idx].bonusSet_2[randomRowIndex].length);
                     // Get the element using the random index
                     DiceValue = table.users[idx].bonusSet_2[randomRowIndex].splice(randomColIndex, 1)[0];
+
+                } else {   
+
+                    // Generate random row and column indix
+                    const randomRowIndex = Math.floor(Math.random() * table.users[idx].bonusSet_1.length);
+                    const randomColIndex = Math.floor(Math.random() * table.users[idx].bonusSet_1[randomRowIndex].length);
+                    // Get and remove the element using the random indices
+                    DiceValue = table.users[idx].bonusSet_1[randomRowIndex].splice(randomColIndex, 1)[0];
                 }
+            }
+            if(DiceValue === undefined || DiceValue === null || DiceValue == '') {
+                this.getRandomDiceValue(myPosition, myRoom);
             }
             return {'DiceValue' : DiceValue, 'table' : table};
         } catch(err) {
