@@ -267,7 +267,7 @@ class _Tables
                 level: 'debugg',
                 meta: {'data' : JSON.stringify(filteredTable.users)}
             };
-            logDNA.error(`bonus_set_${filteredTable.room}`, logData);
+            logDNA.log(`bonus_set_${filteredTable.room}`, logData);
 
             return {
                 table: filteredTable,
@@ -739,6 +739,7 @@ class _Tables
                     DiceValue = table.users[idx].bonusSet_1[randomRowIndex].splice(randomColIndex, 1)[0];
                 }
             }
+            console.log('DiceValue', DiceValue);
             if(DiceValue === undefined || DiceValue === null || DiceValue == '') {
                 this.getRandomDiceValue(myPosition, myRoom);
             }
