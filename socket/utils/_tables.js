@@ -739,7 +739,7 @@ class _Tables
                     DiceValue = table.users[idx].bonusSet_1[randomRowIndex].splice(randomColIndex, 1)[0];
                 }
             }
-            console.log('DiceValue', DiceValue);
+            
             if(DiceValue === undefined || DiceValue === null || DiceValue == '') {
                return this.getRandomDiceValue(myPosition, myRoom);
             }
