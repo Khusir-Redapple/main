@@ -725,24 +725,31 @@ class _Tables
                     // DiceValue = table.users[idx].diceValue.shift();
                     // read value from dice set 2
                     // Generate random row and column indix
-                    const randomRowIndex = Math.floor(Math.random() * table.users[idx].bonusSet_2.length);
-                    const randomColIndex = Math.floor(Math.random() * table.users[idx].bonusSet_2[randomRowIndex].length);
+                    // const randomRowIndex = Math.floor(Math.random() * table.users[idx].bonusSet_2.length);
+                    // const randomColIndex = Math.floor(Math.random() * table.users[idx].bonusSet_2[randomRowIndex].length);
                     // Get the element using the random index
-                    DiceValue = table.users[idx].bonusSet_2[randomRowIndex].splice(randomColIndex, 1)[0];
+                    // DiceValue = table.users[idx].bonusSet_2[randomRowIndex].splice(randomColIndex, 1)[0];
+                    
+                    // Modified version of bonus value logic
+                    DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_2);
 
                 } else {   
 
                     // Generate random row and column indix
-                    const randomRowIndex = Math.floor(Math.random() * table.users[idx].bonusSet_1.length);
-                    const randomColIndex = Math.floor(Math.random() * table.users[idx].bonusSet_1[randomRowIndex].length);
+                    // const randomRowIndex = Math.floor(Math.random() * table.users[idx].bonusSet_1.length);
+                    // const randomColIndex = Math.floor(Math.random() * table.users[idx].bonusSet_1[randomRowIndex].length);
                     // Get and remove the element using the random indices
-                    DiceValue = table.users[idx].bonusSet_1[randomRowIndex].splice(randomColIndex, 1)[0];
+                    // DiceValue = table.users[idx].bonusSet_1[randomRowIndex].splice(randomColIndex, 1)[0];
+
+                    // Modified version of bonus value logic
+                    DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_1);
+
                 }
             }
             
-            if(DiceValue === undefined || DiceValue === null || DiceValue == '') {
-               return this.getRandomDiceValue(myPosition, myRoom);
-            }
+            // if(DiceValue === undefined || DiceValue === null || DiceValue == '') {
+            //    return this.getRandomDiceValue(myPosition, myRoom);
+            // }
             return {'DiceValue' : DiceValue, 'table' : table};
         } catch(err) {
             let logData = {
@@ -750,6 +757,17 @@ class _Tables
                 meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, stackTrace : err.stack}
             };
             logDNA.error('bonusRollDice', logData);
+        }
+    }
+
+    getElementFromSubarray(array) {
+        // Using nested loops to iterate through all elements
+        for (let i = 0; i < array.length; i++) {
+            for (let j = 0; j < array[i].length; j++) {
+                if(array[i][j] > 0) { 
+                    return array[i].shift();
+                }
+            }
         }
     }
 
