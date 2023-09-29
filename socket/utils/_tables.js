@@ -754,7 +754,7 @@ class _Tables
                         table.users[3].bonusSet_2 = JSON.parse((JSON.stringify(bonus_set_two)));
                         
                         DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_2);
-                        console.log('new set two generated', JSON.stringify(table.users));
+                        // console.log('new set two generated', JSON.stringify(table.users));
                     }
                 } else {
                     // Modified version of bonus value logic
@@ -782,7 +782,7 @@ class _Tables
                             this.shuffleArray(subArray);
                         }
                         table.users[3].bonusSet_1 = JSON.parse((JSON.stringify(bonus_set_one))); 
-                        console.log('new set one generated', JSON.stringify(table.users));
+                        // console.log('new set one generated', JSON.stringify(table.users));
                         DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_1);
                     }
                 }
