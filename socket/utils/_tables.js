@@ -784,7 +784,7 @@ class _Tables
                         DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_1);
                     }
                 }
-              // console.log(`player position ==> ${idx}, Bonus count ==> ${bonusCount} , Dice Value => ${DiceValue}`);
+              console.log(`player position ==> ${idx}, Bonus count ==> ${bonusCount} , Dice Value => ${DiceValue}`);
             }
             return {'DiceValue' : DiceValue, 'table' : table};
         } catch(err) {
