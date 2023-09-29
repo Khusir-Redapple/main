@@ -722,7 +722,6 @@ class _Tables
                 table.users[idx].bonus_count += 1;
                 // To find how many bonus consicutivly happans
                 const bonusCount = gamePlayData.data.extra_roll_reason.length;
-                console.log("bonusCount==>", idx, bonusCount)
                 // To get value from two set based on odd and even bonus count                
                 // if(table.users[idx].bonus_count % 2 === 0) {
                 if(bonusCount % 2 === 0) {
@@ -747,8 +746,8 @@ class _Tables
 
                     // Modified version of bonus value logic
                     DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_1);
-
                 }
+                console.log(`player position ==> ${idx}, Bonus count ==> ${bonusCount} , Dice Value => ${DiceValue}`);
             }
             // console.log('user_id =>', myPosition, 'value =>', DiceValue);
             // if(DiceValue === undefined || DiceValue === null || DiceValue == '') {
