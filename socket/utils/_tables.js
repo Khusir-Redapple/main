@@ -746,7 +746,7 @@ class _Tables
 
                 }
             }
-            console.log('user_id =>', myPosition, 'value =>', DiceValue);
+            // console.log('user_id =>', myPosition, 'value =>', DiceValue);
             // if(DiceValue === undefined || DiceValue === null || DiceValue == '') {
             //    return this.getRandomDiceValue(myPosition, myRoom);
             // }
