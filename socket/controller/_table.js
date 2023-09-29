@@ -285,7 +285,7 @@ module.exports = {
 
             else {
                 var myPos = await _tab.getMyPosition(params.room, id, myRoom);
-                let DICE_ROLLED_RES = _tab.getRandomDiceValue(myPos, myRoom);
+                let DICE_ROLLED_RES = _tab.getRandomDiceValue(myPos, myRoom, gamePlayData);
                 let DICE_ROLLED;
                 if (DICE_ROLLED_RES) {
                     myRoom = DICE_ROLLED_RES.table;
@@ -908,7 +908,7 @@ module.exports = {
                             }, timer)
                             let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
                             // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                            let DICE_ROLLED_RES = _tab.getRandomDiceValue(myPos, myRoom);
+                            let DICE_ROLLED_RES = _tab.getRandomDiceValue(myPos, myRoom, gamePlayData);
                             let DICE_ROLLED;
                             if (DICE_ROLLED_RES) {
                                 myRoom = DICE_ROLLED_RES.table;
@@ -1693,7 +1693,7 @@ module.exports = {
                         await _tab.updateCurrentTurn(params.room, mypos, 'turn', -1, 0, myRoom);
                         let dices_rolled = await _tab.gePlayerDices(params.room, mypos, myRoom, gamePlayData);
                         // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                        let DICE_ROLLED_RES = _tab.getRandomDiceValue(mypos, myRoom);
+                        let DICE_ROLLED_RES = _tab.getRandomDiceValue(mypos, myRoom, gamePlayData);
                         let DICE_ROLLED;
                         if (DICE_ROLLED_RES) {
                             myRoom = DICE_ROLLED_RES.table;
@@ -1801,7 +1801,7 @@ module.exports = {
         if (!params.room) return false;
 
         let start = await _tab.tournamentStartGame(params.room, myRoom, gamePlayData);
-        // console.log('AFTER START ==>', JSON.stringify(start));
+        console.log('AFTER START ==>', JSON.stringify(start));
         // let tableD = await Table.findOne({room: params.room});
         let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
 

@@ -709,7 +709,7 @@ class _Tables
         }
     }
 
-    getRandomDiceValue(myPosition, myRoom) {
+    getRandomDiceValue(myPosition, myRoom, gamePlayData) {
         // return Math.floor(Math.random() * 5) + 1;
         // return fortuna.diceRoll();    
         try { 
@@ -720,8 +720,12 @@ class _Tables
             if(table.users[idx].bonusSet_1 && table.users[idx].bonusSet_2) {
                 // To increment the bonus count
                 table.users[idx].bonus_count += 1;
+                // To find how many bonus consicutivly happans
+                const bonusCount = gamePlayData.data.extra_roll_reason.length;
+                console.log("bonusCount==>", idx, bonusCount)
                 // To get value from two set based on odd and even bonus count                
-                if(table.users[idx].bonus_count % 2 === 0) {
+                // if(table.users[idx].bonus_count % 2 === 0) {
+                if(bonusCount % 2 === 0) {
                     // DiceValue = table.users[idx].diceValue.shift();
                     // read value from dice set 2
                     // Generate random row and column indix
