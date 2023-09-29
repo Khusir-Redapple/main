@@ -71,12 +71,14 @@ class _Tables
             const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
 
             const bonus_set_one = [];
-            for (let index = 0; index < 5; index++) {
+            // for (let index = 0; index < 5; index++) {
+            for (let index = 0; index < 1; index++) {
                 bonus_set_one.push(this.generateBonusSetOne());                
             }
             
             const bonus_set_two = [];
-            for (let index = 0; index < 3; index++) {
+            // for (let index = 0; index < 3; index++) {
+            for (let index = 0; index < 1; index++) {
                 bonus_set_two.push(this.generateBonusSetTwo());                
             }
 
@@ -724,35 +726,68 @@ class _Tables
                 const bonusCount = gamePlayData.data.extra_roll_reason.length;
                 // To get value from two set based on odd and even bonus count                
                 // if(table.users[idx].bonus_count % 2 === 0) {
-                if(bonusCount % 2 === 0) {
-                    // DiceValue = table.users[idx].diceValue.shift();
-                    // read value from dice set 2
-                    // Generate random row and column indix
-                    // const randomRowIndex = Math.floor(Math.random() * table.users[idx].bonusSet_2.length);
-                    // const randomColIndex = Math.floor(Math.random() * table.users[idx].bonusSet_2[randomRowIndex].length);
-                    // Get the element using the random index
-                    // DiceValue = table.users[idx].bonusSet_2[randomRowIndex].splice(randomColIndex, 1)[0];
-                    
+                if(bonusCount % 2 === 0) {                    
                     // Modified version of bonus value logic
                     DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_2);
-
-                } else {   
-
-                    // Generate random row and column indix
-                    // const randomRowIndex = Math.floor(Math.random() * table.users[idx].bonusSet_1.length);
-                    // const randomColIndex = Math.floor(Math.random() * table.users[idx].bonusSet_1[randomRowIndex].length);
-                    // Get and remove the element using the random indices
-                    // DiceValue = table.users[idx].bonusSet_1[randomRowIndex].splice(randomColIndex, 1)[0];
-
+                    // if set two is empty then create a new set
+                    if(DiceValue === undefined) {
+                        console.log('set two generated');
+                        const bonus_set_two = [];
+                        for (let index = 0; index < 3; index++) {
+                            bonus_set_two.push(this.generateBonusSetTwo());                
+                        }
+                        table.users[0].bonusSet_2 = JSON.parse((JSON.stringify(bonus_set_two)));
+                        // shuffle for bonus set one
+                        for (const subArray of bonus_set_two) {
+                            this.shuffleArray(subArray);
+                        }
+                        table.users[1].bonusSet_2 = JSON.parse((JSON.stringify(bonus_set_two)));
+                        // shuffle for bonus set one
+                        for (const subArray of bonus_set_two) {
+                            this.shuffleArray(subArray);
+                        }
+                        table.users[2].bonusSet_2 = JSON.parse((JSON.stringify(bonus_set_two)));
+                        // shuffle for bonus set one
+                        for (const subArray of bonus_set_two) {
+                            this.shuffleArray(subArray);
+                        }
+                        table.users[3].bonusSet_2 = JSON.parse((JSON.stringify(bonus_set_two)));
+                        
+                        DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_2);
+                        console.log('new set two generated', JSON.stringify(table.users));
+                    }
+                } else {
                     // Modified version of bonus value logic
                     DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_1);
+                    // if set one is empty then create a new set
+                    if(DiceValue === undefined) {
+                        console.log('set one generated');
+                        const bonus_set_one = [];
+                        for (let index = 0; index < 5; index++) {
+                            bonus_set_one.push(this.generateBonusSetOne());                
+                        } 
+                        table.users[0].bonusSet_1 = JSON.parse((JSON.stringify(bonus_set_one)));
+                        // shuffle for bonus set one
+                        for (const subArray of bonus_set_one) {
+                            this.shuffleArray(subArray);
+                        }
+                        table.users[1].bonusSet_1 = JSON.parse((JSON.stringify(bonus_set_one)));
+                        // shuffle for bonus set one
+                        for (const subArray of bonus_set_one) {
+                            this.shuffleArray(subArray);
+                        }
+                        table.users[2].bonusSet_1 = JSON.parse((JSON.stringify(bonus_set_one)));
+                        // shuffle for bonus set one
+                        for (const subArray of bonus_set_one) {
+                            this.shuffleArray(subArray);
+                        }
+                        table.users[3].bonusSet_1 = JSON.parse((JSON.stringify(bonus_set_one))); 
+                        console.log('new set one generated', JSON.stringify(table.users));
+                        DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_1);
+                    }
                 }
-                console.log(`player position ==> ${idx}, Bonus count ==> ${bonusCount} , Dice Value => ${DiceValue}`);
+               // console.log(`player position ==> ${idx}, Bonus count ==> ${bonusCount} , Dice Value => ${DiceValue}`);
             }
-            // console.log('user_id =>', myPosition, 'value =>', DiceValue);
-            // if(DiceValue === undefined || DiceValue === null || DiceValue == '') {
-            //    return this.getRandomDiceValue(myPosition, myRoom);
-            // }
             return {'DiceValue' : DiceValue, 'table' : table};
         } catch(err) {
             let logData = {
