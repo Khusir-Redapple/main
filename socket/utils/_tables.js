@@ -71,14 +71,12 @@ class _Tables
             const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
 
             const bonus_set_one = [];
-            // for (let index = 0; index < 5; index++) {
-            for (let index = 0; index < 1; index++) {
+            for (let index = 0; index < 5; index++) {
                 bonus_set_one.push(this.generateBonusSetOne());                
             }
             
             const bonus_set_two = [];
-            // for (let index = 0; index < 3; index++) {
-            for (let index = 0; index < 1; index++) {
+            for (let index = 0; index < 3; index++) {
                 bonus_set_two.push(this.generateBonusSetTwo());                
             }
 
@@ -786,7 +784,7 @@ class _Tables
                         DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_1);
                     }
                 }
-               console.log(`player position ==> ${idx}, Bonus count ==> ${bonusCount} , Dice Value => ${DiceValue}`);
+              // console.log(`player position ==> ${idx}, Bonus count ==> ${bonusCount} , Dice Value => ${DiceValue}`);
             }
             return {'DiceValue' : DiceValue, 'table' : table};
         } catch(err) {
