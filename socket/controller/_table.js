@@ -394,7 +394,7 @@ module.exports = {
 
             // to validate player have passed same value that have in backend.
             let diceValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
-            console.log('roll skip debugging==>', myPos, diceValue);
+            // console.log('roll skip debugging==>', myPos, diceValue);
             if (diceValue.length !== 0 && params.dice_value != diceValue) {
                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', -1, 0, myRoom);
@@ -915,7 +915,7 @@ module.exports = {
                                 DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
                                 // console.log(JSON.stringify(myRoom));
                             }
-                            console.log('Six skip debugging...', myPos, DICE_ROLLED);
+                            // console.log('Six skip debugging...', myPos, DICE_ROLLED);
                             await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                             // SEND EVENT
                             let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
@@ -1801,7 +1801,7 @@ module.exports = {
         if (!params.room) return false;
 
         let start = await _tab.tournamentStartGame(params.room, myRoom, gamePlayData);
-        console.log('AFTER START ==>', JSON.stringify(start));
+        // console.log('AFTER START ==>', JSON.stringify(start));
         // let tableD = await Table.findOne({room: params.room});
         let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
 
@@ -1940,7 +1940,7 @@ module.exports = {
             logDNA.warn(`user found at join_previous`, logData);
 
             let alreadyPlaying = _tab.alreadyPlayingTable(us.id,myRoom);
-            console.log('join_previous alreadyPlaying- ', JSON.stringify(alreadyPlaying));
+            // console.log('join_previous alreadyPlaying- ', JSON.stringify(alreadyPlaying));
             if (alreadyPlaying.status == 1)
             {
                 // var tab = await Table.findOne({room: alreadyPlaying.table.room, 'players.id': id});

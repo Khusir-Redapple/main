@@ -746,7 +746,7 @@ class _Tables
 
                 }
             }
-            
+            console.log('user_id =>', myPosition, 'value =>', DiceValue);
             // if(DiceValue === undefined || DiceValue === null || DiceValue == '') {
             //    return this.getRandomDiceValue(myPosition, myRoom);
             // }
@@ -1903,7 +1903,7 @@ class _Tables
                     meta: table.users
                 };
                 logDNA.log(`${table.room}_set_${myRoom.no_of_diceSet}`, logData);
-                console.log(JSON.stringify(table.users));
+                // console.log(JSON.stringify(table.users));
             }
              // pop from top of array and update the property value.
              if(table.users[idx]) {

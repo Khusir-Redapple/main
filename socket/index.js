@@ -293,7 +293,7 @@ module.exports = function (io, bullQueue) {
                     "current_turn_type": rez.current_turn_type,
                     "dices_rolled": rez.dices_rolled,
                 }
-                console.log('join_previous end- ', JSON.stringify(rez));
+                // console.log('join_previous end- ', JSON.stringify(rez));
                return callback(compressedObj); 
 
             } catch (ex) {
