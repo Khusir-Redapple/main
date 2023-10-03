@@ -395,8 +395,8 @@ module.exports = {
             // to validate player have passed same value that have in backend.
             let diceValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
             // console.log('roll skip debugging==>', myPos, diceValue);
-            // if (diceValue.length !== 0 && params.dice_value != diceValue) {
-            if (diceValue.length !== 0 && (params.dice_value != 6 || diceValue != 6)) {
+            if (diceValue.length !== 0 && params.dice_value != diceValue) {
+            // if (diceValue.length !== 0 && (params.dice_value != 6 || diceValue != 6)) {
                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', -1, 0, myRoom);
                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
