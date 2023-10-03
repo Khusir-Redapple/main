@@ -292,9 +292,9 @@ module.exports = {
                     DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
                     // console.log(JSON.stringify(myRoom));
                 }
-
+                // comment the below line to unnessery update value.
                 // await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
-                // console.log('update turn 6');
+                console.log('update turn 6', DICE_ROLLED);
                 await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
                 let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
