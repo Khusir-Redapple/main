@@ -917,6 +917,7 @@ module.exports = {
                             }
                             // console.log('Six skip debugging...', myPos, DICE_ROLLED);
                             await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
+                            console.log('pending bonus== 1', DICE_ROLLED);
                             // SEND EVENT
                             let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
                             let event = {
@@ -1701,6 +1702,7 @@ module.exports = {
                             // console.log(JSON.stringify(myRoom));
                         }
                         await _tab.diceRolled(params.room, mypos, DICE_ROLLED, myRoom, gamePlayData);
+                        console.log('pending bonus== 2', DICE_ROLLED);
                         // SEND EVENT
                         let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, mypos);
                         let event = {
