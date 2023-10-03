@@ -338,7 +338,7 @@ module.exports = {
 
     //Move Made
     moveTourney: async function (params, id, gamePlayData, myRoom) {
-        // console.log('Move Made', params);
+        console.log('Move Made', params);
         try {
             // To capture pawn tap time
             let pawnTime = await _tab.setPawnMoveTime(myRoom);
