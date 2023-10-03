@@ -293,7 +293,7 @@ module.exports = {
                     // console.log(JSON.stringify(myRoom));
                 }
 
-                await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
+                // await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                 // console.log('update turn 6');
                 await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
                 let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
