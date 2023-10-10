@@ -598,14 +598,19 @@ module.exports = function (io, bullQueue) {
                 // Here we need to check if there is only one player left in the game 
                 // then update the game_data response
 
-                const activePlayerLeft = userData.filter(item => item.is_left === true).length;
-                if (activePlayerLeft <= 1) {
-                    // Update the userData
-                    var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
-                    for(let i = 0; i< endGameRes.rank.length;i++){
-                        userData[i] = endGameRes.rank[i];
-                    }
+                // Update the userData
+                var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
+                for(let i = 0; i< endGameRes.rank.length;i++){
+                    userData[i] = endGameRes.rank[i];
                 }
+                // const activePlayerLeft = userData.filter(item => item.is_left === true).length;
+                // if (activePlayerLeft <= 1) {
+                //     // Update the userData
+                //     var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
+                //     for(let i = 0; i< endGameRes.rank.length;i++){
+                //         userData[i] = endGameRes.rank[i];
+                //     }
+                // }
                 response.callback.room = myRoom.room;
                 response.callback.game_data = userData;
                 callback(response.callback);
