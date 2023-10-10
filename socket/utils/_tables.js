@@ -858,39 +858,28 @@ class _Tables
 
     updateCurrentTurn(room, pos, type, prev, move, myRoom)
     {
-      //console.log('updateCurrentTurn input ' + room + "_"+ pos+ "_"+ type+ "_"+prev+ "_"+move+ "_"+JSON.stringify(myRoom))
-        // for (let i = 0; i < this.tables.length; i++)
-        // {
-        //     if (this.tables[i].room == room)
-        //     {
-                //for debugging.....
-                //console.log('updateCurrentTurn >>>:: ', myRoom.users[pos]);
-               if(pos<0)
-                  return;
-                if (prev != -1 && move == 0)
-                {
-                    myRoom.users[prev].dices_rolled = [];
-                    myRoom.users[prev].six_counts = 0;
-                    myRoom.users[pos].turn += 1;
-                }
-                if (move)
-                {
-                    myRoom.current_turn_type = type;
-                    myRoom.current_turn = pos;
-                }
-                else
-                {
-                    myRoom.current_turn = pos;
-                    myRoom.turn_start_at = new Date().getTime();
-                    myRoom.turn_timestamp = new Date();
-                    //console.log("Line 701 turn set : ", new Date().getTime(), new Date());
-                    myRoom.current_turn_type = type;
-                }
-                //console.log('updateCurrentTurn res ' + JSON.stringify(myRoom))
-            // }
-        // }
-
+        if(pos<0)
+            return;
+        if (prev != -1 && move == 0)
+        {
+            myRoom.users[prev].dices_rolled = [];
+            myRoom.users[prev].six_counts = 0;
+            myRoom.users[pos].turn += 1;
+        }
+        if (move)
+        {
+            myRoom.current_turn_type = type;
+            myRoom.current_turn = pos;
+        }
+        else
+        {
+            myRoom.current_turn = pos;
+            myRoom.turn_start_at = new Date().getTime();
+            myRoom.turn_timestamp = new Date();
+            myRoom.current_turn_type = type;
+        }
     }
+
     updateCurrentTime(room, myRoom)
     {
         myRoom.turn_start_at = new Date().getTime();

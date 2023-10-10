@@ -2368,8 +2368,8 @@ module.exports = {
         myRoom.users.push({
             id:"fa076935",
             numeric_id:"fa076935",
-            name:"JohnDeer@abc.in",
-            user_token:"fa076935-8644-41dc-8862-3c29602dc65c",
+            name:"Khusir",
+            user_token:"f0952823-a280-4ae2-991f-24b326e338cf",
             profile_pic:"https://lh5.googleusercontent.com/-gFsipyC6xd8/AAAAAAAAAAI/AAAAAAAABlM/BewBLZtCGJg/s96-c/photo.jpg",
             lobbyId:"98575",
             position:0,
@@ -2395,8 +2395,8 @@ module.exports = {
         });
         myRoom.users.push({
             id:"fa076936",
-            numeric_id:"fa076935",
-            name:"JohnDeer@abc.in",
+            numeric_id:"fa076936",
+            name:"Manas(captan)",
             user_token:"fa076935-8644-41dc-8862-3c29602dc65c",
             profile_pic:"https://lh5.googleusercontent.com/-gFsipyC6xd8/AAAAAAAAAAI/AAAAAAAABlM/BewBLZtCGJg/s96-c/photo.jpg",
             lobbyId:"98575",
@@ -2425,10 +2425,10 @@ module.exports = {
        
         // gamePlay data
         const gamePlayData = {
-            room:"1000002",
+            room:"1000001",
             created_at:1696836871308,
             data : {
-                User:"f0952823",
+                User:"fa076935",
                 lobbyId:"98575",
                 turn:1,
                 roll:[],
@@ -2457,7 +2457,7 @@ module.exports = {
                 turn_taken : 0,
                 pawn_positions:[0,0,0,0],
                 game_time:0,
-                room_id:"1000002",
+                room_id:"1000001",
                 timestamp:1696836872430
             }
         };
@@ -2473,9 +2473,9 @@ module.exports = {
             turnTime:params.turnTime,
             payoutConfig:["1"],
             win_amount:{"1":12},
-            room:"1000002",
+            room:"1000001",
             created_at:1696836872364,
-            players:[{"id":"f0952823","token":"f0952823-a280-4ae2-991f-24b326e338cf","fees":"12","is_active":true,"rank":1,"pl":12},{"id":"fa076935","token":"fa076935-8644-41dc-8862-3c29602dc65c","fees":"12","is_active":false,"rank":2,"pl":0}],
+            players:[{"id":"fa076935","token":"f0952823-a280-4ae2-991f-24b326e338cf","fees":"12","is_active":true,"rank":1,"pl":12},{"id":"fa076936","token":"fa076935-8644-41dc-8862-3c29602dc","fees":"12","is_active":false,"rank":2,"pl":0}],
             game_started_at:1696836872390,
             turn_start_at:1696836872390,
             game_completed_at:1696836884121,
@@ -2501,7 +2501,7 @@ module.exports = {
             };
         }
         var mypos = await _tab.getMyPosition(params.room, id, myRoom);
-        // console.log('My position::', mypos);
+        console.log('My position::', mypos);
         gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
         if (mypos != -1) {
             var check = await _tab.isCurrentTurnMine(params.room, mypos, myRoom);
