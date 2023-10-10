@@ -837,6 +837,311 @@ module.exports = function (io, bullQueue) {
             // findAndRemoveFromRoomBySocketId(socket);
         });
 
+        /**
+         * Below events are only for Ludo Tournament
+         */
+        socket.on('tournament_join', async (params, callback) => {
+            // save player token into redis
+            await redisCache.addToRedis(socket.id, params.token);
+            try {
+                if (!params.token) {
+                    return callback({
+                        status: 0,
+                        message: 'No Token provided',
+                    });
+                }
+                return callback({
+                    status: 1,
+                    message: 'Socket registered successfully'
+                });
+            } catch (err)
+            {
+                // for logDNA 
+                let logData = {
+                    level: 'error',
+                    meta: {'env' : `${process.env.NODE_ENV}`, 'error': err, 'params': params,stackTrace : err.stack }
+                };
+                logDNA.error('tournament_join', logData);
+
+                if (typeof callback == 'function')
+                    return callback({
+                        status: 0,
+                        message: 'An error was encountered. Please join a new game.',
+                    });
+                return callback();
+            }                        
+        });
+
+        socket.on('tournament_verify', async (data, callback) => {
+            const startTime = Date.now();
+            try {
+                if (!data || !data.token) {
+                    return callback({
+                        status: 0,
+                        message: 'Token missing',
+                    });
+                }
+                let verifyUser = await requestTemplate.post(`verifyuser`, {
+                    token: data.token
+                });
+                if (!verifyUser.isSuccess) {
+                    return callback({
+                        status: 0,
+                        message: verifyUser.error || localization.apiError,
+                    });
+                }
+                // console.log(verifyUser);
+                // {
+                //     isSuccess: true,
+                //     message: 'success',
+                //     status_code: '200',
+                //     data: {
+                //       token: 'f0952823-a280-4ae2-991f-24b326e338cf',
+                //       user_id: 'f0952823',
+                //       user_name: 'JohnDeer@abc.in',
+                //       profile_pic: 'https://lh5.googleusercontent.com/-gFsipyC6xd8/AAAAAAAAAAI/AAAAAAAABlM/BewBLZtCGJg/s96-c/photo.jpg'
+                //     },
+                //     contestId: '222',
+                //     lobbyId: '98575',
+                //     payoutConfig: { '1': '1' },
+                //     amount: 12,
+                //     turnTime: 10,
+                //     gameTime: 10,
+                //     participants: 2
+                //   }
+
+                let params = verifyUser.data;
+                params.room_fee = verifyUser.amount.toString();
+                params.no_of_players = verifyUser.participants.toString();
+
+                params.totalWinning = verifyUser.amount;
+                params.lobbyId = verifyUser.lobbyId;
+                params.entryFee = 0;
+                if ('entryFee' in verifyUser) {
+                    params.entryFee = verifyUser.entryFee;
+                };                                
+                params.gameTime = verifyUser.gameTime;            
+                params.turnTime = verifyUser.turnTime;            
+
+                if (!params || !params.user_id) {
+                    return callback({
+                        status: 0,
+                        message: localization.missingParamError,
+                    });
+                }
+                socket.data_id = params.user_id.toString();
+                socket.data_name = params.user_name;
+                socket.join(socket.data_id);
+                await Socketz.updateSocket(params.user_id, socket);
+                await redisCache.addToRedis(data.token, params.user_id.toString());
+                var myId = await Socketz.getId(socket.id);
+                if (!myId) {
+                    return callback({
+                        status: 0,
+                        message: 'An error was encountered. Please join a new game.',
+                    });
+                }
+                var myRoom = await _TableInstance.createTableforTournament(params);
+                let compressedMyRoom = myRoom.users.map((element) => {
+                    return {
+                        "name": element.name,
+                        "id": element.id,
+                        "profile_pic": element.profile_pic,
+                        "position": element.position,
+                        "is_active": element.is_active,
+                        "is_done": element.hasOwnProperty('is_done') ? element.is_done : false,
+                        "is_left": element.hasOwnProperty('is_left') ? element.is_left : false,
+                        "rank": element.rank,
+                        "tokens": element.tokens,
+                        "life": element.life,
+                        "token_colour": element.token_colour,
+                    };
+                });
+                let compressedTable = {
+                    "room": myRoom.room,
+                    "totalWinning": myRoom.totalWinning,
+                    "players_done": parseInt(myRoom.players_done),
+                    "players_won": myRoom.players_won,
+                    "current_turn": myRoom.current_turn,
+                    "current_turn_type": myRoom.current_turn_type,
+                    "no_of_players": myRoom.no_of_players,
+                    "users": compressedMyRoom,
+                    "entryFee": myRoom.entryFee,
+                    "turn_time": myRoom.turn_time,
+                    "timeToCompleteGame": myRoom.timeToCompleteGame,
+                    "server_time": new Date(),
+                    "turn_timestamp": new Date(),
+                }
+
+                let compressedObj = {
+                    "status": 1,
+                    "table": compressedTable,
+                    "position": 0,
+                    "timerStart": myRoom.timerStart,
+                    "default_diceroll_timer": myRoom.default_diceroll_timer,
+                }
+                callback(compressedObj);
+                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + myRoom.room);
+                socket.join(myRoom.room);
+                var params_data = {
+                    room: myRoom.room,
+                }
+                var start = await _TableInstance.startIfPossibleTournament(params_data, myRoom, gamePlayData);
+                // console.log("Start", start);
+                if (start) {
+                    let reqData = await _TableInstance.getGameUsersData(start);
+                    await requestTemplate.post(`startgame`, reqData);
+                    // if tournament possible
+                    await startTournament(start, socket, myRoom, gamePlayData);
+                    await bullQueue.add({
+                        name: "gameCompletionQueue",
+                        payload: {
+                            start,
+                            myRoom
+                        }
+                    }, {
+                        delay: 500
+                    });
+                    await redisCache.addToRedis(myRoom.room, myRoom);
+                    await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
+                }
+            } catch (error) {
+                let logData = {
+                    level: 'error',
+                    meta: {
+                        'env': `${process.env.NODE_ENV}`,
+                        'error': error,
+                        'params': data,
+                        stackTrace: error.stack
+                    }
+                };
+                logDNA.error('join_tournament_game', logData);
+                return callback();
+            } finally {
+                const endTime = (Date.now() - startTime);
+                let logData = {
+                    level: 'warning',
+                    meta: {
+                        p: 'joinTournament',
+                        responseTime: endTime,
+                        'env': `${process.env.NODE_ENV}`
+                    }
+                };
+                logDNA.warn(`join_tournament_game`, logData);
+            }
+        });
+
+        socket.on('tournament_diceRoll', async (params, callback) => {
+            const startTime = Date.now();
+            try {
+               
+                let myId = await Socketz.getId(socket.id);
+                // redis call by room.
+                let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params.room);
+                let response = await _TableInstance.tournamntGameDiceRolled(params, myId, myRoom, gamePlayData);
+                await redisCache.addToRedis(myRoom.room, myRoom);
+                await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
+                let turnTimer = config.turnTimer;
+                let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                if(tableData && 'turnTime' in tableData) { turnTimer = tableData.turnTime; }
+                turnTimer += 2;
+                turnTimer = turnTimer * 1000;
+
+                if(response && response.events)
+                {
+                    for (const d of response.events)
+                    {
+                        if(d.name == 'make_diceroll' && response.callback.skip_dice == true)
+                        {
+                            await bullQueue.add(
+                                {
+                                    name: "playerTurnQueue",
+                                    payload: { room: params.room },
+                                },
+                                {
+                                    delay: turnTimer
+                                }
+                            );
+                            break;
+                        }
+                    }
+                }
+                callback(response.callback);
+                if (response.callback.status == 1) processEvents(response, myRoom, socket);
+            }
+            catch (error) {
+                let logData = {
+                    level: 'error',
+                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': error, 'params': params, stackTrace : error.stack}
+                };
+                logDNA.error('tournamnt_game_dice_rolled', logData);
+                return callback();
+                
+            } finally {
+                const endTime = (Date.now() - startTime);
+                let logData = {
+                    level: 'warning',
+                    meta: { p: 'tournamnt_dice_rolled',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                };
+                logDNA.warn(`tournamnt_game_dice_rolled`,logData);
+            }
+        });
+
+        socket.on('tournament_moveMade', async (params, callback) => {
+            // console.log('tournament_move_made', params);
+            const startTime = Date.now();
+            let myId = await Socketz.getId(socket.id);
+            let myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+            try {
+                let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params.room);
+                let response = await _TableInstance.tournamentMoveMade(params, myId, gamePlayData, myRoom);
+                await redisCache.addToRedis(myRoom.room, myRoom);
+                await redisCache.addToRedis('gamePlay_' + myRoom.room, gamePlayData);
+                if(response)
+                {
+                    let turnTimer = config.turnTimer;
+                    let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
+                    if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
+                    turnTimer += 2;
+
+                    if(response.callback && response.callback.isKillable)
+                        turnTimer += 2.5;
+                    turnTimer = turnTimer * 1000;
+
+                    await bullQueue.add(
+                        {
+                            name: "playerTurnQueue",
+                            payload: { room: params.room },
+                        },
+                        {
+                            delay: turnTimer
+                        }
+                    );
+                callback(response.callback);
+                if(response.events  && response.events.length>0)
+                {
+                    if (response.callback.status == 1) processEvents(response, myRoom, socket);
+                }
+             }
+            }
+            catch (err) {
+                let logData = {
+                    level: 'error',
+                    meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, 'params': params, 'room' : myRoom, stackTrace : err.stack,'id':myId}
+                };
+                logDNA.error('tournament_game_move_made', logData);
+                return callback();
+            } finally {
+                const endTime = (Date.now() - startTime);
+                let logData = {
+                    level: 'warning',
+                    meta: { p: 'tournament_move_made',responseTime: endTime,'env' : `${process.env.NODE_ENV}`}
+                };
+                logDNA.warn(`tournament_game_move_made`, logData);
+            }
+        });
+
     });
 
     function removeListeners(socket) {
@@ -949,9 +1254,6 @@ module.exports = function (io, bullQueue) {
         );
     }
 
-    async function delayStartTimebyThreeSeconds() {
-
-    }
     async function calculateWinAmount(amount, payoutConfig) {
         let room_fee = amount;
         let payConfig = payoutConfig;
@@ -1324,7 +1626,15 @@ module.exports = function (io, bullQueue) {
                         let currentUser = myRoom.users.find(x => x.id.toString() == id_of_current_turn);
                         if (currentUser && currentUser.is_active && !myRoom.isGameCompleted) {
                             //console.log('SKIPPED for extra life deduct------->>', JSON.stringify(tableD));
-                            let response = await _TableInstance.skipTurn(params_data, id_of_current_turn, myRoom, gamePlayData);
+                            // for tournament Game
+                            let response;
+                            if(myRoom.is_it_tournament) {
+                                response = await _TableInstance.skipTurnforTournament(params_data, id_of_current_turn, myRoom, gamePlayData);
+                            } else {
+                                // for regular game
+                                response = await _TableInstance.skipTurn(params_data, id_of_current_turn, myRoom, gamePlayData);
+                            }
+
                             myRoom = response.table;
                             gamePlayData = response.gamePlayData;
 
