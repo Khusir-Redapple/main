@@ -1508,24 +1508,24 @@ class _Tables
             // console.log('Rank ------------------->', otherRank, UserRankWiseAmount.get(1));
             let winAmount = 0;
             if (typeof amount != 'undefined' && otherRank == 1 
-                && UserRankWiseAmount.get(1) && !table.users[k].hasOwnProperty("is_left"))
+                && UserRankWiseAmount.get(1) ) // && !table.users[k].hasOwnProperty("is_left")
             {
                 // console.log('Rank 1 ------------------->', UserRankWiseAmount.get(1));
                 winAmount = otherRank == 1 ? Math.floor(UserRankWiseAmount.get(1)/(oneRankCounter == 0 ? 1 : oneRankCounter)) : 0;
                                             
             } else if (typeof amount != 'undefined' && otherRank == 2 
-                && UserRankWiseAmount.get(2) && !table.users[k].hasOwnProperty("is_left"))
+                && UserRankWiseAmount.get(2) ) // && !table.users[k].hasOwnProperty("is_left")
             {
                 // console.log('Rank 2 ------------------->', UserRankWiseAmount.get(2));
                 winAmount = otherRank == 2 ? Math.floor(UserRankWiseAmount.get(2)/(twoRankCounter == 0 ? 1 : twoRankCounter)) : 0;            
                 
             } else if (typeof amount != 'undefined' && otherRank == 3 
-                && UserRankWiseAmount.get(3) && !table.users[k].hasOwnProperty("is_left"))
+                && UserRankWiseAmount.get(3) ) // && !table.users[k].hasOwnProperty("is_left")
             {
                 // console.log('Rank 3 ------------------->', UserRankWiseAmount.get(3));
                 winAmount = otherRank == 3 ? Math.floor(UserRankWiseAmount.get(3)/(threeRankCounter == 0 ? 1 : threeRankCounter)) : 0;
             } else if (typeof amount != 'undefined' && otherRank == 4
-                && UserRankWiseAmount.get(4) && !table.users[k].hasOwnProperty("is_left"))
+                && UserRankWiseAmount.get(4) ) // && !table.users[k].hasOwnProperty("is_left")
             {
                 // console.log('Rank 4 ------------------->', UserRankWiseAmount.get(4));
                 winAmount = otherRank == 4 ? Math.floor(UserRankWiseAmount.get(4)/(fourRankCounter == 0 ? 1 : fourRankCounter)) : 0;
