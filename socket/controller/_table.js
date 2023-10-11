@@ -3133,7 +3133,6 @@ module.exports = {
                 gamePlayData.data.time_between_tap_and_move.push(differences[0]);
             }
 
-
             // VALIDATION
             if (!params) {
                 return { callback: { status: 0, message: localization.missingParamError } };
