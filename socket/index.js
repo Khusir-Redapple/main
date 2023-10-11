@@ -1114,13 +1114,11 @@ module.exports = function (io, bullQueue) {
                                             });
                                             // recalculate data for result screen if player lost lives.
                                             var endGameRes = await _tab.calculateGameEndData(myRoom.room, myRoom.win_amount, myRoom);
-                                            console.log('endGameData on player left==>', endGameRes);
                                             for(let i = 0; i< endGameRes.rank.length;i++){
                                                 compressedData[i] = endGameRes.rank[i];
                                             }
                                             // final compressed response to emmit.
                                             d.data.game_data = compressedData;
-                                            console.log('d.data=>', d.data)
                                             io.to(d.room).emit(d.name, d.data);
                                         } else if(d.name == 'make_diceroll') {
                                             delete d.data.turn_timestamp;
@@ -1193,6 +1191,7 @@ module.exports = function (io, bullQueue) {
                                         });
                                         d.data.score_data = user_score;
                                         io.to(d.room).emit(d.name, d.data);
+
                                     } else if(d.name == 'playerLeft') {
                                         let compressedData = d.data.game_data.map((cur) => {
                                             return {
@@ -1208,17 +1207,14 @@ module.exports = function (io, bullQueue) {
                                         });
                                         // recalculate data for result screen if player lost lives.
                                         var endGameRes = await _tab.calculateGameEndData(myRoom.room, myRoom.win_amount, myRoom);
-                                        console.log('endGameData on player left==>', endGameRes);
                                         for(let i = 0; i< endGameRes.rank.length;i++){
                                             compressedData[i] = endGameRes.rank[i];
                                         }
                                         // final compressed response to emmit.
                                         d.data.game_data = compressedData;
-                                        console.log('d.data=>', d.data)
                                         io.to(d.room).emit(d.name, d.data);
                                     }
                                     else {
-                                        console.log('events ', d.name);
                                         io.to(d.room).emit(d.name, d.data);
                                     }
                                 }
@@ -1245,13 +1241,11 @@ module.exports = function (io, bullQueue) {
                                     });
                                     // recalculate data for result screen if player lost lives.
                                     var endGameRes = await _tab.calculateGameEndData(myRoom.room, myRoom.win_amount, myRoom);
-                                    console.log('endGameData on player left==>', endGameRes);
                                     for(let i = 0; i< endGameRes.rank.length;i++){
                                         compressedData[i] = endGameRes.rank[i];
                                     }
                                     // final compressed response to emmit.
                                     d.data.game_data = compressedData;
-                                    console.log('d.data=>', d.data)
                                     io.to(d.room).emit(d.name, d.data);
                                 }
                                 else {
