@@ -913,7 +913,7 @@ module.exports = function (io, bullQueue) {
                 let params = verifyUser.data;
                 params.room_fee = verifyUser.amount.toString();
                 params.no_of_players = verifyUser.participants.toString();
-
+                params.payoutConfig = verifyUser.payoutConfig;
                 params.totalWinning = verifyUser.amount;
                 params.lobbyId = verifyUser.lobbyId;
                 params.entryFee = 0;
