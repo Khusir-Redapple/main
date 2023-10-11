@@ -2507,7 +2507,10 @@ module.exports = {
             var check = await _tab.isCurrentTurnMine(params.room, mypos, myRoom);
             if (check) {
                 // To update turn count
-                _tab.updateTurnCount(id, myRoom, gamePlayData);
+                const response = _tab.updateTurnCount(myRoom, gamePlayData);
+                myRoom = response.table;
+                gamePlayData = response.gamePlayData;
+
                 let deductRes = await _tab.deductLife(params.room, id, myRoom, gamePlayData);
                 myRoom = deductRes.table;
                 gamePlayData = deductRes.gameData;
@@ -2744,7 +2747,9 @@ module.exports = {
         }
         
         // To update turn count
-        _tab.updateTurnCount(id, myRoom, gamePlayData);
+        const response = _tab.updateTurnCount(myRoom, gamePlayData);
+        myRoom = response.table;
+        gamePlayData = response.gamePlayData;
 
         let isJackpot = false;
         let resObj = { callback: { status: 1, message: localization.success }, events: [] };
