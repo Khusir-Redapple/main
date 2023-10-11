@@ -1193,7 +1193,32 @@ module.exports = function (io, bullQueue) {
                                         });
                                         d.data.score_data = user_score;
                                         io.to(d.room).emit(d.name, d.data);
-                                    } else {
+                                    } else if(d.name == 'playerLeft') {
+                                        let compressedData = d.data.game_data.map((cur) => {
+                                            return {
+                                                //player_index, name, rank, amount, id, score, is_left
+                                                "player_index":cur.player_index,
+                                                "id":cur.id,
+                                                "name":cur.name,
+                                                "rank":cur.rank,
+                                                "amount":cur.amount,
+                                                "is_left":cur.hasOwnProperty('is_left') ? cur.is_left : false,
+                                                "score":cur.score,
+                                            };
+                                        });
+                                        // recalculate data for result screen if player lost lives.
+                                        var endGameRes = await _tab.calculateGameEndData(myRoom.room, myRoom.win_amount, myRoom);
+                                        console.log('endGameData on player left==>', endGameRes);
+                                        for(let i = 0; i< endGameRes.rank.length;i++){
+                                            compressedData[i] = endGameRes.rank[i];
+                                        }
+                                        // final compressed response to emmit.
+                                        d.data.game_data = compressedData;
+                                        console.log('d.data=>', d.data)
+                                        io.to(d.room).emit(d.name, d.data);
+                                    }
+                                    else {
+                                        console.log('events ', d.name);
                                         io.to(d.room).emit(d.name, d.data);
                                     }
                                 }
