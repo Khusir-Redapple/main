@@ -919,7 +919,6 @@ class _Tables
         // gamePlayData.data.cut_pawn = 0,
         // gamePlayData.data.cut_move = 0,
         gamePlayData.data.total_turn = myRoom.total_turn,
-        gamePlayData.data.turn_taken = myRoom.turn_taken,
         gamePlayData.data.cut_bonus = 0,
         gamePlayData.data.home_base = 0,
         gamePlayData.data.home_base_bonus = 0,
@@ -2236,19 +2235,6 @@ class _Tables
                     }
                 }
         return false;
-    }
-
-    /**
-     *  Below methods are only used for ludo tourname game
-     */
-    
-    updateTurnCount(myRoom, gamePlayData) {
-        myRoom.turn_taken += 1;
-        gamePlayData.data.turn_taken += 1;
-        return {
-            'table' : myRoom,
-            'gamePlayData' : gamePlayData
-        }
     }
 }
 

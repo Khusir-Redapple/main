@@ -2336,10 +2336,24 @@ module.exports = {
     },
 
     /**
-     *  Below methods are used for Ludo Tournament Only
+     *  Below methods are used only for Ludo Tournament Only
      */
 
     createTableforTournament : async function(params) {
+        // user pawn color setup
+        const color = [0, 1, 2, 3];
+        const shuffledColor = color.sort(() => 0.5 - Math.random());
+        // To generate dice value
+        const dice_value = _tab.getCustomizedValue(23, 2);
+        // To generate bonus set value
+        const bonus_set_one = [];
+        for (let index = 0; index < 5; index++) {
+            bonus_set_one.push(_tab.generateBonusSetOne());                
+        }
+        const bonus_set_two = [];
+        for (let index = 0; index < 3; index++) {
+            bonus_set_two.push(_tab.generateBonusSetTwo());                
+        }
         // redis myRoom data
         const myRoom =  {
             room: params.lobbyId,
@@ -2385,13 +2399,13 @@ module.exports = {
             points_per_diceRoll: [],
             bonusPoints: 0,
             moves: 0,
-            bonus_count:0,
-            bonusSet_1:[[6,2,1,5,2,1],[2,3,6,5,2,1],[3,6,5,3,3,4],[3,5,3,2,3,6],[2,5,1,3,6,4]],
-            bonusSet_2:[[5,3,6,4],[6,4,5,4],[1,5,1,6]],
-            pawnSafe_status:[true,true,true,true],
-            checkpoint:[false,false,false,false],
-            token_colour:2,
-            diceValue:[3,5,3,3,4,5,2,1,2,1,4,1,5,1,6,5,5,6,6,4,3,1,2]
+            bonus_count: 0,
+            bonusSet_1: bonus_set_one,
+            bonusSet_2: bonus_set_one,
+            pawnSafe_status: [true,true,true,true],
+            checkpoint: [false,false,false,false],
+            token_colour: shuffledColor[0],
+            diceValue: dice_value
         },
         {
             id:"fa01",
@@ -2418,7 +2432,7 @@ module.exports = {
             bonusSet_2:[],
             pawnSafe_status:[true,true,true,true],
             checkpoint:[false,false,false,false],
-            token_colour:2,
+            token_colour: shuffledColor[1],
             diceValue:[]
         },
         {
@@ -2446,7 +2460,7 @@ module.exports = {
             bonusSet_2:[],
             pawnSafe_status:[true,true,true,true],
             checkpoint:[false,false,false,false],
-            token_colour:2,
+            token_colour:shuffledColor[2],
             diceValue:[]
         },
         {
@@ -2474,7 +2488,7 @@ module.exports = {
             bonusSet_2:[],
             pawnSafe_status:[true,true,true,true],
             checkpoint:[false,false,false,false],
-            token_colour:2,
+            token_colour:shuffledColor[3],
             diceValue:[]
         });
         await redisCache.addToRedis(myRoom.room, myRoom);
@@ -2510,7 +2524,6 @@ module.exports = {
                 life_lost:0,
                 lives_left:3,
                 total_turn : 23,
-                turn_taken : 0,
                 pawn_positions:[0,0,0,0],
                 game_time:0,
                 room_id: params.lobbyId,
@@ -2563,9 +2576,9 @@ module.exports = {
             var check = await _tab.isCurrentTurnMine(params.room, mypos, myRoom);
             if (check) {
                 // To update turn count
-                const response = _tab.updateTurnCount(myRoom, gamePlayData);
-                myRoom = response.table;
-                gamePlayData = response.gamePlayData;
+                // const response = _tab.updateTurnCount(myRoom, gamePlayData);
+                // myRoom = response.table;
+                // gamePlayData = response.gamePlayData;
 
                 let deductRes = await _tab.deductLife(params.room, id, myRoom, gamePlayData);
                 myRoom = deductRes.table;
@@ -2701,7 +2714,7 @@ module.exports = {
                                 };
                                 rez_finalObj.events.push(event);
                                 let reqData = await this.getEndGameData(event.data, myRoom.room_fee);                                
-                                await requestTemplate.post(`endgame`, reqData);                               
+                                await requestTemplate.post(`endgame`, reqData);                            
                                 await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, mypos);
                             }                        
                             rez_finalObj.table = myRoom;
@@ -2803,9 +2816,9 @@ module.exports = {
         }
         
         // To update turn count
-        const response = _tab.updateTurnCount(myRoom, gamePlayData);
-        myRoom = response.table;
-        gamePlayData = response.gamePlayData;
+        // const response = _tab.updateTurnCount(myRoom, gamePlayData);
+        // myRoom = response.table;
+        // gamePlayData = response.gamePlayData;
 
         let isJackpot = false;
         let resObj = { callback: { status: 1, message: localization.success }, events: [] };
@@ -2834,7 +2847,6 @@ module.exports = {
         //dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
         //console.log("value got ", dices_rolled);
         resObj.callback.dices_rolled = dices_rolled;
-
         // ADD DICEROLLED EVENT 
         let event = {
             type: 'room_excluding_me',
@@ -2849,9 +2861,7 @@ module.exports = {
                 skip_dice: false
             },
         };
-        // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
         resObj.callback.skip_dice = false;
-
         // console.log('EVENT_PUSHED', event);
         resObj.events.push(event);
         var movePossible = await _tab.isMovePossible(params.room, id, myRoom);
@@ -3058,13 +3068,11 @@ module.exports = {
                 if (DICE_ROLLED_RES) {
                     myRoom = DICE_ROLLED_RES.table;
                     DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
-                    // console.log(JSON.stringify(myRoom));
                 }
-                // comment the below line to unnessery update value.
-                // await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
-                // console.log('update turn 6', DICE_ROLLED);
                 await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
-                let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
+                // added below two lines on 11-10-2023
+                await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
+                gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
                 resObj.callback.skip_dice = false;
                 let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
@@ -3196,7 +3204,6 @@ module.exports = {
                         server_time: new Date(),
                     },
                 };
-
                 resObj.events.push(event);
                 gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
                 let user_points = 0;
@@ -3221,11 +3228,6 @@ module.exports = {
                 params.token_index,
                 myRoom
             );
-            // console.log('Tournament movePossible >>', movePossibleExact);
-            // var tableD = await Table.findOne({
-            //     room: params.room,
-            // });
-
             if (!movePossibleExact) {
                 // if move not possible.
                 if (params.dice_value == 6) {
@@ -3279,10 +3281,6 @@ module.exports = {
                         DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                     }
                     await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-                    // console.log('[DICE VALUE SIX]', DICE_ROLLED);
-                    //await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-                    // let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
-                    // console.log('[DICE VALUE SIX]', dices_rolled, myPos);
                     let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
                     // SEND EVENT
                     let event = {
@@ -3303,12 +3301,8 @@ module.exports = {
                             server_time: new Date(),
                         },
                     };
-
                     resObj.events.push(event);
                 }
-
-                // console.log("MOVE NOT POSSIBLE =========>", JSON.stringify(resObj));
-                // SEND EVENT
                 // update the gamePlay data at the time of skip happen for non moveble event.
                 gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
                 let user_points = 0;
@@ -3374,7 +3368,6 @@ module.exports = {
                                 }
                             });
                         }
-
                         // Add one bonus if home happans on Six.
                         await _tab.addBonus(params.room, id, 0, "Home", myRoom, gamePlayData);
                         await _tab.addBonusPoints(params.room, id, 50, 1, 'home_base_bonus', myRoom, gamePlayData);
@@ -3387,7 +3380,6 @@ module.exports = {
                     }               
                     if (allHome)
                     {
-
                         // Add TurnComplete Event
                         let turnCompleteEvent = {
                             type: 'room_including_me',
@@ -3412,7 +3404,6 @@ module.exports = {
                         if (endGame)
                         {
                             let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
-
                             // Update values in user wallets & table data [DB]
                             // console.log('tableD::', tableD);
                             if (tableD) {
@@ -3516,13 +3507,8 @@ module.exports = {
                         // console.log('gamePlayDatNew: ' + JSON.stringify(gamePlayData));
 
                         var canIKillRes = await _tab.CanIKill(params.room, id, params.token_index, myPos, myRoom, gamePlayData);
-
                         myRoom = canIKillRes.myRoom;
                         gamePlayData = canIKillRes.gameData;
-                        // added new line
-                        //await redisCache.addToRedis('gamePlay_'+myRoom.room ,gamePlayData);
-
-                        // console.log("canIKill >>>", canIKillRes)
                         let canIKill = canIKillRes.dead_possible;
                         if (canIKill) {
                             // console.log("canIKill true:::", canIKill[0])
@@ -3564,7 +3550,6 @@ module.exports = {
                                         }
                                     });
                                 }
-
                                 // moveBonusCheck = true;
                                 killed = true;
                                 await _tab.addBonus(params.room, id, 0, "Kill", myRoom, gamePlayData);
@@ -3586,10 +3571,6 @@ module.exports = {
                             moveBonusCheck = true;
                         }
                         // Else [!canIKill]
-                        // else
-                        // {
-                        //     moveBonusCheck = true;
-                        // }
                         moveBonusCheck = true;
                     } catch (err) {
                         let logData = {
@@ -3598,18 +3579,14 @@ module.exports = {
                         };
                         logDNA.error('tournament_game_moveTourney+2', logData);
                     }
-
                 }
 
                 // console.log('BONUS', moveBonusCheck);
                 // IF moveBonusCheck
                 if (moveBonusCheck) {
                     let movePossible = await _tab.isMovePossible(params.room, id, myRoom);
-                    // console.log('movePossible >>', movePossible);
-
                     let timer = 1500; //1500;
                     if (killed) timer = killTimer;//4000 //nostra 3000
-
                     // If Move Possible
                     if (movePossible) {
                         //  MAKE_MOVE TO ME
@@ -3638,12 +3615,8 @@ module.exports = {
                     }
                     // Else [!movePossible]
                     else {
-                        // console.log("in the SCRAP TURNB");
-                        // scrapTurn
-                        // let sixCounts = await _tab.setSix(params.room, id);
                         // console.log("set six...3")
                         _tab.scrapTurn(params.room, myPos, myRoom);
-
                         // Check If Bonus Pending
                         let pendingBonus = await _tab.getBonus(params.room, id, myRoom);
                         // console.log('GET BONUS', pendingBonus);
@@ -3756,8 +3729,6 @@ module.exports = {
             return resObj;
         } catch (err)
         {
-            // console.log('ERROR', err);
-
             let logData = {
                 level: 'error',
                 meta: { 'env': `${process.env.NODE_ENV}`, 'error': err, 'params': params, 'room': myRoom, stackTrace: err.stack }
@@ -3765,5 +3736,4 @@ module.exports = {
             logDNA.error('tournament_game_moveTourney_3', logData);
         }
     },
-
 };
