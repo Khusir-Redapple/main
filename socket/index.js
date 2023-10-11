@@ -1108,10 +1108,15 @@ module.exports = function (io, bullQueue) {
                                                     "name":cur.name,
                                                     "rank":cur.rank,
                                                     "amount":cur.amount,
-                                                    "is_left":cur.is_left,
+                                                    "is_left":cur.hasOwnProperty('is_left') ? cur.is_left : false,
                                                     "score":cur.score,
                                                 };
                                             });
+                                            // recalculate data for result screen if player lost lives.
+                                            var endGameRes = await _tab.calculateGameEndData(myRoom.room, myRoom.win_amount, myRoom);
+                                            for(let i = 0; i< endGameRes.rank.length;i++){
+                                                compressedData[i] = endGameRes.rank[i];
+                                            }
                                             // final compressed response to emmit.
                                             d.data.game_data = compressedData;
                                             io.to(d.room).emit(d.name, d.data);
