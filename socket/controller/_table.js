@@ -2367,7 +2367,7 @@ module.exports = {
             current_turn: 0,
             current_turn_type: "roll",
             turn_start_at: 0,
-            no_of_players: params.no_of_players,
+            no_of_players: 4,
             no_of_diceSet: 0,
             users : [],
             lobbyId: params.lobbyId,
@@ -2671,12 +2671,13 @@ module.exports = {
                         await requestTemplate.post(`matchmakingFailed`, reqData);
 
                             // Check if EndGame Possible
-                            let endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
-                            let endGame;
-                            if (endGameRes) {
-                                myRoom = endGameRes.table;
-                                endGame = endGameRes.rank;
-                            }
+                            // let endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
+                             let endGame = _tab.calculateTurnamentScore(myRoom.current_turn, myRoom);
+                            // let endGame;
+                            // if (endGameRes) {
+                            //     myRoom = endGameRes.table;
+                            //     endGame = endGameRes.rank;
+                            // }
                             if (endGame)
                             {
                                 let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
@@ -2686,14 +2687,14 @@ module.exports = {
                                     // in redis updated isGameCompleted property
                                     myRoom.isGameCompleted = true;
                                     await redisCache.addToRedis(params.room, myRoom);
-                                    endGame.map((eGame) => {
-                                        tableD.players.map((playersTable) => {
-                                            if (eGame.id.toString() == playersTable.id.toString()) {
-                                                playersTable.rank = eGame.rank;
-                                                playersTable.pl = eGame.amount;
-                                            }
-                                        })
-                                    })
+                                    // endGame.map((eGame) => {
+                                    //     tableD.players.map((playersTable) => {
+                                    //         if (eGame.id.toString() == playersTable.id.toString()) {
+                                    //             playersTable.rank = eGame.rank;
+                                    //             playersTable.pl = eGame.amount;
+                                    //         }
+                                    //     })
+                                    // })
 
                                     tableD.game_completed_at = new Date().getTime();
                                     tableD.isGameCompleted   = true;

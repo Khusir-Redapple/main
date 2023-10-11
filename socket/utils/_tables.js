@@ -2236,6 +2236,23 @@ class _Tables
                 }
         return false;
     }
+
+    /**
+     * Below methods are only used for Tournament Game
+     */
+    calculateTurnamentScore(pos, myRoom) {               
+        return [{
+            name: myRoom.users[pos].name,
+            id: myRoom.users[pos].id,
+            numeric_id: myRoom.users[pos].numeric_id,
+            player_index : myRoom.users[pos].position,
+            token : myRoom.users[pos].user_token,
+            rank: 0,           
+            amount: 0,
+            is_left: myRoom.users[pos].hasOwnProperty('is_left') ? myRoom.users[pos].is_left : false,
+            score: myRoom.users[pos].points + myRoom.users[pos].bonusPoints
+        }]
+    }
 }
 
 module.exports = {
