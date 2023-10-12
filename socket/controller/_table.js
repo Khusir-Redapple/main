@@ -3166,7 +3166,7 @@ module.exports = {
                     if (params.dice_value != 6) {
                         // Add extra Bonus
                         await _tab.addBonus(params.room, id, 1, "Home", myRoom, gamePlayData);
-                        await _tab.addBonusPoints(params.room, id, 50, 1, 'home_base_bonus', myRoom, gamePlayData);
+                        //await _tab.addBonusPoints(params.room, id, 50, 1, 'home_base_bonus', myRoom, gamePlayData);
                     }
                     else if (params.dice_value == 6) {
                         // If home happans with six, then extra_roll_reason should be home.
@@ -3179,7 +3179,7 @@ module.exports = {
                         }
                         // Add one bonus if home happans on Six.
                         await _tab.addBonus(params.room, id, 0, "Home", myRoom, gamePlayData);
-                        await _tab.addBonusPoints(params.room, id, 50, 1, 'home_base_bonus', myRoom, gamePlayData);
+                        // await _tab.addBonusPoints(params.room, id, 50, 1, 'home_base_bonus', myRoom, gamePlayData);
                     }
                     // Check if allHome
                     const allHomeRes = _tab.allHome(params.room, id, myRoom);
@@ -3422,7 +3422,8 @@ module.exports = {
                             await _tab.useBonus(params.room, id, myRoom);
                             // Send 'roll' to same player
                             console.log('update turn 29');
-                            await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
+                            // **** Not increasing the turn count when bonus roll given
+                            // await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
                             setTimeout(function () {
                                 _tab.updateCurrentTime(params.room, myRoom); /// to solve early leave deduction on token kill
                             }, timer)
