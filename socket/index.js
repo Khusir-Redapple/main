@@ -1847,6 +1847,8 @@ module.exports = function (io, bullQueue) {
             if(myRoom.total_turn === myRoom.users[0].turn) {
                 return;
             } else {
+                // To sent remaining turn 
+                io.to(start.room).emit('turnLeft', { status: 1, data: { turn: myRoom.total_turn - myRoom.users[0].turn} });
                 await bullQueue.add(job.data, {
                     delay: 1000
                 });
