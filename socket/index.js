@@ -852,7 +852,7 @@ module.exports = function (io, bullQueue) {
                 }
                 return callback({
                     status: 1,
-                    message: 'Socket registered successfully'
+                    joined: 0
                 });
             } catch (err)
             {
