@@ -2570,7 +2570,7 @@ module.exports = {
             };
         }
         var mypos = await _tab.getMyPosition(params.room, id, myRoom);
-        console.log('My position::', id, mypos);
+        console.log('skip turn position::', id, mypos);
         gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
         if (mypos != -1) {
             var check = await _tab.isCurrentTurnMine(params.room, mypos, myRoom);

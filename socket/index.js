@@ -1620,7 +1620,6 @@ module.exports = function (io, bullQueue) {
                         checkTabel.current_turn,
                         myRoom
                     );
-                    console.log("curr turn " + id_of_current_turn);
                     if (id_of_current_turn != -1) {
                         let currentUser = myRoom.users.find(x => x.id.toString() == id_of_current_turn);
                         if (currentUser && currentUser.is_active && !myRoom.isGameCompleted) {
