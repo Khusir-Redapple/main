@@ -1601,8 +1601,7 @@ module.exports = function (io, bullQueue) {
     }
 
     async function playerTurn(job) {
-        let params_data = job.payload;
-
+        let params_data = job.payload;        
         try {
             let myRoom = await redisCache.getRecordsByKeyRedis(params_data.room);
             let gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + params_data.room);
@@ -1621,7 +1620,7 @@ module.exports = function (io, bullQueue) {
                         checkTabel.current_turn,
                         myRoom
                     );
-                    //console.log("curr turn " + id_of_current_turn);
+                    console.log("curr turn " + id_of_current_turn);
                     if (id_of_current_turn != -1) {
                         let currentUser = myRoom.users.find(x => x.id.toString() == id_of_current_turn);
                         if (currentUser && currentUser.is_active && !myRoom.isGameCompleted) {
@@ -1664,6 +1663,7 @@ module.exports = function (io, bullQueue) {
 
         }
         catch (err) {
+            console.log('helooooooo', err);
             if(params_data && params_data.room)
             {
             let turnTimer = config.turnTimer;
