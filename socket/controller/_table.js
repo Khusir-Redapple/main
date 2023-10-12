@@ -2868,8 +2868,8 @@ module.exports = {
         var movePossible = await _tab.isMovePossible(params.room, id, myRoom);
         // IF MOVE POSSIBLE FROM CURRENT DICES & Position
 
-        const jackPOT = await _tab.jackPot(params.room, id, myRoom);
-        let sixCounts = await _tab.getSix(params.room, id, myRoom);
+        // const jackPOT = await _tab.jackPot(params.room, id, myRoom);
+        // let sixCounts = await _tab.getSix(params.room, id, myRoom);
         
         /**
          * To check current dice rolled value is 6 and move not possible. 
@@ -2879,70 +2879,14 @@ module.exports = {
         let turnTimer = config.turnTimer;
         let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
         if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
-
-        if (sixCounts == 2 && dices_rolled[0] == 6) {
-            //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
-            await _tab.scrapTurn(params.room, myPos, myRoom);
-            // DICE_ROLL TO NEXT
-            await _tab.setSix(params.room, id, myRoom);
-            // console.log('setSix');
-            // if consecutive 3 six happans the reset pending bonus.
-            // console.log('reset pending bonus');
-            await _tab.useBonus(params.room, id, myRoom);
-            let nextPos = 0;
-            // console.log('update turn 1');
-            await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
-            let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
-            let DICE_ROLLED;
-            if (DICE_ROLLED_RES) {
-                myRoom = DICE_ROLLED_RES.table;
-                DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
-            }
-            _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-            dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
-            gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
-            // console.log('game time from non movable event', gamePlayData.data.game_time);
-            await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
-            // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
-            resObj.callback.skip_dice = true;
-            threeSix = true;
-            // SEND EVENT
-            let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
-            let event = {
-                type: 'room_including_me',
-                room: params.room,
-                delay: 2000,
-                name: 'make_diceroll',
-                data: {
-                    room: params.room,
-                    position: nextPos,
-                    tokens: await _tab.getTokens(params.room, myRoom),
-                    dice: DICE_ROLLED,
-                    dices_rolled: [DICE_ROLLED],
-                    turn_start_at: turnTimer,
-                    extra_move_animation: false,
-                    skip_dice: skipDice,
-                    turn_timestamp: myRoom.turn_timestamp,
-                    server_time: new Date(),
-                },
-            };
-            myRoom = await _tab.clearDices(params.room, myPos, myRoom);
-            resObj.events.push(event);
-        }
+        
         if (movePossible) {
             // console.log('[MOVE POSSIBLE DICE ROLLED]');
             let timer = 150; // previously it was 500
             let myPos = await _tab.getMyPosition(params.room, id, myRoom);
             //  MAKE_MOVE TO ME
-            let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom); 
-            if (threeSix) {
-                // console.log('update turn 2');
-                //await _tab.updateCurrentTurn(params.room, nextPos, 'roll', myPos,0,myRoom);
-            }
-            else {
-                // console.log('update turn 3');
-                await _tab.updateCurrentTurn(params.room, myPos, 'move', -1, 1, myRoom);
-            };
+            let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
+            await _tab.updateCurrentTurn(params.room, myPos, 'move', -1, 1, myRoom);            
             let dices_roll = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
             // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
             resObj.callback.skip_dice = threeSix;
@@ -2964,139 +2908,42 @@ module.exports = {
             };
             resObj.events.push(event);
         }
-        // ELSE // if both are false
-        if (!movePossible && !jackPOT) {
-            // console.log('[MOVE IMPOSSIBLE DICE ROLLED]');
-            if (DICE_ROLLED != 6) {
-                // console.log('[DICE ROLLED NOT SIX]');
-                //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
-                _tab.scrapTurn(params.room, myPos, myRoom);
-                // DICE_ROLL TO NEXT
-                let timer = 1500;
-                let nextPos = 0;
-                // console.log('update turn 4');
-                await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
-                let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
-                let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
-                let DICE_ROLLED;
-                if (DICE_ROLLED_RES) {
-                    myRoom = DICE_ROLLED_RES.table;
-                    DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
-                }
-                await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-
-                gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
-                // console.log('game time from non movable event', gamePlayData.data.game_time);
-                await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
-                // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
-                resObj.callback.skip_dice = true;
-                let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
-                let event = {
-                    type: 'room_including_me',
-                    room: params.room,
-                    delay: timer,
-                    name: 'make_diceroll',
-                    data: {
-                        room: params.room,
-                        position: nextPos,
-                        tokens: await _tab.getTokens(params.room, myRoom),
-                        dice: DICE_ROLLED,
-                        dices_rolled: [DICE_ROLLED],
-                        turn_start_at: turnTimer,
-                        extra_move_animation: false,
-                        skip_dice: skipDice,
-                        turn_timestamp: myRoom.turn_timestamp,
-                        server_time: new Date(),
-                    },
-                };
-                resObj.events.push(event);
+        // ELSE // if both are false // if(!movePossible && !jackPOT)
+        if (!movePossible) {
+            var myPos = await _tab.getMyPosition(params.room, id, myRoom);
+            let DICE_ROLLED_RES = _tab.getRandomDiceValue(myPos, myRoom, gamePlayData);
+            let DICE_ROLLED;
+            if (DICE_ROLLED_RES) {
+                myRoom = DICE_ROLLED_RES.table;
+                DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
             }
-            /**
-             * Bug No: 37
-             * when the movable pawn has less than 6 steps to move then we are getting extra move
-             */
-            else if (movePossible == false && DICE_ROLLED == 6) {
-                // console.log('[DICE ROLLED NOT SIX]');
-                // reset bonus dice roll & six count.
-                await _tab.setSix(params.room, id, myRoom);
-                await _tab.useBonus(params.room, id, myRoom);
-                //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
-                _tab.scrapTurn(params.room, myPos, myRoom);
-                // DICE_ROLL TO NEXT
-                let timer = 1500;
-                let nextPos = 0;
-                // console.log('update turn 5');
-                await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
-                let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
-                let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
-                let DICE_ROLLED;
-                if (DICE_ROLLED_RES) {
-                    myRoom = DICE_ROLLED_RES.table;
-                    DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
-                }
-                await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-                gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
-                // console.log('game time from non movable event', gamePlayData.data.game_time);
-                await _tab.sendToSqsAndResetGamePlayData(params.room, myRoom, gamePlayData, myPos);
-                // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
-                resObj.callback.skip_dice = true;
-                let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
-                let event = {
-                    type: 'room_including_me',
+            await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
+            // added below two lines on 11-10-2023
+            await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
+            gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
+            // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
+            resObj.callback.skip_dice = false;
+            let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
+            let event = {
+                type: 'room_including_me',
+                room: params.room,
+                delay: 2210,
+                name: 'make_diceroll',
+                data: {
                     room: params.room,
-                    delay: timer,
-                    name: 'make_diceroll',
-                    data: {
-                        room: params.room,
-                        position: nextPos,
-                        tokens: await _tab.getTokens(params.room, myRoom),
-                        dice: DICE_ROLLED,
-                        dices_rolled: [DICE_ROLLED],
-                        turn_start_at: turnTimer,
-                        extra_move_animation: false,
-                        skip_dice: skipDice,
-                        turn_timestamp: myRoom.turn_timestamp,
-                        server_time: new Date(),
-                    },
-                };
-                resObj.events.push(event);
-            }
-
-            else {
-                var myPos = await _tab.getMyPosition(params.room, id, myRoom);
-                let DICE_ROLLED_RES = _tab.getRandomDiceValue(myPos, myRoom, gamePlayData);
-                let DICE_ROLLED;
-                if (DICE_ROLLED_RES) {
-                    myRoom = DICE_ROLLED_RES.table;
-                    DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
-                }
-                await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
-                // added below two lines on 11-10-2023
-                await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
-                gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
-                // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
-                resObj.callback.skip_dice = false;
-                let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
-                let event = {
-                    type: 'room_including_me',
-                    room: params.room,
-                    delay: 2210,
-                    name: 'make_diceroll',
-                    data: {
-                        room: params.room,
-                        position: myPos,
-                        tokens: await _tab.getTokens(params.room, myRoom),
-                        dice: DICE_ROLLED,
-                        dices_rolled: [DICE_ROLLED],
-                        turn_start_at: turnTimer,
-                        extra_move_animation: true,
-                        skip_dice: skipDice,
-                        turn_timestamp: myRoom.turn_timestamp,
-                        server_time: new Date(),
-                    },
-                };
-                resObj.events.push(event);
-            }
+                    position: myPos,
+                    tokens: await _tab.getTokens(params.room, myRoom),
+                    dice: DICE_ROLLED,
+                    dices_rolled: [DICE_ROLLED],
+                    turn_start_at: turnTimer,
+                    extra_move_animation: true,
+                    skip_dice: skipDice,
+                    turn_timestamp: myRoom.turn_timestamp,
+                    server_time: new Date(),
+                },
+            };
+            resObj.events.push(event);
+            
 
         }
         let events = {
@@ -3229,80 +3076,39 @@ module.exports = {
                 myRoom
             );
             if (!movePossibleExact) {
-                // if move not possible.
-                if (params.dice_value == 6) {
-                    // remove the bonus dice.
-                    _tab.useBonus(params.room, id, myRoom);
-                    //  SCRAP CURRENT DICES & PASS NEXT DICE_ROLL
-                    await _tab.scrapTurn(params.room, myPos, myRoom);
-                    // DICE_ROLL TO NEXT
-                    let nextPos = 0;
-                    await _tab.scrapTurn(params.room, nextPos, myRoom);
-                    // console.log('update turn 7');
-                    await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
-                    let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
-                    let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
-                    let DICE_ROLLED;
-                    if (DICE_ROLLED_RES) {
-                        myRoom = DICE_ROLLED_RES.table;
-                        DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
-                    }
-                    await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-                    let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
-                    let event = {
-                        type: 'room_including_me',
-                        room: params.room,
-                        delay: 1500,
-                        name: 'make_diceroll',
-                        data: {
-                            room: params.room,
-                            position: nextPos,
-                            tokens: await _tab.getTokens(params.room, myRoom),
-                            dice: DICE_ROLLED,
-                            dices_rolled: [DICE_ROLLED],
-                            turn_start_at: turnTimer,
-                            extra_move_animation: false,
-                            skip_dice: skipDice,
-                            turn_timestamp: myRoom.turn_timestamp,
-                            server_time: new Date(),
-                        },
-                    };
-                    resObj.events.push(event);
-                } else {
-                    // Send 'roll' to same player
-                    // console.log('update turn 8');
-                    let nextPos = 0;
-                    //await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0,myRoom);
-                    await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
-                    let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
-                    let DICE_ROLLED;
-                    if (DICE_ROLLED_RES) {
-                        myRoom = DICE_ROLLED_RES.table;
-                        DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
-                    }
-                    await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
-                    let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
-                    // SEND EVENT
-                    let event = {
-                        type: 'room_including_me',
-                        room: params.room,
-                        delay: 1500,
-                        name: 'make_diceroll',
-                        data: {
-                            room: params.room,
-                            position: nextPos,
-                            tokens: await _tab.getTokens(params.room, myRoom),
-                            dice: DICE_ROLLED,
-                            dices_rolled: [DICE_ROLLED],
-                            turn_start_at: turnTimer,
-                            extra_move_animation: false,
-                            skip_dice: skipDice,
-                            turn_timestamp: myRoom.turn_timestamp,
-                            server_time: new Date(),
-                        },
-                    };
-                    resObj.events.push(event);
+
+                let nextPos = 0;
+                //await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0,myRoom);
+                await _tab.updateCurrentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
+                let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
+                let DICE_ROLLED;
+                if (DICE_ROLLED_RES) {
+                    myRoom = DICE_ROLLED_RES.table;
+                    DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                 }
+                await _tab.diceRolled(params.room, nextPos, DICE_ROLLED, myRoom, gamePlayData);
+                let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, nextPos);
+                // SEND EVENT
+                let event = {
+                    type: 'room_including_me',
+                    room: params.room,
+                    delay: 1500,
+                    name: 'make_diceroll',
+                    data: {
+                        room: params.room,
+                        position: nextPos,
+                        tokens: await _tab.getTokens(params.room, myRoom),
+                        dice: DICE_ROLLED,
+                        dices_rolled: [DICE_ROLLED],
+                        turn_start_at: turnTimer,
+                        extra_move_animation: false,
+                        skip_dice: skipDice,
+                        turn_timestamp: myRoom.turn_timestamp,
+                        server_time: new Date(),
+                    },
+                };
+                resObj.events.push(event);
+                
                 // update the gamePlay data at the time of skip happen for non moveble event.
                 gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
                 let user_points = 0;
@@ -3395,12 +3201,8 @@ module.exports = {
                         resObj.events.push(turnCompleteEvent);
 
                         // Check if EndGame Possible
-                        var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
-                        let endGame;
-                        if (endGameRes) {
-                            myRoom = endGameRes.table;
-                            endGame = endGameRes.rank;
-                        }
+                        //var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
+                        let endGame = _tab.calculateTurnamentScore(myRoom.current_turn, myRoom);
                         if (endGame)
                         {
                             let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
@@ -3411,15 +3213,6 @@ module.exports = {
                                 // in redis updated isGameCompleted property
                                 myRoom.isGameCompleted = true;
                                 await redisCache.addToRedis(params.room, myRoom);
-                                endGame.map(async (eGame) => {
-                                    tableD.players.map(async (playersTable) => {
-                                        if (eGame.id.toString() == playersTable.id.toString()) {
-                                            playersTable.rank = eGame.rank;
-                                            playersTable.pl = eGame.amount;
-                                        }
-                                    });
-                                });
-
                                 tableD.game_completed_at = new Date().getTime();
                                 tableD.isGameCompleted   = true;
                                 await redisCache.addToRedis(`table_${params.room}`,tableD);
