@@ -841,9 +841,9 @@ module.exports = function (io, bullQueue) {
          * Below events are only for Ludo Tournament
          */
         socket.on('tournament_join', async (params, callback) => {
-            // save player token into redis
-            await redisCache.addToRedis(socket.id, params.token);
             try {
+                // save player token into redis
+                await redisCache.addToRedis(socket.id, params.token);             
                 if (!params.token) {
                     return callback({
                         status: 0,
@@ -861,8 +861,7 @@ module.exports = function (io, bullQueue) {
                     level: 'error',
                     meta: {'env' : `${process.env.NODE_ENV}`, 'error': err, 'params': params,stackTrace : err.stack }
                 };
-                logDNA.error('tournament_join', logData);
-
+                logDNA.error('tournament_game_join', logData);
                 if (typeof callback == 'function')
                     return callback({
                         status: 0,
@@ -890,26 +889,6 @@ module.exports = function (io, bullQueue) {
                         message: verifyUser.error || localization.apiError,
                     });
                 }
-                // console.log(verifyUser);
-                // {
-                //     isSuccess: true,
-                //     message: 'success',
-                //     status_code: '200',
-                //     data: {
-                //       token: 'f0952823-a280-4ae2-991f-24b326e338cf',
-                //       user_id: 'f0952823',
-                //       user_name: 'JohnDeer@abc.in',
-                //       profile_pic: 'https://lh5.googleusercontent.com/-gFsipyC6xd8/AAAAAAAAAAI/AAAAAAAABlM/BewBLZtCGJg/s96-c/photo.jpg'
-                //     },
-                //     contestId: '222',
-                //     lobbyId: '98575',
-                //     payoutConfig: { '1': '1' },
-                //     amount: 12,
-                //     turnTime: 10,
-                //     gameTime: 10,
-                //     participants: 2
-                //   }
-
                 let params = verifyUser.data;
                 params.room_fee = verifyUser.amount.toString();
                 params.no_of_players = verifyUser.participants.toString();
@@ -1068,7 +1047,8 @@ module.exports = function (io, bullQueue) {
                     }
                 }
                 callback(response.callback);
-                if (response.callback.status == 1) processEvents(response, myRoom, socket);
+                // if (response.callback.status == 1) processEvents(response, myRoom, socket);
+                if (response.callback.status == 1) emitEventsforTournament(response, myRoom, socket);
             }
             catch (error) {
                 let logData = {
@@ -1121,7 +1101,8 @@ module.exports = function (io, bullQueue) {
                 callback(response.callback);
                 if(response.events  && response.events.length>0)
                 {
-                    if (response.callback.status == 1) processEvents(response, myRoom, socket);
+                    // if (response.callback.status == 1) processEvents(response, myRoom, socket);
+                    if (response.callback.status == 1) emitEventsforTournament(response, myRoom, socket);
                 }
              }
             }
@@ -1518,6 +1499,174 @@ module.exports = function (io, bullQueue) {
             }
         }
     }
+    /**
+     *  Only for Tournament Game
+    */
+    async function emitEventsforTournament(rez, myRoom, socket) {
+        if (_.isArray(rez.events)) {
+            if (rez.events.length > 0) {
+                for (const d of rez.events) {
+                    let logData = {
+                        level: 'debugg',
+                        meta: d
+                    };
+                    d.name ? logDNA.log(`Event ${d.name} fired`, logData) : '';
+                    deleteObjectProperty(logData);
+                    setTimeout(
+                        async function () {
+                            if (d.name == 'make_move') {
+                                let params_data = {
+                                    room: d.room,
+                                };
+                                var checkTabel = await _TableInstance.istableExists(params_data, myRoom);
+                                if (checkTabel.current_turn != d.data.position) {
+                                    return;
+                                }
+                            }
+                            
+                            if (d.type == 'users_including_me') {
+                                for (const g of d.users) {
+                                    var id = await Socketz.getSocket(g);
+                                    // console.log("user", g);
+                                    // console.log("socket", id);
+                                    io.to(id).emit(d.name, d.data);
+                                }
+                                if(d.name == 'leaveTable'){
+                                    delete d.data.room;
+                                    delete d.data.refund;
+                                    io.to(id).emit(d.name, d.data);
+                                }
+                            } else if (d.type == 'users_excluding_me') {
+                                for (const g of d.users) {
+                                    var id = await Socketz.getSocket(g);
+                                    // console.log("user", g);
+                                    // console.log("socket", id);
+                                    socket.to(id).emit(d.name, d.data);
+                                }
+                            } else if (d.type == 'room_including_me') {
+                                /**
+                                 * To check if maximum turn reached
+                                 **/
+                                if (myRoom.total_turn === myRoom.users[0].turn) {
+                                    if (d.name == 'make_diceroll' && d.data.extra_move_animation == false) {
+                                        let data = await _TableInstance.checkwinnerOfTournament_V2(d.room, myRoom);
+                                        myRoom = data.table;
+                                        processEvents(data, myRoom, socket);
+                                    } else if (d.name == 'end_game') {
+                                        io.to(d.room).emit(d.name, d.data);
+                                        // To remove all player from room after game end.
+                                        io.of('/').in(d.room).clients((error, clients) => {
+                                            clients.forEach(socketId => {
+                                            //   io.sockets.sockets[socketId].leave(d.room);
+                                            const socket = io.sockets.sockets[socketId];
+                                            if (socket) {
+                                                socket.leave(d.room);
+                                            }
+                                            });
+                                        });
+                                    } else if (d.name == 'make_move') {
+                                        io.to(d.room).emit(d.name, d.data);
+                                    } else if (d.name == 'life_deduct') {
+                                        io.to(d.room).emit(d.name, d.data);
+                                    } else if (d.name == 'score_updated') {
+                                        let getmyRoom = await redisCache.getRecordsByKeyRedis(d.room);
+                                        let user_score = getmyRoom.users.map((user) =>
+                                        {
+                                            return {
+                                                user_id: user.id,
+                                                score: user.points + user.bonusPoints,
+                                                points: user.points,
+                                                bonusPoints: user.bonusPoints,
+                                                life : user.life,
+                                                pawnScore : user.tokens
+                                            };
+                                        });
+                                        d.data.score_data = user_score;
+                                        io.to(d.room).emit(d.name, d.data);
+                                    }  
+                                    else {
+                                        io.to(d.room).emit(d.name, d.data);
+                                    }
+                                } else {
+                                    if(d.name == 'playerLeft') {
+                                        let compressedData = d.data.game_data.map((cur) => {
+                                            return {
+                                                //player_index, name, rank, amount, id, score, is_left
+                                                "player_index":cur.player_index,
+                                                "id":cur.id,
+                                                "name":cur.name,
+                                                "rank":cur.rank,
+                                                "amount":cur.amount,
+                                                "is_left":cur.is_left,
+                                                "score":cur.score,
+                                            };
+                                        });
+                                        // final compressed response to emmit.
+                                        d.data.game_data = compressedData;
+                                        io.to(d.room).emit(d.name, d.data);
+                                    } else if(d.name == 'make_diceroll') {
+                                        delete d.data.turn_timestamp;
+                                        delete d.data.server_time;
+
+                                        io.to(d.room).emit(d.name, d.data);
+                                    } else if(d.name == 'make_move'){
+                                        delete d.data.turn_timestamp;
+                                        delete d.data.server_time;
+
+                                        io.to(d.room).emit(d.name, d.data);
+                                    } else if(d.name == 'end_game') {
+                                        io.to(d.room).emit(d.name, d.data);
+                                        // To remove all player from room after game end.
+                                        io.of('/').in(d.room).clients((error, clients) => {
+                                            clients.forEach(socketId => {
+                                            //   io.sockets.sockets[socketId].leave(d.room);
+                                            const socket = io.sockets.sockets[socketId];
+                                            if (socket) {
+                                                socket.leave(d.room);
+                                            }
+                                            });
+                                        });
+                                    } else if (d.name == 'score_updated') {
+                                        let getmyRoom = await redisCache.getRecordsByKeyRedis(d.room);
+                                        let user_score = getmyRoom.users.map((user) =>
+                                        {
+                                            return {
+                                                user_id: user.id,
+                                                score: user.points + user.bonusPoints,
+                                                points: user.points,
+                                                bonusPoints: user.bonusPoints,
+                                                life : user.life,
+                                                pawnScore : user.tokens
+                                            };
+                                        });
+                                        d.data.score_data = user_score;
+                                        io.to(d.room).emit(d.name, d.data);
+                                    }
+                                    else {
+                                        io.to(d.room).emit(d.name, d.data);
+                                    }
+                                }
+                            } else if (d.type == 'room_excluding_me') {
+                                if(d.name == 'dice_rolled') {
+                                    delete d.data.dices_rolled;
+                                    delete d.data.skip_dice;
+                                    socket.to(d.room).emit(d.name, d.data);
+                                } else if(d.name == 'move_made') {
+                                    delete d.data.dices_rolled;
+                                    socket.to(d.room).emit(d.name, d.data);  
+                                }
+                                else {
+                                    socket.to(d.room).emit(d.name, d.data);
+                                }
+                                
+                            }
+                        },
+                        d.delay ? d.delay : 0
+                    );
+                }
+            }
+        }
+    }
 
     /**
      * The function used to check the gameTime expired or not.
@@ -1693,22 +1842,35 @@ module.exports = function (io, bullQueue) {
     async function checkGameCompletion(job) {
 
         let { start, myRoom } = job.data.payload;
-        let gameTime = await checkGameExpireTime(myRoom);
-        let latestMyRoom = await redisCache.getRecordsByKeyRedis(myRoom.room);
-        if (gameTime && !latestMyRoom.isGameCompleted) {
-            //console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
-            io.to(start.room).emit('gameTime', { status: 1, data: { time: gameTime.time, current_turn: -1} });
-            if (gameTime.time == 0) {
-                // console.log('gameTimerEnd...........................');
-                // sent event to socket Client for equal ture.                                            
-                let equalTurnPlayerData = await _TableInstance.determineTotalTurn(start.room);
-                io.to(start.room).emit('final_turn_initiated', equalTurnPlayerData);
-                // console.log('final_turn_initiated');
+        // for tourname game
+        if(myRoom.is_it_tournament) {
+            if(myRoom.total_turn === myRoom.users[0].turn) {
                 return;
             } else {
                 await bullQueue.add(job.data, {
                     delay: 1000
                 });
+            }
+
+        } else {
+            // for regular game
+            let gameTime = await checkGameExpireTime(myRoom);
+            let latestMyRoom = await redisCache.getRecordsByKeyRedis(myRoom.room);
+            if (gameTime && !latestMyRoom.isGameCompleted) {
+                //console.log('isGameCompleted ====>', JSON.stringify(latestRoomData));
+                io.to(start.room).emit('gameTime', { status: 1, data: { time: gameTime.time, current_turn: -1} });
+                if (gameTime.time == 0) {
+                    // console.log('gameTimerEnd...........................');
+                    // sent event to socket Client for equal ture.                                            
+                    let equalTurnPlayerData = await _TableInstance.determineTotalTurn(start.room);
+                    io.to(start.room).emit('final_turn_initiated', equalTurnPlayerData);
+                    // console.log('final_turn_initiated');
+                    return;
+                } else {
+                    await bullQueue.add(job.data, {
+                        delay: 1000
+                    });
+                }
             }
         }
     }

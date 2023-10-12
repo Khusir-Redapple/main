@@ -2376,8 +2376,7 @@ module.exports = {
             turn_time: params.turnTime,
             timeToCompleteGame: params.gameTime * 60,
             is_it_tournament : true,
-            total_turn : 23,
-            turn_taken : 0
+            total_turn : 23
         }
         myRoom.users.push({
             id: params.user_id,
@@ -3533,4 +3532,43 @@ module.exports = {
             logDNA.error('tournament_game_moveTourney_3', logData);
         }
     },
+    
+    checkwinnerOfTournament_V2: async function (room,myRoom)
+    {
+        let tableD = await redisCache.getRecordsByKeyRedis(`table_${room}`);
+        if (tableD)
+        {
+            endGame = _tab.calculateTurnamentScore(myRoom.current_turn, myRoom);
+            if (endGame) {
+                // in redis updated isGameCompleted property
+                myRoom.isGameCompleted = true;
+                await redisCache.addToRedis(room, myRoom);
+                tableD.game_completed_at = new Date().getTime();
+                tableD.isGameCompleted = true;
+                await redisCache.addToRedis(`table_${room}`, tableD);
+                // Update values in user wallets & table data [DB]
+                let event = {
+                    type: 'room_including_me',
+                    room: room,
+                    delay: 2000,
+                    name: 'end_game',
+                    data: {
+                        room: room,
+                        game_data: endGame,
+                    },
+                };
+                let reqData = await this.getEndGameData(event.data, myRoom.room_fee);
+                // console.log("END-GAME-DATA-2", reqData);
+                await requestTemplate.post(`endgame`, reqData);
+                //return event;
+                let resObj = {
+                    'events': [],
+                    'table': myRoom
+                };
+
+                resObj.events.push(event);
+                return resObj;
+            }    
+        }
+    }
 };
