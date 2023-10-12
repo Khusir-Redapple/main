@@ -2376,7 +2376,7 @@ module.exports = {
             turn_time: params.turnTime,
             timeToCompleteGame: params.gameTime * 60,
             is_it_tournament : true,
-            total_turn : 23
+            total_turn : 10
         }
         myRoom.users.push({
             id: params.user_id,
@@ -2449,7 +2449,7 @@ module.exports = {
             dices_rolled:[],
             bonus_dice:0,
             six_counts:0,
-            tokens:[10,20,30,40],
+            tokens:[10,50,40,52],
             points:0,
             points_per_diceRoll:[],
             bonusPoints:0,
@@ -2477,7 +2477,7 @@ module.exports = {
             dices_rolled:[],
             bonus_dice:0,
             six_counts:0,
-            tokens:[5,15,25,45],
+            tokens:[7,15,35,45],
             points:0,
             points_per_diceRoll:[],
             bonusPoints:0,
@@ -3532,7 +3532,7 @@ module.exports = {
             logDNA.error('tournament_game_moveTourney_3', logData);
         }
     },
-    
+
     checkwinnerOfTournament_V2: async function (room,myRoom)
     {
         let tableD = await redisCache.getRecordsByKeyRedis(`table_${room}`);
