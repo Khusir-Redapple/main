@@ -1955,14 +1955,13 @@ module.exports = function (io, bullQueue) {
         let { start, myRoom } = job.data.payload;
         // for tourname game
         if(myRoom.is_it_tournament) {
-            // debugging.....
-            console.log(myRoom.total_turn, myRoom.users[0].turn);
-
-            if(myRoom.total_turn === myRoom.users[0].turn) {
+            // to get letest myRoom data
+            const myRoom_turnCount = await redisCache.getRecordsByKeyRedis(myRoom.room);
+            if(myRoom_turnCount.total_turn === myRoom_turnCount.users[0].turn) {
                 return;
             } else {
                 // To sent remaining turn 
-                io.to(start.room).emit('turnLeft', { status: 1, data: { turn: myRoom.total_turn - myRoom.users[0].turn} });
+                io.to(start.room).emit('turnLeft', { status: 1, data: { turn: myRoom_turnCount.total_turn - myRoom_turnCount.users[0].turn} });
                 await bullQueue.add(job.data, {
                     delay: 1000
                 });
