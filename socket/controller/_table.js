@@ -2376,7 +2376,7 @@ module.exports = {
             turn_time: params.turnTime,
             timeToCompleteGame: params.gameTime * 60,
             is_it_tournament : true,
-            total_turn : 10
+            total_turn : 30
         }
         myRoom.users.push({
             id: params.user_id,
