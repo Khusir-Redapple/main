@@ -1037,7 +1037,7 @@ module.exports = function (io, bullQueue) {
                             await bullQueue.add(
                                 {
                                     name: "playerTurnQueue",
-                                    payload: { room: params.room },
+                                    payload: { room: params.room,turn:20 },
                                 },
                                 {
                                     delay: turnTimer
@@ -1090,7 +1090,7 @@ module.exports = function (io, bullQueue) {
                     await bullQueue.add(
                         {
                             name: "playerTurnQueue",
-                            payload: { room: params.room},
+                            payload: { room: params.room, turn:20},
                         },
                         {
                             delay: turnTimer
@@ -1907,7 +1907,7 @@ module.exports = function (io, bullQueue) {
                             await bullQueue.add(
                                 {
                                     name: "playerTurnQueue",
-                                    payload: { room: params_data.room },
+                                    payload: { room: params_data.room, turn:20 },
                                 },
                                 {
                                     delay: turnTimer
