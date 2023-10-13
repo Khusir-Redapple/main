@@ -913,6 +913,7 @@ module.exports = function (io, bullQueue) {
                 socket.join(socket.data_id);
                 await Socketz.updateSocket(params.user_id, socket);
                 await redisCache.addToRedis(data.token, params.user_id.toString());
+                await redisCache.addToRedis('user_id'+params.user_id, params.lobbyId);
                 var myId = await Socketz.getId(socket.id);
                 if (!myId) {
                     return callback({
@@ -1122,6 +1123,117 @@ module.exports = function (io, bullQueue) {
                 logDNA.warn(`tournament_game_move_made`, logData);
             }
         });
+
+        socket.on('tournament_join_previous', async (params, callback) => {
+        
+            const startTime = Date.now();
+            // save player token into redis
+            await redisCache.addToRedis(socket.id, params.token);
+            // To get user_id from token.                        
+            const userId = await Socketz.getId(socket.id);
+            try {
+
+                if (!userId) {
+                    let myLog = {
+                        level: 'warning',
+                        meta: {
+                            p: 'join_previous',
+                            'env': `${process.env.NODE_ENV}`,
+                            'socketId': socket.id
+                        }
+                    };
+                    logDNA.warn(`user_id not found at join_previous in TournamentGame`, myLog);
+
+                    return callback({
+                        status: 0,
+                        message: 'An error was encountered. Please join a new game.',
+                    });
+                }
+                // To get roomId from user_id
+                const roomId = await redisCache.getRecordsByKeyRedis('user_id'+id.toString());
+                if(!roomId) {
+                    return callback({
+                        status: 2,
+                        message: 'Room not found, Please join a new game.',
+                    })
+                }
+                // join socket to room
+                socket.join(roomId);
+                const myRoom = await redisCache.getRecordsByKeyRedis(rez.table.room);
+                const compressedMyRoom = myRoom.users.map((element) => {
+                    return {
+                        "name": element.name,
+                        "id": element.id,
+                        "profile_pic": element.profile_pic,
+                        "position": element.position,
+                        "is_active": element.is_active,
+                        "is_done": element.hasOwnProperty('is_done') ? element.is_done : false,
+                        "is_left": element.hasOwnProperty('is_left') ? element.is_left : false,
+                        "rank": element.rank,
+                        "tokens": element.tokens,
+                        "life": element.life,
+                        "token_colour": element.token_colour,
+                    };
+                });
+                // To finding the dice value for player by player_id.
+                const player = myRoom.users.find(player => player.id == userId);
+                const skip_dice = false;
+                const compressedTable = {
+                    "room": myRoom.room,
+                    "totalWinning": myRoom.totalWinning,
+                    "players_done": parseInt(myRoom.players_done),
+                    "players_won": myRoom.players_won,
+                    "current_turn": myRoom.current_turn,
+                    "current_turn_type": myRoom.current_turn_type,
+                    "no_of_players": parseInt(myRoom.no_of_players),
+                    "users": compressedMyRoom,
+                    "entryFee": myRoom.entryFee,
+                    "turn_time": myRoom.turn_time,
+                    "timeToCompleteGame": myRoom.timeToCompleteGame,
+                    "server_time": new Date(),
+                    "turn_timestamp": myRoom.turn_timestamp,
+                    "skip_dice": skip_dice,
+                    "dice": player.dices_rolled.toString()
+                }
+                const compressedObj = {
+                    "status": 1,
+                    "table": compressedTable,
+                    "current_turn_type": myRoom.current_turn_type,
+                    "dices_rolled": player.dices_rolled,
+                }
+               // To return the object.
+                return callback(compressedObj);
+
+            } catch (ex) {
+                let logData = {
+                    level: 'error',
+                    meta: {
+                        'env': `${process.env.NODE_ENV}`,
+                        'error': ex,
+                        'params': params,
+                        stackTrace: ex.stack
+                    }
+                };
+                logDNA.error('join_previous_tournament_game :: Event :: Error', logData);
+                return callback({
+                    status: 0,
+                    message: 'An error was encountered. Please join a new game.',
+                });
+            } finally {
+                const endTime = (Date.now() - startTime);
+                let logData = {
+                    level: 'warning',
+                    meta: {
+                        p: 'join_previous',
+                        responseTime: endTime,
+                        'env': `${process.env.NODE_ENV}`,
+                        'params': params,
+                        'myId': userId
+                    }
+                };
+                logDNA.warn(`join_previous_tournament_game`, logData);
+            }
+        })
 
     });
 
@@ -1811,7 +1923,6 @@ module.exports = function (io, bullQueue) {
 
         }
         catch (err) {
-            console.log('helooooooo', err);
             if(params_data && params_data.room)
             {
             let turnTimer = config.turnTimer;
