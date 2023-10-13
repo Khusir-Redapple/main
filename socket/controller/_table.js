@@ -2403,7 +2403,7 @@ module.exports = {
             bonusSet_2: bonus_set_one,
             pawnSafe_status: [true,true,true,true],
             checkpoint: [false,false,false,false],
-            token_colour: shuffledColor[0],
+            token_colour: 1,
             diceValue: dice_value
         },
         {
@@ -2431,7 +2431,7 @@ module.exports = {
             bonusSet_2:[],
             pawnSafe_status:[true,true,true,true],
             checkpoint:[false,false,false,false],
-            token_colour: shuffledColor[1],
+            token_colour: 2,
             diceValue:[]
         },
         {
@@ -2459,7 +2459,7 @@ module.exports = {
             bonusSet_2:[],
             pawnSafe_status:[true,true,true,true],
             checkpoint:[false,false,false,false],
-            token_colour:shuffledColor[2],
+            token_colour: 3,
             diceValue:[]
         },
         {
@@ -2487,7 +2487,7 @@ module.exports = {
             bonusSet_2:[],
             pawnSafe_status:[true,true,true,true],
             checkpoint:[false,false,false,false],
-            token_colour:shuffledColor[3],
+            token_colour: 0,
             diceValue:[]
         });
         await redisCache.addToRedis(myRoom.room, myRoom);
