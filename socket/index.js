@@ -1959,7 +1959,7 @@ module.exports = function (io, bullQueue) {
             const myRoom_turnCount = await redisCache.getRecordsByKeyRedis(myRoom.room);
             // if(myRoom_turnCount.total_turn === myRoom_turnCount.users[0].turn) {
             const remainingTurn = myRoom_turnCount.total_turn - myRoom_turnCount.users[0].turn;
-            if (remainingTurn == 0) {
+            if (remainingTurn <= 0) {
                 // To sent 0 turn at end
                 io.to(start.room).emit('turnLeft', { status: 1, data: { turn: remainingTurn} });
                 return;
