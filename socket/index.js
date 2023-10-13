@@ -1037,7 +1037,7 @@ module.exports = function (io, bullQueue) {
                             await bullQueue.add(
                                 {
                                     name: "playerTurnQueue",
-                                    payload: { room: params.room,turn:20 },
+                                    payload: { room: params.room,turn: myRoom.users[0].turn},
                                 },
                                 {
                                     delay: turnTimer
@@ -1090,7 +1090,7 @@ module.exports = function (io, bullQueue) {
                     await bullQueue.add(
                         {
                             name: "playerTurnQueue",
-                            payload: { room: params.room, turn:20},
+                            payload: { room: params.room, turn: myRoom.users[0].turn},
                         },
                         {
                             delay: turnTimer
@@ -1886,7 +1886,20 @@ module.exports = function (io, bullQueue) {
                             // for tournament Game
                             let response;
                             if(myRoom.is_it_tournament) {
-                                response = await _TableInstance.skipTurnforTournament(params_data, id_of_current_turn, myRoom, gamePlayData);
+                                if(myRoom.users[0].turn == params_data.turn) {
+                                    response = await _TableInstance.skipTurnforTournament(params_data, id_of_current_turn, myRoom, gamePlayData);
+                                } else {
+                                    console.log('turn missmatch in bull');
+                                    await bullQueue.add(
+                                        {
+                                            name: "playerTurnQueue",
+                                            payload: { room: params_data.room, turn: myRoom.users[0].turn }
+                                        },
+                                        {
+                                            delay: 12000
+                                        }
+                                    );
+                                }
                             } else {
                                 // for regular game
                                 response = await _TableInstance.skipTurn(params_data, id_of_current_turn, myRoom, gamePlayData);
@@ -1907,7 +1920,7 @@ module.exports = function (io, bullQueue) {
                             await bullQueue.add(
                                 {
                                     name: "playerTurnQueue",
-                                    payload: { room: params_data.room, turn:20 },
+                                    payload: { room: params_data.room },
                                 },
                                 {
                                     delay: turnTimer
@@ -1932,7 +1945,7 @@ module.exports = function (io, bullQueue) {
             await bullQueue.add(
                 {
                     name: "playerTurnQueue",
-                    payload: { room: params_data.room },
+                    payload: { room: params_data.room, turn: myRoom.users[0].turn },
                 },
                 {
                     delay: turnTimer
