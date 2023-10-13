@@ -3389,7 +3389,7 @@ module.exports = {
                         console.log('update turn 28');
                         await _tab.updateCurrentTurn(params.room, myPos, 'move', -1, 0, myRoom);
                         setTimeout(function () {
-                            _tab.updateCurrentTime(params.room, myRoom); /// to solve early leave deduction on token kill
+                            _tab.updateCurrentTime(params.room, myRoom);
                         }, timer)
 
                         let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
