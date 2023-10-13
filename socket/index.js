@@ -1034,11 +1034,10 @@ module.exports = function (io, bullQueue) {
                     {
                         if(d.name == 'make_diceroll' && response.callback.skip_dice == true)
                         {
-                            console.log('diceRolled '+turnTimer);
                             await bullQueue.add(
                                 {
                                     name: "playerTurnQueue",
-                                    payload: { room: params.room },
+                                    payload: { room: params.room , turn:myRoom.users[0].turn},
                                 },
                                 {
                                     delay: turnTimer
@@ -1086,13 +1085,12 @@ module.exports = function (io, bullQueue) {
                     let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
                     if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
                     turnTimer += 2;
-                    if(response.callback && response.callback.isKillable) { turnTimer += 10; }
+                    if(response.callback && response.callback.isKillable) { turnTimer += 3; }
                     turnTimer = turnTimer * 1000;
-                    console.log('timer '+ turnTimer);
                     await bullQueue.add(
                         {
                             name: "playerTurnQueue",
-                            payload: { room: params.room },
+                            payload: { room: params.room , turn : myRoom.user[0].turn},
                         },
                         {
                             delay: turnTimer
@@ -1861,6 +1859,7 @@ module.exports = function (io, bullQueue) {
     }
 
     async function playerTurn(job) {
+        console.log('playerTurn', JSON.stringify(job));
         let params_data = job.payload;        
         try {
             let myRoom = await redisCache.getRecordsByKeyRedis(params_data.room);
