@@ -1955,6 +1955,9 @@ module.exports = function (io, bullQueue) {
         let { start, myRoom } = job.data.payload;
         // for tourname game
         if(myRoom.is_it_tournament) {
+            // debugging.....
+            console.log(myRoom.total_turn, myRoom.users[0].turn);
+
             if(myRoom.total_turn === myRoom.users[0].turn) {
                 return;
             } else {
