@@ -1085,7 +1085,7 @@ module.exports = function (io, bullQueue) {
                     let tableData = await redisCache.getRecordsByKeyRedis(`table_${myRoom.room}`);
                     if('turnTime' in tableData) { turnTimer = tableData.turnTime; }
                     turnTimer += 2;
-                    if(response.callback && response.callback.isKillable) { turnTimer += 5; }
+                    if(response.callback && response.callback.isKillable) { console.log('killable'); turnTimer += 10; }
                     turnTimer = turnTimer * 1000;
                     await bullQueue.add(
                         {
