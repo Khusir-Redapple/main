@@ -1859,7 +1859,7 @@ module.exports = function (io, bullQueue) {
     }
 
     async function playerTurn(job) {
-        console.log('playerTurn', JSON.stringify(job));
+        console.log('playerTurn', JSON.stringify(job.data.payload));
         let params_data = job.payload;        
         try {
             let myRoom = await redisCache.getRecordsByKeyRedis(params_data.room);
