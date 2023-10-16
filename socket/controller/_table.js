@@ -3370,8 +3370,9 @@ module.exports = {
                             await _tab.useBonus(params.room, id, myRoom);
                             // Send 'roll' to same player
                             console.log('update turn 29');
-                            // **** Not increasing the turn count when bonus roll given
-                            // await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
+                            // ****Not increasing the turn count when bonus roll given
+
+                            await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
                             setTimeout(function () {
                                 _tab.updateCurrentTime(params.room, myRoom); /// to solve early leave deduction on token kill
                             }, timer)
@@ -3407,13 +3408,6 @@ module.exports = {
                                 },
                             };
                             resObj.events.push(event);
-                            // Adding bulljs for extra turn
-
-
-
-
-
-
                         }
                         // Else [!BonusPending]
                         else {
