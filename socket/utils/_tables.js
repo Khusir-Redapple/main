@@ -56,12 +56,12 @@ class _Tables
             let shuffleNumberForOtherPlayer;
             let dice_range;
             // if gameTime is less then 10 then dice range should generate between 8 - 12.
-            // if(table.gameTime < 10) {
-            //     (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (12 - 8)) + 8) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
-            // } else {
-            //     (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (18 - 15)) + 15);
-            // }
-            (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (18 - 15)) + 15);
+            if(table.gameTime < 10) {
+                (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (12 - 8)) + 8) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
+            } else {
+                (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (18 - 15)) + 15);
+            }
+                        
             let min_no_of_occurance;
 
             switch (table.no_of_players) {
