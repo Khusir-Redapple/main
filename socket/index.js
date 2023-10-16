@@ -949,6 +949,7 @@ module.exports = function (io, bullQueue) {
                     "entryFee": myRoom.entryFee,
                     "turn_time": myRoom.turn_time,
                     "timeToCompleteGame": myRoom.timeToCompleteGame,
+                    "total_turn" : myRoom.total_turn,
                     "server_time": new Date(),
                     "turn_timestamp": new Date(),
                 }
@@ -1037,7 +1038,7 @@ module.exports = function (io, bullQueue) {
                             await bullQueue.add(
                                 {
                                     name: "playerTurnQueue",
-                                    payload: { room: params.room,turn: myRoom.users[0].turn},
+                                    payload: { room: params.room },
                                 },
                                 {
                                     delay: turnTimer
@@ -1090,7 +1091,7 @@ module.exports = function (io, bullQueue) {
                     await bullQueue.add(
                         {
                             name: "playerTurnQueue",
-                            payload: { room: params.room, turn: myRoom.users[0].turn},
+                            payload: { room: params.room },
                         },
                         {
                             delay: turnTimer
@@ -1286,6 +1287,7 @@ module.exports = function (io, bullQueue) {
             tableData.turn_timestamp = start.table.turn_timestamp;
             tableData.turn_time = start.table.turn_time;
             tableData.timeToCompleteGame = start.table.timeToCompleteGame;
+            tableData.total_turn = start.table.total_turn;
 
             let usersData = [];
             start.table.users.map((ele) => {
@@ -1336,7 +1338,7 @@ module.exports = function (io, bullQueue) {
         await bullQueue.add(
             {
                 name: "playerTurnQueue",
-                payload: { room: start.room, turn:1},
+                payload: { room: start.room },
             },
             {
                 delay: turnTimer * 1000
@@ -1859,7 +1861,6 @@ module.exports = function (io, bullQueue) {
     }
 
     async function playerTurn(job) {
-        console.log('playerTurn', JSON.stringify(job));
         let params_data = job.payload;        
         try {
             let myRoom = await redisCache.getRecordsByKeyRedis(params_data.room);
