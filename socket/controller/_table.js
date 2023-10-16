@@ -3371,7 +3371,6 @@ module.exports = {
                             // Send 'roll' to same player
                             console.log('update turn 29');
                             // ****Not increasing the turn count when bonus roll given
-
                             await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom, 0);
                             setTimeout(function () {
                                 _tab.updateCurrentTime(params.room, myRoom); /// to solve early leave deduction on token kill
