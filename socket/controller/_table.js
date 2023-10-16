@@ -3306,42 +3306,14 @@ module.exports = {
                             }
 
                             resObj.events.push(event);
-
-                            /**
-                             * Bug NO: 39
-                             * If a cut/home happens with a six, then only one extra move should be given
-                             */
-
-                            // If cut/home happen with 6, then only one extra move given. not two
-                            if (params.dice_value == 6) {
-                                // If kill happans with six, then extra_roll_reason should be Kill.
-                                if (gamePlayData.data.extra_roll_reason.includes("six")) {
-                                    gamePlayData.data.extra_roll_reason.map((ele, index) => {
-                                        if (ele == 'six') {
-                                            gamePlayData.data.extra_roll_reason.splice(index, 1);
-                                        }
-                                    });
-                                }
-                                // moveBonusCheck = true;
-                                killed = true;
-                                await _tab.addBonus(params.room, id, 0, "Kill", myRoom, gamePlayData);
-                                await _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus', myRoom, gamePlayData)
-                                // console.log('after cut ------>', myRoom);
-                            } else {
-                                // Add Bonus as much as Killed Token Length
-                                let sixCounts = _tab.setSix(params.room, id, myRoom);
-                                // bugNo: 79 user should no offer more then two dice roll
-                                if (canIKill.length >= 1) {
-                                    await _tab.addBonus(params.room, id, 1, "Kill", myRoom, gamePlayData);
-                                }
-                                // _tab.addBonus(params.room, id, canIKill.length, "Kill");                            
-                                await _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus', myRoom, gamePlayData)
-                                // console.log('after cut ------>', myRoom);
-                                // moveBonusCheck = true;
-                                killed = true;
+                            // Add Bonus as much as Killed Token Length
+                            if (canIKill.length >= 1) {
+                                await _tab.addBonus(params.room, id, 1, "Kill", myRoom, gamePlayData);
                             }
-                            moveBonusCheck = true;
-                        }
+                            // _tab.addBonus(params.room, id, canIKill.length, "Kill");                            
+                            await _tab.addBonusPoints(params.room, id, 20, canIKill.length, 'cut_bonus', myRoom, gamePlayData);
+                            killed = true;
+                        }                          
                         // Else [!canIKill]
                         moveBonusCheck = true;
                     } catch (err) {
