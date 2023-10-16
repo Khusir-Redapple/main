@@ -1117,12 +1117,7 @@ class _Tables
             else
             {
                 dead_possible[i].movebleBox = table.users[dead_possible[i].user].tokens[dead_possible[i].token];
-                table.users[dead_possible[i].user].points -= table.users[dead_possible[i].user].tokens[dead_possible[i].token]; //commented above line and replace with this line
-                if(table.is_it_tournament){
-                    table.users[0].points += table.users[dead_possible[i].user].tokens[dead_possible[i].token];
-                } else {
-                    table.users[dead_possible[i].user].points -= table.users[dead_possible[i].user].tokens[dead_possible[i].token];
-                }
+                table.users[dead_possible[i].user].points -= table.users[dead_possible[i].user].tokens[dead_possible[i].token]; //commented above line and replace with this line              
                 table.users[dead_possible[i].user].tokens[dead_possible[i].token] = 0;
                 dead_possible[i].tokenIndex = 0;
                 // gamePlayData.data["cut_move " + i] = dead_possible[i].movebleBox + " - 0"
@@ -1138,6 +1133,11 @@ class _Tables
                 'cut_move' : dead_possible[i].movebleBox,
             }
             gamePlayData.data.kill_player_data.push(killPlayerData);
+            
+            // If game is tournament then added backTrack pawn cell count.
+            if(table.is_it_tournament) {
+                table.users[0].points += killPlayerData.cut_move;
+            }
         }
         //console.log("dead_possible >new>>>", dead_possible);
         //console.log('KILL TABLE INFO ::', table);
