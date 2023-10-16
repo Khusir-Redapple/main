@@ -856,7 +856,7 @@ class _Tables
         );
     }
 
-    updateCurrentTurn(room, pos, type, prev, move, myRoom)
+    updateCurrentTurn(room, pos, type, prev, move, myRoom, turnUpdate = 1)
     {
         if(pos<0)
             return;
@@ -864,7 +864,11 @@ class _Tables
         {
             myRoom.users[prev].dices_rolled = [];
             myRoom.users[prev].six_counts = 0;
-            myRoom.users[pos].turn += 1;
+            if(turnUpdate) {
+                myRoom.users[pos].turn += 1;
+            }
+            
+
         }
         if (move)
         {

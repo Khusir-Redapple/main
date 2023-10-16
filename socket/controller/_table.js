@@ -3321,7 +3321,7 @@ module.exports = {
                             level: 'error',
                             meta: { 'env': `${process.env.NODE_ENV}`, 'error': err, 'params': params, 'room': myRoom, stackTrace: err.stack }
                         };
-                        logDNA.error('tournament_game_moveTourney+2', logData);
+                        logDNA.error('tournament_game_moveTourney_2', logData);
                     }
                 }
 
@@ -3372,7 +3372,7 @@ module.exports = {
                             console.log('update turn 29');
                             // ****Not increasing the turn count when bonus roll given
 
-                            await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
+                            await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom, 0);
                             setTimeout(function () {
                                 _tab.updateCurrentTime(params.room, myRoom); /// to solve early leave deduction on token kill
                             }, timer)
