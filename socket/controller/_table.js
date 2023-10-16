@@ -3157,30 +3157,9 @@ module.exports = {
                 var killed = false;
                 let killTimer = 4000;
                 // if CURRENT_POSITION == 56
-                if (token_position == 56) {
-                    // console.log('[BEFORE HOME]');
-                    /**
-                     * Bug NO: 39
-                     * If a cut/home happens with a six, then only one extra move should be given
-                    */
-                    if (params.dice_value != 6) {
-                        // Add extra Bonus
-                        await _tab.addBonus(params.room, id, 1, "Home", myRoom, gamePlayData);
-                        //await _tab.addBonusPoints(params.room, id, 50, 1, 'home_base_bonus', myRoom, gamePlayData);
-                    }
-                    else if (params.dice_value == 6) {
-                        // If home happans with six, then extra_roll_reason should be home.
-                        if (gamePlayData.data.extra_roll_reason.includes("six")) {
-                            gamePlayData.data.extra_roll_reason.map((ele, index) => {
-                                if (ele == 'six') {
-                                    gamePlayData.data.extra_roll_reason.splice(index, 1);
-                                }
-                            });
-                        }
-                        // Add one bonus if home happans on Six.
-                        await _tab.addBonus(params.room, id, 0, "Home", myRoom, gamePlayData);
-                        // await _tab.addBonusPoints(params.room, id, 50, 1, 'home_base_bonus', myRoom, gamePlayData);
-                    }
+                if (token_position == 56) { 
+                    // Add extra Bonus Roll
+                    await _tab.addBonus(params.room, id, 1, "Home", myRoom, gamePlayData); 
                     // Check if allHome
                     const allHomeRes = _tab.allHome(params.room, id, myRoom);
                     let allHome = allHomeRes
@@ -3204,15 +3183,12 @@ module.exports = {
                         resObj.events.push(turnCompleteEvent);
 
                         // Check if EndGame Possible
-                        //var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
                         let endGame = _tab.calculateTurnamentScore(myRoom.current_turn, myRoom);
                         if (endGame)
                         {
                             let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
                             // Update values in user wallets & table data [DB]
-                            // console.log('tableD::', tableD);
                             if (tableD) {
-                                // console.log("GAME END :: >>>>>>>");
                                 // in redis updated isGameCompleted property
                                 myRoom.isGameCompleted = true;
                                 await redisCache.addToRedis(params.room, myRoom);
@@ -3465,7 +3441,7 @@ module.exports = {
 
 
 
-                            
+
                         }
                         // Else [!BonusPending]
                         else {
