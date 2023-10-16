@@ -3047,7 +3047,7 @@ module.exports = {
                         dice: DICE_ROLLED,
                         dices_rolled: [DICE_ROLLED],
                         turn_start_at: turnTimer,
-                        extra_move_animation: true,
+                        extra_move_animation: false,
                         skip_dice: skipDice,
                         turn_timestamp: myRoom.turn_timestamp,
                         server_time: new Date(),
@@ -3459,6 +3459,13 @@ module.exports = {
                                 },
                             };
                             resObj.events.push(event);
+                            // Adding bulljs for extra turn
+
+
+
+
+
+                            
                         }
                         // Else [!BonusPending]
                         else {
