@@ -1312,7 +1312,7 @@ module.exports = function (io, bullQueue) {
         io.to(start.room).emit('gameInitiated', start);        
         // If game is Tournament then pause execution for 6 sec.
         if (myRoom.is_it_tournament) {
-            await new Promise(resolve => setTimeout(resolve, 6000));
+            await new Promise(resolve => setTimeout(resolve, 8000));
         } else {
             // Pause execution for 1.5 seconds for normal game
             await new Promise(resolve => setTimeout(resolve, 1500));
