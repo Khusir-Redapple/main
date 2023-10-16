@@ -600,8 +600,10 @@ module.exports = function (io, bullQueue) {
 
                 // Update the userData
                 var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
-                for(let i = 0; i< endGameRes.rank.length;i++){
-                    userData[i] = endGameRes.rank[i];
+                if(endGameRes.rank && endGameRes.rank.length) {
+                    for(let i = 0; i< endGameRes.rank.length;i++){
+                        userData[i] = endGameRes.rank[i];
+                    }
                 }
                 // const activePlayerLeft = userData.filter(item => item.is_left === true).length;
                 // if (activePlayerLeft <= 1) {
