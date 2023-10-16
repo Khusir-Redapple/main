@@ -1118,6 +1118,11 @@ class _Tables
             {
                 dead_possible[i].movebleBox = table.users[dead_possible[i].user].tokens[dead_possible[i].token];
                 table.users[dead_possible[i].user].points -= table.users[dead_possible[i].user].tokens[dead_possible[i].token]; //commented above line and replace with this line
+                if(table.is_it_tournament){
+                    table.users[0].points += table.users[dead_possible[i].user].tokens[dead_possible[i].token];
+                } else {
+                    table.users[dead_possible[i].user].points -= table.users[dead_possible[i].user].tokens[dead_possible[i].token];
+                }
                 table.users[dead_possible[i].user].tokens[dead_possible[i].token] = 0;
                 dead_possible[i].tokenIndex = 0;
                 // gamePlayData.data["cut_move " + i] = dead_possible[i].movebleBox + " - 0"

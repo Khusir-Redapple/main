@@ -2374,6 +2374,7 @@ module.exports = {
             entryFee: params.entryFee,
             isGameCompleted: false,
             turn_time: params.turnTime,
+            game_time: params.gameTime,
             timeToCompleteGame: params.gameTime * 60,
             is_it_tournament : true,
             total_turn : 30
