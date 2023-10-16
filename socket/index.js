@@ -1961,7 +1961,7 @@ module.exports = function (io, bullQueue) {
         if(myRoom.is_it_tournament) {
             // to get letest myRoom data
             const myRoom_turnCount = await redisCache.getRecordsByKeyRedis(myRoom.room);
-            // if(myRoom_turnCount.total_turn === myRoom_turnCount.users[0].turn) {
+            console.log(myRoom_turnCount.total_turn, myRoom_turnCount.users[0].turn);
             const remainingTurn = myRoom_turnCount.total_turn - myRoom_turnCount.users[0].turn;
             if (remainingTurn <= 0) {
                 // To sent 0 turn at end
