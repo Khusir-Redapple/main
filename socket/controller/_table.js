@@ -3533,11 +3533,11 @@ module.exports = {
             // if game start & move happend at tie time then
             let currentData = new Date();
             // currentData.setSeconds(currentData.getSeconds() - 1);
-            currentData.setSeconds(currentData.getSeconds() + 5);
+            currentData.setSeconds(currentData.getSeconds() + 7);
             let time = new Date(currentData).getTime();
             tableD.game_started_at = '-1';
             let turnTime = new Date();
-            const newTurnTime = new Date(turnTime.getTime() + 6);
+            const newTurnTime = new Date(turnTime.getTime() + 8);
             tableD.turn_start_at = new Date(newTurnTime).getTime();
             // tableD.turn_start_at = new Date().getTime();
             myRoom.game_started_at = time;
@@ -3546,7 +3546,7 @@ module.exports = {
                 // Get the current date and time
                 const currentDate = new Date();
                 // Subtract 3 seconds
-                const newDate = new Date(currentDate.getTime() + 6);
+                const newDate = new Date(currentDate.getTime() + 8);
                 tableD.game_started_at = new Date(newDate).getTime();
                 // to log dice value in logdna
                 let logData = {
@@ -3560,8 +3560,6 @@ module.exports = {
             if('gameTime' in tableD) {
                 configGameTime = tableD.gameTime;
             }
-            let timeToAdd = new Date(new Date().getTime() + configGameTime * 60000);
-            var seconds = (timeToAdd - new Date().getTime()) / 1000;
             start.timeToCompleteGame = configGameTime * 60;
         }
         return start;
