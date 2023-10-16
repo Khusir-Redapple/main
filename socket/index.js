@@ -1309,9 +1309,14 @@ module.exports = function (io, bullQueue) {
             start.table = tableData;
             start.table.users = usersData;
         }
-        io.to(start.room).emit('gameInitiated', start);
-        // Pause execution for 3 seconds
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        io.to(start.room).emit('gameInitiated', start);        
+        // If game is Tournament
+        if (myRoom.is_it_tournament) {
+            await new Promise(resolve => setTimeout(resolve, 6000));
+        } else {
+            // Pause execution for 1.5 seconds for normal game
+            await new Promise(resolve => setTimeout(resolve, 1500));
+        }
         io.to(start.room).emit('startGame', start);
         // To emmit score_updated with default value.
         let user_points = start.table.users.map((user) =>
