@@ -967,7 +967,7 @@ module.exports = function (io, bullQueue) {
                 var params_data = {
                     room: myRoom.room,
                 }
-                var start = await _TableInstance.startIfPossibleTournament(params_data, myRoom, gamePlayData);
+                var start = await _TableInstance.tournamentStartPossible(params_data, myRoom, gamePlayData);
                 // console.log("Start", start);
                 if (start) {
                     let reqData = await _TableInstance.getGameUsersData(start);
@@ -1310,7 +1310,7 @@ module.exports = function (io, bullQueue) {
             start.table.users = usersData;
         }
         io.to(start.room).emit('gameInitiated', start);        
-        // If game is Tournament
+        // If game is Tournament then pause execution for 6 sec.
         if (myRoom.is_it_tournament) {
             await new Promise(resolve => setTimeout(resolve, 6000));
         } else {
