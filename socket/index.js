@@ -901,8 +901,7 @@ module.exports = function (io, bullQueue) {
                     params.entryFee = verifyUser.entryFee;
                 };                                
                 params.gameTime = verifyUser.gameTime;            
-                params.turnTime = verifyUser.turnTime;            
-                params.pawnPositions = verifyUser.pawnPositions;
+                params.turnTime = verifyUser.turnTime;
                 if (!params || !params.user_id) {
                     return callback({
                         status: 0,
