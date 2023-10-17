@@ -2575,11 +2575,6 @@ module.exports = {
         if (mypos != -1) {
             var check = await _tab.isCurrentTurnMine(params.room, mypos, myRoom);
             if (check) {
-                // To update turn count
-                // const response = _tab.updateTurnCount(myRoom, gamePlayData);
-                // myRoom = response.table;
-                // gamePlayData = response.gamePlayData;
-
                 let deductRes = await _tab.deductLife(params.room, id, myRoom, gamePlayData);
                 myRoom = deductRes.table;
                 gamePlayData = deductRes.gameData;
@@ -2642,19 +2637,6 @@ module.exports = {
                                 },
                             ],
                         };
-
-                        // var checkOnlyPlayerLeftRes = _tab.checkOnlyPlayerLeft(params.room, myRoom);
-                        // let checkOnlyPlayerLeft;
-                        // if (checkOnlyPlayerLeftRes) {
-                        //     myRoom = checkOnlyPlayerLeftRes.table;
-                        //     checkOnlyPlayerLeft = checkOnlyPlayerLeftRes.response;
-                        // }
-
-                        // CheckIfOnlyPlayerLeft
-                        // let tableD = await Table.findOne({
-                        //     room: params.room,
-                        // });
-
                         //var us = await User.findById(id);
                         let us = myRoom.users.find((ele) => ele.id == id.toString());
                         // console.log("MyRoom====>", myRoom, us);
@@ -2672,12 +2654,7 @@ module.exports = {
 
                             // Check if EndGame Possible
                             // let endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
-                             let endGame = _tab.calculateTurnamentScore(myRoom.current_turn, myRoom);
-                            // let endGame;
-                            // if (endGameRes) {
-                            //     myRoom = endGameRes.table;
-                            //     endGame = endGameRes.rank;
-                            // }
+                            let endGame = _tab.calculateTurnamentScore(myRoom.current_turn, myRoom);
                             if (endGame)
                             {
                                 let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
@@ -2687,15 +2664,6 @@ module.exports = {
                                     // in redis updated isGameCompleted property
                                     myRoom.isGameCompleted = true;
                                     await redisCache.addToRedis(params.room, myRoom);
-                                    // endGame.map((eGame) => {
-                                    //     tableD.players.map((playersTable) => {
-                                    //         if (eGame.id.toString() == playersTable.id.toString()) {
-                                    //             playersTable.rank = eGame.rank;
-                                    //             playersTable.pl = eGame.amount;
-                                    //         }
-                                    //     })
-                                    // })
-
                                     tableD.game_completed_at = new Date().getTime();
                                     tableD.isGameCompleted   = true;
                                     await redisCache.addToRedis(`table_${params.room}`,tableD);
