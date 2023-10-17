@@ -530,7 +530,6 @@ class _Tables
                             DICE_ROLLED = DICE_ROLLED_RES.returnDiceValue;
                         }
                         myRoom.users[pl].turn = 1;         
-                        
                         myRoom.users[pl].dices_rolled = [];
                         myRoom.users[pl].dices_rolled.push(DICE_ROLLED);
 
@@ -2257,6 +2256,31 @@ class _Tables
             is_left: myRoom.users[pos].hasOwnProperty('is_left') ? myRoom.users[pos].is_left : false,
             score: myRoom.users[pos].points + myRoom.users[pos].bonusPoints
         }]
+    }
+
+    updateTournamentTurn(room, pos, type, prev, move, myRoom)
+    {
+        if(pos<0)
+            return;
+        if (prev != -1 && move == 0)
+        {
+            myRoom.users[prev].dices_rolled = [];
+            myRoom.users[prev].six_counts = 0;
+            myRoom.users[pos].turn += 1;
+            myRoom.users[pos].updateTournamentTurn += 1;
+        }
+        if (move)
+        {
+            myRoom.current_turn_type = type;
+            myRoom.current_turn = pos;
+        }
+        else
+        {
+            myRoom.current_turn = pos;
+            myRoom.turn_start_at = new Date().getTime();
+            myRoom.turn_timestamp = new Date();
+            myRoom.current_turn_type = type;
+        }
     }
 }
 
