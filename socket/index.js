@@ -889,7 +889,6 @@ module.exports = function (io, bullQueue) {
                         message: verifyUser.error || localization.apiError,
                     });
                 }
-                console.log('verifyUser', verifyUser);
                 let params = verifyUser.data;
                 params.room_fee = verifyUser.amount.toString();
                 params.no_of_players = verifyUser.participants.toString();
