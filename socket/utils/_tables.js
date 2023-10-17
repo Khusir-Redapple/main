@@ -2258,7 +2258,7 @@ class _Tables
         }]
     }
 
-    updateTournamentTurn(room, pos, type, prev, move, myRoom)
+    updateTournamentTurn(pos, type, prev, move, myRoom)
     {
         if(pos<0)
             return;
@@ -2267,7 +2267,7 @@ class _Tables
             myRoom.users[prev].dices_rolled = [];
             myRoom.users[prev].six_counts = 0;
             myRoom.users[pos].turn += 1;
-            myRoom.users[pos].updateTournamentTurn += 1;
+            myRoom.users[pos].tournamentTurn += 1;
         }
         if (move)
         {

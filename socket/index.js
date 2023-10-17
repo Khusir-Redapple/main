@@ -1663,7 +1663,7 @@ module.exports = function (io, bullQueue) {
                                 /**
                                  * To check if maximum turn reached
                                  **/
-                                if (myRoom.total_turn === myRoom.users[0].turn) {
+                                if (myRoom.total_turn === myRoom.users[0].tournamentTurn) {
                                     if (d.name == 'make_diceroll' && d.data.extra_move_animation == false) {
                                         let data = await _TableInstance.checkwinnerOfTournament_V2(d.room, myRoom);
                                         myRoom = data.table;
@@ -1961,8 +1961,8 @@ module.exports = function (io, bullQueue) {
         if(myRoom.is_it_tournament && !myRoom.isGameCompleted) {
             // to get letest myRoom data
             const myRoom_turnCount = await redisCache.getRecordsByKeyRedis(myRoom.room);
-            console.log(myRoom_turnCount.total_turn, myRoom_turnCount.users[0].updateTournamentTurn);
-            const remainingTurn = myRoom_turnCount.total_turn - myRoom_turnCount.users[0].updateTournamentTurn;
+            console.log(myRoom_turnCount.total_turn, myRoom_turnCount.users[0].tournamentTurn);
+            const remainingTurn = myRoom_turnCount.total_turn - myRoom_turnCount.users[0].tournamentTurn;
             if (remainingTurn <= 0) {
                 // To sent 0 turn at end
                 io.to(start.room).emit('turnLeft', { status: 1, data: { turn: remainingTurn} });

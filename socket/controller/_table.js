@@ -2719,7 +2719,7 @@ module.exports = {
                         // always turn position is 0 
                         let nextPos = 0;
                         console.log('update turn 21');
-                        await _tab.updateTournamentTurn(params.room, nextPos, 'turn', mypos, 0, myRoom);
+                        await _tab.updateTournamentTurn(nextPos, 'turn', mypos, 0, myRoom);
                         //console.log("gamePlayData before 1: " + JSON.stringify(gamePlayData));
                         // let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                         // let DICE_ROLLED = await _tab.rollDice(params.room, id);
@@ -2859,7 +2859,7 @@ module.exports = {
             //  MAKE_MOVE TO ME
             let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
             console.log('update turn 22');
-            await _tab.updateTournamentTurn(params.room, myPos, 'move', -1, 1, myRoom);            
+            await _tab.updateTournamentTurn(myPos, 'move', -1, 1, myRoom);            
             let dices_roll = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
             // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
             resObj.callback.skip_dice = threeSix;
@@ -2891,7 +2891,7 @@ module.exports = {
                 DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
             }
             console.log('update turn 23');
-            await _tab.updateTournamentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
+            await _tab.updateTournamentTurn(myPos, 'turn', -1, 0, myRoom);
             // added below two lines on 11-10-2023
             await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
             gamePlayData.data.game_time = await _tab.setGameTime(myRoom);
@@ -2994,7 +2994,7 @@ module.exports = {
             if (diceValue.length !== 0 && params.dice_value !=6 && params.dice_value != diceValue) {
                 let nextPos = 0;
                 console.log('update turn 24');
-                await _tab.updateTournamentTurn(params.room, nextPos, 'turn', -1, 0, myRoom);
+                await _tab.updateTournamentTurn(nextPos, 'turn', -1, 0, myRoom);
                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                 let DICE_ROLLED;
                 if (DICE_ROLLED_RES) {
@@ -3055,7 +3055,7 @@ module.exports = {
                 let nextPos = 0;
                 //await _tab.updateCurrentTurn(params.room, myPos, 'roll', -1, 0,myRoom);
                 console.log('update turn 26');
-                await _tab.updateTournamentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
+                await _tab.updateTournamentTurn(nextPos, 'turn', myPos, 0, myRoom);
                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                 let DICE_ROLLED;
                 if (DICE_ROLLED_RES) {
@@ -3204,7 +3204,7 @@ module.exports = {
                             // DICE_ROLL TO NEXT
                             let nextPos = 0;
                             console.log('update turn 27');
-                            await _tab.updateTournamentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
+                            await _tab.updateTournamentTurn(nextPos, 'turn', myPos, 0, myRoom);
                             let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                             let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
                             let DICE_ROLLED;
@@ -3308,7 +3308,7 @@ module.exports = {
                     if (movePossible) {
                         //  MAKE_MOVE TO ME
                         console.log('update turn 28');
-                        await _tab.updateTournamentTurn(params.room, myPos, 'move', -1, 0, myRoom);
+                        await _tab.updateTournamentTurn(myPos, 'move', -1, 0, myRoom);
                         setTimeout(function () {
                             _tab.updateCurrentTime(params.room, myRoom);
                         }, timer)
@@ -3344,7 +3344,7 @@ module.exports = {
                             // Send 'roll' to same player
                             console.log('update turn 29');
                             // ****Not increasing the turn count when bonus roll given
-                            await _tab.updateTournamentTurn(params.room, myPos, 'turn', -1, 0, myRoom, 0);
+                            await _tab.updateTournamentTurn(myPos, 'turn', -1, 0, myRoom);
                             setTimeout(function () {
                                 _tab.updateCurrentTime(params.room, myRoom); /// to solve early leave deduction on token kill
                             }, timer)
@@ -3388,7 +3388,7 @@ module.exports = {
                             await _tab.scrapTurn(params.room, myPos, myRoom);
                             let nextPos = 0;
                             console.log('update turn 30');
-                            await _tab.updateTournamentTurn(params.room, nextPos, 'turn', myPos, 0, myRoom);
+                            await _tab.updateTournamentTurn(nextPos, 'turn', myPos, 0, myRoom);
                             let dices_rolled = await _tab.gePlayerDices(params.room, nextPos, myRoom, gamePlayData);
                             // let DICE_ROLLED = await _tab.rollDice(params.room, id);
                             let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
