@@ -2424,7 +2424,7 @@ module.exports = {
             dices_rolled:[],
             bonus_dice:0,
             six_counts:0,
-            tokens: pawnPositions[0],
+            tokens: params.pawnPositions[0],
             points:0,
             points_per_diceRoll:[],
             bonusPoints:0,
@@ -2453,7 +2453,7 @@ module.exports = {
             dices_rolled:[],
             bonus_dice:0,
             six_counts:0,
-            tokens: pawnPositions[1],
+            tokens: params.pawnPositions[1],
             points:0,
             points_per_diceRoll:[],
             bonusPoints:0,
@@ -2482,7 +2482,7 @@ module.exports = {
             dices_rolled:[],
             bonus_dice:0,
             six_counts:0,
-            tokens: pawnPositions[2],
+            tokens: params.pawnPositions[2],
             points:0,
             points_per_diceRoll:[],
             bonusPoints:0,
@@ -2544,8 +2544,8 @@ module.exports = {
             lobbyId: params.lobbyId,
             gameTime: params.gameTime,
             turnTime: params.turnTime,
-            payoutConfig: params.room_fee,
-            win_amount: params.payoutConfig,
+            payoutConfig: params.payoutConfig,
+            win_amount: params.room_fee,
             room: params.lobbyId,
             created_at: new Date().getTime(),
             players:[{"id":params.user_id, "token":params.token,"fees": params.room_fee,"is_active":true,"rank":0,"pl":0}],
@@ -2553,7 +2553,7 @@ module.exports = {
             turn_start_at: new Date().getTime(),
             game_completed_at: new Date().getTime(),
             isGameCompleted:false,
-            is_it_tournament : true
+            is_it_tournament:true
         }
         await redisCache.addToRedis('table_'+myRoom.room, table);
         return myRoom;
