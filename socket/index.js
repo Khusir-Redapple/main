@@ -908,7 +908,8 @@ module.exports = function (io, bullQueue) {
                 };                                
                 params.gameTime = verifyUser.gameTime;            
                 params.turnTime = verifyUser.turnTime;
-                if (!params || !params.user_id) {
+                params.totalMoves = verifyUser.totalMoves;
+                if (!params || !params.user_id || ! params.totalMoves) {
                     return callback({
                         status: 0,
                         message: localization.missingParamError,
