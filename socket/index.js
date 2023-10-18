@@ -600,7 +600,7 @@ module.exports = function (io, bullQueue) {
 
                 // Update the userData
                 var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
-                if(endGameRes.rank && endGameRes.rank.length) {
+                if(endGameRes.rank) {
                     for(let i = 0; i< endGameRes.rank.length;i++){
                         userData[i] = endGameRes.rank[i];
                     }
