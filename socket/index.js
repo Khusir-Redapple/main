@@ -8,6 +8,8 @@ const Socketz         = new Sockets();
 const requestTemplate = require('../api/service/request-template');
 const config = require('../config');
 // const ObjectId = require('mongoose').Types.ObjectId;
+const { _Tables } = require('./utils/_tables');
+const _tab = new _Tables();
 const logDNA = require('../api/service/logDNA');
 const redisCache = require('../api/service/redis-cache');
 const { CostExplorer } = require('aws-sdk');
@@ -291,7 +293,7 @@ module.exports = function (io, bullQueue) {
                     "current_turn_type": rez.current_turn_type,
                     "dices_rolled": rez.dices_rolled,
                 }
-                console.log('join_previous end- ', JSON.stringify(rez));
+                // console.log('join_previous end- ', JSON.stringify(rez));
                return callback(compressedObj); 
 
             } catch (ex) {
@@ -353,7 +355,7 @@ module.exports = function (io, bullQueue) {
             let payout = await calculateWinAmount(verifyUser.amount, verifyUser.payoutConfig);
             // console.log("payout -- ", payout);
             params.winningAmount = payout.payoutConfig;
-            params.totalWinning = payout.totalWinning;
+            params.totalWinning = verifyUser.amount;//payout.totalWinning;
             params.lobbyId = verifyUser.lobbyId;
             // object to array convert for payoutConfig           
             const payoutArray = [];
@@ -593,6 +595,24 @@ module.exports = function (io, bullQueue) {
                         });
                     }, []);
                 }
+                // Here we need to check if there is only one player left in the game 
+                // then update the game_data response
+
+                // Update the userData
+                var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
+                if(endGameRes.rank && endGameRes.rank.length) {
+                    for(let i = 0; i< endGameRes.rank.length;i++){
+                        userData[i] = endGameRes.rank[i];
+                    }
+                }
+                // const activePlayerLeft = userData.filter(item => item.is_left === true).length;
+                // if (activePlayerLeft <= 1) {
+                //     // Update the userData
+                //     var endGameRes = await _tab.calculateGameEndData(params.room, myRoom.win_amount, myRoom);
+                //     for(let i = 0; i< endGameRes.rank.length;i++){
+                //         userData[i] = endGameRes.rank[i];
+                //     }
+                // }
                 response.callback.room = myRoom.room;
                 response.callback.game_data = userData;
                 callback(response.callback);
@@ -1090,10 +1110,15 @@ module.exports = function (io, bullQueue) {
                                                     "name":cur.name,
                                                     "rank":cur.rank,
                                                     "amount":cur.amount,
-                                                    "is_left":cur.is_left,
+                                                    "is_left":cur.hasOwnProperty('is_left') ? cur.is_left : false,
                                                     "score":cur.score,
                                                 };
                                             });
+                                            // recalculate data for result screen if player lost lives.
+                                            var endGameRes = await _tab.calculateGameEndData(myRoom.room, myRoom.win_amount, myRoom);
+                                            for(let i = 0; i< endGameRes.rank.length;i++){
+                                                compressedData[i] = endGameRes.rank[i];
+                                            }
                                             // final compressed response to emmit.
                                             d.data.game_data = compressedData;
                                             io.to(d.room).emit(d.name, d.data);
@@ -1168,7 +1193,30 @@ module.exports = function (io, bullQueue) {
                                         });
                                         d.data.score_data = user_score;
                                         io.to(d.room).emit(d.name, d.data);
-                                    } else {
+
+                                    } else if(d.name == 'playerLeft') {
+                                        let compressedData = d.data.game_data.map((cur) => {
+                                            return {
+                                                //player_index, name, rank, amount, id, score, is_left
+                                                "player_index":cur.player_index,
+                                                "id":cur.id,
+                                                "name":cur.name,
+                                                "rank":cur.rank,
+                                                "amount":cur.amount,
+                                                "is_left":cur.hasOwnProperty('is_left') ? cur.is_left : false,
+                                                "score":cur.score,
+                                            };
+                                        });
+                                        // recalculate data for result screen if player lost lives.
+                                        var endGameRes = await _tab.calculateGameEndData(myRoom.room, myRoom.win_amount, myRoom);
+                                        for(let i = 0; i< endGameRes.rank.length;i++){
+                                            compressedData[i] = endGameRes.rank[i];
+                                        }
+                                        // final compressed response to emmit.
+                                        d.data.game_data = compressedData;
+                                        io.to(d.room).emit(d.name, d.data);
+                                    }
+                                    else {
                                         io.to(d.room).emit(d.name, d.data);
                                     }
                                 }
@@ -1180,6 +1228,27 @@ module.exports = function (io, bullQueue) {
                                 } else if(d.name == 'move_made') {
                                     delete d.data.dices_rolled;
                                     socket.to(d.room).emit(d.name, d.data);  
+                                } else if(d.name == 'playerLeft') {
+                                    let compressedData = d.data.game_data.map((cur) => {
+                                        return {
+                                            //player_index, name, rank, amount, id, score, is_left
+                                            "player_index":cur.player_index,
+                                            "id":cur.id,
+                                            "name":cur.name,
+                                            "rank":cur.rank,
+                                            "amount":cur.amount,
+                                            "is_left":cur.hasOwnProperty('is_left') ? cur.is_left : false,
+                                            "score":cur.score,
+                                        };
+                                    });
+                                    // recalculate data for result screen if player lost lives.
+                                    var endGameRes = await _tab.calculateGameEndData(myRoom.room, myRoom.win_amount, myRoom);
+                                    for(let i = 0; i< endGameRes.rank.length;i++){
+                                        compressedData[i] = endGameRes.rank[i];
+                                    }
+                                    // final compressed response to emmit.
+                                    d.data.game_data = compressedData;
+                                    io.to(d.room).emit(d.name, d.data);
                                 }
                                 else {
                                     socket.to(d.room).emit(d.name, d.data);

@@ -284,10 +284,17 @@ module.exports = {
             }
 
             else {
-                let DICE_ROLLED = _tab.getRandomDiceValue();
                 var myPos = await _tab.getMyPosition(params.room, id, myRoom);
-                await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
-                // console.log('update turn 6');
+                let DICE_ROLLED_RES = _tab.getRandomDiceValue(myPos, myRoom, gamePlayData);
+                let DICE_ROLLED;
+                if (DICE_ROLLED_RES) {
+                    myRoom = DICE_ROLLED_RES.table;
+                    DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
+                    // console.log(JSON.stringify(myRoom));
+                }
+                // comment the below line to unnessery update value.
+                // await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
+                // console.log('update turn 6', DICE_ROLLED);
                 await _tab.updateCurrentTurn(params.room, myPos, 'turn', -1, 0, myRoom);
                 let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
                 // to add dice skip, bug_no_64, Ex: if 1 pawn is two steps away from home, when i roll a five then the roll will be skipped. So, need a skipped feedback for this case
@@ -387,7 +394,8 @@ module.exports = {
 
             // to validate player have passed same value that have in backend.
             let diceValue = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
-            if (diceValue.length !== 0 && params.dice_value != diceValue) {
+            // console.log('roll skip debugging==>', myPos, diceValue);
+            if (diceValue.length !== 0 && params.dice_value !=6 && params.dice_value != diceValue) {
                 let nextPos = await _tab.getNextPosition(params.room, myPos, myRoom);
                 await _tab.updateCurrentTurn(params.room, nextPos, 'turn', -1, 0, myRoom);
                 let DICE_ROLLED_RES = await _tab.rollDice(params.room, nextPos, myRoom);
@@ -681,7 +689,7 @@ module.exports = {
                             resObj.events.push(event);
                             let reqData = await this.getEndGameData(event.data, myRoom.room_fee);
                             // console.log("END-GAME-DATA-1", reqData);
-                            let startGame = await requestTemplate.post(`endgame`, reqData)
+                            let startGame = await requestTemplate.post(`endgame`, reqData);
                             // if (!startGame.isSuccess)
                             // {
                             //     return {callback: {status: 0, message: startGame.error}};
@@ -900,7 +908,14 @@ module.exports = {
                             }, timer)
                             let dices_rolled = await _tab.gePlayerDices(params.room, myPos, myRoom, gamePlayData);
                             // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                            let DICE_ROLLED = _tab.getRandomDiceValue();
+                            let DICE_ROLLED_RES = _tab.getRandomDiceValue(myPos, myRoom, gamePlayData);
+                            let DICE_ROLLED;
+                            if (DICE_ROLLED_RES) {
+                                myRoom = DICE_ROLLED_RES.table;
+                                DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
+                                // console.log(JSON.stringify(myRoom));
+                            }
+                            // console.log('Six skip debugging...', myPos, DICE_ROLLED);
                             await _tab.diceRolled(params.room, myPos, DICE_ROLLED, myRoom, gamePlayData);
                             // SEND EVENT
                             let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, myPos);
@@ -1089,7 +1104,7 @@ module.exports = {
                     message: localization.missingParamError,
                     refund: refund
                 },
-            };                 
+            };        
         var rez = await _tab.leave(params.room, id, myRoom);
         // console.log('LEAVE RES', rez); //2|socket  | [2022-04-13T11:01:02.572] [INFO] default - LEAVE RES { res: false, flag: 1, remove: true }
         let turnTimer = config.turnTimer;
@@ -1265,7 +1280,7 @@ module.exports = {
                     rez_finalObj.events.push(event);
                     let reqData = await this.getEndGameData(event.data, myRoom.room_fee);
                     // console.log("END-GAME-DATA-3", reqData);
-                    let startGame = await requestTemplate.post(`endgame`, reqData)
+                    let startGame = await requestTemplate.post(`endgame`, reqData);
                     // if (!startGame.isSuccess)
                     // {
                     //     return {callback: {status: 0, message: startGame.error}};
@@ -1678,7 +1693,13 @@ module.exports = {
                         await _tab.updateCurrentTurn(params.room, mypos, 'turn', -1, 0, myRoom);
                         let dices_rolled = await _tab.gePlayerDices(params.room, mypos, myRoom, gamePlayData);
                         // let DICE_ROLLED = _tab.rollDice(params.room, id);
-                        let DICE_ROLLED = _tab.getRandomDiceValue();
+                        let DICE_ROLLED_RES = _tab.getRandomDiceValue(mypos, myRoom, gamePlayData);
+                        let DICE_ROLLED;
+                        if (DICE_ROLLED_RES) {
+                            myRoom = DICE_ROLLED_RES.table;
+                            DICE_ROLLED = DICE_ROLLED_RES.DiceValue;
+                            // console.log(JSON.stringify(myRoom));
+                        }
                         await _tab.diceRolled(params.room, mypos, DICE_ROLLED, myRoom, gamePlayData);
                         // SEND EVENT
                         let skipDice = _tab.isSkippable(myRoom, DICE_ROLLED, mypos);
@@ -1919,7 +1940,7 @@ module.exports = {
             logDNA.warn(`user found at join_previous`, logData);
 
             let alreadyPlaying = _tab.alreadyPlayingTable(us.id,myRoom);
-            console.log('join_previous alreadyPlaying- ', JSON.stringify(alreadyPlaying));
+            // console.log('join_previous alreadyPlaying- ', JSON.stringify(alreadyPlaying));
             if (alreadyPlaying.status == 1)
             {
                 // var tab = await Table.findOne({room: alreadyPlaying.table.room, 'players.id': id});

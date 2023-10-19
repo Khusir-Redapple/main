@@ -47,6 +47,7 @@ class _Tables
                 lobbyId: table.lobbyId,
                 entryFee : entry_Fee,
                 isGameCompleted : false,
+                gameTime : table.gameTime,
 
             };
             let colour = [0, 1, 2, 3];
@@ -54,8 +55,13 @@ class _Tables
             let randomRumber;
             let shuffleNumberForOtherPlayer;
             let dice_range;
-            (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (22 - 15)) + 15);
-           
+            // if gameTime is less then 10 then dice range should generate between 8 - 12.
+            if(table.gameTime < 10) {
+                (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (12 - 8)) + 8) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
+            } else {
+                (table.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (18 - 15)) + 15);
+            }
+                        
             let min_no_of_occurance;
 
             switch (table.no_of_players) {
@@ -69,6 +75,17 @@ class _Tables
                     break;
             }
             const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
+
+            const bonus_set_one = [];
+            for (let index = 0; index < 5; index++) {
+                bonus_set_one.push(this.generateBonusSetOne());                
+            }
+            
+            const bonus_set_two = [];
+            for (let index = 0; index < 3; index++) {
+                bonus_set_two.push(this.generateBonusSetTwo());                
+            }
+
             const previousSequences = new Set();
             for (var pl = 0; pl < 4; pl++)
             {
@@ -84,6 +101,14 @@ class _Tables
                 } else {
                     //shuffleNumberForOtherPlayer = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                     shuffleNumberForOtherPlayer = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
+                    // shuffle for bonus set one
+                    for (const subArray of bonus_set_one) {
+                        this.shuffleArray(subArray);
+                    }
+                    // shuffle for bonus set two
+                    for (const subArray of bonus_set_two) {
+                        this.shuffleArray(subArray);
+                    }
                 }                
                 table_i.users[pl] = {
                     id: '',
@@ -107,6 +132,9 @@ class _Tables
                     points_per_diceRoll: [],
                     bonusPoints: 0,
                     moves: 0,
+                    bonus_count : 0,
+                    bonusSet_1 : pl == 0 ? JSON.parse((JSON.stringify(bonus_set_one))) : JSON.parse((JSON.stringify(bonus_set_one))),
+                    bonusSet_2 : pl == 0 ? JSON.parse((JSON.stringify(bonus_set_two))) : JSON.parse((JSON.stringify(bonus_set_two))),
                     pawnSafe_status : [true, true, true, true],
                     checkpoint : [false, false, false, false],
                     token_colour: random_colour,
@@ -208,6 +236,9 @@ class _Tables
 
             if (pos == -1) return false;
             let readDiceValue = filteredTable.users[pos].diceValue;
+            let bonusSet_1_value = filteredTable.users[pos].bonusSet_1;
+            let bonusSet_2_value = filteredTable.users[pos].bonusSet_2;
+
             filteredTable.users[pos] = {
                 id: user.id,
                 numeric_id: user.numeric_id,
@@ -228,12 +259,22 @@ class _Tables
                 points_per_diceRoll : [],
                 bonusPoints: 0,
                 moves: 0,
+                bonus_count : 0,
+                bonusSet_1 : bonusSet_1_value,
+                bonusSet_2 : bonusSet_2_value,
                 pawnSafe_status : [true, true, true, true],
                 checkpoint : [false, false, false, false],
                 token_colour: filteredTable.users[pos].token_colour,
                 diceValue : readDiceValue
             };
             // console.log('Random dice value', JSON.stringify(filteredTable));
+            // log for bonusSet
+            let logData = {
+                level: 'debugg',
+                meta: {'data' : JSON.stringify(filteredTable.users)}
+            };
+            logDNA.log(`bonus_set_${filteredTable.room}`, logData);
+
             return {
                 table: filteredTable,
                 pos: pos,
@@ -674,9 +715,102 @@ class _Tables
         }
     }
 
-    getRandomDiceValue(){
+    getRandomDiceValue(myPosition, myRoom, gamePlayData) {
         // return Math.floor(Math.random() * 5) + 1;
-        return fortuna.diceRoll();
+        // return fortuna.diceRoll();    
+        try { 
+            let DiceValue = null;            
+            let table = myRoom;
+            // let idx = table.users.findIndex(element => element.id == user_id);
+            let idx = table.users.findIndex(element => element.position == myPosition);
+            if(table.users[idx].bonusSet_1 && table.users[idx].bonusSet_2) {
+                // To increment the bonus count
+                table.users[idx].bonus_count += 1;
+                // To find how many bonus consicutivly happans
+                const bonusCount = gamePlayData.data.extra_roll_reason.length;
+                // To get value from two set based on odd and even bonus count                
+                // if(table.users[idx].bonus_count % 2 === 0) {
+                if(bonusCount % 2 === 0) {                    
+                    // Modified version of bonus value logic
+                    DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_2);
+                    // if set two is empty then create a new set
+                    if(DiceValue === undefined) {
+                        console.log('set two generated');
+                        const bonus_set_two = [];
+                        for (let index = 0; index < 3; index++) {
+                            bonus_set_two.push(this.generateBonusSetTwo());                
+                        }
+                        table.users[0].bonusSet_2 = JSON.parse((JSON.stringify(bonus_set_two)));
+                        // shuffle for bonus set one
+                        for (const subArray of bonus_set_two) {
+                            this.shuffleArray(subArray);
+                        }
+                        table.users[1].bonusSet_2 = JSON.parse((JSON.stringify(bonus_set_two)));
+                        // shuffle for bonus set one
+                        for (const subArray of bonus_set_two) {
+                            this.shuffleArray(subArray);
+                        }
+                        table.users[2].bonusSet_2 = JSON.parse((JSON.stringify(bonus_set_two)));
+                        // shuffle for bonus set one
+                        for (const subArray of bonus_set_two) {
+                            this.shuffleArray(subArray);
+                        }
+                        table.users[3].bonusSet_2 = JSON.parse((JSON.stringify(bonus_set_two)));
+                        
+                        DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_2);
+                        // console.log('new set two generated', JSON.stringify(table.users));
+                    }
+                } else {
+                    // Modified version of bonus value logic
+                    DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_1);
+                    // if set one is empty then create a new set
+                    if(DiceValue === undefined) {
+                        console.log('set one generated');
+                        const bonus_set_one = [];
+                        for (let index = 0; index < 5; index++) {
+                            bonus_set_one.push(this.generateBonusSetOne());                
+                        } 
+                        table.users[0].bonusSet_1 = JSON.parse((JSON.stringify(bonus_set_one)));
+                        // shuffle for bonus set one
+                        for (const subArray of bonus_set_one) {
+                            this.shuffleArray(subArray);
+                        }
+                        table.users[1].bonusSet_1 = JSON.parse((JSON.stringify(bonus_set_one)));
+                        // shuffle for bonus set one
+                        for (const subArray of bonus_set_one) {
+                            this.shuffleArray(subArray);
+                        }
+                        table.users[2].bonusSet_1 = JSON.parse((JSON.stringify(bonus_set_one)));
+                        // shuffle for bonus set one
+                        for (const subArray of bonus_set_one) {
+                            this.shuffleArray(subArray);
+                        }
+                        table.users[3].bonusSet_1 = JSON.parse((JSON.stringify(bonus_set_one))); 
+                        // console.log('new set one generated', JSON.stringify(table.users));
+                        DiceValue = this.getElementFromSubarray(table.users[idx].bonusSet_1);
+                    }
+                }
+            //   console.log(`player position ==> ${idx}, Bonus count ==> ${bonusCount} , Dice Value => ${DiceValue}`);
+            }
+            return {'DiceValue' : DiceValue, 'table' : table};
+        } catch(err) {
+            let logData = {
+                level: 'error',
+                meta: { 'env' : `${process.env.NODE_ENV}`,'error': err, stackTrace : err.stack}
+            };
+            logDNA.error('bonusRollDice', logData);
+        }
+    }
+
+    getElementFromSubarray(array) {
+        // Using nested loops to iterate through all elements
+        for (let i = 0; i < array.length; i++) {
+            for (let j = 0; j < array[i].length; j++) {
+                if(array[i][j] > 0) { 
+                    return array[i].shift();
+                }
+            }
+        }
     }
 
     getSix(room, id, myRoom)
@@ -1380,24 +1514,24 @@ class _Tables
             // console.log('Rank ------------------->', otherRank, UserRankWiseAmount.get(1));
             let winAmount = 0;
             if (typeof amount != 'undefined' && otherRank == 1 
-                && UserRankWiseAmount.get(1) && !table.users[k].hasOwnProperty("is_left"))
+                && UserRankWiseAmount.get(1) ) // && !table.users[k].hasOwnProperty("is_left")
             {
                 // console.log('Rank 1 ------------------->', UserRankWiseAmount.get(1));
                 winAmount = otherRank == 1 ? Math.floor(UserRankWiseAmount.get(1)/(oneRankCounter == 0 ? 1 : oneRankCounter)) : 0;
                                             
             } else if (typeof amount != 'undefined' && otherRank == 2 
-                && UserRankWiseAmount.get(2) && !table.users[k].hasOwnProperty("is_left"))
+                && UserRankWiseAmount.get(2) ) // && !table.users[k].hasOwnProperty("is_left")
             {
                 // console.log('Rank 2 ------------------->', UserRankWiseAmount.get(2));
                 winAmount = otherRank == 2 ? Math.floor(UserRankWiseAmount.get(2)/(twoRankCounter == 0 ? 1 : twoRankCounter)) : 0;            
                 
             } else if (typeof amount != 'undefined' && otherRank == 3 
-                && UserRankWiseAmount.get(3) && !table.users[k].hasOwnProperty("is_left"))
+                && UserRankWiseAmount.get(3) ) // && !table.users[k].hasOwnProperty("is_left")
             {
                 // console.log('Rank 3 ------------------->', UserRankWiseAmount.get(3));
                 winAmount = otherRank == 3 ? Math.floor(UserRankWiseAmount.get(3)/(threeRankCounter == 0 ? 1 : threeRankCounter)) : 0;
             } else if (typeof amount != 'undefined' && otherRank == 4
-                && UserRankWiseAmount.get(4) && !table.users[k].hasOwnProperty("is_left"))
+                && UserRankWiseAmount.get(4) ) // && !table.users[k].hasOwnProperty("is_left")
             {
                 // console.log('Rank 4 ------------------->', UserRankWiseAmount.get(4));
                 winAmount = otherRank == 4 ? Math.floor(UserRankWiseAmount.get(4)/(fourRankCounter == 0 ? 1 : fourRankCounter)) : 0;
@@ -1769,8 +1903,8 @@ class _Tables
                 let dice_range;
                 let min_no_of_occurance;
                 if(myRoom.no_of_diceSet == 1) {
-                    (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (25 - 22)) + 22) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
-                    (myRoom.no_of_players == 2) ? min_no_of_occurance = 2 : min_no_of_occurance = 1;
+                    (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (12 - 8)) + 8) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
+                    (myRoom.no_of_players == 2) ? min_no_of_occurance = 1 : min_no_of_occurance = 1;
                 } else if(myRoom.no_of_diceSet == 2){
                     (myRoom.no_of_players == 2) ? (dice_range = Math.floor(Math.random() * (12 - 8)) + 8) : (dice_range = Math.floor(Math.random() * (12 - 8)) + 8);
                     (myRoom.no_of_players == 2) ? min_no_of_occurance = 1 : min_no_of_occurance = 1;
@@ -1781,7 +1915,7 @@ class _Tables
                 }
 
                 // 80 percentage of number will generate 1 to 5 and 20 percentage generate 6.
-                const original_dice_value = this.getCustomizedValue(dice_range, min_no_of_occurance);
+                const original_dice_value = this.getCustomizedValue_V2(dice_range, min_no_of_occurance);
                 const previousSequences = new Set();
                 //let player_0 = this.generateUniqueShuffledSequence(original_dice_value, previousSequences);
                 let new_player_0 = this.rearrangeArrayWithoutConsecutiveRepeats(original_dice_value);
@@ -1811,10 +1945,12 @@ class _Tables
                     meta: table.users
                 };
                 logDNA.log(`${table.room}_set_${myRoom.no_of_diceSet}`, logData);
-                console.log(JSON.stringify(table.users));
+                // console.log(JSON.stringify(table.users));
             }
              // pop from top of array and update the property value.
-            returnDiceValue = table.users[idx].diceValue.shift();
+             if(table.users[idx]) {
+                returnDiceValue = table.users[idx].diceValue.shift();
+             }
             //console.log(`dice for user ${table.users[idx].id} is ${returnDiceValue} id- ${idx}`);
             return {
                 'returnDiceValue' : returnDiceValue,
@@ -1857,6 +1993,50 @@ class _Tables
         this.shuffleArray(result);
         return result;
 
+    }
+
+    getCustomizedValue_V2(dice_range, no_of_occurance) {
+        // Create an array to store the result
+        const result = [];
+        // Generate numbers 1 to 6 based on condition.
+        for (let i = 1; i <= 6; i++) {
+          if(no_of_occurance == 1) {
+            result.push(i);
+          } else {
+            result.push(i);
+            result.push(i);
+          }
+        }
+        // Generate additional random numbers to reach a total of dice_range
+        while (result.length < dice_range) {
+         const randomNumber = Math.floor(Math.random() * 4) + 1; // Generates a random number between 1 and 4 (inclusive)
+         // Count the number of occurrences of the given number in the array
+         const count = result.filter(item => item >= 1 && item <= 4 && item === randomNumber).length;
+          if(count < 3) {
+            result.push(randomNumber);
+          }
+        }
+        // Shuffle the array to randomize the order
+        this.shuffleArray(result);
+        return result;
+    }
+
+    generateBonusSetOne(){
+        const result = [5,6];
+        while (result.length < 6) {
+            const randomNumber = Math.floor(Math.random() * 4) + 1;
+            result.push(randomNumber);
+        }
+        return this.rearrangeArrayWithoutConsecutiveRepeats(result);
+    }
+
+    generateBonusSetTwo(){
+        const result = [5,6];
+        while (result.length < 4) {
+            const randomNumber = Math.floor(Math.random() * 4) + 1;
+            result.push(randomNumber);
+        }
+        return this.rearrangeArrayWithoutConsecutiveRepeats(result);
     }
 
     /**
