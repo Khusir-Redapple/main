@@ -2085,23 +2085,28 @@ module.exports = function (io, bullQueue) {
 
         let { start, myRoom } = job.data.payload;
         // for tourname game
-        if(myRoom.is_it_tournament && !myRoom.isGameCompleted) {
-            // to get letest myRoom data
-            const myRoom_turnCount = await redisCache.getRecordsByKeyRedis(myRoom.room);
-            console.log(myRoom_turnCount.total_turn, myRoom_turnCount.users[0].tournamentTurn);
-            const remainingTurn = myRoom_turnCount.total_turn - myRoom_turnCount.users[0].tournamentTurn;
-            if (remainingTurn <= 0) {
-                // To sent 0 turn at end
-                io.to(start.room).emit('turnLeft', { status: 1, data: { turn: remainingTurn} });
-                return;
+        if(myRoom.is_it_tournament) {
+            let latestMyRoom = await redisCache.getRecordsByKeyRedis(myRoom.room);
+            if(!latestMyRoom.isGameCompleted) {
+                // to get letest myRoom data
+                //const myRoom_turnCount = await redisCache.getRecordsByKeyRedis(myRoom.room);
+               // console.log(myRoom_turnCount.total_turn, myRoom_turnCount.users[0].tournamentTurn);
+                // const remainingTurn = myRoom_turnCount.total_turn - myRoom_turnCount.users[0].tournamentTurn;
+                const remainingTurn = latestMyRoom.total_turn - latestMyRoom.users[0].tournamentTurn;
+                if (remainingTurn <= 0) {
+                    // To sent 0 turn at end
+                    io.to(start.room).emit('turnLeft', { status: 1, data: { turn: remainingTurn} });
+                    return;
+                } else {
+                    // To sent remaining turn 
+                    io.to(start.room).emit('turnLeft', { status: 1, data: { turn: remainingTurn} });
+                    await bullQueue.add(job.data, {
+                        delay: 1000
+                    });
+                }
             } else {
-                // To sent remaining turn 
-                io.to(start.room).emit('turnLeft', { status: 1, data: { turn: remainingTurn} });
-                await bullQueue.add(job.data, {
-                    delay: 1000
-                });
+                return;
             }
-
         } else {
             // for regular game
             let gameTime = await checkGameExpireTime(myRoom);
