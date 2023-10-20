@@ -1240,6 +1240,77 @@ module.exports = function (io, bullQueue) {
             }
         })
 
+        socket.on('leaveTournament', async (params, callback) => {
+            // room, token
+            const startTime = Date.now();
+            try {                
+                const myRoom = await redisCache.getRecordsByKeyRedis(params.room);
+                if(myRoom) {
+                    let endGame = _tab.calculateTurnamentScore(myRoom.current_turn, myRoom);
+                    if (endGame)
+                    {
+                        let tableD = await redisCache.getRecordsByKeyRedis(`table_${params.room}`);
+                        if (tableD)
+                        {
+                            // in redis updated isGameCompleted property
+                            myRoom.isGameCompleted = true;
+                            await redisCache.addToRedis(params.room, myRoom);
+                            tableD.game_completed_at = new Date().getTime();
+                            tableD.isGameCompleted   = true;
+                            await redisCache.addToRedis(`table_${params.room}`,tableD);
+                        }
+                        // To calculate end game data                       
+                        let reqData = {
+                            room: myRoom.room,
+                            amount: myRoom.room_fee ? myRoom.room_fee.toString():'0',
+                            users: [{
+                                "user_id": myRoom.users[0].id,
+                                "token": myRoom.users[0].user_token,
+                                "rank": myRoom.users[0].rank,
+                                "score": myRoom.users[0].points + myRoom.users[0].bonusPoints,
+                                "winnings": 0
+                            }]
+                        }                                                  
+                        await requestTemplate.post(`endgame`, reqData);
+                        const gamePlayData = await redisCache.getRecordsByKeyRedis('gamePlay_' + myRoom.room);                    
+                        await _tab.sendToSqsAndResetGamePlayData(myRoom.room, myRoom, gamePlayData, myRoom.current_turn);
+                    }
+                }
+                // To return the object.
+                return callback({
+                    status: 1, message : 'success'
+                });
+
+            } catch (error) {
+                let logData = {
+                    level: 'error',
+                    meta: {
+                        'env': `${process.env.NODE_ENV}`,
+                        'error': error,
+                        'params': params,
+                        stackTrace: error.stack
+                    }
+                };
+                logDNA.error('leave_tournament_game', logData);
+                return callback({
+                    status: 0,
+                    message: 'An error was encountered. during leave game.',
+                });
+            } finally {
+                const endTime = (Date.now() - startTime);
+                let logData = {
+                    level: 'warning',
+                    meta: {
+                        p: 'leave_tournament_game',
+                        responseTime: endTime,
+                        'env': `${process.env.NODE_ENV}`,
+                        'params': params
+                    }
+                };
+                logDNA.warn(`leave_tournament_game`, logData);
+            }
+        })
+
     });
 
     function removeListeners(socket) {
